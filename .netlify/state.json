@@ -1,0 +1,21 @@
+{
+	"geolocation": {
+		"data": {
+			"city": "Rajkot",
+			"country": {
+				"code": "IN",
+				"name": "India"
+			},
+			"subdivision": {
+				"code": "GJ",
+				"name": "Gujarat"
+			},
+			"timezone": "Asia/Kolkata",
+			"latitude": 22.2904,
+			"longitude": 70.7915,
+			"postalCode": "360022"
+		},
+		"timestamp": 1749644622423
+	},
+	"siteId": "1c2db590-dc52-471f-bbfc-f2272b0807fc"
+}

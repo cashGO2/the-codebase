@@ -1,0 +1,1 @@
+document.addEventListener("DOMContentLoaded",(()=>{const e=document.getElementById("darkToggle");"true"===localStorage.getItem("darkMode")&&document.body.classList.add("dark"),e.addEventListener("click",(()=>{document.body.classList.toggle("dark"),localStorage.setItem("darkMode",document.body.classList.contains("dark"))}))}));

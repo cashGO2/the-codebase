@@ -1,0 +1,71 @@
+functionsDirectory = "D:\\v4\\materio\\api\\v1"
+functionsDirectoryOrigin = "config"
+headersOrigin = "config"
+redirectsOrigin = "config"
+plugins = []
+
+[dev]
+command = "bundle exec jekyll serve --watch"
+framework = "jekyll"
+targetPort = 4000.0
+port = 8888.0
+autoLaunch = true
+
+[functions]
+
+[functions."*"]
+included_files = ["config/**"]
+
+[build]
+publish = "D:\\v4\\materio\\_site"
+publishOrigin = "config"
+commandOrigin = "config"
+command = "node scripts/generate-build-id.js && bundle exec jekyll build && node scripts/minify-assets.js"
+functions = "D:\\v4\\materio\\api\\v1"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
+
+[[headers]]
+for = "/*"
+
+[headers.values]
+Access-Control-Allow-Origin = "*"
+Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+Access-Control-Allow-Headers = "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+Access-Control-Max-Age = "86400"
+
+[[redirects]]
+from = "/api/v1/*"
+to = "/.netlify/functions/:splat"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/api/v1/_preflight/*"
+to = "/.netlify/functions/cors"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]

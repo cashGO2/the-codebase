@@ -1,0 +1,380 @@
+<div class="container">
+    <nav class="navbar">
+        <div class="navbar-top-group">
+            <a href="#" class="tab-link active" data-tab="home">
+                <i class="fas fa-home"></i>
+            </a>
+            <a href="#2" class="tab-link" data-tab="chat">
+                <i class="fas fa-comments"></i>
+            </a>
+            <a href="#3" class="tab-link" data-tab="notifications">
+                <i class="fas fa-bell"></i>
+            </a>
+            <!-- <a href="#5" class="tab-link" data-tab="downloads">
+                <i class="fas fa-download"></i>
+            </a> -->
+        </div>
+        <div class="navbar-bottom-group">
+            <a href="#4" class="tab-link profile-icon" data-tab="settings">
+                <i id="settings-icon" class="fas fa-cog"></i>
+                <img id="profile-image" src="/assets/img/default-avatar.svg" style="display: none;">
+            </a>
+        </div>
+    </nav>
+
+    <div class="content">
+        <div id="home" class="tab-content active">
+            <div class="card-one" id="reading">
+                <h2>What are you reading today?</h2>
+                <form id="readingSelectionForm">
+                    <div>
+                        <label for="semesterSelect"></label>
+                        <select id="semesterSelect">
+                            <option value="">Select Semester</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="subjectSelect"></label>
+                        <select id="subjectSelect" disabled>
+                            <option value="">Select Subject</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="categorySelect"></label>
+                        <select id="categorySelect" disabled>
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="topicSelect"></label>
+                        <select id="topicSelect" disabled>
+                            <option value="">Select Topic</option>
+                        </select>
+                    </div>
+                </form>
+
+                <button id="submitButton">Submit</button>
+            </div>
+            <div id="popup">
+                <div class="popup-controls">
+                    </button>
+                    <!-- <button id="downloadButton" style="margin-right:100;margin-top:5px;transition:all 0.3s ease;cursor:pointer;" title="Download for offline reading"><i class="fa-regular fa-bookmark"></i></button> -->
+                    <button id="fullscreenButton" style="margin-right: 40px; margin-top:5px;"><i
+                            class="fas fa-expand"></i></button>
+                    <button id="closePopup"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="popupContent">
+                    <!-- PDF iframe will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Promotional Modals -->
+        <div class="promo-modal-overlay" id="promoModal">
+                <div class="promo-modal">
+                    <img src="./static/res/pplx.png" class="promo-cover">
+                    <i class="fas fa-times promo-close-btn" onclick="closePromoModal()"></i>
+                    <h2><i class="fa-solid fa-bullhorn" style="margin-right: 10px;"></i>Get 1 Month of Perplexity Pro
+                        for free!</h2>
+                    <p>You can get Perplexity pro for free with unlimited access to OpenAI models (4o, 4.1, o4-mini)
+                        with no limits on image generation and reasoning , DeepSeek R1, Claude 3.7 Sonnet etc upto 2
+                        years. So, signup with your student email to claim the offer.
+                    </p>
+                    <p>Offer valid till 31st May only.</p>
+                    <a href="./redirects/pplx" target="_blank">
+                        <button id="offerButton" class="site-button"><i class="fa-solid fa-tag"
+                                style="margin-left: 5px; margin-right: 10px;"></i>Redeem Now!</button>
+                    </a>
+                </div>
+            </div>
+
+        <div id="chat" class="tab-content">
+            <h1>
+                Chat
+                <i class="fas fa-info info-icon">
+                    <span class="tooltip" style="font-weight: normal;">You can chat here by signing with github and
+                        ask doubts or discuss topics, Formatting with Markdown is supported.</span>
+                </i>
+            </h1>
+            <div id="giscus" data-repo="Materioa/Materio">
+                <!-- The Giscus comment section will be loaded here -->
+            </div>
+            <script src="https://giscus.app/client.js" data-repo="Materioa/Materio" data-repo-id="R_kgDOK_VkLg"
+                data-category="Chat" data-category-id="DIC_kwDOK_VkLs4CmdaW" data-mapping="title" data-strict="0"
+                data-reactions-enabled="0" data-emit-metadata="0" data-input-position="top" data-theme="noborder_dark"
+                data-lang="en" crossorigin="anonymous" async>
+                </script>
+
+        </div>
+
+        <div id="notifications" class="tab-content">
+            <h1>Notifications</h1>
+            <div id="notificationBoard" style="color:#000000;">
+                <!-- Notification cards will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- <div id="downloads" class="tab-content">
+            <h1>
+                Downloads
+                <i class="fas fa-info info-icon">
+                    <span class="tooltip" style="font-weight: normal;">Your downloaded files are stored locally for offline reading.</span>
+                </i>
+            </h1>
+            <div id="downloadsBoard" style="color:#000000;">
+                <div id="downloadsLoading" class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i> Loading downloads...
+                </div>
+                <div id="downloadsEmpty" class="empty-state" style="display: none;">
+                    <i class="fas fa-download" style="font-size: 48px; color: #ccc; margin-bottom: 16px;"></i>
+                    <p>No downloads yet</p>
+                    <p style="color: #666; font-size: 14px;">Downloaded files will appear here</p>
+                </div>
+                <div id="downloadsList"></div>
+            </div>
+        </div> -->
+
+        <div id="settings" class="tab-content">
+            <h1>Settings</h1>
+            <!-- Version -->
+            <div class="card-layout" id="versionInfo" style></div>
+            <!-- Account -->
+            <div class="card-layout" id="account">
+                <div class="account-card">
+                    <div class="account-info">
+                        <img id="account-profile-image" src="/assets/img/default-avatar.svg" alt="Profile"
+                            class="account-profile-pic">
+                        <div class="account-details">
+                            <p class="account-name" id="account-name">Log in to Materio Account</p>
+                            <p class="account-username" id="account-username"></p>
+                        </div>
+                    </div>
+                    <a href="/account" class="account-link">
+                        <i class="fas fa-chevron-right" style="text-decoration: none;"></i>
+                    </a>
+                </div>
+            </div>
+            <!-- Dark mode toggle -->
+            <div class="card-layout" id="themeCard">
+                <div class="toggle-container">
+                    <div class="paper-mode-title">Enable Dark Mode</div>
+                    <label class="switch">
+                        <input type="checkbox" id="themeToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <!-- Contributions -->
+            <div class="card-layout" id="gh">
+                <div class="toggle-container">
+                    <a href="https://github.com/Materioa/materio/issues/new?template=contribute.yml"
+                        class="contribute-button">
+                        <i class="fas fa-circle-plus" style="margin-right: 15px;"></i>
+                        <span style="font-weight: 600; color: #333; text-decoration: none;">Contribute Materials</span>
+                        <i class="fas fa-chevron-right" style="position: absolute; right: 30px; margin-right: 0;"></i>
+                    </a>
+                </div>
+            </div>
+            <!-- Tabs -->
+            <div class="card-layout" id="tabSwitcherCard">
+                <div class="tab-switcher-container">
+                    <span class="tab-text active" data-target="preferences"><b>Preferences</b></span>
+                    <span class="tab-text" data-target="about-app"><b>About the App</b></span>
+                    <div class="active-tab-indicator" id="activeTabIndicator"></div>
+                </div>
+            </div>
+            <!-- Preferences Section -->
+            <div id="preferences-content" class="tab-content-section active">
+                <!-- Reading Modes -->
+                <p style="margin-left: 5px;"><b>Reading Modes</b></p>
+                <div class="card-layout" id="paperModeCard">
+                    <div class="toggle-container">
+                        <div class="paper-mode-info">
+                            <div class="paper-mode-title">Paper Mode</div>
+                            <div class="paper-mode-description">Paper-like reading experience</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="paperModeToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <details class="grain-details" id="grainDetails" style="display: none;">
+                        <summary class="grain-summary">Grain Settings</summary>
+                        <div class="grain-size-control" id="grainSizeControl">
+                            <div class="grain-size-label">
+                                <span>Grain Size</span>
+                                <span class="grain-size-value" id="grainSizeValue">100%</span>
+                            </div>
+                            <input type="range" id="grainSizeSlider" min="0" max="200" value="100" step="10"
+                                class="grain-slider">
+                        </div>
+                    </details>
+                </div>
+                <div class="card-layout" id="nightReadingCard">
+                    <div class="toggle-container">
+                        <div class="paper-mode-info">
+                            <div class="paper-mode-title">Night Mode</div>
+                            <div class="paper-mode-description">Reduces eye strain</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="nightReadingToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <details class="grain-details" id="nightReadingDetails" style="display: none;">
+                        <summary class="grain-summary">Night Mode Settings</summary>
+                        <div class="grain-size-control" id="nightReadingControl">
+                            <div class="warmth-control" id="warmthControl">
+                                <div class="warmth-label">
+                                    <span>Warmth</span>
+                                    <span class="warmth-value" id="warmthValue">50%</span>
+                                </div>
+                                <input type="range" id="warmthSlider" min="0" max="100" value="50" step="5"
+                                    class="warmth-slider">
+                            </div>
+                            <div class="night-schedule-container">
+                                <div class="time-input-group">
+                                    <label for="nightStartTime">Start Time:</label>
+                                    <input type="time" id="nightStartTime" value="20:00" class="time-input">
+                                </div>
+                                <div class="time-input-group">
+                                    <label for="nightEndTime">End Time:</label>
+                                    <input type="time" id="nightEndTime" value="06:00" class="time-input">
+                                </div>
+                                <div class="schedule-toggle-group">
+                                    <span>Auto Schedule</span>
+                                    <label class="switch small-switch">
+                                        <input type="checkbox" id="nightScheduleToggle">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+                <div class="card-layout" id="einkModeCard">
+                    <div class="toggle-container">
+                        <div class="paper-mode-info">
+                            <div class="paper-mode-title">E-Ink Mode</div>
+                            <div class="paper-mode-description">Grayscale filter like e-ink displays</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="einkModeToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Advanced Customisation and Cookie Management -->
+                <p style="margin-left: 5px;"><b>Advanced</b></p>
+                <div class="card-layout" id="bgToggleCard">
+                    <div class="toggle-container">
+                        <div class="paper-mode-info">
+                            <div class="paper-mode-title">Background Image</div>
+                            <div class="paper-mode-description">Disable home background image</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="disableBgToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="card-layout" id="cookiesToggleCard">
+                    <div class="toggle-container">
+                        <div class="paper-mode-info">
+                            <div class="paper-mode-title">Accept Cookies</div>
+                            <div class="paper-mode-description">Opt in for analytics cookies</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="optOutCookiesToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About the App Section -->
+            <div id="about-app-content" class="tab-content-section">
+                <p style="margin-left: 5px;"><b>Release Overview</b></p>
+                <div class="card-layout" id="about">
+                    <p id="versionInfoText">Version: </p>
+                    <p id="buildInfoText">Build: </p>
+                    <details id="changeLogDetails">
+                        <summary><i class="fa-regular fa-telescope" style="margin-right: 10px;"></i>What's New ?
+                        </summary>
+                        <div id="changeLogContent">
+                            <!-- log will appear here -->
+                        </div>
+                    </details>
+                </div>
+
+                <p style="margin-left: 5px;"><b>Legal</b></p>
+                <div class="card-layout" id="notices">
+                    <p>
+                        <i class="fas fa-circle-info"><span><a href="/whatisthis"
+                                    style="font-family:'Manrope', sans-serif; font-weight: 600; color: #333; text-decoration: none;">About</a></span></i>
+                        <i class="fas fa-chevron-right" style="float: right;margin-right: 20px;"></i>
+                    </p>
+                    <hr>
+                    <p>
+                        <i class="fas fa-scroll"><span><a href="/license"
+                                    style="font-family:'Manrope', sans-serif; font-weight: 600; color: #333;text-decoration: none;">License</a></span></i>
+                        <i class="fas fa-chevron-right" style="float: right;margin-right: 20px;"></i>
+                    </p>
+                    <hr>
+                    <p>
+                        <i class="fas fa-file-contract"><span><a href="/privacy"
+                                    style="font-family:'Manrope', sans-serif; font-weight:600; color: #333;text-decoration: none;">Privacy
+                                    Policy</a></span></i>
+                        <i class="fas fa-chevron-right" style="float: right;margin-right: 20px;"></i>
+                    </p>
+                    <hr>
+                    <p>
+                        <i class="fas fa-cookie"><span><a href="/cookies"
+                                    style="font-family:'Manrope', sans-serif; font-weight: 600; color: #333;text-decoration: none;">Cookie
+                                    Policy</a></span></i>
+                        <i class="fas fa-chevron-right" style="float: right;margin-right: 20px;"></i>
+                    </p>
+                    <hr>
+                    <p>
+                        <i class="fab fa-github"><span><a href="https://github.com/Jinansh230705"
+                                    style="font-family:'Manrope', sans-serif; font-weight: 600; color: #333;text-decoration: none;">Developer's
+                                    Github</a></span></i>
+                        <i class="fas fa-chevron-right" style="float: right;margin-right: 20px;"></i>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Creator Stamp -->
+            <div class="card-layout" id="creatorInfo">
+                <p>&copy; Materio</p>
+                <p> Crafted with ❤️ by Jinansh </p>
+            </div>
+
+            <!-- Opensource Licenses and Miscelleneous -->
+            <div id="licensesCard" style="text-align: center; margin: 20px 0;">
+                <details>
+                    <summary
+                        style="list-style: none; cursor: pointer; display: inline-block; background: none; border: none; font-size: 14px; color: #666; padding: 8px 0; transition: color 0.3s ease;">
+                        <i class="fas fa-chevron-down"
+                            style="margin-left: 8px; transition: transform 0.3s ease; font-size: 12px;"></i>
+                        Opensource Licenses
+                    </summary>
+                    <div id="licensesContent"
+                        style="max-height: 300px; overflow-y: auto; background-color: #f3f3ee; border: 1px solid #ddd; border-radius: 5px; padding: 15px; margin: 10px auto; text-align: center; max-width: 90%;">
+                        <pre id="licensesText"
+                            style="font-family: 'Consolas', 'Monaco', 'Courier New', monospace; font-size: 12px; line-height: 1.4; margin: 0; white-space: pre-wrap; color: #333; text-align: center;">Loading licenses...</pre>
+                    </div>
+                </details>
+            </div>
+            <details id="miscCard" style="text-align: center; margin: 20px 0;">
+                <summary
+                    style="list-style: none; cursor: pointer; display: inline-block; background: none; border: none; font-size: 14px; color: #666; padding: 8px 0; transition: color 0.3s ease;">
+                    <i class="fas fa-chevron-down"
+                        style="margin-left: 8px; transition: transform 0.3s ease; font-size: 12px;"></i>
+                    Misc
+                </summary>
+                <span style="font-family: 'Consolas', 'Monaco', 'Courier New', monospace;">Materio ID: <span
+                        id="buildId">{{ site.data.build_id.build_id | default: "dev-local"}}</span></span>
+            </details>
+        </div>
