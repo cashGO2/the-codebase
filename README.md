@@ -1,6 +1,6 @@
 # Materio
 
-![Materio Logo](./assets/logo.png)
+![Materio Logo](https://materioa.netlify.app/assets/img/materio.svg)
 
 A modern, feature-rich application built with cutting-edge technologies to deliver exceptional user experiences.
 
@@ -80,13 +80,6 @@ materio/
 | `npm run lint` | Run linting |
 | `npm run type-check` | Run TypeScript type checking |
 
-## 🎨 Customization
-
-Materio is designed to be highly customizable:
-
-- **Theming**: Modify colors, fonts, and spacing in `src/styles/theme.ts`
-- **Components**: Extend or override components in `src/components/`
-- **Configuration**: Update settings in `config/app.config.ts`
 
 ## 🔐 Environment Variables
 
@@ -179,7 +172,7 @@ For commercial licensing or public hosting permissions, contact: [materio.operab
 
 If you encounter any issues or have suggestions for improvements:
 
-1. Check existing [Issues](https://github.com/your-username/materio/issues)
+1. Check existing [Issues](https://github.com/Materioa/materio/issues)
 2. Create a new issue with detailed description
 3. Include steps to reproduce (for bugs)
 4. Provide environment information
@@ -187,8 +180,7 @@ If you encounter any issues or have suggestions for improvements:
 ## 📞 Support
 
 - **Email**: [materio.operable341@silomails.com](mailto:materio.operable341@silomails.com)
-- **Documentation**: [docs.materio.com](https://docs.materio.com)
-- **Issues**: [GitHub Issues](https://github.com/your-username/materio/issues)
+- **Issues**: [GitHub Issues](https://github.com/Materioa/materio/issues)
 
 ## 🙏 Acknowledgments
 
@@ -206,6 +198,6 @@ If you encounter any issues or have suggestions for improvements:
 ---
 
 <div align="center">
-  <p>Made with ❤️ by <a href="https://github.com/your-username">Jinansh Mehta</a></p>
+  <p>Crafted with ❤️ by <a href="https://github.com/Jinansh230705">Jinansh Mehta</a></p>
   <p>&copy; 2025 Materio. All rights reserved.</p>
 </div>
