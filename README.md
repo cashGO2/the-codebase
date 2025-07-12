@@ -198,10 +198,10 @@ If you encounter any issues or have suggestions for improvements:
 
 ## 📊 Project Stats
 
-![GitHub stars](https://img.shields.io/github/stars/your-username/materio?style=social)
-![GitHub forks](https://img.shields.io/github/forks/your-username/materio?style=social)
-![GitHub issues](https://img.shields.io/github/issues/your-username/materio)
-![GitHub license](https://img.shields.io/github/license/your-username/materio)
+![GitHub stars](https://img.shields.io/github/stars/Materioa/materio?style=social)
+![GitHub forks](https://img.shields.io/github/forks/Materioa/materio?style=social)
+![GitHub issues](https://img.shields.io/github/issues/Materioa/materio)
+![GitHub license](https://img.shields.io/github/license/Materioa/materio)
 
 ---
 
