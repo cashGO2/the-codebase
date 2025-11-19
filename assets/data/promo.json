@@ -1,0 +1,41 @@
+{
+  "enabled": true,
+  "category": "whats-new",
+  "frequency": "once",
+  "customFrequencyHours": "null",
+  "title": "What's New?",
+  "description": "1. AI Search was optimised so you can now ask something like `what to read?`, `resources with basics of turing machines` etc. and get suggestions based on it.\n 2. Improved user experience by revamping the items in the reading card.\n 3. Little improvements to PDF loading logic to reduce lag and faster loading (this will be improved more later).",
+  "link": "null",
+  "images": [
+    "assets/img/covers/211dbe97-430f-4637-b459-5bbc9e63ffcd.webp"
+  ],
+  "imageRotationInterval": 5000,
+  "imageAnimation": {
+    "type": "cascade",
+    "duration": 600,
+    "direction": "left"
+  },
+  "isLimitedOffer": true,
+  "startDate": "2025-11-14T19:00",
+  "endDate": "2025-11-15T19:00",
+  "showDateInfo": false,
+  "lastUpdated": "2025-11-14T18:55:00.000Z",
+  "buttons": {
+    "primary": {
+      "show": false,
+      "text": "Try Now",
+      "icon": "&#8206;"
+    },
+    "secondary": {
+      "show": true,
+      "text": "Got it",
+      "icon": "&#8206;" 
+    }
+  },
+  "disclaimer": {
+    "show": false,
+    "text": "Terms and conditions.",
+    "linkText": "Read more",
+    "linkUrl": ""
+  }
+}

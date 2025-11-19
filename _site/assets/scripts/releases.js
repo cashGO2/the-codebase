@@ -1,1 +1,43 @@
-window.addEventListener("DOMContentLoaded",(function(){var e=window.location.href,n="stable";-1!==e.indexOf("/channels/")?n="channels":-1!==e.indexOf("/labs")&&(n="labs"),fetch("/assets/data/releases.json").then((function(e){return e.json()})).then((function(e){for(var t=null,o=0;o<e.length;o++)if(e[o].branch.toLowerCase()===n){t=e[o];break}if(t){var a=document.getElementById("versionInfoText"),r=document.getElementById("buildInfoText"),l=document.getElementById("changeLogContent");if(a.textContent="Version: "+t.version,r.textContent="Build: "+t.build,Array.isArray(t.logs)){for(var s="",i=0;i<t.logs.length;i++)s+="<p>"+t.logs[i]+"</p>";l.innerHTML=s}else l.textContent=t.logs}else document.getElementById("changeLogContent").textContent="No changelog available for this branch."})).catch((function(e){console.error("Error loading releases:",e)}))}));
+window.addEventListener("DOMContentLoaded", function () {
+    var url = window.location.href;
+    var branch = "stable";
+    if (url.indexOf("/channels/") !== -1) {
+        branch = "channels";
+    } else if (url.indexOf("/labs") !== -1) {
+        branch = "labs";
+    }
+    fetch('/assets/data/releases.json')
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (releases) {
+            var releaseFound = null;
+            for (var i = 0; i < releases.length; i++) {
+                if (releases[i].branch.toLowerCase() === branch) {
+                    releaseFound = releases[i];
+                    break;
+                }
+            }
+            if (releaseFound) {
+                var versionElem = document.getElementById("versionInfoText");
+                var buildElem = document.getElementById("buildInfoText");
+                var logElem = document.getElementById("changeLogContent");
+                versionElem.textContent = "Version: " + releaseFound.version;
+                buildElem.textContent = "Build: " + releaseFound.build;
+                if (Array.isArray(releaseFound.logs)) {
+                    var html = "";
+                    for (var j = 0; j < releaseFound.logs.length; j++) {
+                        html += "<p>" + releaseFound.logs[j] + "</p>";
+                    }
+                    logElem.innerHTML = html;
+                } else {
+                    logElem.textContent = releaseFound.logs;
+                }
+            } else {
+                document.getElementById("changeLogContent").textContent = "No changelog available for this branch.";
+            }
+        })
+        .catch(function (err) {
+            console.error("Error loading releases:", err);
+        });
+});

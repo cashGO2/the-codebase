@@ -103,17 +103,16 @@ class AssetMinifier {
       const { minify } = require('html-minifier-terser');
       const originalCode = fs.readFileSync(filePath, 'utf8');
       const originalSize = originalCode.length;
-      
-      const result = await minify(originalCode, {
+        const result = await minify(originalCode, {
         collapseWhitespace: true,
         removeComments: true,
-        removeRedundantAttributes: true,
-        removeScriptTypeAttributes: true,
-        removeStyleLinkTypeAttributes: true,
+        removeRedundantAttributes: false, // Changed to false to preserve input type attributes
+        removeScriptTypeAttributes: false, // Changed to false to preserve all type attributes
+        removeStyleLinkTypeAttributes: false, // Changed to false
         useShortDoctype: true,
         minifyCSS: true,
         minifyJS: true,
-        removeEmptyAttributes: true,
+        removeEmptyAttributes: false, // Changed to false to preserve all attributes
         removeOptionalTags: false, // Keep for compatibility
         caseSensitive: true,
         preserveLineBreaks: false

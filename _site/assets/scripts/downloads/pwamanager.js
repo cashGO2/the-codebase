@@ -1,1 +1,159 @@
-class PWADownloadManager{constructor(){this.directoryHandle=null,this.supportsFileSystemAccess="showDirectoryPicker"in window}async initializeDirectory(){if(!this.supportsFileSystemAccess)return console.warn("File System Access API not supported"),!1;try{return this.directoryHandle=await window.showDirectoryPicker({mode:"readwrite",startIn:"downloads"}),localStorage.setItem("materio-download-dir",JSON.stringify(this.directoryHandle)),!0}catch(e){return console.error("Failed to get directory access:",e),!1}}async downloadFile(e,t,a){if(!this.directoryHandle&&!await this.initializeDirectory())throw new Error("No directory access");try{const r=await fetch(e);if(!r.ok)throw new Error("Failed to fetch file");const o=await r.blob(),i=await this.directoryHandle.getFileHandle(t,{create:!0}),n=await i.createWritable();return await n.write(o),await n.close(),await this.saveMetadata({filename:t,title:a,downloadedAt:(new Date).toISOString(),originalUrl:e}),{success:!0,filename:t}}catch(e){throw console.error("Download failed:",e),e}}async saveMetadata(e){try{const t=await this.directoryHandle.getFileHandle("materio-metadata.json",{create:!0});let a=[];try{const e=await t.getFile(),r=await e.text();a=JSON.parse(r)}catch(e){}a.push(e);const r=await t.createWritable();await r.write(JSON.stringify(a,null,2)),await r.close()}catch(e){console.error("Failed to save metadata:",e)}}async getDownloads(){if(!this.directoryHandle)return[];try{const e=await this.directoryHandle.getFileHandle("materio-metadata.json"),t=await e.getFile(),a=await t.text();return JSON.parse(a)}catch(e){return[]}}}class IndexedDBDownloadManager{constructor(){this.dbName="MaterioDownloads",this.dbVersion=1,this.db=null}async init(){return new Promise(((e,t)=>{const a=indexedDB.open(this.dbName,this.dbVersion);a.onerror=()=>t(a.error),a.onsuccess=()=>{this.db=a.result,e()},a.onupgradeneeded=e=>{const t=e.target.result;if(!t.objectStoreNames.contains("downloads")){const e=t.createObjectStore("downloads",{keyPath:"id",autoIncrement:!0});e.createIndex("filename","filename",{unique:!0}),e.createIndex("downloadedAt","downloadedAt")}}}))}async saveDownload(e,t){const a=this.db.transaction(["downloads"],"readwrite").objectStore("downloads"),r={...e,fileData:t,id:Date.now()};return a.add(r)}async getDownloads(){const e=this.db.transaction(["downloads"],"readonly").objectStore("downloads");return new Promise(((t,a)=>{const r=e.getAll();r.onsuccess=()=>t(r.result),r.onerror=()=>a(r.error)}))}}
+// PWA Download Manager with File System Access API
+class PWADownloadManager {
+    constructor() {
+        this.directoryHandle = null;
+        this.supportsFileSystemAccess = 'showDirectoryPicker' in window;
+    }
+
+    async initializeDirectory() {
+        if (!this.supportsFileSystemAccess) {
+            console.warn('File System Access API not supported');
+            return false;
+        }
+
+        try {
+            // Request directory access (user will choose directory)
+            this.directoryHandle = await window.showDirectoryPicker({
+                mode: 'readwrite',
+                startIn: 'downloads'
+            });
+            
+            // Store directory handle for future use
+            localStorage.setItem('materio-download-dir', JSON.stringify(this.directoryHandle));
+            return true;
+        } catch (error) {
+            console.error('Failed to get directory access:', error);
+            return false;
+        }
+    }
+
+    async downloadFile(url, filename, title) {
+        if (!this.directoryHandle && !await this.initializeDirectory()) {
+            throw new Error('No directory access');
+        }
+
+        try {
+            // Fetch the file
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Failed to fetch file');
+            
+            const blob = await response.blob();
+            
+            // Create file in the chosen directory
+            const fileHandle = await this.directoryHandle.getFileHandle(filename, {
+                create: true
+            });
+            
+            const writable = await fileHandle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+            
+            // Store metadata
+            await this.saveMetadata({
+                filename,
+                title,
+                downloadedAt: new Date().toISOString(),
+                originalUrl: url
+            });
+            
+            return { success: true, filename };
+            
+        } catch (error) {
+            console.error('Download failed:', error);
+            throw error;
+        }
+    }
+
+    async saveMetadata(metadata) {
+        try {
+            const metadataHandle = await this.directoryHandle.getFileHandle('materio-metadata.json', {
+                create: true
+            });
+            
+            let existingData = [];
+            try {
+                const file = await metadataHandle.getFile();
+                const text = await file.text();
+                existingData = JSON.parse(text);
+            } catch (e) {
+                // File doesn't exist yet
+            }
+            
+            existingData.push(metadata);
+            
+            const writable = await metadataHandle.createWritable();
+            await writable.write(JSON.stringify(existingData, null, 2));
+            await writable.close();
+            
+        } catch (error) {
+            console.error('Failed to save metadata:', error);
+        }
+    }
+
+    async getDownloads() {
+        if (!this.directoryHandle) return [];
+        
+        try {
+            const metadataHandle = await this.directoryHandle.getFileHandle('materio-metadata.json');
+            const file = await metadataHandle.getFile();
+            const text = await file.text();
+            return JSON.parse(text);
+        } catch (error) {
+            return [];
+        }
+    }
+}
+
+// Alternative: IndexedDB Storage for metadata
+class IndexedDBDownloadManager {
+    constructor() {
+        this.dbName = 'MaterioDownloads';
+        this.dbVersion = 1;
+        this.db = null;
+    }
+
+    async init() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(this.dbName, this.dbVersion);
+            
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => {
+                this.db = request.result;
+                resolve();
+            };
+            
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains('downloads')) {
+                    const store = db.createObjectStore('downloads', { keyPath: 'id', autoIncrement: true });
+                    store.createIndex('filename', 'filename', { unique: true });
+                    store.createIndex('downloadedAt', 'downloadedAt');
+                }
+            };
+        });
+    }
+
+    async saveDownload(metadata, fileBlob) {
+        const transaction = this.db.transaction(['downloads'], 'readwrite');
+        const store = transaction.objectStore('downloads');
+        
+        const downloadData = {
+            ...metadata,
+            fileData: fileBlob,
+            id: Date.now()
+        };
+        
+        return store.add(downloadData);
+    }
+
+    async getDownloads() {
+        const transaction = this.db.transaction(['downloads'], 'readonly');
+        const store = transaction.objectStore('downloads');
+        
+        return new Promise((resolve, reject) => {
+            const request = store.getAll();
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+}

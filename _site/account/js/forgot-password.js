@@ -1,1 +1,103 @@
-document.addEventListener("DOMContentLoaded",(function(){const e=document.getElementById("forgotPasswordForm"),t=document.getElementById("passwordReset"),o=document.getElementById("confirmPasswordReset"),s=document.getElementById("newPassword"),r=document.getElementById("confirmNewPassword");let n=!1;e&&e.addEventListener("submit",(async function(e){e.preventDefault();const i=document.getElementById("email").value.trim(),a=document.getElementById("recoveryKey").value.trim();if(i&&a)try{const e=this.querySelector('button[type="submit"]');if(e.textContent,e.disabled=!0,n){const t=s.value,o=r.value;if(!t||!o)return showNotification("Please enter and confirm your new password","error"),void(e.disabled=!1);if(t!==o)return showNotification("Passwords do not match","error"),void(e.disabled=!1);if(t.length<8)return showNotification("Password must be at least 8 characters long","error"),void(e.disabled=!1);e.textContent="RESETTING...";const n=await makeApiRequest("forgot-password","POST",{email:i,recoveryKey:a,newPassword:t});n&&n.token&&(setAuthToken(n.token),showNotification("Password reset successfully!","success"),setTimeout((()=>{redirectToProfile()}),2e3))}else{e.textContent="VERIFYING...";const s=await makeApiRequest("forgot-password","POST",{email:i,recoveryKey:a});s&&s.verified&&(n=!0,t.classList.remove("hidden"),o.classList.remove("hidden"),e.textContent="RESET PASSWORD",e.disabled=!1,showNotification("Recovery key verified! Please enter your new password.","success"))}}catch(e){console.error("Password reset error:",e),showNotification(e.message||"Failed to reset password. Please check your email and recovery key.","error"),submitButton.disabled=!1,submitButton.textContent=originalText}else showNotification("Please enter your email and recovery key","error")}))}));
+document.addEventListener('DOMContentLoaded', function() {
+  const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+  const passwordResetDiv = document.getElementById('passwordReset');
+  const confirmPasswordResetDiv = document.getElementById('confirmPasswordReset');
+  const newPasswordInput = document.getElementById('newPassword');
+  const confirmNewPasswordInput = document.getElementById('confirmNewPassword');
+  
+  let recoveryVerified = false;
+  
+  if (forgotPasswordForm) {
+    forgotPasswordForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value.trim();
+      const recoveryKey = document.getElementById('recoveryKey').value.trim();
+      
+      // Basic validation
+      if (!email || !recoveryKey) {
+        showNotification('Please enter your email and recovery key', 'error');
+        return;
+      }
+      
+      try {
+        // Show loading state
+        const submitButton = this.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        submitButton.disabled = true;
+        
+        if (!recoveryVerified) {
+          submitButton.textContent = 'VERIFYING...';
+          
+          // Step 1: Verify recovery key
+          const verifyResponse = await makeApiRequest('forgot-password', 'POST', {
+            email,
+            recoveryKey
+          });
+          
+          if (verifyResponse && verifyResponse.verified) {
+            // Recovery key is valid, show password reset fields
+            recoveryVerified = true;
+            passwordResetDiv.classList.remove('hidden');
+            confirmPasswordResetDiv.classList.remove('hidden');
+            submitButton.textContent = 'RESET PASSWORD';
+            submitButton.disabled = false;
+            
+            showNotification('Recovery key verified! Please enter your new password.', 'success');
+          }
+        } else {
+          // Step 2: Reset password
+          const newPassword = newPasswordInput.value;
+          const confirmNewPassword = confirmNewPasswordInput.value;
+          
+          // Validate new password
+          if (!newPassword || !confirmNewPassword) {
+            showNotification('Please enter and confirm your new password', 'error');
+            submitButton.disabled = false;
+            return;
+          }
+          
+          if (newPassword !== confirmNewPassword) {
+            showNotification('Passwords do not match', 'error');
+            submitButton.disabled = false;
+            return;
+          }
+          
+          if (newPassword.length < 8) {
+            showNotification('Password must be at least 8 characters long', 'error');
+            submitButton.disabled = false;
+            return;
+          }
+          
+          submitButton.textContent = 'RESETTING...';
+          
+          // Make password reset API request
+          const resetResponse = await makeApiRequest('forgot-password', 'POST', {
+            email,
+            recoveryKey,
+            newPassword
+          });
+          
+          // Handle successful password reset
+          if (resetResponse && resetResponse.token) {
+            setAuthToken(resetResponse.token);
+            
+            showNotification('Password reset successfully!', 'success');
+            
+            // Redirect to profile page after a short delay
+            setTimeout(() => {
+              redirectToProfile();
+            }, 2000);
+          }
+        }
+      } catch (error) {
+        console.error('Password reset error:', error);
+        showNotification(error.message || 'Failed to reset password. Please check your email and recovery key.', 'error');
+        
+        // Reset button state
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
+      }
+    });
+  }
+});

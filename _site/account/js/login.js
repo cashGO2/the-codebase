@@ -1,1 +1,65 @@
-document.addEventListener("DOMContentLoaded",(function(){const e=document.getElementById("loginForm");e&&e.addEventListener("submit",(async function(e){e.preventDefault();const t=document.getElementById("username").value.trim(),o=document.getElementById("password").value,n=document.getElementById("remember").checked;if(!t||!o)return void showNotification("Please enter both username and password","error");const i=this.querySelector('button[type="submit"]'),s=i.textContent;try{i.disabled=!0,i.textContent="SIGNING IN...";const e=await makeApiRequest("login","POST",{username:t,password:o});e&&e.token&&(setAuthToken(e.token),n&&e.user&&localStorage.setItem("materio_user",JSON.stringify(e.user)),showNotification("Login successful! Redirecting...","success"),setTimeout((()=>{redirectToProfile()}),1500))}catch(e){console.error("Login error:",e),showNotification(e.message||"Failed to sign in. Please check your credentials.","error"),i.disabled=!1,i.textContent=s}})),document.querySelectorAll(".btn-social").forEach((e=>{e.addEventListener("click",(function(){showNotification("Social login is not available at this time","info")}))}))}));
+document.addEventListener('DOMContentLoaded', function() {
+  const loginForm = document.getElementById('loginForm');
+  
+  if (loginForm) {
+    loginForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const rememberMe = document.getElementById('remember').checked;
+        if (!username || !password) {
+        showNotification('Please enter both username and password', 'error');
+        return;
+      }
+      
+      // Define submitButton outside the try block so it's accessible in the catch block
+      const submitButton = this.querySelector('button[type="submit"]');
+      const originalText = submitButton.textContent;
+      
+      try {
+        // Show loading state
+        submitButton.disabled = true;
+        submitButton.textContent = 'SIGNING IN...';
+        
+        // Make login API request
+        const response = await makeApiRequest('login', 'POST', {
+          username,
+          password
+        });
+        
+        // Save token if login successful
+        if (response && response.token) {
+          setAuthToken(response.token);
+          
+          // Store user data if needed
+          if (rememberMe && response.user) {
+            localStorage.setItem('materio_user', JSON.stringify(response.user));
+          }
+          
+          showNotification('Login successful! Redirecting...', 'success');
+          
+          // Redirect to profile page after a short delay
+          setTimeout(() => {
+            redirectToProfile();
+          }, 1500);
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        showNotification(error.message || 'Failed to sign in. Please check your credentials.', 'error');
+        
+        // Reset button state
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
+      }
+    });
+  }
+  
+  // Enable social login buttons if needed (currently just UI placeholders)
+  const socialButtons = document.querySelectorAll('.btn-social');
+  socialButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      showNotification('Social login is not available at this time', 'info');
+    });
+  });
+});

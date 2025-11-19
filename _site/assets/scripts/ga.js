@@ -1,1 +1,156 @@
-!function(){if(!window.gtag)return;function e(e,t){window.gtag("event",e,t)}const t=Date.now();let n;window.addEventListener("beforeunload",(function(){e("user_engagement",{engagement_time_msec:Date.now()-t})})),document.querySelectorAll("button").forEach((t=>{t.addEventListener("click",(function(){e("button_click",{event_label:this.id||this.innerText})}))})),document.querySelectorAll(".tab-link").forEach((t=>{t.addEventListener("click",(function(){e("nav_tab_switch",{event_label:this.getAttribute("data-tab")})}))})),document.querySelectorAll(".setting-toggle").forEach((t=>{t.addEventListener("change",(function(){e("setting_toggle",{setting_name:this.id,status:this.checked?"on":"off"})}))})),window.addEventListener("scroll",(function(){n&&clearTimeout(n),n=setTimeout((()=>{e("page_scroll",{scroll_y:window.scrollY})}),1e3)}));let o=0,i=null,l=Date.now(),c=1;function a(){i||(i=setInterval((()=>{o+=1e3}),1e3),e("pdf_view_start",{}))}!function(){const t=document.getElementById("pdf-iframe");t&&(t.addEventListener("load",a),t.contentWindow.addEventListener("scroll",(function(){!function(t){const n=Date.now();n-l>1e3&&(e("pdf_scroll",{scroll_y:t}),l=n)}(t.contentWindow.scrollY)})),t.contentWindow.addEventListener("zoom",(function(t){var n;(n=t.detail.zoomLevel)!==c&&(e("pdf_zoom",{zoom_level:n}),c=n)})))}();const d=document.getElementById("popup");d&&new MutationObserver((t=>{t.forEach((t=>{"none"===t.target.style.display&&i&&(clearInterval(i),i=null,e("user_engagement",{engagement_time_msec:o}),o=0)}))})).observe(d,{attributes:!0,attributeFilter:["style"]}),window.addEventListener("message",(t=>{t.origin.includes("mozilla.github.io")&&e("pdf_interaction",{data:t.data})}))}(),document.addEventListener("DOMContentLoaded",(function(){function e(e,t,n){let o="";if(n){const e=new Date;e.setTime(e.getTime()+24*n*60*60*1e3),o="; expires="+e.toUTCString()}document.cookie=e+"="+(t||"")+o+"; path=/"}const t="GTM-M6PC6RJL",n=document.getElementById("optOutCookiesToggle");n&&("true"===function(){const e="optOutCookies=",t=document.cookie.split(";");for(let n=0;n<t.length;n++){let o=t[n].trim();if(0===o.indexOf(e))return o.substring(14)}return null}()?(n.checked=!0,window["ga-disable-"+t]=!0):window["ga-disable-"+t]=!1,n.addEventListener("change",(function(){this.checked?(window["ga-disable-"+t]=!0,e("optOutCookies","true",30)):(window["ga-disable-"+t]=!1,e("optOutCookies","false",30))})))}));
+(function () {
+    if (!window.gtag) {
+        return;
+    }
+
+    function trackEvent(eventName, params) {
+        window.gtag('event', eventName, params);
+    }
+
+    const pageLoadTime = Date.now();
+    window.addEventListener("beforeunload", function () {
+        const engagementTime = Date.now() - pageLoadTime;
+        trackEvent("user_engagement", { engagement_time_msec: engagementTime });
+    });
+
+    document.querySelectorAll("button").forEach((btn) => {
+        btn.addEventListener("click", function () {
+            trackEvent("button_click", { event_label: this.id || this.innerText });
+        });
+    });
+
+    document.querySelectorAll(".tab-link").forEach((tab) => {
+        tab.addEventListener("click", function () {
+            trackEvent("nav_tab_switch", { event_label: this.getAttribute("data-tab") });
+        });
+    });
+
+    document.querySelectorAll(".setting-toggle").forEach((setting) => {
+        setting.addEventListener("change", function () {
+            trackEvent("setting_toggle", { setting_name: this.id, status: this.checked ? "on" : "off" });
+        });
+    });
+
+    let scrollTimeout;
+    window.addEventListener("scroll", function () {
+        if (scrollTimeout) clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            trackEvent("page_scroll", { scroll_y: window.scrollY });
+        }, 1000);
+    });
+
+    let pdfEngagementTime = 0;
+    let pdfTimer = null;
+    let lastScrollTime = Date.now();
+    let lastZoomLevel = 1;
+
+    function startPdfTimer() {
+        if (!pdfTimer) {
+            pdfTimer = setInterval(() => {
+                pdfEngagementTime += 1000;
+            }, 1000);
+            trackEvent("pdf_view_start", {});
+        }
+    }
+    function stopPdfTimer() {
+        if (pdfTimer) {
+            clearInterval(pdfTimer);
+            pdfTimer = null;
+            trackEvent("user_engagement", { engagement_time_msec: pdfEngagementTime });
+            pdfEngagementTime = 0;
+        }
+    }
+
+    function trackPdfScroll(scrollY) {
+        const now = Date.now();
+        if (now - lastScrollTime > 1000) {
+            trackEvent("pdf_scroll", { scroll_y: scrollY });
+            lastScrollTime = now;
+        }
+    }
+
+    function trackPdfZoom(zoomLevel) {
+        if (zoomLevel !== lastZoomLevel) {
+            trackEvent("pdf_zoom", { zoom_level: zoomLevel });
+            lastZoomLevel = zoomLevel;
+        }
+    }
+
+    function setupPdfTracking() {
+        const pdfIframe = document.getElementById("pdf-iframe");
+        if (pdfIframe) {
+            pdfIframe.addEventListener("load", startPdfTimer);
+            pdfIframe.contentWindow.addEventListener("scroll", function () {
+                trackPdfScroll(pdfIframe.contentWindow.scrollY);
+            });
+            pdfIframe.contentWindow.addEventListener("zoom", function (event) {
+                trackPdfZoom(event.detail.zoomLevel);
+            });
+        }
+    }
+    setupPdfTracking();
+
+    const popup = document.getElementById("popup");
+    if (popup) {
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.target.style.display === "none") {
+                    stopPdfTimer();
+                }
+            });
+        });
+        observer.observe(popup, { attributes: true, attributeFilter: ["style"] });
+    }
+
+    window.addEventListener("message", (event) => {
+        if (event.origin.includes("mozilla.github.io")) {
+            trackEvent("pdf_interaction", { data: event.data });
+        }
+    });
+   
+})();
+
+document.addEventListener('DOMContentLoaded', function () {
+    function setCookie(name, value, days) {
+        let expires = "";
+        if (days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        // console.log("Cookie set:", name, value);
+    }
+
+    function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(";");
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i].trim();
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length);
+        }
+        return null;
+    }
+
+    const GA_OPT_OUT_ID = "GTM-M6PC6RJL";
+    const optOutToggle = document.getElementById("optOutCookiesToggle");
+    if (optOutToggle) {
+        const savedOptOut = getCookie("optOutCookies");
+        if (savedOptOut === "true") {
+            optOutToggle.checked = true;
+            window['ga-disable-' + GA_OPT_OUT_ID] = true;
+        } else {
+            window['ga-disable-' + GA_OPT_OUT_ID] = false;
+        }
+
+        optOutToggle.addEventListener("change", function () {
+            if (this.checked) {
+                window['ga-disable-' + GA_OPT_OUT_ID] = true;
+                setCookie("optOutCookies", "true", 30);
+            } else {
+                window['ga-disable-' + GA_OPT_OUT_ID] = false;
+                setCookie("optOutCookies", "false", 30);
+            }
+        });
+    }
+});

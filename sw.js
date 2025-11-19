@@ -1,161 +1,278 @@
 // Service Worker for Materio PWA
-// Version: 2.0.0 - Online-First Strategy
-// Skip caching on localhost
-if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-  self.addEventListener('install', () => self.skipWaiting());
-  self.addEventListener('activate', () => self.clients.claim());
+// Version: 3.1.0 - Offline Downloads Support
+// 
+// STRATEGY:
+// - ONLINE: Always fetch fresh from network
+// - OFFLINE: Show cached homepage with Downloads tab only
+// - Downloaded PDFs: Load from IndexedDB and display in viewer
+
+// Helper to check if running on localhost
+const isLocalhost = () => {
+  const hostname = self.location.hostname;
+  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('localhost') || hostname.includes(':8888');
+};
+
+// Localhost mode - pass through only
+if (isLocalhost()) {
+  console.log('[SW] Localhost detected - pass-through mode');
+  
+  self.addEventListener('install', () => {
+    self.skipWaiting();
+  });
+  
+  self.addEventListener('activate', (event) => {
+    event.waitUntil(self.clients.claim());
+  });
+  
   self.addEventListener('fetch', (event) => {
-    // Pass through all requests without caching
     event.respondWith(fetch(event.request));
   });
-  return;
+  
+} else {
+  // Production mode - Cache minimal files for offline Downloads
+  console.log('[SW] Production mode - Offline Downloads support');
+
+const OFFLINE_CACHE = 'materio-offline-v3-3-5';
+
+// Helper function to get cookie value
+function getCookie(name) {
+  const value = `; ${self.cookieStore || ''}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
 }
 
-const CACHE_NAME = 'materio-v2-0';
-const STATIC_CACHE = 'materio-static-v2-0';
-const DYNAMIC_CACHE = 'materio-dynamic-v2-0';
-const API_CACHE = 'materio-api-v2-0';
+// Get selected wallpaper from cookie (will be checked during install)
+function getWallpaperFiles() {
+  const wallpapers = [];
+  
+  // Try to get selectedWallpaper from cookie
+  // Note: Service worker can't access document.cookie directly
+  // So we'll cache all wallpapers to be safe
+  
+  // Static wallpapers (WebP format for 90% size reduction)
+  wallpapers.push('/assets/img/events/hero.webp');  // Default
+  wallpapers.push('/assets/img/events/h2.webp');    // Zen
+  wallpapers.push('/assets/img/events/h5.webp');    // Dusk
+  wallpapers.push('/assets/img/events/h3.webp');    // A Blissful Night
+  
+  // Dynamic wallpapers (cache current one based on time)
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+  const totalMinutes = hours * 60 + minutes;
+  
+  let dynamicIndex = 2; // Default daytime
+  if (totalMinutes >= 345 && totalMinutes < 360) dynamicIndex = 0;
+  else if (totalMinutes >= 360 && totalMinutes < 405) dynamicIndex = 1;
+  else if (totalMinutes >= 405 && totalMinutes < 1065) dynamicIndex = 2;
+  else if (totalMinutes >= 1065 && totalMinutes < 1080) dynamicIndex = 3;
+  else if (totalMinutes >= 1080 && totalMinutes < 1140) dynamicIndex = 4;
+  else if (totalMinutes >= 1140 && totalMinutes < 1185) dynamicIndex = 5;
+  else if (totalMinutes >= 1185 && totalMinutes < 1430) dynamicIndex = 6;
+  else if (totalMinutes >= 1430 || totalMinutes < 30) dynamicIndex = 7;
+  else if (totalMinutes >= 30 && totalMinutes < 345) dynamicIndex = 8;
+  
+  wallpapers.push(`/assets/img/events/dynamic/part_${dynamicIndex}.webp`);
+  
+  return wallpapers;
+}
 
-// Essential files that need to be cached for offline functionality
-const STATIC_ASSETS = [
+// Cache all files in the oread directory for full offline PDF support
+function getOreadFiles() {
+  // Complete list of all oread files (relative to public root)
+  return [
+    '/oread/LICENSE',
+    '/oread/build/pdf.mjs',
+    '/oread/build/pdf.mjs.map',
+    '/oread/build/pdf.sandbox.mjs',
+    '/oread/build/pdf.sandbox.mjs.map',
+    '/oread/build/pdf.worker.mjs',
+    '/oread/build/pdf.worker.mjs.map',
+    '/oread/web/viewer.html',
+    '/oread/web/viewer.mjs',
+    '/oread/web/viewer.mjs.map',
+    '/oread/web/viewer.css',
+    '/oread/web/themesync.css',
+    '/oread/web/showbtnrq.js',
+    '/oread/web/overlays.js',
+    '/oread/web/keybinds.js',
+    '/oread/web/intelligence.js',
+    '/oread/web/debugger.mjs',
+    '/oread/web/debugger.css',
+    '/oread/web/compressed.tracemonkey-pldi-09.pdf',
+    // Images
+    '/oread/web/images/annotation-key.svg',
+    '/oread/web/images/annotation-paragraph.svg',
+    '/oread/web/images/annotation-paperclip.svg',
+    '/oread/web/images/annotation-pushpin.svg',
+    '/oread/web/images/annotation-note.svg',
+    '/oread/web/images/annotation-noicon.svg',
+    '/oread/web/images/annotation-newparagraph.svg',
+    '/oread/web/images/annotation-insert.svg',
+    '/oread/web/images/annotation-help.svg',
+    '/oread/web/images/annotation-comment.svg',
+    '/oread/web/images/annotation-check.svg',
+    '/oread/web/images/altText_warning.svg',
+    '/oread/web/images/altText_spinner.svg',
+    '/oread/web/images/altText_done.svg',
+    '/oread/web/images/altText_disclaimer.svg',
+    '/oread/web/images/altText_add.svg',
+    '/oread/web/images/editor-toolbar-delete.svg',
+    '/oread/web/images/editor-toolbar-edit.svg',
+    '/oread/web/images/cursor-editorTextHighlight.svg',
+    '/oread/web/images/cursor-editorInk.svg',
+    '/oread/web/images/cursor-editorFreeText.svg',
+    '/oread/web/images/cursor-editorFreeHighlight.svg',
+    '/oread/web/images/secondaryToolbarButton-lastPage.svg',
+    '/oread/web/images/secondaryToolbarButton-handTool.svg',
+    '/oread/web/images/secondaryToolbarButton-firstPage.svg',
+    '/oread/web/images/secondaryToolbarButton-documentProperties.svg',
+    '/oread/web/images/secondaryToolbarButton-rotateCcw.svg',
+    '/oread/web/images/secondaryToolbarButton-rotateCw.svg',
+    '/oread/web/images/secondaryToolbarButton-scrollHorizontal.svg',
+    '/oread/web/images/secondaryToolbarButton-scrollPage.svg',
+    '/oread/web/images/secondaryToolbarButton-scrollVertical.svg',
+    '/oread/web/images/secondaryToolbarButton-scrollWrapped.svg',
+    '/oread/web/images/secondaryToolbarButton-selectTool.svg',
+    '/oread/web/images/secondaryToolbarButton-spreadEven.svg',
+    '/oread/web/images/secondaryToolbarButton-spreadNone.svg',
+    '/oread/web/images/secondaryToolbarButton-spreadOdd.svg',
+    '/oread/web/images/messageBar_warning.svg',
+    '/oread/web/images/messageBar_closingButton.svg',
+    '/oread/web/images/loading.svg',
+    '/oread/web/images/loading-icon.gif',
+    '/oread/web/images/gv-toolbarButton-download.svg',
+    '/oread/web/images/findbarButton-previous.svg',
+    '/oread/web/images/findbarButton-next.svg',
+    '/oread/web/images/treeitem-expanded.svg',
+    '/oread/web/images/treeitem-collapsed.svg',
+    '/oread/web/images/toolbarButton-zoomOut.svg',
+    '/oread/web/images/toolbarButton-zoomIn.svg',
+    '/oread/web/images/toolbarButton-viewThumbnail.svg',
+    '/oread/web/images/toolbarButton-viewOutline.svg',
+    '/oread/web/images/toolbarButton-viewLayers.svg',
+    '/oread/web/images/toolbarButton-viewAttachments.svg',
+    '/oread/web/images/toolbarButton-sidebarToggle.svg',
+    '/oread/web/images/toolbarButton-secondaryToolbarToggle.svg',
+    '/oread/web/images/toolbarButton-search.svg',
+    '/oread/web/images/toolbarButton-print.svg',
+    '/oread/web/images/toolbarButton-presentationMode.svg',
+    '/oread/web/images/toolbarButton-pageUp.svg',
+    '/oread/web/images/toolbarButton-pageDown.svg',
+    '/oread/web/images/toolbarButton-openFile.svg',
+    '/oread/web/images/toolbarButton-menuArrow.svg',
+    '/oread/web/images/toolbarButton-editorStamp.svg',
+    '/oread/web/images/toolbarButton-editorSignature.svg',
+    '/oread/web/images/toolbarButton-editorInk.svg',
+    '/oread/web/images/toolbarButton-editorHighlight.svg',
+    '/oread/web/images/toolbarButton-editorFreeText.svg',
+    '/oread/web/images/toolbarButton-download.svg',
+    '/oread/web/images/toolbarButton-currentOutlineItem.svg',
+    '/oread/web/images/toolbarButton-bookmark.svg'
+  ];
+}
+
+const OFFLINE_ESSENTIALS = [
   '/',
   '/index.html',
   '/manifest.json',
-  
-  // CSS Files - Cache all for offline UI
+  // Core CSS
   '/assets/style/main.css',
-  '/assets/style/notification.css',
-  '/assets/style/gestures.css',
-  
-  // JavaScript Files - Cache all for offline functionality
+  '/assets/style/ota-update.css',
+  '/assets/style/icon-fallback.css',
+  // Core JS for Downloads tab and profile dropdown
   '/assets/scripts/main.js',
   '/assets/scripts/caching.js',
-  '/assets/scripts/notify.js',
-  '/assets/scripts/releases.js',
-  '/assets/scripts/theme.js',
-  '/assets/scripts/advanced.js',
+  '/assets/scripts/pdf-downloads.js',
+  '/assets/scripts/downloads-ui.js',
   '/assets/scripts/profile-image.js',
-  '/assets/scripts/ga.js',
-  '/assets/scripts/gestures.js',
-  '/assets/scripts/pwa.js',
-  
-  // Images and Icons
+  '/assets/scripts/theme.js',
+  '/assets/scripts/releases.js',
+  // Data files
+  '/assets/data/releases.json',
+  '/assets/app/fonticons.css',
+  '/assets/app/hugeicons.css',
+  // Font Awesome Kit (external CDN for icons)
+  'https://materioa.github.io/kit/6a787c7335.js',
   '/assets/img/materio_new_bk.svg',
   '/assets/img/materio_new_wh.svg',
+  '/assets/img/v4_logo.png',
   '/assets/img/default-avatar.svg',
-  
-  // Account pages - Cache for offline access
-  '/account/index.html',
-  '/account/profile.html',
-  '/account/files.html',
-  '/account/signup.html',
-  
-  // Essential data files - Cache last known versions for offline
-  '/assets/data/releases.json',
-  '/assets/data/events.json',
-  
-  // Account CSS for full offline experience
-  '/account/css/styles.css',
-  '/account/css/redesigned-styles.css',
-  
-  // Account JS for offline functionality
-  '/account/js/auth.js',
-  '/account/js/profile.js',
-  '/account/js/google-drive.js'
+  '/assets/img/icon.svg',
+  '/assets/img/icon.png',
+  ...getOreadFiles()
 ];
 
-// Files that should NEVER be served from cache when online (always fresh)
-const ALWAYS_FRESH_PATTERNS = [
-  /^\/assets\/data\//,           // All data files
-  /^\/channels\//,               // All channel content
-  /^\/databases\//,              // All database files
-  /^\/manifest\.json/,           // PWA manifest
-  /^\/api\//,                    // All API calls
-  /\.html$/,                     // All HTML pages (for feature updates)
-  /\.css$/,                      // All CSS (for UI updates)
-  /\.js$/                        // All JavaScript (for feature updates)
-];
-
-// Only these file types can be served from cache when online (mostly static assets)
-const CACHE_ALLOWED_WHEN_ONLINE = [
-  /\.(?:png|jpg|jpeg|gif|webp|ico)$/,  // Images only
-  /\.(?:woff|woff2|ttf|eot)$/,         // Fonts only
-  /\.(?:svg)$/ // SVG icons (but not if they're in /assets/img/ for consistency)
-];
-
-// Install event - cache static assets
+// Install event - cache essentials
 self.addEventListener('install', event => {
-//   console.log('[SW] Installing service worker...');
+  console.log('[SW] Installing v3.3.3 - Improved kit caching with better logging');
   event.waitUntil(
     (async () => {
       try {
-        const staticCache = await caches.open(STATIC_CACHE);
-        const dynamicCache = await caches.open(DYNAMIC_CACHE);
+        const cache = await caches.open(OFFLINE_CACHE);
         
-        // console.log('[SW] Caching static assets...');
+        // Get wallpaper files to cache
+        const wallpaperFiles = getWallpaperFiles();
+        const allFilesToCache = [...OFFLINE_ESSENTIALS, ...wallpaperFiles];
         
-        // Cache essential files one by one to handle errors gracefully
-        const cachePromises = STATIC_ASSETS.map(async (url) => {
+        console.log(`[SW] Caching ${allFilesToCache.length} files including icons, profile dropdown, and wallpapers`);
+        
+        // Cache essential files one by one
+        for (const url of allFilesToCache) {
           try {
-            await staticCache.add(url);
-            // console.log(`[SW] Cached: ${url}`);
-          } catch (error) {
-            console.warn(`[SW] Failed to cache: ${url}`, error);
-          }
-        });
-        
-        await Promise.allSettled(cachePromises);
-        
-        // Pre-cache some dynamic content for better offline experience
-        const dynamicUrls = [
-          '/assets/data/releases.json',
-          '/assets/data/events.json'
-        ];
-        
-        const dynamicPromises = dynamicUrls.map(async (url) => {
-          try {
-            const response = await fetch(url);
+            const fetchOptions = {
+              mode: url.startsWith('http') ? 'cors' : 'same-origin',
+              credentials: 'omit',
+              cache: 'reload' // Force fresh fetch
+            };
+            
+            const response = await fetch(url, fetchOptions);
             if (response.ok) {
-              await dynamicCache.put(url, response);
-              // console.log(`[SW] Pre-cached dynamic: ${url}`);
+              await cache.put(url, response);
+              
+              // Extra logging for external resources
+              if (url.startsWith('http')) {
+                console.log(`[SW] ✓ Cached external: ${url}`);
+              } else {
+                console.log(`[SW] ✓ Cached: ${url}`);
+              }
+            } else {
+              console.warn(`[SW] ✗ Failed (${response.status}): ${url}`);
             }
           } catch (error) {
-            console.warn(`[SW] Failed to pre-cache dynamic: ${url}`, error);
+            console.warn(`[SW] ✗ Error caching: ${url}`, error.message);
           }
-        });
+        }
         
-        await Promise.allSettled(dynamicPromises);
-        // console.log('[SW] Installation complete - site ready for offline use');
-        
-        // Skip waiting to activate immediately
+        console.log('[SW] Offline essentials, profile dropdown, icons, and wallpapers cached');
         self.skipWaiting();
       } catch (error) {
-        console.error('[SW] Installation failed:', error);
+        console.error('[SW] Install failed:', error);
       }
     })()
   );
 });
 
-// Activate event - clean up old caches
+// Activate event - clean old caches and take control
 self.addEventListener('activate', event => {
-//   console.log('[SW] Activating service worker...');
+  console.log('[SW] Activating v3.3.3...');
   event.waitUntil(
     (async () => {
       try {
-        // Take control of all pages immediately
-        await self.clients.claim();
-        
-        // Clean up old caches
+        // Delete old caches (keep only current version)
         const cacheNames = await caches.keys();
-        const deleteCachePromises = cacheNames
-          .filter(name => name !== STATIC_CACHE && name !== DYNAMIC_CACHE && name !== API_CACHE)
+        const deletePromises = cacheNames
+          .filter(name => name !== OFFLINE_CACHE)
           .map(name => {
-            // console.log(`[SW] Deleting old cache: ${name}`);
+            console.log(`[SW] Deleting old cache: ${name}`);
             return caches.delete(name);
           });
         
-        await Promise.all(deleteCachePromises);
-        // console.log('[SW] Service worker activated');
+        await Promise.all(deletePromises);
+        await self.clients.claim();
+        
+        console.log('[SW] Activated - Offline Downloads ready');
       } catch (error) {
         console.error('[SW] Activation failed:', error);
       }
@@ -163,443 +280,149 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch event - handle all network requests
+// Fetch event - Network first, cache fallback
 self.addEventListener('fetch', event => {
   const { request } = event;
-  const url = new URL(request.url);
   
-  // Skip non-GET requests and chrome-extension requests
-  if (request.method !== 'GET' || url.protocol === 'chrome-extension:') {
+  // Skip non-GET requests
+  if (request.method !== 'GET') {
     return;
   }
   
   event.respondWith(handleFetch(request));
 });
 
-// Main fetch handler - ONLINE FIRST STRATEGY
+// Fetch handler - Always try network first
 async function handleFetch(request) {
   const url = new URL(request.url);
-  const pathname = url.pathname;
   
   try {
-    // Special handling for blob cache requests
-    if (url.searchParams.has('blob-cache-key')) {
-      return await handleBlobCacheRequest(request);
-    }
+    // ALWAYS try network first (for fresh content when online)
+    const networkResponse = await fetch(request);
     
-    // Check if user is online
-    const isOnline = navigator.onLine;
-    
-    if (isOnline) {
-      // ONLINE: Always fetch fresh content, but cache it for offline use
-      return await onlineFetchAndCache(request);
-    } else {
-      // OFFLINE: Use cache-first strategy
-      return await offlineCacheFirst(request);
-    }
-    
-  } catch (error) {
-    console.error('[SW] Fetch failed:', error);
-    return await handleOfflineFallback(request);
-  }
-}
-
-// Online strategy: Always fetch fresh, cache in background
-async function onlineFetchAndCache(request) {
-  const url = new URL(request.url);
-  const pathname = url.pathname;
-  
-  try {
-    // Always fetch fresh content when online
-    const networkResponse = await fetch(request, {
-      headers: {
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
-      }
-    });
-    
+    // If successful and it's an essential file, update cache in background
     if (networkResponse.ok) {
-      // Cache the response for offline use
-      const responseToCache = networkResponse.clone();
+      const cache = await caches.open(OFFLINE_CACHE);
       
-      // Determine which cache to use
-      let cache;
-      if (STATIC_ASSETS.includes(pathname) || 
-          pathname.startsWith('/assets/') || 
-          pathname.startsWith('/account/')) {
-        cache = await caches.open(STATIC_CACHE);
-      } else if (pathname.startsWith('/api/')) {
-        cache = await caches.open(API_CACHE);
-      } else {
-        cache = await caches.open(DYNAMIC_CACHE);
+      // Cache response for essential files or same-origin requests or icon kits
+      if (url.origin === self.location.origin || 
+          OFFLINE_ESSENTIALS.includes(url.pathname) ||
+          OFFLINE_ESSENTIALS.includes(url.href) ||
+          url.href.includes('fontawesome.com') ||
+          url.href.includes('hugeicons.com') ||
+          url.href.includes('materioa.github.io/kit')) {
+        cache.put(request, networkResponse.clone()).catch(() => {
+          // Ignore cache errors silently
+        });
       }
-      
-      // Cache asynchronously (don't block the response)
-      cache.put(request, responseToCache).catch(err => {
-        console.warn('[SW] Failed to cache:', request.url, err);
-      });
     }
     
     return networkResponse;
   } catch (error) {
-    console.warn('[SW] Network failed while online, falling back to cache:', request.url);
-    // If network fails even when online, fall back to cache
-    return await offlineCacheFirst(request);
+    // Network failed - user is offline, serve from cache
+    console.log('[SW] Offline - serving from cache:', url.pathname);
+    return await handleOffline(request);
   }
 }
 
-// Offline strategy: Cache-first with comprehensive fallback
-async function offlineCacheFirst(request) {
+// Offline handler - serve from cache
+async function handleOffline(request) {
   const url = new URL(request.url);
-  const pathname = url.pathname;
+  const cache = await caches.open(OFFLINE_CACHE);
   
-  try {
-    // Try static cache first
-    const staticCache = await caches.open(STATIC_CACHE);
-    let cachedResponse = await staticCache.match(request);
-    
-    if (cachedResponse) {
-      console.log('[SW] Serving from static cache (offline):', request.url);
-      return cachedResponse;
-    }
-    
-    // Try API cache
-    const apiCache = await caches.open(API_CACHE);
-    cachedResponse = await apiCache.match(request);
-    
-    if (cachedResponse) {
-      console.log('[SW] Serving from API cache (offline):', request.url);
-      return cachedResponse;
-    }
-    
-    // Try dynamic cache
-    const dynamicCache = await caches.open(DYNAMIC_CACHE);
-    cachedResponse = await dynamicCache.match(request);
-    
-    if (cachedResponse) {
-      console.log('[SW] Serving from dynamic cache (offline):', request.url);
-      return cachedResponse;
-    }
-    
-    // No cache available
-    throw new Error('No cached version available');
-    
-  } catch (error) {
-    console.error('[SW] Cache lookup failed:', error);
-    return await handleOfflineFallback(request);
-  }
-}
-
-// Offline fallback handler
-async function handleOfflineFallback(request) {
-  const url = new URL(request.url);
+  // Try exact match first
+  let cachedResponse = await cache.match(request);
   
-  // For HTML requests, try to serve the requested page from cache, then fallback to main page
-  if (request.headers.get('accept')?.includes('text/html')) {
-    const cache = await caches.open(STATIC_CACHE);
-    
-    // First try to serve the exact requested page
-    let cachedResponse = await cache.match(request);
-    if (cachedResponse) {
-      console.log('[SW] Serving cached page (offline):', request.url);
-      return cachedResponse;
-    }
-    
-    // If that fails, try common variations
-    const possiblePages = [
-      url.pathname,
-      url.pathname + 'index.html',
-      url.pathname.replace(/\/$/, '') + '.html',
-      '/',
-      '/index.html'
-    ];
-    
-    for (const page of possiblePages) {
-      cachedResponse = await cache.match(page);
-      if (cachedResponse) {
-        console.log('[SW] Serving fallback page (offline):', page);
-        return cachedResponse;
-      }
-    }
+  // If not found and it's the kit URL, try matching with different options
+  if (!cachedResponse && url.href.includes('materioa.github.io/kit')) {
+    cachedResponse = await cache.match(request, { ignoreSearch: true });
   }
   
-  // For CSS/JS/image requests, try to serve from cache
-  if (url.pathname.match(/\.(css|js|png|jpg|jpeg|gif|webp|svg|ico|woff|woff2|ttf|eot)$/)) {
-    const caches = [STATIC_CACHE, DYNAMIC_CACHE];
-    for (const cacheName of caches) {
-      const cache = await caches.open(cacheName);
-      const cachedResponse = await cache.match(request);
-      if (cachedResponse) {
-        console.log('[SW] Serving cached asset (offline):', request.url);
-        return cachedResponse;
-      }
-    }
+  if (cachedResponse) {
+    console.log('[SW] Serving from cache:', url.href);
+    return cachedResponse;
   }
   
-  // For API requests, return a proper offline response
-  if (url.pathname.startsWith('/api/')) {
-    return new Response(
-      JSON.stringify({
-        error: 'Offline',
-        message: 'This feature requires an internet connection',
-        offline: true,
-        status: 'offline_mode',
-        retryAfter: 'Please check your connection and try again'
-      }),
-      {
-        status: 503,
-        statusText: 'Service Unavailable (Offline)',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache'
-        }
-      }
-    );
-  }
-  
-  // For data files, try to serve last cached version
-  if (url.pathname.startsWith('/assets/data/') || url.pathname.startsWith('/channels/')) {
-    const cache = await caches.open(DYNAMIC_CACHE);
-    const cachedResponse = await cache.match(request);
+  // For oread viewer, try to find it in cache with ignoreSearch
+  if (url.pathname.includes('/oread/')) {
+    const oreadPath = url.pathname.split('?')[0]; // Get path without query params
+    cachedResponse = await cache.match(oreadPath);
     if (cachedResponse) {
-      console.log('[SW] Serving cached data (offline):', request.url);
+      console.log('[SW] Serving cached oread file:', oreadPath);
       return cachedResponse;
     }
   }
   
-  // Final fallback - return a simple offline message only for unhandled requests
+  // For HTML pages (but NOT oread viewer), serve cached homepage
+  if (request.headers.get('accept')?.includes('text/html') && !url.pathname.includes('/oread/')) {
+    const homepage = await cache.match('/') || await cache.match('/index.html');
+    if (homepage) {
+      console.log('[SW] Serving cached homepage');
+      return homepage;
+    }
+  }
+  
+  // Nothing in cache - show offline message
   return new Response(
     `<!DOCTYPE html>
-    <html>
+    <html lang="en">
     <head>
       <title>Offline - Materio</title>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          text-align: center;
+          padding: 20px;
+        }
+        .container { max-width: 500px; }
+        .emoji { font-size: 5em; margin-bottom: 20px; }
+        h1 { font-size: 2.5em; margin-bottom: 15px; }
+        p { font-size: 1.1em; margin: 10px 0; opacity: 0.9; line-height: 1.6; }
+        button {
+          margin-top: 30px;
+          padding: 15px 40px;
+          font-size: 1.1em;
+          background: white;
+          color: #667eea;
+          border: none;
+          border-radius: 30px;
+          cursor: pointer;
+          font-weight: 600;
+          transition: transform 0.2s;
+        }
+        button:hover { transform: translateY(-2px); }
+      </style>
     </head>
-    <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f5f5f5;">
-      <h2>🌐 You're Offline</h2>
-      <p>This content isn't available offline.</p>
-      <p>Please check your internet connection and try again.</p>
-      <button onclick="window.location.reload()" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-        Try Again
-      </button>
+    <body>
+      <div class="container">
+        <div class="emoji">📡</div>
+        <h1>You're Offline</h1>
+        <p>Some content isn't available offline.</p>
+        <p style="font-size: 0.95em;">Your downloaded PDFs are still accessible!</p>
+        <button onclick="window.location.reload()">Try Again</button>
+      </div>
     </body>
     </html>`,
-    { 
+    {
       status: 503,
-      statusText: 'Service Unavailable (Offline)',
+      statusText: 'Service Unavailable',
       headers: {
-        'Content-Type': 'text/html',
-        'Cache-Control': 'no-cache'
+        'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'no-store'
       }
     }
   );
 }
 
-// Blob cache storage for PDF optimization
-const blobCacheMap = new Map();
+console.log('[SW] Service worker v3.3.3 loaded - Kit URL properly cached with enhanced matching');
 
-// Handle blob cache requests
-async function handleBlobCacheRequest(request) {
-  const url = new URL(request.url);
-  const cacheKey = url.searchParams.get('blob-cache-key');
-  
-  if (blobCacheMap.has(cacheKey)) {
-    const cachedBlob = blobCacheMap.get(cacheKey);
-    return new Response(cachedBlob.data, {
-      status: 200,
-      statusText: 'OK',
-      headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Length': cachedBlob.size.toString(),
-        'Cache-Control': 'public, max-age=31536000',
-        'Accept-Ranges': 'bytes'
-      }
-    });
-  }
-  
-  // If not in cache, return 404
-  return new Response('Not Found', { status: 404 });
-}
-
-// Store blob in cache
-function storeBlobInCache(key, arrayBuffer, size) {
-  blobCacheMap.set(key, {
-    data: arrayBuffer,
-    size: size,
-    timestamp: Date.now()
-  });
-  
-  // Clean up old entries (keep max 10 cached PDFs)
-  if (blobCacheMap.size > 10) {
-    const entries = Array.from(blobCacheMap.entries());
-    entries.sort((a, b) => a[1].timestamp - b[1].timestamp);
-    const oldestKey = entries[0][0];
-    blobCacheMap.delete(oldestKey);
-  }
-}
-
-// Message handling for manual cache updates
-self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-  
-  if (event.data && event.data.type === 'CACHE_UPDATE') {
-    event.waitUntil(updateCache(event.data.urls));
-  }
-  
-  if (event.data && event.data.type === 'CLEAR_CACHE') {
-    event.waitUntil(clearAllCaches());
-  }
-  
-  if (event.data && event.data.type === 'REFRESH_VERSION_DATA') {
-    event.waitUntil(refreshVersionCriticalFiles());
-  }
-  
-  if (event.data && event.data.type === 'STORE_BLOB_CACHE') {
-    const { key, arrayBuffer, size } = event.data;
-    storeBlobInCache(key, arrayBuffer, size);
-    // Send confirmation back
-    event.ports[0]?.postMessage({ success: true });
-  }
-    if (event.data && event.data.type === 'GET_BLOB_CACHE') {
-    const { key } = event.data;
-    const cached = blobCacheMap.get(key);
-    event.ports[0]?.postMessage({ 
-      success: !!cached,
-      data: cached || null 
-    });
-  }
-  
-  if (event.data && event.data.type === 'CLEAR_BLOB_CACHE') {
-    blobCacheMap.clear();
-    event.ports[0]?.postMessage({ success: true });
-  }
-});
-
-// Refresh critical files (now just clears cache since we're online-first)
-async function refreshVersionCriticalFiles() {
-  try {
-    console.log('[SW] Refreshing caches for online-first strategy...');
-    
-    // Clear old cached versions to ensure fresh content
-    const cacheNames = await caches.keys();
-    const clearPromises = cacheNames.map(async (name) => {
-      if (name.includes('materio-api') || name.includes('materio-dynamic')) {
-        console.log('[SW] Clearing cache:', name);
-        return caches.delete(name);
-      }
-    });
-    
-    await Promise.allSettled(clearPromises);
-    
-    // Re-create fresh caches
-    await caches.open(API_CACHE);
-    await caches.open(DYNAMIC_CACHE);
-    
-    console.log('[SW] Cache refresh complete - all content will be fresh on next request');
-  } catch (error) {
-    console.error('[SW] Cache refresh failed:', error);
-  }
-}
-
-// Manually update cache
-async function updateCache(urls = []) {
-  try {
-    const cache = await caches.open(DYNAMIC_CACHE);
-    const cachePromises = urls.map(url => 
-      fetch(url).then(response => {
-        if (response.ok) {
-          cache.put(url, response.clone());
-        }
-      }).catch(error => {
-        console.warn(`[SW] Failed to update cache for: ${url}`, error);
-      })
-    );
-    await Promise.allSettled(cachePromises);
-    // console.log('[SW] Cache updated');
-  } catch (error) {
-    console.error('[SW] Cache update failed:', error);
-  }
-}
-
-// Clear all caches
-async function clearAllCaches() {
-  try {
-    const cacheNames = await caches.keys();
-    const deletePromises = cacheNames.map(name => caches.delete(name));
-    await Promise.all(deletePromises);
-    // console.log('[SW] All caches cleared');
-  } catch (error) {
-    console.error('[SW] Cache clearing failed:', error);
-  }
-}
-
-// Background sync for when connectivity is restored
-self.addEventListener('sync', event => {
-  if (event.tag === 'background-sync') {
-    event.waitUntil(doBackgroundSync());
-  }
-});
-
-async function doBackgroundSync() {
-  try {
-    // Retry failed requests or sync data when back online
-    // console.log('[SW] Background sync triggered');
-    
-    // You can implement specific sync logic here
-    // For example, sync user data, upload pending files, etc.
-    
-  } catch (error) {
-    console.error('[SW] Background sync failed:', error);
-  }
-}
-
-// Push notification handling
-self.addEventListener('push', event => {
-  if (!event.data) return;
-  
-  const data = event.data.json();
-  const options = {
-    body: data.body,
-    icon: '/assets/img/icon.svg',
-    badge: '/assets/img/icon.svg',
-    vibrate: [200, 100, 200],
-    data: {
-      dateOfArrival: Date.now(),
-      primaryKey: data.id || 1
-    },
-    actions: [
-      {
-        action: 'explore',
-        title: 'Open',
-        icon: '/assets/img/icon.svg'
-      },
-      {
-        action: 'close',
-        title: 'Close',
-        icon: '/assets/img/icon.svg'
-      }
-    ]
-  };
-  
-  event.waitUntil(
-    self.registration.showNotification(data.title || 'Materio', options)
-  );
-});
-
-// Notification click handling
-self.addEventListener('notificationclick', event => {
-  event.notification.close();
-  
-  if (event.action === 'close') {
-    return;
-  }
-  
-  event.waitUntil(
-    clients.openWindow('/')
-  );
-});
-
-// console.log('[SW] Service worker script loaded');
+} // End of production mode else block

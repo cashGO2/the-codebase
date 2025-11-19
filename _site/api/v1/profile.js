@@ -44,13 +44,16 @@ async function handleGetProfile(event) {
       return {
         statusCode: 401,
         body: JSON.stringify({ error: 'Invalid or expired token' }),
-        headers: { 'Content-Type': 'application/json' }
-      };
-    }    // Get user data from database
+        headers: { 'Content-Type': 'application/json' }      };
+    }
+
+    const userId = decoded.id;
+
+    // Get user data from database
     const { data: user, error } = await supabase
       .from('users')
-      .select('id, username, display_name, email, profile_picture, created_at, updated_at, recovery_key, has_admin_privileges')
-      .eq('id', decoded.id)
+      .select('id, username, display_name, email, profile_picture, created_at, updated_at, recovery_key, has_admin_privileges, is_plus_user')
+      .eq('id', userId)
       .single();
 
     if (error || !user) {
@@ -71,6 +74,7 @@ async function handleGetProfile(event) {
           profilePicture: user.profile_picture,
           recoveryKey: user.recovery_key,
           hasAdminPrivileges: user.has_admin_privileges,
+          isPlusUser: user.is_plus_user,
           createdAt: user.created_at,
           updatedAt: user.updated_at
         }
@@ -261,7 +265,7 @@ async function handleUpdateProfile(event) {
     }    // Return updated profile data
     const { data: updatedUser, error: fetchError } = await supabase
       .from('users')
-      .select('id, username, display_name, email, profile_picture, created_at, updated_at, recovery_key, has_admin_privileges')
+      .select('id, username, display_name, email, profile_picture, created_at, updated_at, recovery_key, has_admin_privileges, is_plus_user')
       .eq('id', decoded.id)
       .single();
 
@@ -283,6 +287,7 @@ async function handleUpdateProfile(event) {
           profilePicture: updatedUser.profile_picture,
           recoveryKey: updatedUser.recovery_key,
           hasAdminPrivileges: updatedUser.has_admin_privileges,
+          isPlusUser: updatedUser.is_plus_user,
           createdAt: updatedUser.created_at,
           updatedAt: updatedUser.updated_at
         },

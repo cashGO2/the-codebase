@@ -1,1 +1,154 @@
-function updateThemeColor(){const e=document.body.classList.contains("dark-mode"),t=document.querySelector("meta[name=theme-color]");t&&t.setAttribute("content",e?"#1a1a1a":"#f3f3ee")}document.addEventListener("DOMContentLoaded",(function(){const e=document.getElementById("themeToggle");function t(e){const t=[document.body,document.querySelector("header"),document.querySelector(".navbar"),document.querySelector(".content"),document.getElementById("themeCard"),document.getElementById("bgToggleCard"),document.getElementById("popup"),document.getElementById("versionInfo"),document.getElementById("reading"),document.getElementById("notices"),document.getElementById("notificationBoard"),document.getElementById("advanced"),document.getElementById("about"),document.getElementById("cookiesToggleCard"),document.getElementById("paperModeCard"),document.getElementById("grainSizeControl"),document.getElementById("creatorInfo"),document.getElementById("licensesCard"),document.getElementById("miscCard"),document.getElementById("account"),document.getElementById("oiaa"),document.getElementById("gh"),document.getElementById("nightReadingCard"),document.getElementById("einkModeCard"),document.getElementById("tabSwitcherCard")];document.querySelectorAll("#notify").forEach((e=>t.push(e))),t.forEach((t=>{t&&(e?t.classList.add("dark-mode"):t.classList.remove("dark-mode"))}));const n=document.querySelector("iframe.giscus-frame");n&&n.contentWindow.postMessage({giscus:{setConfig:{theme:e?"http://localhost:8888/assets/style/giscus.css":"noborder_light"}}},"https://giscus.app");const o=document.getElementById("pdf-iframe");if(o&&o.contentWindow)try{o.contentWindow.postMessage({type:"themeMode",isDark:e},"*")}catch(e){}}let n=function(){const e="theme=",t=document.cookie.split(";");for(let n=0;n<t.length;n++){let o=t[n].trim();if(0===o.indexOf(e))return o.substring(6)}return null}();if("dark"===n)e.checked=!0,t(!0);else if("light"===n)e.checked=!1,t(!1);else{const n=window.matchMedia("(prefers-color-scheme: dark)").matches;e.checked=n,t(n)}e.addEventListener("change",(function(){const e=this.checked;!function(e,t){let n="";{const e=new Date;e.setTime(e.getTime()+2592e6),n="; expires="+e.toUTCString()}document.cookie="theme="+t+n+"; path=/"}(0,e?"dark":"light"),t(e)}))}));const themeChoice=document.getElementById("themeToggle");themeChoice&&themeChoice.addEventListener("click",(()=>{document.body.classList.toggle("dark-mode"),updateThemeColor()})),document.addEventListener("DOMContentLoaded",updateThemeColor),window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",(function(e){if(!getCookie("theme")){const t=e.matches,n=document.getElementById("pdf-iframe");if(n&&n.contentWindow)try{n.contentWindow.postMessage({type:"themeMode",isDark:t},"*")}catch(e){}}}));
+document.addEventListener("DOMContentLoaded", function () {
+    const themeToggle = document.getElementById('themeToggle');
+
+    function setCookie(name, value, days) {
+        let expires = "";
+        if (days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + value + expires + "; path=/";
+    }
+
+    function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(";");
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i].trim();
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length);
+        }
+        return null;
+    }
+
+    function applyTheme(isDark) {
+        const elements = [
+            document.body,
+            document.querySelector('header'),
+            document.querySelector('.navbar'),
+            document.querySelector('.content'),
+            document.getElementById('themeCard'),
+            document.getElementById('bgToggleCard'),
+            document.getElementById('popup'),
+            document.getElementById('versionInfo'),
+            document.getElementById('reading'),
+            document.getElementById('notices'),
+            document.getElementById('notificationBoard'),
+            document.getElementById('advanced'),
+            document.getElementById('about'),
+            document.getElementById('cookiesToggleCard'), document.getElementById('paperModeCard'),
+            document.getElementById('grainSizeControl'),
+            document.getElementById('creatorInfo'),
+            document.getElementById('licensesCard'),
+            document.getElementById('miscCard'),
+            document.getElementById('account'),
+            document.getElementById('oiaa'),
+            document.getElementById('gh'),
+            document.getElementById('nightReadingCard'),
+            document.getElementById('einkModeCard'),
+            document.getElementById('tabSwitcherCard'),
+            document.getElementById('blogs'),
+            document.getElementById('blogPost1'),
+            document.getElementById('blogPost2'),
+            document.getElementById('blogPost3'),
+            document.getElementById('blogPost4'),
+            document.getElementById('blogPost5'),
+            document.getElementById('recommendedPosts'),
+            document.getElementById('recommendedPost1'),
+            document.getElementById('recommendedPost2'),
+            document.getElementById('recommendedPost3'),
+            document.getElementById('recommendedPost4'),
+            document.getElementById('recommendedPost5'),
+            document.getElementById('wallpaperSelectionCard'),
+            document.getElementById('getinsights'),
+            document.getElementById('storageInfoCard'),
+            document.getElementById('localCdnCard'),
+            document.getElementById('serverTerminal')
+
+        ];
+        const notifyCards = document.querySelectorAll('#notify');
+        notifyCards.forEach(card => elements.push(card));
+
+        elements.forEach(el => {
+            if (el) {
+                isDark ? el.classList.add('dark-mode') : el.classList.remove('dark-mode');
+            }
+        }); const giscusFrame = document.querySelector("iframe.giscus-frame");
+        if (giscusFrame) {
+            giscusFrame.contentWindow.postMessage(
+                { giscus: { setConfig: { theme: isDark ? "http://localhost:8888/assets/style/giscus.css" : "noborder_light" } } },
+                "https://giscus.app"
+            );
+        }
+        // Sync theme with PDF iframe if it exists
+        const pdfIframe = document.getElementById('pdf-iframe');
+        if (pdfIframe && pdfIframe.contentWindow) {
+            try {
+                pdfIframe.contentWindow.postMessage({
+                    type: 'themeMode',
+                    isDark: isDark
+                }, '*');
+                // console.log('Theme sync sent to PDF iframe: ' + (isDark ? 'dark' : 'light'));
+            } catch (e) {
+                // console.log('Could not sync theme with PDF iframe: ' + e.message);
+            }
+        }
+    }
+    let userTheme = getCookie("theme");
+    if (userTheme === "dark") {
+        themeToggle.checked = true;
+        applyTheme(true);
+    } else if (userTheme === "light") {
+        themeToggle.checked = false;
+        applyTheme(false);
+    } else {
+        const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        themeToggle.checked = systemPrefersDark;
+        applyTheme(systemPrefersDark);
+    }
+    themeToggle.addEventListener("change", function () {
+        const isDark = this.checked;
+        setCookie("theme", isDark ? "dark" : "light", 30);
+        applyTheme(isDark);
+    });
+});
+function updateThemeColor() {
+    const isDarkMode = document.body.classList.contains("dark-mode");
+    const metaThemeColor = document.querySelector("meta[name=theme-color]");
+
+    if (metaThemeColor) {
+        metaThemeColor.setAttribute("content", isDarkMode ? "#1a1a1a" : "#f2f2eb");
+    }
+}
+const themeChoice = document.getElementById("themeToggle");
+if (themeChoice) {
+    themeChoice.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+        updateThemeColor();
+    });
+}
+document.addEventListener("DOMContentLoaded", updateThemeColor);
+
+// Listen for system theme changes and update PDF iframe if using system theme
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+    const userTheme = getCookie("theme");
+
+    // Only auto-switch if using system theme (no explicit theme cookie)
+    if (!userTheme) {
+        const isDark = e.matches;
+
+        // Update PDF iframe with new system theme
+        const pdfIframe = document.getElementById('pdf-iframe');
+        if (pdfIframe && pdfIframe.contentWindow) {
+            try {
+                pdfIframe.contentWindow.postMessage({
+                    type: 'themeMode',
+                    isDark: isDark
+                }, '*');
+                // console.log('System theme change detected, updated PDF iframe: ' + (isDark ? 'dark' : 'light'));
+            } catch (err) {
+                // console.log('Could not sync system theme change with PDF iframe: ' + err.message);
+            }
+        }
+    }
+});

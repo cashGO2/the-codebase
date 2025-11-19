@@ -1,15 +1,33 @@
+# Environment variables
 .env
-# .netlify
-# api/
-# .netlifycfg
-# .npmrc
-# .pages.yml
-# Gemfile
-# Gemfile.lock
-# netlify.dev.toml
-# config/
-# node_modules
+server/.env
+
+# Node modules
+node_modules/
+server/node_modules/
+
+# History and saved changes
 .history 
 saved_changes
-# .babelrc
-# netlify/
+
+# Build outputs
+_site/
+dist/
+build/
+
+# Netlify
+.netlify
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+devdocs.md

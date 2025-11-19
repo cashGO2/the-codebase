@@ -1,1 +1,28 @@
-async function fetchRealtimeUsers(){try{const e=await fetch("/api/v1/getRealtimeUsers"),t=await e.json(),n=parseInt(t.users),s=document.getElementById("user-count"),r=document.getElementById("realtime-users-card");if(!isNaN(n)&&s&&r){s.textContent=n;const e=1===n?" person is reading with you":" people are reading with you";document.getElementById("user-label").textContent=e,r.style.opacity=1}}catch(e){console.error("Error fetching realtime users:",e)}}document.addEventListener("DOMContentLoaded",(()=>{fetchRealtimeUsers(),setInterval(fetchRealtimeUsers,3e4)}));
+ async function fetchRealtimeUsers() {
+                    try {
+                        const response = await fetch('/api/v1/getRealtimeUsers');
+                        const data = await response.json();
+
+                        const userCount = parseInt(data.users);
+                        const userCountSpan = document.getElementById('user-count');
+                        const card = document.getElementById('realtime-users-card');
+
+                        if (!isNaN(userCount) && userCountSpan && card) {
+                            userCountSpan.textContent = userCount;
+
+                            const labelText = userCount === 1
+                                ? ' person is reading with you'
+                                : ' people are reading with you';
+                            const labelSpan = document.getElementById('user-label');
+                            labelSpan.textContent = labelText;
+                            card.style.opacity = 1;
+                        }
+                    } catch (err) {
+                        console.error('Error fetching realtime users:', err);
+                    }
+                }
+
+                document.addEventListener('DOMContentLoaded', () => {
+                    fetchRealtimeUsers();
+                    setInterval(fetchRealtimeUsers, 30000);
+                });

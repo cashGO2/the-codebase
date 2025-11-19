@@ -26,10 +26,11 @@ exports.handler = async (event, context) => {
         headers: { 'Content-Type': 'application/json' }
       };
     }    // STEP 1: Validate invite exists and is not expired (simple check)
+    // Use case-insensitive comparison to handle URL normalization
     const { data: invite, error: inviteError } = await supabase
       .from('invites')
-      .select('id, redeemed, expires_at')
-      .eq('code', inviteCode)
+      .select('id, redeemed, expires_at, contains_plus_perks')
+      .ilike('code', inviteCode)
       .single();
 
     if (inviteError || !invite) {
@@ -89,6 +90,9 @@ exports.handler = async (event, context) => {
     const recoveryKey = generateRecoveryKey();
     const hashedPassword = await hashPassword(password);
     
+    // Set plus user status based on invite type
+    const isPlusUser = invite.contains_plus_perks || false;
+    
     const userData = {
       username,
       display_name: displayName,
@@ -96,6 +100,7 @@ exports.handler = async (event, context) => {
       password: hashedPassword,
       recovery_key: recoveryKey,
       has_admin_privileges: false,
+      is_plus_user: isPlusUser,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
@@ -180,10 +185,14 @@ exports.handler = async (event, context) => {
     });
 
     // STEP 7: Return success
+    const successMessage = isPlusUser 
+      ? 'User created successfully with Plus benefits!' 
+      : 'User created successfully';
+      
     return {
       statusCode: 201,
       body: JSON.stringify({
-        message: 'User created successfully',
+        message: successMessage,
         token,
         user: {
           id: newUser.id,
@@ -191,8 +200,10 @@ exports.handler = async (event, context) => {
           displayName: newUser.display_name,
           email: newUser.email,
           hasAdminPrivileges: newUser.has_admin_privileges,
+          isPlusUser: newUser.is_plus_user,
           profilePicture: profilePicUrl,
-          recoveryKey
+          recoveryKey,
+          grantedPlusFromInvite: isPlusUser && invite.contains_plus_perks
         }
       }),
       headers: { 'Content-Type': 'application/json' }

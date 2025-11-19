@@ -75,6 +75,7 @@ exports.handler = async (event, context) => {
           displayName: user.display_name,
           email: user.email,
           hasAdminPrivileges: user.has_admin_privileges,
+          isPlusUser: user.is_plus_user,
           profilePicture
         }
       }),

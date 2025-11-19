@@ -1,17 +1,68 @@
 ---
 layout: base
 ---
-<main class="post-container" style="font-family: 'Manrope', sans-serif;">
-  <article class="post" style="max-width: 700px; margin: 0 auto;">
-    <div style="text-align: center;">
-      <p class="post-date" style="font-size: 14px; color: var(--gray);">
-        {{ page.date | date: "%B %d, %Y" }}
-        {% if page.categories %}
-          • {{ page.categories | join: ', ' }}
-        {% endif %}
-      </p>
 
-      <p class="post-title" style="font-size: 32px;font-weight: bold;">{{ page.title }}</p>
+<link rel="stylesheet" href="{{ '/assets/style/post.css' | relative_url }}">
+
+<main class="post-container" style="font-family: 'Manrope', sans-serif;" {% if page.visibility == 'private' %}data-visibility="private"{% endif %} {% if page.category %}data-category="{{ page.category }}"{% endif %}>
+  <article class="post" style="max-width: 700px; margin: 0 auto;">
+    {% if page.visibility == 'private' %}
+    <!-- <div id="private-post-notice" style="background: rgb(255 139 51 / 15%); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; text-align: center;"> -->
+      <!-- <p style="margin: 0; color: #ff9467; font-weight: 600;"><i class="fa-solid fa-lock"></i> This is a private post</p> -->
+      <!-- <p style="margin: 0.5rem 0 0; font-size: 0.9rem; color: var(--text);">Only admin users can view this content</p> -->
+    <!-- </div> -->
+    {% endif %}
+    
+    <div style="text-align: center;">
+      <!-- Date, Category, and Navigation Pills -->
+      <div style="display: flex; justify-content: center; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;">
+        <!-- Date and Category Pill -->
+        <div class="post-date-pill" style="border-radius: 20px; padding: 0.4rem 0.8rem; font-size: 12px;">
+          {{ page.date | date: "%B %d, %Y" }}
+          {% if page.categories %}
+            • {{ page.categories | join: ', ' | replace: ' ', '-' }}
+          {% endif %}
+          {% assign words = content | number_of_words %}
+          {% assign reading_time = words | divided_by: 200 %}
+          {% if reading_time == 0 %}
+            {% assign reading_time = 1 %}
+          {% endif %}
+          • {{ reading_time }} min read
+        </div>
+        
+        <!-- Print-only clean meta information -->
+        <div class="print-meta" style="display: none;">
+          {{ page.date | date: "%B %d, %Y" }}
+          {% if page.categories %}
+            • {{ page.categories | join: ', ' | replace: ' ', '-' }}
+          {% endif %}
+          {% assign words = content | number_of_words %}
+          {% assign reading_time = words | divided_by: 200 %}
+          {% if reading_time == 0 %}
+            {% assign reading_time = 1 %}
+          {% endif %}
+          • {{ reading_time }} minute read
+        </div>
+        
+        <!-- Previous Post Button -->
+        {% if page.previous_post %}
+        <a href="{{ page.previous_post }}" class="post-nav-button" style="border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.2s ease;" title="Previous Post">
+          <i class="fa-solid fa-chevron-left" style="font-size: 12px;"></i>
+        </a>
+        {% endif %}
+        
+        <!-- Next Post Button -->
+        {% if page.next_post %}
+        <a href="{{ page.next_post }}" class="post-nav-button" style="border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.2s ease;" title="Next Post">
+          <i class="fa-solid fa-chevron-right" style="font-size: 12px;"></i>
+        </a>
+        {% endif %}
+      </div>
+
+      <p class="post-title" style="font-size: 32px;font-weight: bold;">
+        {{ page.title }}
+        {% if page.visibility == 'private' %} <span class="private-badge"><i class="fa-solid fa-lock"></i> Private</span>{% endif %}
+      </p>
 
       {% if page.excerpt %}
       <p class="post-description" style="font-size: 14px; margin-top: 0.5rem; color: var(--gray);">
@@ -20,10 +71,143 @@ layout: base
       {% endif %}
 
       {% if page.image %}
-      <img src="{{ page.image }}" alt="Cover image" class="post-cover" style="border-radius: 12px; margin: 1.5rem auto; display: block; max-height: 420px; object-fit: cover;" />
+      <div style="display: block; position: relative; margin: 1.5rem auto; max-width: 700px;">
+        <div class="post-image-frame" style="padding: 5px; border-radius: 17px;">
+          {% if page.image contains '.mp4' or page.image contains '.webm' or page.image contains '.mov' %}
+            <!-- Video cover -->
+            <div class="video-cover" style="margin: 0;">
+              <video id="cover-video" muted loop style="border-radius: 12px;">
+                {% assign file_ext = page.image | split: '.' | last %}
+                {% if file_ext == 'webm' %}
+                  <source src="{{ page.image }}" type="video/webm">
+                {% elsif file_ext == 'mov' %}
+                  <source src="{{ page.image }}" type="video/quicktime">
+                {% else %}
+                  <source src="{{ page.image }}" type="video/mp4">
+                {% endif %}
+                Your browser does not support the video tag.
+              </video>
+              <div class="video-controls paused" onclick="toggleVideo('cover-video')">
+                <i class="fa-solid fa-play"></i>
+              </div>
+            </div>
+          {% else %}
+            <!-- Image cover -->
+            <img src="{{ page.image }}" alt="Cover image" class="post-cover" style="border-radius: 12px; display: block; width: 100%; height: auto; object-fit: cover;" />
+          {% endif %}
+        </div>
+      </div>
       {% endif %}
+      
+      <!-- Author and Share Row -->
+      <div class="author-share-row" style="display: flex; justify-content: space-between; align-items: center; margin: 0.5rem auto; max-width: 700px; padding: 0 1rem;">
+        <!-- Author Profile Section -->
+        <div style="display: flex; align-items: center; gap: 0.8rem;">
+          {% if page.author %}
+            {% assign author_data = site.data.authors[page.author] %}
+          {% else %}
+            {% assign author_data = site.data.authors.default %}
+          {% endif %}
+          
+          <div class="author-avatar" style="width: 35px; height: 35px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(0,0,0,0.1);">
+            <img src="{{ author_data.image | default: '/assets/img/default-avatar.svg' }}" alt="{{ author_data.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <div class="author-info">
+            <div class="author-name" style="font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.2;">{{ author_data.name | default: 'Default Author' }}</div>
+          </div>
+        </div>
+
+        <!-- Share, Print, and Listen icons -->
+        <div style="display: flex; justify-content: center; align-items: center; gap: 1rem;">
+          
+          <!-- Listen to Post Component -->
+          <div id="listen-component" class="listen-pill" style="display: flex; align-items: center; background: rgba(0,0,0,0.05); border-radius: 20px; padding: 0.3rem 0.6rem; cursor: pointer; transition: all 0.2s ease;" onclick="console.log('Listen clicked'); toggleListen();">
+            <i id="listen-icon" class="fa-solid fa-play" style="font-size: 12px; margin-right: 0.4rem; color: #333;"></i>
+            <div class="waveform-container" style="display: flex; align-items: center; gap: 1px; margin-right: 0.4rem;">
+              <div class="wave-bar" style="width: 2px; height: 8px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 12px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 6px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 10px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 8px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 14px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 9px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 11px; background: #666; border-radius: 1px;"></div>
+            </div>
+            <span id="listen-duration" style="font-size: 11px; color: #666; font-weight: 500;">Listen</span>
+          </div>
+          
+          <!-- Seek controls (only visible when playing/paused) -->
+          <div id="seek-controls" class="seek-controls" style="display: none; align-items: center; gap: 0.3rem; margin-left: 0.5rem;">
+            <button onclick="seekBackward()" class="seek-btn" title="Go back 5 seconds" style="background: none; border: none; color: #666; cursor: pointer; padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
+              <i class="fa-solid fa-backward" style="font-size: 10px;"></i>
+            </button>
+            <button onclick="seekForward()" class="seek-btn" title="Skip forward 5 seconds" style="background: none; border: none; color: #666; cursor: pointer; padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
+              <i class="fa-solid fa-forward" style="font-size: 10px;"></i>
+            </button>
+            <button onclick="stopAudio()" class="seek-btn stop-btn" title="Stop" style="background: none; border: none; color: #d32f2f; cursor: pointer; padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
+              <i class="fa-solid fa-stop" style="font-size: 10px;"></i>
+            </button>
+          </div>
+
+          <i class="fa-regular fa-link-simple" onclick="sharePost()" style="transform: rotate(-45deg); font-size: 14px; cursor: pointer; color: var(--text);" title="Share"></i>
+          <i class="fa-regular fa-print" onclick="printPost()" style="font-size: 14px; cursor: pointer; color: var(--text);" title="Print"></i>
+          
+        </div>
+      </div>
     </div>
+
+    {% if page.summarize %}
+    <!-- AI Summary Section -->
+    <div id="ai-summary-section" class="ai-summary-section" style="border-radius: 12px; padding: 1.5rem; margin: 2rem auto; display: none;">
+      <div id="summary-header" style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none;" onclick="toggleSummary()">
+        <div style="display: flex; align-items: center;">
+          <i class="fa-solid fa-wand-magic-sparkles" style="margin-right: 0.5rem; font-size: 18px;"></i>
+          <h3 style="margin: 0; font-size: 18px; font-weight: 600;">Summary</h3>
+        </div>
+        <i id="summary-chevron" class="fa-solid fa-chevron-down" style="transition: transform 0.3s ease;"></i>
+      </div>
+      <div id="ai-summary-content" style="line-height: 1.6; margin-top: 1rem; display: none;">
+        <p id="summary-placeholder" style="margin: 0; font-style: italic; opacity: 0.7;">
+          Click to generate AI summary...
+        </p>
+        <div id="summary-text" style="display: none;"></div>
+        
+        <!-- Follow-up Question Box -->
+        <div id="followup-section" style="margin-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 1rem; display: none;">
+          <div style="display: flex; align-items: center; margin-bottom: 0.75rem;">
+            <i class="fa-solid fa-question-circle" style="margin-right: 0.5rem; font-size: 14px; opacity: 0.7;"></i>
+            <span style="font-size: 14px; font-weight: 600; opacity: 0.8;">Ask a Follow up:</span>
+          </div>
+          
+          <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
+            <div class="followup-pill" style="position: relative; flex: 1; display: flex; align-items: center; background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.2); border-radius: 25px; padding: 0.5rem 3rem 0.5rem 1rem;">
+              <input type="text" id="followup-input" placeholder="e.g., What are the main benefits discussed?" 
+                     style="flex: 1; border: none; background: transparent; font-size: 14px; outline: none;" 
+                     onkeypress="handleFollowupKeypress(event)">
+              <button onclick="askFollowupQuestion()" id="followup-btn" 
+                      style="position: absolute; right: 4px; width: 32px; height: 32px; background: #ff8200; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;">
+                <i class="fa-solid fa-arrow-up" style="font-size: 12px;"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div id="followup-response" style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(0,0,0,0.03); border-radius: 6px; display: none; font-size: 14px; line-height: 1.5;">
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
 
     <div class="post-body">{{ content }}</div>
   </article>
 </main>
+
+<!-- PDF.js Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+
+<!-- Google AdSense Script -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7539227284131407"
+     crossorigin="anonymous"></script>
+
+<script src="{{ '/assets/scripts/post.js' | relative_url }}"></script>

@@ -1,7 +1,7 @@
 {
 	"geolocation": {
 		"data": {
-			"city": "Rajkot",
+			"city": "Vadodara",
 			"country": {
 				"code": "IN",
 				"name": "India"
@@ -11,11 +11,11 @@
 				"name": "Gujarat"
 			},
 			"timezone": "Asia/Kolkata",
-			"latitude": 22.2904,
-			"longitude": 70.7915,
-			"postalCode": "360022"
+			"latitude": 22.3008,
+			"longitude": 73.2043,
+			"postalCode": "390001"
 		},
-		"timestamp": 1749644622423
+		"timestamp": 1763517876836
 	},
 	"siteId": "1c2db590-dc52-471f-bbfc-f2272b0807fc"
 }

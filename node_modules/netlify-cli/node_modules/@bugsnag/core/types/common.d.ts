@@ -23,11 +23,13 @@ export interface Config {
   onSession?: OnSessionCallback | OnSessionCallback[]
   logger?: Logger | null
   maxBreadcrumbs?: number
-  metadata?: { [key: string]: any }
+  metadata?: { [section: string]: { [key: string]: any } }
   featureFlags?: FeatureFlag[]
   releaseStage?: string
   plugins?: Plugin[]
   user?: User | null
+  reportUnhandledPromiseRejectionsAsHandled?: boolean
+  sendPayloadChecksums?: boolean
 }
 
 export type OnErrorCallback = (event: Event, cb: (err: null | Error, shouldSend?: boolean) => void) => void | boolean | Promise<void | boolean>

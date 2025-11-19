@@ -1,1 +1,844 @@
-document.addEventListener("DOMContentLoaded",(function(){const e=document.getElementById("disableBgToggle"),t=document.getElementById("home");let n=window.matchMedia("(max-width: 768px)").matches,i=null;function o(e,t,n){let i="";if(n){const e=new Date;e.setTime(e.getTime()+24*n*60*60*1e3),i="; expires="+e.toUTCString()}document.cookie=e+"="+(t||"")+i+"; path=/"}function a(e){const t=e+"=",n=document.cookie.split(";");for(let e=0;e<n.length;e++){let i=n[e].trim();if(0===i.indexOf(t))return i.substring(t.length)}return null}function s(){e&&e.checked?t.style.setProperty("--bg-img","none"):i?c(i):fetch("/assets/data/events.json").then((e=>e.json())).then((e=>{const t=new Date;let n=e.filter((e=>new Date(e.setDate)<=t&&(!e.default||0==e.default))),o=null;if(n.length>0)o=n.sort(((e,t)=>new Date(t.setDate)-new Date(e.setDate)))[0];else{let t=e.filter((e=>1==e.default));t.length>0&&(o=t[0])}o&&(i=o,c(o))})).catch((e=>console.error("Error loading event backgrounds:",e)))}function c(e){const n=window.matchMedia("(max-width: 768px)").matches?e.url_mobile:e.url_pc;t.style.setProperty("--bg-img",`url('${n}')`)}"true"===a("disableBg")&&(e.checked=!0,t.style.setProperty("--bg-img","none")),s(),e&&e.addEventListener("change",(function(){this.checked?t.style.setProperty("--bg-img","none"):s(),o("disableBg",this.checked?"true":"false",30)})),window.addEventListener("resize",function(e){let t;return function(...n){clearTimeout(t),t=setTimeout((()=>e.apply(this,n)),200)}}((function(){if(e&&e.checked)return;const t=window.matchMedia("(max-width: 768px)").matches;t!==n&&(s(),n=t)})));const d=document.getElementById("paperModeToggle"),r=document.getElementById("grainDetails"),l=(document.getElementById("grainSizeControl"),document.getElementById("grainSizeSlider")),u=document.getElementById("grainSizeValue"),g=document.getElementById("popup");function m(e,t){const n=document.getElementById("pdf-iframe");if(n){try{const i=n.contentDocument?.body;if(i)return void(t?i.classList.add(e):i.classList.remove(e))}catch(e){}try{n.contentWindow.postMessage({type:"overlayMode",mode:e,enable:t},"*")}catch(e){}}}function h(){g&&g.classList.add("paper-mode"),m("paper-mode",!0),y()}function y(){r&&(r.style.display="block")}function p(e){const t=Math.round(e/100*200);g&&g.style.setProperty("--grain-size",`${t}px`),u&&(u.textContent=`${e}%`)}window.addEventListener("message",(function(e){if(e.data&&"applyOverlayModes"===e.data.type){const t=document.getElementById("pdf-iframe");if(t&&e.source===t.contentWindow){const e=document.getElementById("popup");if(e){const n=e.classList.contains("paper-mode"),i=e.classList.contains("night-reading"),o=e.classList.contains("eink-mode");n&&t.contentWindow.postMessage({type:"overlayMode",mode:"paper-mode",enable:!0},"*"),i&&t.contentWindow.postMessage({type:"overlayMode",mode:"night-reading",enable:!0},"*"),o&&t.contentWindow.postMessage({type:"overlayMode",mode:"eink-mode",enable:!0},"*");const a=document.body.classList.contains("dark-mode");t.contentWindow.postMessage({type:"themeMode",isDark:a},"*")}}}})),function(){const e=a("paperMode"),t=a("grainSize")||"100";"true"===e&&(d.checked=!0,h(),y()),l&&(l.value=t,p(t))}(),d&&d.addEventListener("change",(function(){this.checked?(h(),o("paperMode","true",30)):(g&&g.classList.remove("paper-mode"),m("paper-mode",!1),r&&(r.style.display="none"),o("paperMode","false",30))})),l&&l.addEventListener("input",(function(){const e=this.value;p(e),o("grainSize",e,30)})),g&&new MutationObserver((e=>{e.forEach((e=>{"attributes"===e.type&&"style"===e.attributeName&&"none"!==g.style.display&&""!==g.style.display&&d&&d.checked&&h()}))})).observe(g,{attributes:!0,attributeFilter:["style","class"]});const f=document.getElementById("nightReadingToggle"),v=document.getElementById("nightReadingDetails"),E=document.getElementById("nightStartTime"),k=document.getElementById("nightEndTime"),b=document.getElementById("nightScheduleToggle"),w=document.getElementById("warmthSlider"),M=document.getElementById("warmthValue");let L=null;function B(){g&&(g.classList.add("night-reading"),w&&P(w.value)),m("night-reading",!0),S(),setTimeout((()=>{w&&P(w.value)}),300)}function I(){g&&g.classList.remove("night-reading"),m("night-reading",!1),v&&(v.style.display="none")}function S(){v&&(v.style.display="block")}function T(e){const[t,n]=e.split(":").map(Number);return 60*t+n}function D(){if(!b||!b.checked)return;const e=function(){const e=new Date;return`${String(e.getHours()).padStart(2,"0")}:${String(e.getMinutes()).padStart(2,"0")}`}(),t=function(e,t,n){const i=T(e),o=T(t),a=T(n);return i>o?a>=i||a<=o:a>=i&&a<=o}(E?E.value:"20:00",k?k.value:"06:00",e);t&&!f.checked?(f.checked=!0,B(),o("nightReading","true",30)):!t&&f.checked&&(f.checked=!1,I(),o("nightReading","false",30))}function x(){L&&clearInterval(L),L=setInterval(D,6e4),D()}(function(){const e=a("nightReading"),t=a("nightStartTime")||"20:00",n=a("nightEndTime")||"06:00",i=a("nightSchedule"),o=a("nightWarmth")||"50";"true"===e&&(f.checked=!0,B(),S()),E&&(E.value=t),k&&(k.value=n),"true"===i&&(b.checked=!0,x()),w&&(w.value=o,P(o))})(),f&&f.addEventListener("change",(function(){this.checked?(B(),o("nightReading","true",30)):(I(),o("nightReading","false",30))})),b&&b.addEventListener("change",(function(){this.checked?(x(),o("nightSchedule","true",30)):(L&&(clearInterval(L),L=null),o("nightSchedule","false",30))})),E&&E.addEventListener("change",(function(){o("nightStartTime",this.value,30),b&&b.checked&&D()})),k&&k.addEventListener("change",(function(){o("nightEndTime",this.value,30),b&&b.checked&&D()})),g&&new MutationObserver((e=>{e.forEach((e=>{"attributes"===e.type&&"style"===e.attributeName&&"none"!==g.style.display&&""!==g.style.display&&f&&f.checked&&B()}))})).observe(g,{attributes:!0,attributeFilter:["style","class"]});const W=document.getElementById("einkModeToggle");function z(){g&&g.classList.add("eink-mode"),m("eink-mode",!0)}function P(e){const t=e/100*.3;g&&g.style.setProperty("--warmth-opacity",t),M&&(M.textContent=`${e}%`),function(e){const t=document.getElementById("pdf-iframe");if(t&&g.classList.contains("night-reading")){try{const n=t.contentDocument;if(n){if(n.documentElement.style.setProperty("--warmth-opacity",e),n.body.classList.contains("night-reading")){const e=n.getElementById("viewer");e&&(e.style.transform="translateZ(0)",setTimeout((()=>{e.style.transform=""}),10))}return}}catch(e){}try{t.contentWindow.postMessage({type:"nightWarmth",opacity:e},"*")}catch(e){}}}(t)}"true"===a("einkMode")&&(W.checked=!0,z()),W&&W.addEventListener("change",(function(){this.checked?(z(),o("einkMode","true",30)):(g&&g.classList.remove("eink-mode"),m("eink-mode",!1),o("einkMode","false",30))})),g&&new MutationObserver((e=>{e.forEach((e=>{"attributes"===e.type&&"style"===e.attributeName&&"none"!==g.style.display&&""!==g.style.display&&W&&W.checked&&z()}))})).observe(g,{attributes:!0,attributeFilter:["style","class"]}),w&&w.addEventListener("input",(function(){const e=this.value;P(e),o("nightWarmth",e,30)}))}));
+document.addEventListener('DOMContentLoaded', function () {
+    const disableBgToggle = document.getElementById("disableBgToggle");
+    const homeElem = document.getElementById("home");
+    let lastIsMobile = window.matchMedia("(max-width: 768px)").matches;
+    let cachedEventToApply = null;
+
+    function setCookie(name, value, days) {
+        let expires = "";
+        if (days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+
+    function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(";");
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i].trim();
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length);
+        }
+        return null;
+    }
+
+    function setWallpaperAsBackground(wallpaperType) {
+        const selectedCard = document.querySelector(`[data-wallpaper="${wallpaperType}"]`);
+        if (selectedCard) {
+            const bgImage = selectedCard.dataset.bgImage;
+            if (wallpaperType === 'dynamic') {
+                // Apply dynamic wallpaper
+                applyDynamicWallpaper();
+            } else if (bgImage && bgImage !== '') {
+                homeElem.style.setProperty("--bg-img", bgImage);
+            } else {
+                // Default background - apply event background directly
+                if (cachedEventToApply) {
+                    updateBgFromEvent(cachedEventToApply);
+                } else {
+                    // Load and apply event background
+                    loadAndApplyEventBackground();
+                }
+            }
+        } else {
+            console.error('❌ Wallpaper card not found for:', wallpaperType);
+        }
+    }
+
+    // Dynamic wallpaper functionality
+    function getDynamicImageIndex() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const totalMinutes = hours * 60 + minutes;
+        
+        // Custom time mappings for part_0 to part_8
+        // part_0: 5:45 AM - 6:00 AM
+        if ((totalMinutes >= 345 && totalMinutes < 360)) { // 5:45-6:00 AM
+            return 0;
+        }
+        // part_1: 6:00 AM - 6:45 AM
+        else if (totalMinutes >= 360 && totalMinutes < 405) { // 6:00-6:45 AM
+            return 1;
+        }
+        // part_2: 6:45 AM - 5:45 AM (next day) - This seems like it should be PM, assuming 6:45 AM - 5:45 PM
+        else if (totalMinutes >= 405 && totalMinutes < 1065) { // 6:45 AM - 5:45 PM
+            return 2;
+        }
+        // part_3: 5:45 PM - 6:00 PM
+        else if (totalMinutes >= 1065 && totalMinutes < 1080) { // 5:45-6:00 PM
+            return 3;
+        }
+        // part_4: 6:00 PM - 7:00 PM
+        else if (totalMinutes >= 1080 && totalMinutes < 1140) { // 6:00-7:00 PM
+            return 4;
+        }
+        // part_5: 7:00 PM - 7:45 PM
+        else if (totalMinutes >= 1140 && totalMinutes < 1185) { // 7:00-7:45 PM
+            return 5;
+        }
+        // part_6: 7:45 PM - 11:50 PM
+        else if (totalMinutes >= 1185 && totalMinutes < 1430) { // 7:45-11:50 PM
+            return 6;
+        }
+        // part_7: 11:50 PM - 12:30 AM (next day)
+        else if (totalMinutes >= 1430 || totalMinutes < 30) { // 11:50 PM - 12:30 AM
+            return 7;
+        }
+        // part_8: 12:30 AM - 5:45 AM
+        else if (totalMinutes >= 30 && totalMinutes < 345) { // 12:30-5:45 AM
+            return 8;
+        }
+        
+        // Fallback to part_0
+        return 0;
+    }
+
+    function getDynamicImageUrl() {
+        const index = getDynamicImageIndex();
+        return `url('/assets/img/events/dynamic/part_${index}.webp')`;
+    }
+
+    function applyDynamicWallpaper() {
+        const imageUrl = getDynamicImageUrl();
+        homeElem.style.setProperty("--bg-img", imageUrl);
+        
+        // Update preview card to show current image
+        updateDynamicPreview();
+    }
+
+    function updateDynamicPreview() {
+        const dynamicPreview = document.getElementById('dynamicPreview');
+        const dynamicTime = document.getElementById('dynamicTime');
+        
+        if (dynamicPreview) {
+            const index = getDynamicImageIndex();
+            const imageUrl = `/assets/img/events/dynamic/part_${index}.webp`;
+            dynamicPreview.style.backgroundImage = `url('${imageUrl}')`;
+            dynamicPreview.style.backgroundSize = 'cover';
+            dynamicPreview.style.backgroundPosition = 'center';
+            
+            // Remove the animated gradient
+            dynamicPreview.style.animation = 'none';
+        }
+        
+        if (dynamicTime) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            dynamicTime.textContent = timeString;
+        }
+    }
+
+    // Dynamic wallpaper timer
+    let dynamicWallpaperInterval = null;
+
+    function startDynamicWallpaperTimer() {
+        // Clear any existing interval
+        if (dynamicWallpaperInterval) {
+            clearInterval(dynamicWallpaperInterval);
+        }
+        
+        // Update every minute to check for time changes
+        dynamicWallpaperInterval = setInterval(() => {
+            const selectedWallpaper = getCookie("selectedWallpaper");
+            if (selectedWallpaper === 'dynamic') {
+                applyDynamicWallpaper();
+            }
+        }, 60000); // Update every minute
+    }
+
+    function stopDynamicWallpaperTimer() {
+        if (dynamicWallpaperInterval) {
+            clearInterval(dynamicWallpaperInterval);
+            dynamicWallpaperInterval = null;
+        }
+    }
+
+    function loadAndApplyEventBackground() {
+        fetch('/assets/data/events.json')
+            .then(response => response.json())
+            .then(events => {
+                const now = new Date();
+                let activeEvents = events.filter(ev => new Date(ev.setDate) <= now && (!ev.default || ev.default == 0));
+                let eventToApply = null;
+                if (activeEvents.length > 0) {
+                    eventToApply = activeEvents.sort((a, b) => new Date(b.setDate) - new Date(a.setDate))[0];
+                } else {
+                    let defaultEvents = events.filter(ev => ev.default == 1);
+                    if (defaultEvents.length > 0) {
+                        eventToApply = defaultEvents[0];
+                    }
+                }
+                if (eventToApply) {
+                    cachedEventToApply = eventToApply;
+                    updateBgFromEvent(eventToApply);
+                }
+            })
+            .catch(err => console.error("Error loading event backgrounds:", err));
+    }
+
+    function applyEventBackgroundForHome() {
+        if (disableBgToggle && disableBgToggle.checked) {
+            homeElem.style.setProperty("--bg-img", "none");
+            return;
+        }
+
+        // Check if a custom wallpaper is selected
+        const selectedWallpaper = getCookie("selectedWallpaper");
+        if (selectedWallpaper && selectedWallpaper !== 'default') {
+            setWallpaperAsBackground(selectedWallpaper);
+            return;
+        }
+
+        if (cachedEventToApply) {
+            updateBgFromEvent(cachedEventToApply);
+            return;
+        }
+        
+        loadAndApplyEventBackground();
+    }
+
+    function updateBgFromEvent(eventToApply) {
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
+        const bgUrl = isMobile ? eventToApply.url_mobile : eventToApply.url_pc;
+        
+        // Check if the URL is set to "dynamic"
+        if (bgUrl === "dynamic") {
+            applyDynamicWallpaper();
+        } else {
+            homeElem.style.setProperty("--bg-img", `url('${bgUrl}')`);
+        }
+    }
+
+    const savedSetting = getCookie("disableBg");
+    if (savedSetting === "true") {
+        disableBgToggle.checked = true;
+        homeElem.style.setProperty("--bg-img", "none");
+    }
+    applyEventBackgroundForHome();
+
+    if (disableBgToggle) {
+        disableBgToggle.addEventListener("change", function () {
+            if (this.checked) {
+                homeElem.style.setProperty("--bg-img", "none");
+            } else {
+                applyEventBackgroundForHome();
+            }
+            setCookie("disableBg", this.checked ? "true" : "false", 30);
+        });
+    }
+    function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    window.addEventListener('resize', debounce(function () {
+        if (disableBgToggle && disableBgToggle.checked) return;
+        const currentIsMobile = window.matchMedia("(max-width: 768px)").matches;
+        if (currentIsMobile !== lastIsMobile) {
+            applyEventBackgroundForHome();
+            lastIsMobile = currentIsMobile;
+        }
+    }, 200));
+
+    // User tier checking functionality
+    function getUserTierStatus() {
+        try {
+            const userData = localStorage.getItem('materio_user');
+            if (!userData) {
+                return { isPlusUser: false, hasAdminPrivileges: false, isLoggedIn: false };
+            }
+            
+            const user = JSON.parse(userData);
+            return {
+                isPlusUser: user.isPlusUser || false,
+                hasAdminPrivileges: user.hasAdminPrivileges || false,
+                isLoggedIn: true
+            };
+        } catch (error) {
+            console.error('Error parsing user data:', error);
+            return { isPlusUser: false, hasAdminPrivileges: false, isLoggedIn: false };
+        }
+    }
+
+    function canAccessWallpaperSelection() {
+        const userStatus = getUserTierStatus();
+        return userStatus.isPlusUser || userStatus.hasAdminPrivileges;
+    }
+
+    function hideWallpaperSelectionCard() {
+        const wallpaperSelectionCard = document.getElementById('wallpaperSelectionCard');
+        if (wallpaperSelectionCard) {
+            wallpaperSelectionCard.style.display = 'none';
+        }
+    }
+
+    // Wallpaper Selection functionality (Plus/Super users only)
+    const wallpaperCards = document.querySelectorAll('.wallpaper-preview-card');
+    
+    function initializeWallpaperSelection() {
+        // Check if user can access wallpaper selection
+        if (!canAccessWallpaperSelection()) {
+            // Hide the entire wallpaper selection card for non-eligible users
+            hideWallpaperSelectionCard();
+            return;
+        }
+        
+        // Initialize dynamic preview
+        updateDynamicPreview();
+        
+        const savedWallpaper = getCookie("selectedWallpaper");
+        if (savedWallpaper) {
+            setWallpaperAsBackground(savedWallpaper);
+            // Update UI to show selected wallpaper
+            wallpaperCards.forEach(card => {
+                card.classList.remove('selected');
+                if (card.dataset.wallpaper === savedWallpaper) {
+                    card.classList.add('selected');
+                }
+            });
+            
+            // Start timer if dynamic wallpaper is selected
+            if (savedWallpaper === 'dynamic') {
+                startDynamicWallpaperTimer();
+            }
+        }
+    }
+    
+    // Add click handlers to wallpaper cards
+    wallpaperCards.forEach(card => {
+        card.addEventListener('click', function() {
+            // Check user access before allowing wallpaper selection
+            if (!canAccessWallpaperSelection()) {
+                return;
+            }
+            
+            // Remove selected class from all cards
+            wallpaperCards.forEach(c => c.classList.remove('selected'));
+            
+            // Add selected class to clicked card
+            this.classList.add('selected');
+            
+            // Get wallpaper type and apply it
+            const wallpaperType = this.dataset.wallpaper;
+            setWallpaperAsBackground(wallpaperType);
+            
+            // Handle dynamic wallpaper timer
+            if (wallpaperType === 'dynamic') {
+                startDynamicWallpaperTimer();
+            } else {
+                stopDynamicWallpaperTimer();
+            }
+            
+            // Save the selection
+            setCookie("selectedWallpaper", wallpaperType, 30);
+        });
+    });
+    
+    // Initialize wallpaper selection on page load
+    initializeWallpaperSelection();
+
+    // Paper Mode functionality
+    const paperModeToggle = document.getElementById("paperModeToggle");
+    const grainDetails = document.getElementById("grainDetails");
+    const grainSizeControl = document.getElementById("grainSizeControl");
+    const grainSizeSlider = document.getElementById("grainSizeSlider");
+    const grainSizeValue = document.getElementById("grainSizeValue");
+    const popup = document.getElementById("popup");
+
+    function initializePaperMode() {
+        const savedPaperMode = getCookie("paperMode");
+        const savedGrainSize = getCookie("grainSize") || "100";
+        
+        if (savedPaperMode === "true") {
+            paperModeToggle.checked = true;
+            enablePaperMode();
+            showGrainSizeControl();
+        }
+        
+        if (grainSizeSlider) {
+            grainSizeSlider.value = savedGrainSize;
+            updateGrainSize(savedGrainSize);
+        }
+    }    // Helper function to apply overlay modes to PDF iframe using postMessage
+    function applyOverlayToPDFIframe(mode, enable) {
+        const pdfIframe = document.getElementById('pdf-iframe');
+        if (pdfIframe) {
+            // Try direct access first (same-origin)
+            try {
+                const iframeBody = pdfIframe.contentDocument?.body;
+                if (iframeBody) {
+                    if (enable) {
+                        iframeBody.classList.add(mode);
+                    } else {
+                        iframeBody.classList.remove(mode);
+                    }
+                    return; // Success with direct access
+                }
+            } catch (e) {
+                // Cross-origin, use postMessage
+            }
+            
+            // Use postMessage for cross-origin communication
+            try {
+                pdfIframe.contentWindow.postMessage({
+                    type: 'overlayMode',
+                    mode: mode,
+                    enable: enable
+                }, '*');
+            } catch (e) {
+                // console.log('Could not communicate with PDF iframe');
+            }
+        }
+    }    // Listen for messages from iframe to handle overlay mode requests
+    window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'applyOverlayModes') {
+            const pdfIframe = document.getElementById('pdf-iframe');
+            if (pdfIframe && event.source === pdfIframe.contentWindow) {
+                const mainPopup = document.getElementById('popup');
+                if (mainPopup) {                    // Send current overlay states to iframe
+                    const paperMode = mainPopup.classList.contains('paper-mode');
+                    const nightReading = mainPopup.classList.contains('night-reading');
+                    const einkMode = mainPopup.classList.contains('eink-mode');
+                    
+                    if (paperMode) {
+                        pdfIframe.contentWindow.postMessage({
+                            type: 'overlayMode',
+                            mode: 'paper-mode',
+                            enable: true
+                        }, '*');
+                    }
+                    
+                    if (nightReading) {
+                        pdfIframe.contentWindow.postMessage({
+                            type: 'overlayMode',
+                            mode: 'night-reading',
+                            enable: true
+                        }, '*');
+                    }
+                    
+                    if (einkMode) {
+                        pdfIframe.contentWindow.postMessage({
+                            type: 'overlayMode',
+                            mode: 'eink-mode',
+                            enable: true
+                        }, '*');
+                    }
+                    
+                    // Send current theme state to iframe
+                    const isDarkMode = document.body.classList.contains('dark-mode');
+                    pdfIframe.contentWindow.postMessage({
+                        type: 'themeMode',
+                        isDark: isDarkMode
+                    }, '*');
+                }
+            }
+        }
+    });
+
+    function enablePaperMode() {
+        if (popup) {
+            popup.classList.add('paper-mode');
+        }
+        applyOverlayToPDFIframe('paper-mode', true);
+        showGrainSizeControl();
+    }
+
+    function disablePaperMode() {
+        if (popup) {
+            popup.classList.remove('paper-mode');
+        }
+        applyOverlayToPDFIframe('paper-mode', false);
+        hideGrainSizeControl();
+    }
+      function showGrainSizeControl() {
+        if (grainDetails) {
+            grainDetails.style.display = 'block';
+        }
+    }
+    
+    function hideGrainSizeControl() {
+        if (grainDetails) {
+            grainDetails.style.display = 'none';
+        }
+    }
+    
+    function updateGrainSize(size) {
+        const grainSizePx = Math.round((size / 100) * 200); // Base size is 200px
+        if (popup) {
+            popup.style.setProperty('--grain-size', `${grainSizePx}px`);
+        }
+        if (grainSizeValue) {
+            grainSizeValue.textContent = `${size}%`;
+        }
+    }
+
+    // Initialize paper mode on page load
+    initializePaperMode();    if (paperModeToggle) {
+        paperModeToggle.addEventListener("change", function () {
+            if (this.checked) {
+                enablePaperMode();
+                setCookie("paperMode", "true", 30);
+            } else {
+                disablePaperMode();
+                setCookie("paperMode", "false", 30);
+            }
+        });
+    }
+    
+    // Grain size slider event listener
+    if (grainSizeSlider) {
+        grainSizeSlider.addEventListener("input", function () {
+            const size = this.value;
+            updateGrainSize(size);
+            setCookie("grainSize", size, 30);
+        });
+    }
+
+    // Listen for popup show/hide events to apply paper mode
+    if (popup) {
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    const isVisible = popup.style.display !== 'none' && popup.style.display !== '';
+                    if (isVisible && paperModeToggle && paperModeToggle.checked) {
+                        enablePaperMode();
+                    }
+                }
+            });
+        });
+          observer.observe(popup, { 
+            attributes: true, 
+            attributeFilter: ['style', 'class'] 
+        });
+    }
+
+    // Night Reading Mode functionality
+    const nightReadingToggle = document.getElementById("nightReadingToggle");
+    const nightReadingDetails = document.getElementById("nightReadingDetails");
+    const nightStartTime = document.getElementById("nightStartTime");
+    const nightEndTime = document.getElementById("nightEndTime");
+    const nightScheduleToggle = document.getElementById("nightScheduleToggle");
+    const warmthSlider = document.getElementById("warmthSlider");
+    const warmthValue = document.getElementById("warmthValue");
+    let nightModeInterval = null;
+
+    function initializeNightReading() {
+        const savedNightReading = getCookie("nightReading");
+        const savedStartTime = getCookie("nightStartTime") || "20:00";
+        const savedEndTime = getCookie("nightEndTime") || "06:00";
+        const savedSchedule = getCookie("nightSchedule");
+        const savedWarmth = getCookie("nightWarmth") || "50";
+        
+        if (savedNightReading === "true") {
+            nightReadingToggle.checked = true;
+            enableNightReading();
+            showNightReadingControl();
+        }
+        
+        if (nightStartTime) nightStartTime.value = savedStartTime;
+        if (nightEndTime) nightEndTime.value = savedEndTime;
+        
+        if (savedSchedule === "true") {
+            nightScheduleToggle.checked = true;
+            startNightSchedule();
+        }
+          if (warmthSlider) {
+            warmthSlider.value = savedWarmth;
+            updateWarmth(savedWarmth);
+        }
+    }    
+
+    function enableNightReading() {
+        if (popup) {
+            popup.classList.add('night-reading');
+            // Apply warmth level from slider
+            if (warmthSlider) {
+                updateWarmth(warmthSlider.value);
+            }
+        }        applyOverlayToPDFIframe('night-reading', true);
+        showNightReadingControl();
+        
+        // Apply warmth setting to PDF iframe after a short delay to ensure overlay is applied
+        setTimeout(() => {
+            if (warmthSlider) {
+                updateWarmth(warmthSlider.value);
+            }
+        }, 300); // Increased delay for better reliability
+    }
+
+    function disableNightReading() {
+        if (popup) {
+            popup.classList.remove('night-reading');
+        }
+        applyOverlayToPDFIframe('night-reading', false);
+        hideNightReadingControl();
+    }
+    
+    function showNightReadingControl() {
+        if (nightReadingDetails) {
+            nightReadingDetails.style.display = 'block';
+        }
+    }
+    
+    function hideNightReadingControl() {
+        if (nightReadingDetails) {
+            nightReadingDetails.style.display = 'none';
+        }
+    }
+
+    function isTimeInRange(startTime, endTime, currentTime) {
+        const start = timeToMinutes(startTime);
+        const end = timeToMinutes(endTime);
+        const current = timeToMinutes(currentTime);
+        
+        // Handle overnight range (e.g., 20:00 to 06:00)
+        if (start > end) {
+            return current >= start || current <= end;
+        }
+        // Handle same-day range
+        return current >= start && current <= end;
+    }
+
+    function timeToMinutes(timeStr) {
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return hours * 60 + minutes;
+    }
+
+    function getCurrentTime() {
+        const now = new Date();
+        return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    }
+
+    function checkNightSchedule() {
+        if (!nightScheduleToggle || !nightScheduleToggle.checked) return;
+        
+        const currentTime = getCurrentTime();
+        const startTime = nightStartTime ? nightStartTime.value : "20:00";
+        const endTime = nightEndTime ? nightEndTime.value : "06:00";
+        
+        const shouldBeActive = isTimeInRange(startTime, endTime, currentTime);
+        
+        if (shouldBeActive && !nightReadingToggle.checked) {
+            nightReadingToggle.checked = true;
+            enableNightReading();
+            setCookie("nightReading", "true", 30);
+        } else if (!shouldBeActive && nightReadingToggle.checked) {
+            nightReadingToggle.checked = false;
+            disableNightReading();
+            setCookie("nightReading", "false", 30);
+        }
+    }
+
+    function startNightSchedule() {
+        if (nightModeInterval) {
+            clearInterval(nightModeInterval);
+        }
+        
+        // Check every minute
+        nightModeInterval = setInterval(checkNightSchedule, 60000);
+        // Check immediately
+        checkNightSchedule();
+    }
+
+    function stopNightSchedule() {
+        if (nightModeInterval) {
+            clearInterval(nightModeInterval);
+            nightModeInterval = null;
+        }
+    }
+
+    // Initialize night reading mode on page load
+    initializeNightReading();
+
+    if (nightReadingToggle) {
+        nightReadingToggle.addEventListener("change", function () {
+            if (this.checked) {
+                enableNightReading();
+                setCookie("nightReading", "true", 30);
+            } else {
+                disableNightReading();
+                setCookie("nightReading", "false", 30);
+            }
+        });
+    }
+
+    if (nightScheduleToggle) {
+        nightScheduleToggle.addEventListener("change", function () {
+            if (this.checked) {
+                startNightSchedule();
+                setCookie("nightSchedule", "true", 30);
+            } else {
+                stopNightSchedule();
+                setCookie("nightSchedule", "false", 30);
+            }
+        });
+    }
+
+    // Save time settings when changed
+    if (nightStartTime) {
+        nightStartTime.addEventListener("change", function () {
+            setCookie("nightStartTime", this.value, 30);
+            if (nightScheduleToggle && nightScheduleToggle.checked) {
+                checkNightSchedule();
+            }
+        });
+    }
+
+    if (nightEndTime) {
+        nightEndTime.addEventListener("change", function () {
+            setCookie("nightEndTime", this.value, 30);
+            if (nightScheduleToggle && nightScheduleToggle.checked) {
+                checkNightSchedule();
+            }
+        });
+    }
+
+    // Listen for popup show/hide events to apply night reading mode
+    if (popup) {
+        const nightObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    const isVisible = popup.style.display !== 'none' && popup.style.display !== '';
+                    if (isVisible && nightReadingToggle && nightReadingToggle.checked) {
+                        enableNightReading();
+                    }
+                }
+            });
+        });
+        
+        nightObserver.observe(popup, { 
+            attributes: true, 
+            attributeFilter: ['style', 'class'] 
+        });
+    }
+
+    // E-Ink Mode functionality
+    const einkModeToggle = document.getElementById("einkModeToggle");
+
+    function initializeEinkMode() {
+        const savedEinkMode = getCookie("einkMode");
+        
+        if (savedEinkMode === "true") {
+            einkModeToggle.checked = true;
+            enableEinkMode();
+        }
+    }
+
+    function enableEinkMode() {
+        if (popup) {
+            popup.classList.add('eink-mode');
+        }
+        applyOverlayToPDFIframe('eink-mode', true);
+    }
+
+    function disableEinkMode() {
+        if (popup) {
+            popup.classList.remove('eink-mode');
+        }
+        applyOverlayToPDFIframe('eink-mode', false);
+    }
+
+    // Initialize e-ink mode on page load
+    initializeEinkMode();
+
+    if (einkModeToggle) {
+        einkModeToggle.addEventListener("change", function () {
+            if (this.checked) {
+                enableEinkMode();
+                setCookie("einkMode", "true", 30);
+            } else {
+                disableEinkMode();
+                setCookie("einkMode", "false", 30);
+            }
+        });
+    }
+
+    // Listen for popup show/hide events to apply e-ink mode
+    if (popup) {
+        const einkObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    const isVisible = popup.style.display !== 'none' && popup.style.display !== '';
+                    if (isVisible && einkModeToggle && einkModeToggle.checked) {
+                        enableEinkMode();
+                    }
+                }
+            });
+        });
+        
+        einkObserver.observe(popup, { 
+            attributes: true, 
+            attributeFilter: ['style', 'class'] 
+        });    }
+
+    // Save time settings when changed
+    function updateWarmth(value) {
+        const warmthOpacity = value / 100 * 0.3; // Scale from 0-100% to 0-0.3 opacity
+        if (popup) {
+            popup.style.setProperty('--warmth-opacity', warmthOpacity);
+        }
+        if (warmthValue) {
+            warmthValue.textContent = `${value}%`;
+        }
+        
+        // Send warmth level to PDF iframe
+        applyWarmthToPDFIframe(warmthOpacity);
+        
+        // Log the warmth update for debugging
+        // console.log(`Warmth updated: ${value}% (opacity: ${warmthOpacity.toFixed(3)})`);
+    }
+      // Helper function to apply warmth to PDF iframe
+    function applyWarmthToPDFIframe(opacity) {
+        const pdfIframe = document.getElementById('pdf-iframe');
+        if (pdfIframe && popup.classList.contains('night-reading')) {
+            // Try direct access first (same-origin)
+            try {
+                const iframeDoc = pdfIframe.contentDocument;
+                if (iframeDoc) {
+                    iframeDoc.documentElement.style.setProperty('--warmth-opacity', opacity);
+                    
+                    // Force repaint to ensure changes are applied
+                    if (iframeDoc.body.classList.contains('night-reading')) {
+                        const viewer = iframeDoc.getElementById('viewer');
+                        if (viewer) {
+                            viewer.style.transform = 'translateZ(0)';
+                            setTimeout(() => {
+                                viewer.style.transform = '';
+                            }, 10);
+                        }
+                    }
+                    
+                    return; // Success with direct access
+                }
+            } catch (e) {
+                // Cross-origin, use postMessage
+                // console.log('Direct access failed, using postMessage:', e.message);
+            }
+            
+            // Use postMessage for cross-origin communication
+            try {
+                pdfIframe.contentWindow.postMessage({
+                    type: 'nightWarmth',
+                    opacity: opacity
+                }, '*');
+            } catch (e) {
+                // console.log('Could not send warmth level to PDF iframe');
+            }
+        }
+    }
+    
+    // Warmth slider event listener
+    if (warmthSlider) {
+        warmthSlider.addEventListener("input", function () {
+            const value = this.value;
+            updateWarmth(value);
+            setCookie("nightWarmth", value, 30);
+        });
+    }
+});

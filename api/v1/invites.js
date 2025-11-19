@@ -29,18 +29,32 @@ exports.handler = async (event, context) => {
     
     console.log('Path parts:', pathParts);
     console.log('Extracted pathAction:', pathAction);
+
+    // Also check for action in the request body (for direct fetch approach)
+    let bodyAction = null;
+    if (event.httpMethod === 'POST' && event.body) {
+      try {
+        const body = JSON.parse(event.body);
+        bodyAction = body.action;
+        console.log('Body action:', bodyAction);
+      } catch (e) {
+        console.log('Error parsing body:', e);
+      }
+    }
     
     // Check if the action is a valid endpoint or part of the path
     const isValidateEndpoint = pathAction === 'validate' || event.path.includes('/invites/validate');
     const isDiagnosticEndpoint = pathAction === 'diagnostic' || event.path.includes('/invites/diagnostic');
     const isToggleAdminEndpoint = pathAction === 'toggle-admin' || event.path.includes('/invites/toggle-admin');
     const isDeleteEndpoint = pathAction === 'delete' || event.path.includes('/invites/delete');
+    const isSharelinkEndpoint = pathAction === 'sharelink' || event.path.includes('/sharelink') || bodyAction === 'sharelink';
     
     console.log('Endpoint checks:', {
       isValidateEndpoint,
       isDiagnosticEndpoint,
       isToggleAdminEndpoint,
-      isDeleteEndpoint
+      isDeleteEndpoint,
+      isSharelinkEndpoint
     });
       // Handle special endpoints
     console.log('Checking which endpoint to use...');
@@ -91,6 +105,89 @@ exports.handler = async (event, context) => {
       }
       
       return await toggleAdmin(event, origin, user.id);
+    } else if (event.path.indexOf('/toggle-plus') !== -1 && event.httpMethod === 'POST') {
+      console.log('Using TOGGLE PLUS USER endpoint handler');
+      // For toggle-plus, we need auth and admin privileges
+      const token = getTokenFromHeaders(event.headers);
+      
+      if (!token) {
+        return {
+          statusCode: 401,
+          headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ error: 'Authentication required' })
+        };
+      }
+
+      // Verify token
+      const decoded = verifyToken(token);
+      if (!decoded) {
+        return {
+          statusCode: 401,
+          headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ error: 'Invalid token' })
+        };
+      }
+
+      // Get user and check admin privileges
+      const { data: user, error: userError } = await supabase
+        .from('users')
+        .select('id, has_admin_privileges')
+        .eq('id', decoded.id)
+        .single();
+
+      if (userError || !user || !user.has_admin_privileges) {
+        return {
+          statusCode: 403,
+          headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ error: 'Admin privileges required' })
+        };
+      }
+      
+      return await togglePlusUser(event, origin, user.id);
+    } else if (event.path === '/sharelink' || event.path === '/.netlify/functions/invites/sharelink' || 
+               event.path === '/invites/sharelink' || event.path.endsWith('/sharelink') || 
+               isSharelinkEndpoint) {
+      console.log('Using SHARELINK endpoint handler');
+      console.log('Path:', event.path);
+      console.log('Body:', event.body);
+      console.log('Headers:', JSON.stringify(event.headers));
+      // For sharelink, we need auth and admin privileges
+      const token = getTokenFromHeaders(event.headers);
+      
+      if (!token) {
+        return {
+          statusCode: 401,
+          headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ error: 'Authentication required' })
+        };
+      }
+
+      // Verify token
+      const decoded = verifyToken(token);
+      if (!decoded) {
+        return {
+          statusCode: 401,
+          headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ error: 'Invalid token' })
+        };
+      }
+
+      // Get user and check admin privileges
+      const { data: user, error: userError } = await supabase
+        .from('users')
+        .select('id, has_admin_privileges')
+        .eq('id', decoded.id)
+        .single();
+
+      if (userError || !user || !user.has_admin_privileges) {
+        return {
+          statusCode: 403,
+          headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ error: 'Admin privileges required' })
+        };
+      }
+      
+      return await createSharelink(event, origin, user.id);
     } else if (isDeleteEndpoint && event.httpMethod === 'POST') {
       // For delete endpoint, we also need auth
       const token = getTokenFromHeaders(event.headers);
@@ -167,7 +264,7 @@ exports.handler = async (event, context) => {
       };
     }    // Process authenticated and admin-required actions
     if (event.httpMethod === 'POST') {
-      return await createInvite(user.id, origin);
+      return await createInvite(user.id, origin, event.body);
     } else if (event.httpMethod === 'GET') {
       return await getInvites(user.id, origin);
     } else {
@@ -188,8 +285,20 @@ exports.handler = async (event, context) => {
 };
 
 // Original invites.js functions
-async function createInvite(userId, origin) {
+async function createInvite(userId, origin, requestBody = null) {
   try {
+    // Parse request body if provided
+    let containsPlusPerks = false;
+    if (requestBody) {
+      try {
+        const body = JSON.parse(requestBody);
+        containsPlusPerks = !!body.containsPlusPerks;
+      } catch (parseError) {
+        // If parsing fails, continue with default values
+        console.log('Request body parsing failed, using defaults');
+      }
+    }
+
     // Generate invite code similar to recovery key format
     const inviteCode = generateRecoveryKey();
     
@@ -198,7 +307,8 @@ async function createInvite(userId, origin) {
       .from('invites')
       .insert({
         code: inviteCode,
-        created_by: userId
+        created_by: userId,
+        contains_plus_perks: containsPlusPerks
       })
       .select()
       .single();
@@ -220,7 +330,8 @@ async function createInvite(userId, origin) {
           id: invite.id,
           code: invite.code,
           created_at: invite.created_at,
-          expires_at: invite.expires_at
+          expires_at: invite.expires_at,
+          contains_plus_perks: invite.contains_plus_perks
         }
       })
     };
@@ -246,7 +357,8 @@ async function getInvites(userId, origin) {
         redeemed_date,
         created_at,
         expires_at,
-        redeemed_user:users!redeemed_by(id, username, display_name, has_admin_privileges)
+        contains_plus_perks,
+        redeemed_user:users!redeemed_by(id, username, display_name, has_admin_privileges, is_plus_user, profile_picture)
       `)
       .eq('created_by', userId)
       .order('created_at', { ascending: false });
@@ -288,10 +400,11 @@ async function validateInvite(event, origin) {
       };
     }
       // Get the invite data - using admin client for reliability
+    // Use case-insensitive comparison to handle URL normalization
     const { data: invite, error } = await supabase
       .from('invites')
-      .select('id, code, redeemed, expires_at, created_at')
-      .eq('code', inviteCode)
+      .select('id, code, redeemed, expires_at, created_at, contains_plus_perks')
+      .ilike('code', inviteCode)
       .single();
       
     if (error || !invite) {
@@ -381,7 +494,7 @@ async function diagnosticInvite(event, origin) {
     const { data: invite, error } = await supabase
       .from('invites')
       .select('*')
-      .eq('code', inviteCode)
+      .ilike('code', inviteCode)
       .single();
 
     if (error) {
@@ -397,8 +510,8 @@ async function diagnosticInvite(event, origin) {
     }    // Check if reservation columns exist by trying to get them
     const { data: inviteWithReservation, error: reservationError } = await supabase
       .from('invites')
-      .select('id, code, redeemed, expires_at, created_at, reserved_at, reserved_until')
-      .eq('code', inviteCode)
+      .select('id, code, redeemed, expires_at, created_at, reserved_at, reserved_until, contains_plus_perks')
+      .ilike('code', inviteCode)
       .single();
 
     const hasReservationColumns = !reservationError;
@@ -456,7 +569,7 @@ async function toggleAdmin(event, origin, adminUserId) {
       .from('users')
       .update({ has_admin_privileges: hasAdminPrivileges })
       .eq('id', userId)
-      .select('id, username, display_name, has_admin_privileges')
+      .select('id, username, display_name, has_admin_privileges, is_plus_user')
       .single();
 
     if (updateError) {
@@ -477,6 +590,54 @@ async function toggleAdmin(event, origin, adminUserId) {
     };
   } catch (error) {
     console.error('Toggle admin API error:', error);
+    return {
+      statusCode: 500,
+      headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'Internal server error', details: error.message })
+    };
+  }
+}
+
+// Toggle plus user privileges
+async function togglePlusUser(event, origin, adminUserId) {
+  try {
+    // Parse request body
+    const { userId, isPlusUser } = JSON.parse(event.body);
+    
+    if (!userId) {
+      return {
+        statusCode: 400,
+        headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'User ID is required' })
+      };
+    }
+
+    // Update user plus privileges
+    const { data: updatedUser, error: updateError } = await supabase
+      .from('users')
+      .update({ is_plus_user: isPlusUser })
+      .eq('id', userId)
+      .select('id, username, display_name, has_admin_privileges, is_plus_user')
+      .single();
+
+    if (updateError) {
+      return {
+        statusCode: 500,
+        headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Failed to update user plus privileges', details: updateError })
+      };
+    }
+
+    return {
+      statusCode: 200,
+      headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: 'User plus privileges updated successfully',
+        user: updatedUser
+      })
+    };
+  } catch (error) {
+    console.error('Toggle plus user API error:', error);
     return {
       statusCode: 500,
       headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
@@ -669,6 +830,102 @@ async function deleteInvite(event, origin, adminUserId) {
     };
   } catch (error) {
     console.error('Delete invite error:', error);
+    return {
+      statusCode: 500,
+      headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'Internal server error', details: error.message })
+    };
+  }
+}
+
+// Create shareable link for invite
+async function createSharelink(event, origin, userId) {
+  try {
+    // Parse request body and extract parameters
+    const bodyData = JSON.parse(event.body);
+    
+    // Support both direct parameters and nested action format
+    let inviteCode, customHeading;
+    
+    if (bodyData.action === 'sharelink') {
+      // New format with action field
+      inviteCode = bodyData.inviteCode;
+      customHeading = bodyData.customHeading;
+    } else {
+      // Original format
+      inviteCode = bodyData.inviteCode;
+      customHeading = bodyData.customHeading;
+    }
+    
+    console.log('Parsed sharelink data:', { inviteCode, customHeading });
+    
+    if (!inviteCode) {
+      return {
+        statusCode: 400,
+        headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Invite code is required' })
+      };
+    }
+
+    // Verify that the invite exists and belongs to this user
+    const { data: invite, error: inviteError } = await supabase
+      .from('invites')
+      .select('id, code, created_by, contains_plus_perks')
+      .eq('code', inviteCode)
+      .eq('created_by', userId)
+      .single();
+
+    if (inviteError || !invite) {
+      return {
+        statusCode: 404,
+        headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Invite not found or access denied' })
+      };
+    }
+
+    // Create the sharelink record
+    const { data: sharelink, error: sharelinkError } = await supabase
+      .from('sharelinks')
+      .upsert({
+        invite_code: inviteCode,
+        custom_heading: customHeading || null,
+        created_by: userId,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'invite_code'
+      })
+      .select()
+      .single();
+
+    if (sharelinkError) {
+      return {
+        statusCode: 500,
+        headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Failed to create sharelink', details: sharelinkError })
+      };
+    }
+
+    // Determine the base URL based on the environment
+    const isLocalhost = origin && (origin.includes('localhost') || origin.includes('127.0.0.1'));
+    const baseUrl = isLocalhost ? origin : 'https://materioa.netlify.app';
+
+    // Return the sharelink data
+    return {
+      statusCode: 200,
+      headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: 'Sharelink created successfully',
+        sharelink: {
+          inviteCode: sharelink.invite_code,
+          customHeading: sharelink.custom_heading,
+          url: `${baseUrl}/invites/${sharelink.invite_code}`,
+          createdAt: sharelink.created_at,
+          updatedAt: sharelink.updated_at
+        }
+      })
+    };
+  } catch (error) {
+    console.error('Create sharelink error:', error);
     return {
       statusCode: 500,
       headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },

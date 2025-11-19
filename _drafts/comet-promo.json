@@ -1,0 +1,41 @@
+{
+  "enabled": true,
+  "title": "GET THE GIFT OF KNOWLEDGE",
+  "description": "Perplexity Pro offers unlimited Pro Search, upgraded AI, file uploads, image generation, custom knowledge hubs, and collaborative spaces—helping you learn, create, and achieve more.",
+  "link": "https://materioa.netlify.app/redirects/pplx",
+  "images": [
+    "/assets/media/pplx.webm"
+  ],
+  "imageRotationInterval": 5000,
+  "imageAnimation": {
+    "type": "cascade",
+    "duration": 600,
+    "direction": "left"
+  },
+  "isLimitedOffer": false,
+  "startDate": "2025-08-01T09:00",
+  "endDate": "2025-08-31T12:00",
+  "lastUpdated": "2025-08-15T03:14:32.106Z",
+  "buttons": {
+    "primary": {
+      "show": true,
+      "text": "Get Perplexity Pro",
+      "icon": "&#8206;"
+    },
+    "secondary": {
+      "show": true,
+      "text": "Not Now",
+      "icon": "&#8206;"
+    }
+  },
+  "disclaimer": {
+    "show": true,
+    "text": "*Terms and conditions apply.",
+    "linkText": "Read more",
+    "linkUrl": "https://www.perplexity.ai/hub/legal/terms-of-service"
+  },
+  "options": {
+    "showDontShowAgain": true,
+    "dontShowAgainText": "I am not interested"
+  }
+}
