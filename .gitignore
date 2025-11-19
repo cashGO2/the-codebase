@@ -3,23 +3,23 @@
 server/.env
 
 # Node modules
-node_modules/
-server/node_modules/
+# node_modules/
+# server/node_modules/
 
 # History and saved changes
 .history 
 saved_changes
 
 # Build outputs
-_site/
-dist/
-build/
+# _site/
+# dist/
+# build/
 
 # Netlify
-.netlify
+# .netlify
 
 # Logs
-*.log
+# *.log
 
 # IDE
 .vscode/
