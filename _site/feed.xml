@@ -1,4 +1,183 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-11-19T18:47:43+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">The InsightRoom.</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">DAA Mid Sem</title><link href="http://localhost:4000/paper-solution/daa-mid/" rel="alternate" type="text/html" title="DAA Mid Sem" /><published>2025-09-25T15:13:26+05:30</published><updated>2025-09-25T15:13:26+05:30</updated><id>http://localhost:4000/paper-solution/daa-mid</id><content type="html" xml:base="http://localhost:4000/paper-solution/daa-mid/"><![CDATA[<h2 id="multiple-choice-questions">Multiple Choice Questions</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:54683/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:54683/" rel="alternate" type="text/html" /><updated>2025-11-21T20:07:48+05:30</updated><id>http://localhost:54683/feed.xml</id><title type="html">The InsightRoom.</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">Software Engineering Important Questions</title><link href="http://localhost:54683/software-engineering-important-questions/" rel="alternate" type="text/html" title="Software Engineering Important Questions" /><published>2025-11-21T08:02:35+05:30</published><updated>2025-11-21T08:02:35+05:30</updated><id>http://localhost:54683/software-engineering-important-questions</id><content type="html" xml:base="http://localhost:54683/software-engineering-important-questions/"><![CDATA[<h1 id="important-questions-for-software-engineering">Important Questions for Software Engineering</h1>
+<p><strong>End Semester Preparation</strong></p>
+
+<hr />
+
+<h2 id="unit-1-introduction-to-software-engineering">UNIT 1: Introduction to Software Engineering</h2>
+
+<ol>
+  <li>Define Software Engineering.</li>
+  <li>What are the characteristics of good software?</li>
+  <li>Explain the layered technology of software engineering.</li>
+  <li>Differentiate between software and hardware.</li>
+  <li>What are software components? Give examples.</li>
+  <li>Write a short note on the software crisis.</li>
+  <li>Explain software applications in different domains.</li>
+  <li>What are the major challenges in software engineering?</li>
+  <li>Explain the Waterfall Model with its advantages and disadvantages.</li>
+  <li>What is the Incremental Model?</li>
+  <li>Describe the Prototype Model with a neat diagram.</li>
+  <li>Explain the Spiral Model and its advantages.</li>
+  <li>What is the Concurrent Development Model?</li>
+  <li>Define Agile Development.</li>
+  <li>Explain the Agile Process Model.</li>
+  <li>What are the principles of agility?</li>
+  <li>Explain Extreme Programming (XP).</li>
+  <li>List other Agile models and tools used in industries.</li>
+  <li>What are the benefits and drawbacks of Agile models?</li>
+  <li>Compare traditional process models with Agile models.</li>
+</ol>
+
+<hr />
+
+<h2 id="unit-2-software-project-management">UNIT 2: Software Project Management</h2>
+
+<ol>
+  <li>What is Software Project Management?</li>
+  <li>What are the main activities involved in software project management?</li>
+  <li>Describe the management spectrum.</li>
+  <li>Explain the relationship between People, Product, Process, and Project.</li>
+  <li>What is the W5HH Principle? Explain each question.</li>
+  <li>Why is team management important in software projects?</li>
+  <li>What are the roles and responsibilities of a project manager?</li>
+  <li>Explain project scope and feasibility analysis.</li>
+  <li>What are the steps involved in effort estimation?</li>
+  <li>Define project scheduling.</li>
+  <li>Explain different types of project scheduling methods.</li>
+  <li>What is staffing in project management?</li>
+  <li>Explain quality planning in software projects.</li>
+  <li>What is risk management?</li>
+  <li>Explain the process of risk identification.</li>
+  <li>Describe risk assessment and control techniques.</li>
+  <li>What is a project monitoring plan?</li>
+  <li>Explain detailed scheduling with examples.</li>
+  <li>Define key performance indicators (KPIs) in project monitoring.</li>
+  <li>What tools are used for project monitoring and control?</li>
+</ol>
+
+<hr />
+
+<h2 id="unit-3-requirements-engineering">UNIT 3: Requirements Engineering</h2>
+
+<ol>
+  <li>What is Requirements Engineering?</li>
+  <li>Explain the steps of the Requirements Engineering process.</li>
+  <li>What is problem recognition?</li>
+  <li>What are the tasks of Requirements Engineering?</li>
+  <li>Define requirement specification.</li>
+  <li>What are functional and non functional requirements?</li>
+  <li>Explain requirement elicitation with techniques.</li>
+  <li>What are the categories of customer requirements?</li>
+  <li>What is a Use Case? Give an example.</li>
+  <li>Explain Functional Specification.</li>
+  <li>What is Requirement Validation?</li>
+  <li>Explain Requirement Analysis with its importance.</li>
+  <li>What is the difference between feasibility study and requirement analysis?</li>
+  <li>Write short notes on requirement documentation.</li>
+  <li>What are the qualities of a good SRS document?</li>
+</ol>
+
+<hr />
+
+<h2 id="unit-4-structured-system-design">UNIT 4: Structured System Design</h2>
+
+<ol>
+  <li>What are the key design concepts in software engineering?</li>
+  <li>Define software architecture.</li>
+  <li>What are architectural styles and patterns?</li>
+  <li>Explain data design and procedural design.</li>
+  <li>What is object oriented design (OOD)?</li>
+  <li>Explain data oriented analysis with examples.</li>
+  <li>Draw and explain an Entity Relationship (ER) diagram.</li>
+  <li>What is a Data Flow Diagram (DFD)?</li>
+  <li>Define Control Flow Model and explain its significance.</li>
+  <li>What is a Data Dictionary?</li>
+  <li>What is Component Level Design?</li>
+  <li>Explain modularity and abstraction in system design.</li>
+  <li>Compare object oriented and functional oriented design approaches.</li>
+</ol>
+
+<hr />
+
+<h2 id="unit-5-coding-and-unit-testing">UNIT 5: Coding and Unit Testing</h2>
+
+<ol>
+  <li>What are programming principles and guidelines?</li>
+  <li>Explain the concept of structured programming.</li>
+  <li>What are coding standards? Why are they important?</li>
+  <li>Explain incremental development of code.</li>
+  <li>How is code evaluation and review managed?</li>
+  <li>Define unit testing.</li>
+  <li>Differentiate between procedural unit testing and class testing.</li>
+  <li>What is code inspection?</li>
+  <li>Explain Cyclomatic Complexity with an example.</li>
+  <li>What is Halstead Software Science measure?</li>
+  <li>Define Knot Count metric.</li>
+  <li>Compare different software metrics.</li>
+  <li>What are the benefits of using code metrics?</li>
+</ol>
+
+<hr />
+
+<h2 id="unit-6-software-testing-and-quality-assurance">UNIT 6: Software Testing and Quality Assurance</h2>
+
+<ol>
+  <li>Define software testing.</li>
+  <li>Explain the psychology of testing.</li>
+  <li>What are the different levels of testing?</li>
+  <li>What are the steps of the testing process?</li>
+  <li>Explain the purpose of a test plan.</li>
+  <li>What is test case design?</li>
+  <li>What is black box testing?</li>
+  <li>Explain Boundary Value Analysis with example.</li>
+  <li>Explain Pairwise Testing and State Based Testing.</li>
+  <li>What is White Box Testing?</li>
+  <li>Describe test case generation and tool support.</li>
+  <li>Define Quality Assurance and Quality Control.</li>
+  <li>Explain the cost of quality in software projects.</li>
+  <li>What are software reviews?</li>
+  <li>Describe Software Quality Assurance (SQA) approaches.</li>
+  <li>What is software reliability?</li>
+  <li>Explain ISO 9000 and ISO 9001 standards for software quality.</li>
+</ol>
+
+<hr />
+
+<h2 id="unit-7-case-tools-and-system-dependability-and-security">UNIT 7: CASE Tools and System Dependability and Security</h2>
+
+<ol>
+  <li>What are CASE tools?</li>
+  <li>Explain the importance of a Central Repository in CASE tools.</li>
+  <li>Differentiate between Upper CASE, Lower CASE, and Integrated CASE tools.</li>
+  <li>What is SCRUM? Describe its main roles and events.</li>
+  <li>What is a dependable system? Explain its attributes.</li>
+  <li>What is Reliability Engineering? Explain with metrics.</li>
+  <li>Explain Safety Engineering with examples.</li>
+  <li>Define Security Engineering.</li>
+  <li>What are the CIA principles of security?</li>
+  <li>What is Resilience Engineering? How does it differ from reliability?</li>
+  <li>Explain techniques to improve system dependability.</li>
+  <li>Write short notes on system reliability and recovery techniques.</li>
+</ol>
+
+<hr />
+
+<h2 id="unit-8-advanced-software-engineering">UNIT 8: Advanced Software Engineering</h2>
+
+<ol>
+  <li>Define Software Reuse. What are its benefits?</li>
+  <li>Explain Component Based Software Engineering (CBSE).</li>
+  <li>What is Distributed Software Engineering?</li>
+  <li>Explain Service Oriented Software Engineering (SOSE).</li>
+  <li>What is Real Time Software Engineering?</li>
+  <li>Differentiate between Hard and Soft Real Time systems.</li>
+  <li>Explain Systems Engineering with example.</li>
+  <li>What is a System of Systems (SoS)?</li>
+  <li>Explain the challenges in Systems of Systems development.</li>
+  <li>Discuss the future trends in Advanced Software Engineering.</li>
+</ol>
+
+<hr />]]></content><author><name></name></author><summary type="html"><![CDATA[Resource provide important questions for exam]]></summary></entry><entry><title type="html">DAA Mid Sem</title><link href="http://localhost:54683/paper-solution/daa-mid/" rel="alternate" type="text/html" title="DAA Mid Sem" /><published>2025-09-25T15:13:26+05:30</published><updated>2025-09-25T15:13:26+05:30</updated><id>http://localhost:54683/paper-solution/daa-mid</id><content type="html" xml:base="http://localhost:54683/paper-solution/daa-mid/"><![CDATA[<h2 id="multiple-choice-questions">Multiple Choice Questions</h2>
 
 <p><strong>In recursion, the base case represents:</strong></p>
 
@@ -502,7 +681,7 @@ int main() {
     printf("%.2lf\\n", maxValue);
     return 0;
 }
-</code></pre>]]></content><author><name></name></author><category term="Paper Solution" /><summary type="html"><![CDATA[This resource covers all the questions with solutions from design and analysis of alogorithms mid semester exam.]]></summary></entry><entry><title type="html">Software Engineering Assignment</title><link href="http://localhost:4000/resource/software-engineering-assignment/" rel="alternate" type="text/html" title="Software Engineering Assignment" /><published>2025-09-20T11:20:10+05:30</published><updated>2025-09-20T11:20:10+05:30</updated><id>http://localhost:4000/resource/software-engineering-assignment</id><content type="html" xml:base="http://localhost:4000/resource/software-engineering-assignment/"><![CDATA[<div class="newtopic"></div>
+</code></pre>]]></content><author><name></name></author><category term="Paper Solution" /><summary type="html"><![CDATA[This resource covers all the questions with solutions from design and analysis of alogorithms mid semester exam.]]></summary></entry><entry><title type="html">Software Engineering Assignment</title><link href="http://localhost:54683/resource/software-engineering-assignment/" rel="alternate" type="text/html" title="Software Engineering Assignment" /><published>2025-09-20T11:20:10+05:30</published><updated>2025-09-20T11:20:10+05:30</updated><id>http://localhost:54683/resource/software-engineering-assignment</id><content type="html" xml:base="http://localhost:54683/resource/software-engineering-assignment/"><![CDATA[<div class="newtopic"></div>
 
 <h1 id="assignment-1">Assignment 1</h1>
 
@@ -1456,7 +1635,7 @@ Focuses on developing software systems where processing and data are spread acro
   </li>
 </ul>
 
-<div style="text-align: center">⁂</div>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This resource provides with the solution of questions given in assignments 1 to 8 of Software Engineering.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/img/covers/759dad03-6b05-4760-9e78-96860d8ce44b.webp" /><media:content medium="image" url="http://localhost:4000/assets/img/covers/759dad03-6b05-4760-9e78-96860d8ce44b.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Calling auth API from CLI using cURL</title><link href="http://localhost:4000/docs/api" rel="alternate" type="text/html" title="Calling auth API from CLI using cURL" /><published>2025-09-03T15:34:00+05:30</published><updated>2025-09-03T15:34:00+05:30</updated><id>http://localhost:4000/docs/auth-cli</id><content type="html" xml:base="http://localhost:4000/docs/api"><![CDATA[<h1 id="materio-api-v1-documentation">Materio API v1 Documentation</h1>
+<div style="text-align: center">⁂</div>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This resource provides with the solution of questions given in assignments 1 to 8 of Software Engineering.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:54683/assets/img/covers/759dad03-6b05-4760-9e78-96860d8ce44b.webp" /><media:content medium="image" url="http://localhost:54683/assets/img/covers/759dad03-6b05-4760-9e78-96860d8ce44b.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Calling auth API from CLI using cURL</title><link href="http://localhost:54683/docs/api" rel="alternate" type="text/html" title="Calling auth API from CLI using cURL" /><published>2025-09-03T15:34:00+05:30</published><updated>2025-09-03T15:34:00+05:30</updated><id>http://localhost:54683/docs/auth-cli</id><content type="html" xml:base="http://localhost:54683/docs/api"><![CDATA[<h1 id="materio-api-v1-documentation">Materio API v1 Documentation</h1>
 
 <p>This document provides comprehensive examples for calling all API endpoints using curl, PowerShell, and bash.</p>
 
@@ -2920,7 +3099,7 @@ curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/signup 
 
 <p><strong>Data Privacy</strong>: User data is handled according to our Privacy Policy. Personal information is encrypted and securely stored.</p>
 
-<p><strong>API Versioning</strong>: This is version 1 of the API. Breaking changes will be introduced in new versions with proper migration guides.</p>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[Complete API documentation for Materio v1 with cURL and PowerShell examples covering authentication, profile management, chat AI, admin tools, CDN management, and premium account recovery features.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/img/covers/b82d9728-d54f-41c9-85be-3b0e5dcea670.webp" /><media:content medium="image" url="http://localhost:4000/assets/img/covers/b82d9728-d54f-41c9-85be-3b0e5dcea670.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Enterprise Java Assignment 2 &amp;amp; 3 Solutions</title><link href="http://localhost:4000/resource/epj-assignment-2/" rel="alternate" type="text/html" title="Enterprise Java Assignment 2 &amp;amp; 3 Solutions" /><published>2025-08-20T00:00:00+05:30</published><updated>2025-08-20T00:00:00+05:30</updated><id>http://localhost:4000/resource/epj-assignment-2</id><content type="html" xml:base="http://localhost:4000/resource/epj-assignment-2/"><![CDATA[<p><strong>1. What is a Servlet?<br />
+<p><strong>API Versioning</strong>: This is version 1 of the API. Breaking changes will be introduced in new versions with proper migration guides.</p>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[Complete API documentation for Materio v1 with cURL and PowerShell examples covering authentication, profile management, chat AI, admin tools, CDN management, and premium account recovery features.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:54683/assets/img/covers/b82d9728-d54f-41c9-85be-3b0e5dcea670.webp" /><media:content medium="image" url="http://localhost:54683/assets/img/covers/b82d9728-d54f-41c9-85be-3b0e5dcea670.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Enterprise Java Assignment 2 &amp;amp; 3 Solutions</title><link href="http://localhost:54683/resource/epj-assignment-2/" rel="alternate" type="text/html" title="Enterprise Java Assignment 2 &amp;amp; 3 Solutions" /><published>2025-08-20T00:00:00+05:30</published><updated>2025-08-20T00:00:00+05:30</updated><id>http://localhost:54683/resource/epj-assignment-2</id><content type="html" xml:base="http://localhost:54683/resource/epj-assignment-2/"><![CDATA[<p><strong>1. What is a Servlet?<br />
 Explain the basics of a web application and how servlets function within Java-enabled web servers.</strong></p>
 
 <p>A <strong>Servlet</strong> is a Java programming language class used to extend the capabilities of servers that host applications accessed by means of a request-response model. Servlets are commonly used to create dynamic web applications.</p>
@@ -3364,7 +3543,7 @@ JSP can embed Java code directly within HTML to generate dynamic personalization
 
 <p>If you need an explanation in bullet points, a summary sheet, or further descriptions on any answer, let me know!</p>
 
-<div style="text-align: center">⁂</div>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This resourse provides with the solutions of all the questions given in assignment 2 and 3 of enterprise programming in java.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/img/covers/0a918c7d-1856-493a-a9d5-c8252dd9ae36.webp" /><media:content medium="image" url="http://localhost:4000/assets/img/covers/0a918c7d-1856-493a-a9d5-c8252dd9ae36.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Design and Analysis of Algorithms Psuedo Codes</title><link href="http://localhost:4000/programming/psuedo-codes/" rel="alternate" type="text/html" title="Design and Analysis of Algorithms Psuedo Codes" /><published>2025-08-02T11:00:26+05:30</published><updated>2025-08-02T11:00:26+05:30</updated><id>http://localhost:4000/programming/psuedo-codes</id><content type="html" xml:base="http://localhost:4000/programming/psuedo-codes/"><![CDATA[<h1 id="algorithm-pseudocodes">Algorithm Pseudocodes</h1>
+<div style="text-align: center">⁂</div>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This resourse provides with the solutions of all the questions given in assignment 2 and 3 of enterprise programming in java.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:54683/assets/img/covers/0a918c7d-1856-493a-a9d5-c8252dd9ae36.webp" /><media:content medium="image" url="http://localhost:54683/assets/img/covers/0a918c7d-1856-493a-a9d5-c8252dd9ae36.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Design and Analysis of Algorithms Psuedo Codes</title><link href="http://localhost:54683/programming/psuedo-codes/" rel="alternate" type="text/html" title="Design and Analysis of Algorithms Psuedo Codes" /><published>2025-08-02T11:00:26+05:30</published><updated>2025-08-02T11:00:26+05:30</updated><id>http://localhost:54683/programming/psuedo-codes</id><content type="html" xml:base="http://localhost:54683/programming/psuedo-codes/"><![CDATA[<h1 id="algorithm-pseudocodes">Algorithm Pseudocodes</h1>
 
 <h2 id="sorting-algorithms">Sorting Algorithms</h2>
 
@@ -3676,7 +3855,7 @@ END
   <li><strong>Prim’s</strong>: O(V²) with adjacency matrix, O(E log V) with priority queue</li>
   <li><strong>Dijkstra’s</strong>: O(V²) with adjacency matrix, O(E log V) with priority queue</li>
   <li><strong>Knapsack</strong>: O(nW) where W is capacity</li>
-</ul>]]></content><author><name></name></author><category term="Programming" /><summary type="html"><![CDATA[This resource covers all the psuedo codes of sorting, searching and greedy algorithms like krushkals, prims,knapsack problem etc.]]></summary></entry><entry><title type="html">Data Analytics and Data Visualization Question Bank with Solutions</title><link href="http://localhost:4000/resource/data-analytics-and-data-analysis-question-bank-with-solutions/" rel="alternate" type="text/html" title="Data Analytics and Data Visualization Question Bank with Solutions" /><published>2025-07-30T20:18:32+05:30</published><updated>2025-07-30T20:18:32+05:30</updated><id>http://localhost:4000/resource/data-analytics-and-data-analysis-question-bank-with-solutions</id><content type="html" xml:base="http://localhost:4000/resource/data-analytics-and-data-analysis-question-bank-with-solutions/"><![CDATA[<h2 id="short-answers">Short Answers</h2>
+</ul>]]></content><author><name></name></author><category term="Programming" /><summary type="html"><![CDATA[This resource covers all the psuedo codes of sorting, searching and greedy algorithms like krushkals, prims,knapsack problem etc.]]></summary></entry><entry><title type="html">Data Analytics and Data Visualization Question Bank with Solutions</title><link href="http://localhost:54683/resource/data-analytics-and-data-analysis-question-bank-with-solutions/" rel="alternate" type="text/html" title="Data Analytics and Data Visualization Question Bank with Solutions" /><published>2025-07-30T20:18:32+05:30</published><updated>2025-07-30T20:18:32+05:30</updated><id>http://localhost:54683/resource/data-analytics-and-data-analysis-question-bank-with-solutions</id><content type="html" xml:base="http://localhost:54683/resource/data-analytics-and-data-analysis-question-bank-with-solutions/"><![CDATA[<h2 id="short-answers">Short Answers</h2>
 <h3 id="1-explain-the-importance-of-data-in-modern-decision-making-processes"><strong>1. Explain the importance of data in modern decision-making processes.</strong></h3>
 <p><strong>Answer:</strong><br />
 Data is vital in today’s decision-making because it provides a <strong>factual basis</strong> for analysis, rather than relying on intuition or guesswork. Key reasons include:</p>
@@ -4310,7 +4489,7 @@ s = \sqrt{240.7} \approx 15.5 \text{ kg}\)</p>
   <li><strong>Improve Predictions:</strong> Tight dispersion leads to better models.</li>
 </ul>
 
-<p><strong>Conclusion:</strong> Dispersion measures are essential for determining data reliability, variability, and comparisons.</p>]]></content><author><name></name></author><category term="Resource" /><summary type="html"><![CDATA[&#8206;]]></summary></entry><entry><title type="html">Theory of Computation</title><link href="http://localhost:4000/theory-of-computation/" rel="alternate" type="text/html" title="Theory of Computation" /><published>2025-07-29T00:00:00+05:30</published><updated>2025-07-29T00:00:00+05:30</updated><id>http://localhost:4000/theory-of-computation</id><content type="html" xml:base="http://localhost:4000/theory-of-computation/"><![CDATA[<h1 id="unit-1-alphabet-languages-grammars-chomsky-hierarchy">UNIT 1: Alphabet, Languages, Grammars, Chomsky Hierarchy</h1>
+<p><strong>Conclusion:</strong> Dispersion measures are essential for determining data reliability, variability, and comparisons.</p>]]></content><author><name></name></author><category term="Resource" /><summary type="html"><![CDATA[&#8206;]]></summary></entry><entry><title type="html">Theory of Computation</title><link href="http://localhost:54683/theory-of-computation/" rel="alternate" type="text/html" title="Theory of Computation" /><published>2025-07-29T00:00:00+05:30</published><updated>2025-07-29T00:00:00+05:30</updated><id>http://localhost:54683/theory-of-computation</id><content type="html" xml:base="http://localhost:54683/theory-of-computation/"><![CDATA[<h1 id="unit-1-alphabet-languages-grammars-chomsky-hierarchy">UNIT 1: Alphabet, Languages, Grammars, Chomsky Hierarchy</h1>
 
 <h2 id="alphabets-strings-and-languages">Alphabets, Strings, and Languages</h2>
 <ul>
@@ -4446,7 +4625,7 @@ s = \sqrt{240.7} \approx 15.5 \text{ kg}\)</p>
 <ul>
   <li>All rules: A → BC or A → a</li>
   <li>Used for certain algorithms (e.g., CYK parsing)</li>
-</ul>]]></content><author><name></name></author><summary type="html"><![CDATA[&#8206;]]></summary></entry><entry><title type="html">Greedy Algorithm Codes</title><link href="http://localhost:4000/programming/greedy-algorithm-codes/" rel="alternate" type="text/html" title="Greedy Algorithm Codes" /><published>2025-07-28T17:43:26+05:30</published><updated>2025-07-28T17:43:26+05:30</updated><id>http://localhost:4000/programming/greedy-algorithm-codes</id><content type="html" xml:base="http://localhost:4000/programming/greedy-algorithm-codes/"><![CDATA[<h2 id="dijkstras-algorithm">Dijkstra’s Algorithm</h2>
+</ul>]]></content><author><name></name></author><summary type="html"><![CDATA[&#8206;]]></summary></entry><entry><title type="html">Greedy Algorithm Codes</title><link href="http://localhost:54683/programming/greedy-algorithm-codes/" rel="alternate" type="text/html" title="Greedy Algorithm Codes" /><published>2025-07-28T17:43:26+05:30</published><updated>2025-07-28T17:43:26+05:30</updated><id>http://localhost:54683/programming/greedy-algorithm-codes</id><content type="html" xml:base="http://localhost:54683/programming/greedy-algorithm-codes/"><![CDATA[<h2 id="dijkstras-algorithm">Dijkstra’s Algorithm</h2>
 
 <pre><code class="language-C">#define MAX 100
 #define INFINITY 9999
@@ -4864,7 +5043,7 @@ int main() {
 	knapsack(num, weight, profit, capacity);
 	return(0);
 }
-</code></pre>]]></content><author><name></name></author><category term="Programming" /><summary type="html"><![CDATA[This resource covers all the codes of greedy algorithms like krushkals, prims, knapsack problem etc.]]></summary></entry><entry><title type="html">DADV Assigmnent - 2 Solutions</title><link href="http://localhost:4000/resource/dadv-assigmnent-2-solutions/" rel="alternate" type="text/html" title="DADV Assigmnent - 2 Solutions" /><published>2025-07-25T15:36:09+05:30</published><updated>2025-07-25T15:36:09+05:30</updated><id>http://localhost:4000/resource/dadv-assigmnent-2-solutions</id><content type="html" xml:base="http://localhost:4000/resource/dadv-assigmnent-2-solutions/"><![CDATA[<h3 id="1-what-do-you-mean-by-python-give-the-importance-of-python">1. What do you mean by Python? Give the importance of Python.</h3>
+</code></pre>]]></content><author><name></name></author><category term="Programming" /><summary type="html"><![CDATA[This resource covers all the codes of greedy algorithms like krushkals, prims, knapsack problem etc.]]></summary></entry><entry><title type="html">DADV Assigmnent - 2 Solutions</title><link href="http://localhost:54683/resource/dadv-assigmnent-2-solutions/" rel="alternate" type="text/html" title="DADV Assigmnent - 2 Solutions" /><published>2025-07-25T15:36:09+05:30</published><updated>2025-07-25T15:36:09+05:30</updated><id>http://localhost:54683/resource/dadv-assigmnent-2-solutions</id><content type="html" xml:base="http://localhost:54683/resource/dadv-assigmnent-2-solutions/"><![CDATA[<h3 id="1-what-do-you-mean-by-python-give-the-importance-of-python">1. What do you mean by Python? Give the importance of Python.</h3>
 
 <p><strong>Answer:</strong></p>
 
@@ -5110,642 +5289,4 @@ Mean = (51 + 38 + 79 + 46 + 57) / 5 = 271 / 5 = 54.2</p>
 = 78.8 / (5 - 1) = 78.8 / 4 = 19.7</p>
 
 <p>Step 5: Sample standard deviation (s)<br />
-= √19.7 ≈ 4.44</p>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This resource provides with the solutions of the questions given in the assignment - 2 of Data Analytics and Data Visualization.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/img/covers/dadv-2.webp" /><media:content medium="image" url="http://localhost:4000/assets/img/covers/dadv-2.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Enterprise Java Assignment Solution</title><link href="http://localhost:4000/resource/enterprise-java-assignment-solution/" rel="alternate" type="text/html" title="Enterprise Java Assignment Solution" /><published>2025-07-14T17:39:39+05:30</published><updated>2025-07-14T17:39:39+05:30</updated><id>http://localhost:4000/resource/enterprise-java-assignment-solution</id><content type="html" xml:base="http://localhost:4000/resource/enterprise-java-assignment-solution/"><![CDATA[<h2 id="1-what-is-jdbc">1. What is JDBC?</h2>
-
-<p><strong>JDBC (Java Database Connectivity)</strong> is an API that enables Java applications to interact with databases. Its primary purpose in enterprise applications is to provide a standard interface for connecting to relational databases, executing SQL queries, and retrieving results. JDBC acts as a bridge between Java code and various databases, ensuring portability and flexibility.</p>
-
-<p><strong>How JDBC Facilitates Interaction:</strong></p>
-
-<ul>
-  <li>Java applications use JDBC classes and interfaces to establish a connection with a database.</li>
-  <li>Developers can execute SQL commands (SELECT, INSERT, UPDATE, DELETE) using JDBC.</li>
-  <li>Results are retrieved and processed in Java, enabling dynamic data-driven applications.</li>
-</ul>
-
-<p><strong>Example:</strong></p>
-
-<pre><code class="language-JAVA">Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "user", "password");
-Statement stmt = conn.createStatement();
-ResultSet rs = stmt.executeQuery("SELECT * FROM employees");
-while(rs.next()) {
-    System.out.println(rs.getString("name"));
-}
-</code></pre>
-
-<p>This code connects to a MySQL database, executes a query, and prints employee names.</p>
-
-<h2 id="2-describe-the-jdbc-architecture">2. Describe the JDBC Architecture</h2>
-
-<p>JDBC architecture defines how Java applications communicate with databases. There are two main architectures:</p>
-
-<h3 id="two-tier-architecture">Two-Tier Architecture</h3>
-
-<ul>
-  <li>The Java application communicates directly with the database using JDBC.</li>
-  <li>Suitable for simple, small-scale applications.</li>
-</ul>
-
-<p><strong>Diagram:</strong></p>
-
-<pre><code class="language-TEXT">Java Application &lt;--&gt; JDBC Driver &lt;--&gt; Database
-</code></pre>
-
-<h3 id="three-tier-architecture">Three-Tier Architecture</h3>
-
-<ul>
-  <li>Introduces a middle tier (application server) between the client and the database.</li>
-  <li>Suitable for large-scale, distributed enterprise applications.</li>
-</ul>
-
-<p><strong>Diagram:</strong></p>
-
-<pre><code class="language-TEXT">Java Application &lt;--&gt; Application Server &lt;--&gt; JDBC Driver &lt;--&gt; Database
-</code></pre>
-
-<p><strong>Differences \&amp; Use Cases:</strong></p>
-
-<ul>
-  <li><strong>Two-Tier:</strong> Direct, simple, less scalable; best for desktop or small apps.</li>
-  <li><strong>Three-Tier:</strong> More scalable, secure, supports business logic in the middle tier; used in web and enterprise systems.</li>
-</ul>
-
-<h2 id="3-main-components-of-jdbc">3. Main Components of JDBC</h2>
-
-<p>The four major components are:</p>
-
-<ol>
-  <li><strong>JDBC Drivers:</strong> Enable Java applications to communicate with different databases.</li>
-  <li><strong>DriverManager:</strong> Manages a list of database drivers and establishes connections.</li>
-  <li><strong>Connection:</strong> Represents a session with a specific database.</li>
-  <li><strong>Statement:</strong> Used to execute SQL queries against the database.</li>
-</ol>
-
-<p><strong>Role of DriverManager:</strong>
-Acts as a factory for database connections, selecting the appropriate driver for the requested database.</p>
-
-<p><strong>Role of Test Suite:</strong>
-A set of tools and tests to verify JDBC driver compliance and correctness.</p>
-
-<h2 id="4-jdbc-classes-and-interfaces">4. JDBC Classes and Interfaces</h2>
-
-<p>Five important JDBC classes/interfaces:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: left">Class/Interface</th>
-      <th style="text-align: left">Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">DriverManager</code></td>
-      <td style="text-align: left">Manages database drivers and connections.</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">Connection</code></td>
-      <td style="text-align: left">Represents a connection/session with a database.</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">Statement</code></td>
-      <td style="text-align: left">Executes static SQL statements and returns results.</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">PreparedStatement</code></td>
-      <td style="text-align: left">Executes precompiled SQL statements with parameters for efficiency.</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">ResultSet</code></td>
-      <td style="text-align: left">Represents the result set of a query; allows iteration over query results.</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2 id="5-key-features-of-jdbc">5. Key Features of JDBC</h2>
-
-<ul>
-  <li><strong>Database Independence:</strong> Works with any database supporting a JDBC driver, making applications portable.</li>
-  <li><strong>SQL Support:</strong> Allows execution of SQL statements from Java, enabling dynamic data operations.</li>
-  <li><strong>Exception Handling:</strong> Robust error handling using exceptions, improving reliability and debugging.</li>
-</ul>
-
-<h2 id="6-comparison-of-jdbc-driver-types">6. Comparison of JDBC Driver Types</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: left">Type</th>
-      <th style="text-align: left">Description</th>
-      <th style="text-align: left">Advantages</th>
-      <th style="text-align: left">Disadvantages</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: left">Type-1</td>
-      <td style="text-align: left">JDBC-ODBC Bridge Driver</td>
-      <td style="text-align: left">Easy to use, universal</td>
-      <td style="text-align: left">Slow, requires ODBC installation</td>
-    </tr>
-    <tr>
-      <td style="text-align: left">Type-2</td>
-      <td style="text-align: left">Native-API Driver</td>
-      <td style="text-align: left">Faster than Type-1</td>
-      <td style="text-align: left">Platform dependent, needs native libs</td>
-    </tr>
-    <tr>
-      <td style="text-align: left">Type-3</td>
-      <td style="text-align: left">Network Protocol Driver</td>
-      <td style="text-align: left">Flexible, no client-side DB code</td>
-      <td style="text-align: left">Needs middleware server</td>
-    </tr>
-    <tr>
-      <td style="text-align: left">Type-4</td>
-      <td style="text-align: left">Thin Driver (Pure Java)</td>
-      <td style="text-align: left">Platform independent, fast</td>
-      <td style="text-align: left">DB specific, needs separate driver</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2 id="7-when-to-use-each-jdbc-driver-type">7. When to Use Each JDBC Driver Type</h2>
-
-<ul>
-  <li><strong>Type-1:</strong> For quick prototyping or legacy systems where ODBC is already in use.</li>
-  <li><strong>Type-2:</strong> When performance is critical and native libraries are available for the target platform.</li>
-  <li><strong>Type-3:</strong> In enterprise environments with a middleware server managing database access.</li>
-  <li><strong>Type-4:</strong> Preferred for most modern applications due to its speed, portability, and ease of deployment.</li>
-</ul>
-
-<p>These solutions provide a comprehensive overview of JDBC concepts, architecture, components, features, and driver types relevant for enterprise Java applications.</p>
-
-<div style="text-align: center">⁂</div>
-
-<div class="newtopic"></div>
-
-<h1 id="assignment-2">Assignment 2</h1>
-
-<h2 id="1-what-is-a-servlet">1) What is a Servlet?</h2>
-
-<p>A Servlet is a Java class that runs on a Java-enabled web server and handles HTTP requests and responses, enabling dynamic web content. It acts as a middle layer between a client (browser) and server-side resources (databases, services). Servlets are managed by a servlet container (e.g., Tomcat, Jetty) which loads, initializes, invokes, and destroys them.</p>
-
-<p>Basics of a web application:</p>
-
-<ul>
-  <li>A web app is packaged as a WAR containing HTML/JSP, static assets, classes, and configuration (web.xml or annotations).</li>
-  <li>The client sends an HTTP request to a URL mapped to a servlet.</li>
-  <li>The servlet container routes the request to the mapped servlet, provides HttpServletRequest/HttpServletResponse objects, and the servlet writes the response (HTML/JSON, etc.).</li>
-  <li>Typical flow: Browser → HTTP request → Servlet Container → Servlet → Business logic/DB → Response → Browser.</li>
-</ul>
-
-<p>How servlets function:</p>
-
-<ul>
-  <li>Extend HttpServlet, override doGet/doPost (or service) to process HTTP methods.</li>
-  <li>Use request parameters, headers, attributes; write output via response writer or stream.</li>
-  <li>Use ServletContext for app-wide resources, and ServletConfig for per-servlet init parameters.</li>
-  <li>Support session management via HttpSession.</li>
-</ul>
-
-<h2 id="2-servlet-lifecycle">2) Servlet Lifecycle</h2>
-
-<p>The servlet lifecycle is managed by the container:</p>
-
-<p>1) Loading and Instantiation:</p>
-
-<ul>
-  <li>The container loads the servlet class and creates an instance (typically on first request, or at startup if load-on-startup is configured).</li>
-</ul>
-
-<p>2) Initialization:</p>
-
-<ul>
-  <li>The container calls init(ServletConfig config) exactly once to initialize resources.</li>
-</ul>
-
-<p>3) Request Handling:</p>
-
-<ul>
-  <li>For each request, the container calls service(HttpServletRequest req, HttpServletResponse resp), which dispatches to doGet, doPost, doPut, doDelete, etc., depending on the HTTP method.</li>
-</ul>
-
-<p>4) Destruction:</p>
-
-<ul>
-  <li>When the application is stopping or the servlet is being taken out of service, the container calls destroy() once so the servlet can release resources.</li>
-</ul>
-
-<p>Flow:
-load class → instantiate → init() → [service() → doXXX() for each request] → destroy()</p>
-
-<h2 id="3-init-service-and-destroy-methods-with-examples">3) init(), service(), and destroy() Methods (with examples)</h2>
-
-<ul>
-  <li>init(ServletConfig config)
-    <ul>
-      <li>Called once after instantiation.</li>
-      <li>Use it to read init parameters, initialize DB connections, caches, thread pools, etc.</li>
-      <li>Do not perform long blocking tasks that delay readiness without need.</li>
-    </ul>
-  </li>
-  <li>service(HttpServletRequest req, HttpServletResponse resp)
-    <ul>
-      <li>Called for each request.</li>
-      <li>Default implementation in HttpServlet dispatches to doGet/doPost/… based on request method.</li>
-      <li>Override doGet/doPost in most cases; override service only when custom dispatching is needed.</li>
-    </ul>
-  </li>
-  <li>destroy()
-    <ul>
-      <li>Called once before the servlet is unloaded.</li>
-      <li>Close DB connections, stop background threads, flush logs, release resources.</li>
-    </ul>
-  </li>
-</ul>
-
-<p>Example:</p>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">jakarta.servlet.ServletConfig</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">jakarta.servlet.ServletException</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">jakarta.servlet.http.HttpServlet</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">jakarta.servlet.http.HttpServletRequest</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">jakarta.servlet.http.HttpServletResponse</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.PrintWriter</span><span class="o">;</span>
-
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SampleServlet</span> <span class="kd">extends</span> <span class="nc">HttpServlet</span> <span class="o">{</span>
-
-    <span class="kd">private</span> <span class="nc">String</span> <span class="n">greeting</span><span class="o">;</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="nc">ServletConfig</span> <span class="n">config</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">ServletException</span> <span class="o">{</span>
-        <span class="kd">super</span><span class="o">.</span><span class="na">init</span><span class="o">(</span><span class="n">config</span><span class="o">);</span>
-        <span class="c1">// Read init-param from web.xml or annotation initParams</span>
-        <span class="n">greeting</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="na">getInitParameter</span><span class="o">(</span><span class="s">"greeting"</span><span class="o">);</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">greeting</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">greeting</span> <span class="o">=</span> <span class="s">"Hello"</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="c1">// Initialize resources (e.g., DataSource lookup)</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">resp</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
-        <span class="n">resp</span><span class="o">.</span><span class="na">setContentType</span><span class="o">(</span><span class="s">"text/plain;charset=UTF-8"</span><span class="o">);</span>
-        <span class="k">try</span> <span class="o">(</span><span class="nc">PrintWriter</span> <span class="n">out</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="na">getWriter</span><span class="o">())</span> <span class="o">{</span>
-            <span class="nc">String</span> <span class="n">name</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="na">getParameter</span><span class="o">(</span><span class="s">"name"</span><span class="o">);</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">name</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">name</span><span class="o">.</span><span class="na">isBlank</span><span class="o">())</span> <span class="n">name</span> <span class="o">=</span> <span class="s">"World"</span><span class="o">;</span>
-            <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">greeting</span> <span class="o">+</span> <span class="s">", "</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s">"!"</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-
-    <span class="c1">// Optionally handle POST</span>
-    <span class="nd">@Override</span>
-    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doPost</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">resp</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
-        <span class="n">doGet</span><span class="o">(</span><span class="n">req</span><span class="o">,</span> <span class="n">resp</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">destroy</span><span class="o">()</span> <span class="o">{</span>
-        <span class="c1">// Clean up resources (close pools, stop schedulers, etc.)</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div></div>
-
-<p>If overriding service:</p>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Override</span>
-<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">service</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">resp</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
-    <span class="c1">// Example: log method, then delegate</span>
-    <span class="nc">String</span> <span class="n">method</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="na">getMethod</span><span class="o">();</span>
-    <span class="c1">// Custom logic...</span>
-    <span class="kd">super</span><span class="o">.</span><span class="na">service</span><span class="o">(</span><span class="n">req</span><span class="o">,</span> <span class="n">resp</span><span class="o">);</span> <span class="c1">// keep default dispatch to doGet/doPost...</span>
-<span class="o">}</span>
-</code></pre></div></div>
-
-<p>Key points:</p>
-
-<ul>
-  <li>init: once per servlet instance.</li>
-  <li>service: per request; dispatches to doXXX.</li>
-  <li>destroy: once before removal.</li>
-</ul>
-
-<h2 id="4-what-is-the-servlet-api">4) What is the Servlet API?</h2>
-
-<p>The Servlet API defines interfaces and classes used by servlets and containers to communicate.</p>
-
-<p>Packages:</p>
-
-<ul>
-  <li>javax.servlet (or jakarta.servlet in newer versions)
-    <ul>
-      <li>Core interfaces: Servlet, ServletRequest, ServletResponse, Filter, FilterChain, RequestDispatcher, ServletConfig, ServletContext, ServletException, AsyncContext, ServletRegistration.</li>
-      <li>Listener interfaces: ServletContextListener, ServletContextAttributeListener, ServletRequestListener, HttpSessionListener, etc.</li>
-    </ul>
-  </li>
-  <li>javax.servlet.http (or jakarta.servlet.http)
-    <ul>
-      <li>HTTP-specific classes/interfaces: HttpServlet, HttpServletRequest, HttpServletResponse, HttpSession, Cookie, HttpUpgradeHandler, Part (for multipart/form-data), HttpServletRequestWrapper/ResponseWrapper.</li>
-    </ul>
-  </li>
-</ul>
-
-<p>Purpose:</p>
-
-<ul>
-  <li>Standardizes how servlets handle requests/responses.</li>
-  <li>Provides lifecycle hooks and configuration mechanisms.</li>
-  <li>Supports filters, listeners, async processing, multipart, security, and session management.</li>
-</ul>
-
-<p>Note on naming:</p>
-
-<ul>
-  <li>Since Servlet 5.0+ under Jakarta EE 9+, packages changed from javax.* to jakarta.*. Use the correct namespace based on container version.</li>
-</ul>
-
-<h2 id="5-using-annotations-in-servlets-webservlet">5) Using Annotations in Servlets (@WebServlet)</h2>
-
-<p>Annotations simplify configuration by eliminating or reducing web.xml entries.</p>
-
-<p>@WebServlet:</p>
-
-<ul>
-  <li>Declares a servlet and its URL mappings directly on the class.</li>
-  <li>Supports name, urlPatterns (or value), initParams, loadOnStartup, asyncSupported, etc.</li>
-</ul>
-
-<p>Example basic:</p>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">jakarta.servlet.annotation.WebServlet</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">jakarta.servlet.http.HttpServlet</span><span class="o">;</span>
-
-<span class="nd">@WebServlet</span><span class="o">(</span><span class="s">"/hello"</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloServlet</span> <span class="kd">extends</span> <span class="nc">HttpServlet</span> <span class="o">{</span> <span class="cm">/* doGet/doPost... */</span> <span class="o">}</span>
-</code></pre></div></div>
-
-<p>Multiple URL patterns with init params:</p>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">jakarta.servlet.annotation.WebInitParam</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">jakarta.servlet.annotation.WebServlet</span><span class="o">;</span>
-
-<span class="nd">@WebServlet</span><span class="o">(</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s">"GreetServlet"</span><span class="o">,</span>
-    <span class="n">urlPatterns</span> <span class="o">=</span> <span class="o">{</span><span class="s">"/greet"</span><span class="o">,</span> <span class="s">"/welcome/*"</span><span class="o">},</span>
-    <span class="n">initParams</span> <span class="o">=</span> <span class="o">{</span>
-        <span class="nd">@WebInitParam</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"greeting"</span><span class="o">,</span> <span class="n">value</span> <span class="o">=</span> <span class="s">"Namaste"</span><span class="o">)</span>
-    <span class="o">},</span>
-    <span class="n">loadOnStartup</span> <span class="o">=</span> <span class="mi">1</span><span class="o">,</span>
-    <span class="n">asyncSupported</span> <span class="o">=</span> <span class="kc">false</span>
-<span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GreetServlet</span> <span class="kd">extends</span> <span class="nc">HttpServlet</span> <span class="o">{</span> <span class="cm">/* override doGet */</span> <span class="o">}</span>
-</code></pre></div></div>
-
-<p>How it simplifies:</p>
-
-<ul>
-  <li>No need to define <servlet> and <servlet-mapping> in web.xml.</servlet-mapping></servlet></li>
-  <li>Co-locates configuration with code; easier maintenance.</li>
-  <li>Still possible to mix with web.xml; web.xml can override annotations when needed.</li>
-</ul>
-
-<p>Related annotations:</p>
-
-<ul>
-  <li>@WebFilter for filters.</li>
-  <li>@WebListener for listeners.</li>
-  <li>@MultipartConfig for file uploads on a servlet.</li>
-</ul>
-
-<h2 id="6-servletconfig-vs-servletcontext">6) ServletConfig vs ServletContext</h2>
-
-<p>Purpose:</p>
-
-<ul>
-  <li>ServletConfig: Per-servlet configuration parameters provided by deployment descriptor or annotations; accessible within that servlet.</li>
-  <li>ServletContext: Application-wide context shared across all servlets in the web app; holds global params and resources.</li>
-</ul>
-
-<p>Scope and lifecycle:</p>
-
-<ul>
-  <li>ServletConfig: Created by container per servlet instance and passed to init(); exists for that servlet’s lifetime.</li>
-  <li>ServletContext: Created when the web application starts; destroyed when app stops; one per web app.</li>
-</ul>
-
-<p>Common methods and usage:</p>
-
-<p>ServletConfig:</p>
-
-<ul>
-  <li>getInitParameter(String name): get a servlet’s init-param.</li>
-  <li>getInitParameterNames(): enumerate parameters.</li>
-  <li>getServletName(): name.</li>
-  <li>getServletContext(): access the shared ServletContext.</li>
-</ul>
-
-<p>ServletContext:</p>
-
-<ul>
-  <li>getInitParameter(String name)/getInitParameterNames(): context-wide init params (from web.xml).</li>
-  <li>setAttribute(String name, Object obj)/getAttribute(String name)/removeAttribute(String): share objects (e.g., DataSource) across servlets.</li>
-  <li>getRequestDispatcher(String path): forward/include to resources.</li>
-  <li>getResource/getResourceAsStream: access resources from the WAR.</li>
-  <li>log(String msg, Throwable t): container logging.</li>
-  <li>getContextPath(): application context path.</li>
-</ul>
-
-<p>Examples:</p>
-
-<p>web.xml (context and servlet params):</p>
-
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;context-param&gt;</span>
-  <span class="nt">&lt;param-name&gt;</span>appTitle<span class="nt">&lt;/param-name&gt;</span>
-  <span class="nt">&lt;param-value&gt;</span>Student Portal<span class="nt">&lt;/param-value&gt;</span>
-<span class="nt">&lt;/context-param&gt;</span>
-
-<span class="nt">&lt;servlet&gt;</span>
-  <span class="nt">&lt;servlet-name&gt;</span>StudentServlet<span class="nt">&lt;/servlet-name&gt;</span>
-  <span class="nt">&lt;servlet-class&gt;</span>com.example.StudentServlet<span class="nt">&lt;/servlet-class&gt;</span>
-  <span class="nt">&lt;init-param&gt;</span>
-    <span class="nt">&lt;param-name&gt;</span>pageSize<span class="nt">&lt;/param-name&gt;</span>
-    <span class="nt">&lt;param-value&gt;</span>20<span class="nt">&lt;/param-value&gt;</span>
-  <span class="nt">&lt;/init-param&gt;</span>
-<span class="nt">&lt;/servlet&gt;</span>
-<span class="nt">&lt;servlet-mapping&gt;</span>
-  <span class="nt">&lt;servlet-name&gt;</span>StudentServlet<span class="nt">&lt;/servlet-name&gt;</span>
-  <span class="nt">&lt;url-pattern&gt;</span>/students<span class="nt">&lt;/url-pattern&gt;</span>
-<span class="nt">&lt;/servlet-mapping&gt;</span>
-</code></pre></div></div>
-
-<p>In servlet:</p>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Override</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="nc">ServletConfig</span> <span class="n">config</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">ServletException</span> <span class="o">{</span>
-    <span class="kd">super</span><span class="o">.</span><span class="na">init</span><span class="o">(</span><span class="n">config</span><span class="o">);</span>
-    <span class="nc">String</span> <span class="n">pageSize</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="na">getInitParameter</span><span class="o">(</span><span class="s">"pageSize"</span><span class="o">);</span> <span class="c1">// ServletConfig</span>
-    <span class="nc">ServletContext</span> <span class="n">ctx</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="na">getServletContext</span><span class="o">();</span>
-    <span class="nc">String</span> <span class="n">appTitle</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="na">getInitParameter</span><span class="o">(</span><span class="s">"appTitle"</span><span class="o">);</span>    <span class="c1">// ServletContext</span>
-    <span class="n">ctx</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="s">"DB_POOL"</span><span class="o">,</span> <span class="n">myDataSource</span><span class="o">);</span>             <span class="c1">// Shared resource</span>
-<span class="o">}</span>
-</code></pre></div></div>
-
-<p>Differences summary:</p>
-
-<ul>
-  <li>Granularity: Config = per servlet; Context = entire web app.</li>
-  <li>Use cases: Config = servlet-specific defaults; Context = shared resources/settings.</li>
-  <li>Creation: Config passed to init(); Context available from start to end of app.</li>
-</ul>
-
-<h2 id="7-session-tracking-in-servlets">7) Session Tracking in Servlets</h2>
-
-<p>What is session tracking?</p>
-
-<ul>
-  <li>HTTP is stateless; session tracking maintains state across multiple requests from the same client.</li>
-  <li>Common mechanisms: HttpSession (server-side), cookies (JSESSIONID), URL rewriting, hidden form fields, SSL session IDs.</li>
-</ul>
-
-<p>How it works with HttpSession:</p>
-
-<ul>
-  <li>The container creates or retrieves an HttpSession associated with a JSESSIONID.</li>
-  <li>The ID is typically stored in a cookie; if cookies are disabled, URL rewriting can append ;jsessionid=… to links.</li>
-  <li>Data is stored as attributes on the session object.</li>
-</ul>
-
-<p>Basic example:</p>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Override</span>
-<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">resp</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
-    <span class="nc">HttpSession</span> <span class="n">session</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="na">getSession</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span> <span class="c1">// create if absent</span>
-    <span class="nc">Integer</span> <span class="n">count</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Integer</span><span class="o">)</span> <span class="n">session</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">"count"</span><span class="o">);</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">count</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-    <span class="n">session</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="s">"count"</span><span class="o">,</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
-
-    <span class="n">resp</span><span class="o">.</span><span class="na">setContentType</span><span class="o">(</span><span class="s">"text/plain;charset=UTF-8"</span><span class="o">);</span>
-    <span class="n">resp</span><span class="o">.</span><span class="na">getWriter</span><span class="o">().</span><span class="na">println</span><span class="o">(</span><span class="s">"Visits this session: "</span> <span class="o">+</span> <span class="o">(</span><span class="n">count</span> <span class="o">+</span> <span class="mi">1</span><span class="o">));</span>
-<span class="o">}</span>
-</code></pre></div></div>
-
-<p>Setting and reading attributes:</p>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">session</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="s">"user"</span><span class="o">,</span> <span class="n">userObj</span><span class="o">);</span>
-<span class="nc">User</span> <span class="n">user</span> <span class="o">=</span> <span class="o">(</span><span class="nc">User</span><span class="o">)</span> <span class="n">session</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">"user"</span><span class="o">);</span>
-</code></pre></div></div>
-
-<p>Session configuration:</p>
-
-<ul>
-  <li>Timeout: setMaxInactiveInterval(seconds) or in web.xml:</li>
-</ul>
-
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;session-config&gt;</span>
-  <span class="nt">&lt;session-timeout&gt;</span>30<span class="nt">&lt;/session-timeout&gt;</span> <span class="c">&lt;!-- minutes --&gt;</span>
-<span class="nt">&lt;/session-config&gt;</span>
-</code></pre></div></div>
-
-<p>URL rewriting fallback:</p>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">url</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="na">encodeURL</span><span class="o">(</span><span class="n">req</span><span class="o">.</span><span class="na">getContextPath</span><span class="o">()</span> <span class="o">+</span> <span class="s">"/cart"</span><span class="o">);</span>
-</code></pre></div></div>
-
-<p>Cookies alternative:</p>
-
-<ul>
-  <li>Manual cookie handling for simple tracking:</li>
-</ul>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Cookie</span> <span class="n">c</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Cookie</span><span class="o">(</span><span class="s">"theme"</span><span class="o">,</span> <span class="s">"dark"</span><span class="o">);</span>
-<span class="n">c</span><span class="o">.</span><span class="na">setMaxAge</span><span class="o">(</span><span class="mi">7</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="o">);</span>
-<span class="n">c</span><span class="o">.</span><span class="na">setHttpOnly</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-<span class="n">c</span><span class="o">.</span><span class="na">setPath</span><span class="o">(</span><span class="n">req</span><span class="o">.</span><span class="na">getContextPath</span><span class="o">());</span>
-<span class="n">resp</span><span class="o">.</span><span class="na">addCookie</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
-</code></pre></div></div>
-
-<p>Security best practices:</p>
-
-<ul>
-  <li>Mark session cookies HttpOnly and Secure (when using HTTPS).</li>
-  <li>Regenerate session ID after login to prevent fixation:</li>
-</ul>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">req</span><span class="o">.</span><span class="na">changeSessionId</span><span class="o">();</span>
-</code></pre></div></div>
-
-<ul>
-  <li>Avoid storing sensitive data directly in the session; store minimal identifiers.</li>
-  <li>Implement logout:</li>
-</ul>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">req</span><span class="o">.</span><span class="na">getSession</span><span class="o">().</span><span class="na">invalidate</span><span class="o">();</span>
-</code></pre></div></div>
-
-<p>File upload note (sessions and multipart):</p>
-
-<ul>
-  <li>When using multipart forms, annotate the servlet with @MultipartConfig and access parts via request.getPart(“file”); session usage remains the same.</li>
-</ul>
-
-<p>—</p>
-
-<p>If any code needs to target javax.* (Servlet 3.1/4.0) vs jakarta.* (Servlet 5.0+), adjust import packages accordingly based on the server (e.g., Tomcat 9 uses javax.<em>, Tomcat 10+ uses jakarta.</em>).</p>
-
-<div class="newtopic"></div>
-
-<h1 id="assignment-3">Assignment 3</h1>
-
-<h2 id="1-what-is-jsp-javaserver-pages">1) What is JSP (JavaServer Pages)?</h2>
-
-<p>JSP is a server-side technology that allows embedding Java code into HTML to generate dynamic web content; at runtime, a JSP is translated into a servlet, compiled, loaded, and executed by the container to produce the response. JSP supports features like automatic translation-to-servlet, implicit objects (request, response, session, application), and lifecycle hooks (jspInit, _jspService, jspDestroy). Compared to writing raw servlets, JSP is advantageous for view-centric pages because HTML authoring is more natural, Java can be inserted where needed, and the container manages translation/compilation automatically.[1][2][3]</p>
-
-<h2 id="2-jsp-architecture">2) JSP Architecture</h2>
-
-<p>JSP follows the standard web app stack where the browser sends an HTTP request to the web server, which forwards it to the JSP engine (in the servlet container); the engine checks if compilation is needed, translates the JSP into a servlet, compiles it, loads it, and invokes it to create the dynamic response. Conceptually, this aligns with a three-layer architecture: presentation (JSP), business logic (Java classes/beans/services), and data access (databases), with JSP primarily handling the presentation layer and delegating logic to Java classes or beans. During request processing, the steps are: parse JSP, generate servlet source, compile to class, instantiate, initialize via jspInit(), and handle the request via _jspService(), then write the response back to the client.[2][1]</p>
-
-<h2 id="3-phases-of-the-jsp-lifecycle">3) Phases of the JSP Lifecycle</h2>
-
-<ul>
-  <li>Translation: The JSP file is parsed and converted into a Java servlet source file (e.g., test.java).[1][2]</li>
-  <li>Compilation: The generated Java servlet is compiled into bytecode (test.class).[2][1]</li>
-  <li>Class loading and instantiation: The class is loaded and an instance is created by the container.[1]</li>
-  <li>Initialization: The container calls jspInit() once for initialization tasks.[2][1]</li>
-  <li>Request processing: For each request, the container invokes _jspService(request, response), which corresponds to the JSP body and should not be overridden by the author.[4][3][1]</li>
-  <li>Destruction: Before removal, the container calls jspDestroy() to release resources.[1][2]</li>
-</ul>
-
-<p>Typical example pattern: define setup in jspInit(), use JSP elements in the page body to generate output (which becomes _jspService()), and clean up in jspDestroy().[3][2][1]</p>
-
-<h2 id="4-role-of-jspinit-_jspservice-and-jspdestroy">4) Role of jspInit(), _jspService(), and jspDestroy()</h2>
-
-<ul>
-  <li>jspInit(): Called once when the JSP is initialized; use to open resources such as DB connections or caches.[3][2][1]</li>
-  <li>_jspService(): Automatically generated method that contains the body of the JSP and handles each request; it should never be defined by the JSP author.[4][3]</li>
-  <li>jspDestroy(): Called once when the JSP is about to be destroyed; use to release resources.[4][3][2][1]</li>
-</ul>
-
-<p>The JSP container manages these methods: it generates _jspService(), and invokes jspInit() before servicing requests and jspDestroy() during cleanup; authors may override jspInit() and jspDestroy(), but not _jspService().[5][3][4][1]</p>
-
-<h2 id="5-types-of-jsp-elements-syntax-and-examples">5) Types of JSP Elements (syntax and examples)</h2>
-
-<ul>
-  <li>Expressions: Insert the value of a Java expression into the output; syntax:  (e.g., ).</li>
-  <li>Scriptlets: Embed arbitrary Java code in the JSP; syntax: .</li>
-  <li>Declarations: Declare fields or methods that become class members outside _jspService(); syntax:  (e.g., ).</li>
-  <li>Directives: Provide instructions to the container at translation time; syntax:  (e.g., page directive).</li>
-  <li>JSP comments: Syntax: , not sent to the client.</li>
-</ul>
-
-<p>Declarations create class-level members in the generated servlet, while expressions write directly to the response without needing out.println().</p>
-
-<h2 id="6-compare-jsp-with-servlets">6) Compare JSP with Servlets</h2>
-
-<p>Both JSP and servlets ultimately execute as servlets, but JSP emphasizes view templating by mixing HTML with small Java snippets, which is more convenient for page authoring. JSP reduces boilerplate around writing HTML from Java (avoids many out.println calls) and is automatically translated and compiled by the container on first use or when modified. Servlets are better for complex controller logic, while JSPs are ideal for presentation with optional use of JavaBeans or tags for cleaner separation of concerns.</p>
-
-<h2 id="7-how-jsp-supports-dynamic-content-generation">7) How JSP supports dynamic content generation</h2>
-
-<p>JSP generates dynamic content by executing Java code within the page (scriptlets, expressions) and by using implicit objects such as request, session, and application to read user input and state during _jspService(). On each request, the container invokes the generated _jspService(request, response) method, which accesses parameters, interacts with business logic, and writes dynamic output to the response stream. Because the JSP is compiled to a servlet and recompiled on changes, dynamic user-driven content (form inputs, query parameters, session data) is computed at request time and delivered as HTML, JSON, or other formats.</p>
-
-<p>Notes and best practices: Prefer minimal Java in JSP and delegate logic to beans/tags; authors should not define _jspService(); override jspInit()/jspDestroy() only for setup/cleanup when necessary.</p>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This post provides with the solution for the questions given in the enterprise programming in java (EPJ) Assignment - 1]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/img/covers/17.46.22_664acc74.webp" /><media:content medium="image" url="http://localhost:4000/assets/img/covers/17.46.22_664acc74.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+= √19.7 ≈ 4.44</p>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This resource provides with the solutions of the questions given in the assignment - 2 of Data Analytics and Data Visualization.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:54683/assets/img/covers/dadv-2.webp" /><media:content medium="image" url="http://localhost:54683/assets/img/covers/dadv-2.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

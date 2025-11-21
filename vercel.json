@@ -1,0 +1,55 @@
+{
+  "version": 2,
+  "buildCommand": "node scripts/generate-build-id.js && bundle exec jekyll build && node scripts/minify-assets.js",
+  "outputDirectory": "_site",
+  "framework": "jekyll",
+  "headers": [
+    {
+      "source": "/assets/data/(.*).json",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
+        { "key": "Pragma", "value": "no-cache" },
+        { "key": "Expires", "value": "0" }
+      ]
+    },
+    {
+      "source": "/channels/(.*).json",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
+        { "key": "Pragma", "value": "no-cache" },
+        { "key": "Expires", "value": "0" }
+      ]
+    },
+    {
+      "source": "/manifest.json",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
+        { "key": "Pragma", "value": "no-cache" },
+        { "key": "Expires", "value": "0" }
+      ]
+    },
+    {
+      "source": "/assets/(style|scripts|img)/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/account/css/(.*).css",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/account/profile", "destination": "/account/profile.html" },
+    { "source": "/sharelink-test", "destination": "/sharelink-test.html" },
+    { "source": "/api/v1/:path*", "destination": "/api/v2/:path*" }
+  ],
+  "redirects": [
+    { "source": "/blog", "destination": "/room", "permanent": true },
+    { "source": "/programming%20humor/(.*)", "destination": "/programming-humor/$1", "permanent": true },
+    { "source": "/code%20craftsmanship/(.*)", "destination": "/code-craftsmanship/$1", "permanent": true },
+    { "source": "/paper%20solution/(.*)", "destination": "/paper-solution/$1", "permanent": true }
+  ]
+}

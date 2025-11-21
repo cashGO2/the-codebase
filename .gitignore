@@ -31,3 +31,7 @@ saved_changes
 .DS_Store
 Thumbs.db
 devdocs.md
+# Local Netlify folder
+.netlify
+
+.vercel

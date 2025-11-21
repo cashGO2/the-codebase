@@ -144,7 +144,7 @@ exports.handler = async (event, context) => {
       }
       
       return await togglePlusUser(event, origin, user.id);
-    } else if (event.path === '/sharelink' || event.path === '/.netlify/functions/invites/sharelink' || 
+    } else if (event.path === '/sharelink' || event.path === '/api/v2/invites/sharelink' || 
                event.path === '/invites/sharelink' || event.path.endsWith('/sharelink') || 
                isSharelinkEndpoint) {
       console.log('Using SHARELINK endpoint handler');

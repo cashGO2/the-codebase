@@ -1,7 +1,7 @@
 // Constants
 // For this scenario, we're always targeting the production auth server
 // Since we're running the main app locally but using the deployed auth server
-const API_URL = '/.netlify/functions';
+const API_URL = '/api/v2';
 const FRONTEND_URL = 'https://materioa.netlify.app';
 const LOCAL_STORAGE_TOKEN_KEY = 'materio_auth_token';
 

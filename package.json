@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "dev": "netlify dev",
+    "vercel-dev": "vercel dev",
     "build": "bundle exec jekyll build && netlify build",
     "functions": "netlify functions:serve --functions=api/v1",
     "minify-js": "uglifyjs assets/scripts/auth.js assets/scripts/login.js assets/scripts/signup.js assets/scripts/forgot-password.js assets/scripts/profile-management.js -o _site/assets/scripts/auth.min.js --source-map --compress --mangle",

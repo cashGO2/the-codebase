@@ -2992,7 +2992,7 @@ function openShareModal(inviteCode) {
         showNotification('Sharelinks table not found. Attempting to create it...', 'warning');
         
         // Run the migration to create the table
-        fetch('/.netlify/functions/run-migrations')
+        fetch('/api/v2/run-migrations')
           .then(response => response.json())
           .then(migrationResult => {
             console.log('Migration result:', migrationResult);
@@ -3060,7 +3060,7 @@ async function updateShareLink() {
     if (!successfulUpdate) {
       try {
         console.log('Attempting to update using sharelink endpoint...');
-        const response = await fetch('/.netlify/functions/sharelink', {
+        const response = await fetch('/api/v2/sharelink', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
