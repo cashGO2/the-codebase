@@ -3,7 +3,7 @@ const {
   hashPassword, 
   generateToken, 
   generateRecoveryKey 
-} = require('./utils');
+} = require('./_utils');
 
 module.exports = async (req, res) => {
   // Only allow POST requests

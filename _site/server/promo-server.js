@@ -11,49 +11,37 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
 // Import chat functionality
-const chatHandler = require('../api/v1/chat');
+const chatHandler = require('../api/v2/chat');
 
 // Chat API routes
-app.get('/api/v1/chat/models', async (req, res) => {
+app.get('/api/v2/chat/models', async (req, res) => {
   try {
-    const mockEvent = {
-      httpMethod: 'GET',
-      path: '/api/v1/chat/models',
-      headers: req.headers
-    };
-    const result = await chatHandler.handler(mockEvent, {});
-    res.status(result.statusCode).json(JSON.parse(result.body));
+    await chatHandler(req, res);
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    // Only send error if response hasn't been sent yet
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, error: error.message });
+    }
   }
 });
 
-app.post('/api/v1/chat', async (req, res) => {
+app.post('/api/v2/chat', async (req, res) => {
   try {
-    const mockEvent = {
-      httpMethod: 'POST',
-      path: '/api/v1/chat',
-      headers: req.headers,
-      body: JSON.stringify(req.body)
-    };
-    const result = await chatHandler.handler(mockEvent, {});
-    res.status(result.statusCode).json(JSON.parse(result.body));
+    await chatHandler(req, res);
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, error: error.message });
+    }
   }
 });
 
-app.get('/api/v1/chat/health', async (req, res) => {
+app.get('/api/v2/chat/health', async (req, res) => {
   try {
-    const mockEvent = {
-      httpMethod: 'GET',
-      path: '/api/v1/chat/health',
-      headers: req.headers
-    };
-    const result = await chatHandler.handler(mockEvent, {});
-    res.status(result.statusCode).json(JSON.parse(result.body));
+    await chatHandler(req, res);
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, error: error.message });
+    }
   }
 });
 
@@ -106,9 +94,9 @@ if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Materio API server running on port ${PORT}`);
     console.log(`Promo save API: POST /api/save-promo`);
-    console.log(`Chat API: POST /api/v1/chat`);
-    console.log(`Chat Models: GET /api/v1/chat/models`);
-    console.log(`Chat Health: GET /api/v1/chat/health`);
+    console.log(`Chat API: POST /api/v2/chat`);
+    console.log(`Chat Models: GET /api/v2/chat/models`);
+    console.log(`Chat Health: GET /api/v2/chat/health`);
   });
 }
 

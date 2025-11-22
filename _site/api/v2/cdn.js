@@ -3,7 +3,7 @@ const {
   verifyToken, 
   getTokenFromHeaders,
   corsHeaders
-} = require('./utils');
+} = require('./_utils');
 
 // Load environment variables
 require('dotenv').config();

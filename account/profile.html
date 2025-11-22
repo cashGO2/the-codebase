@@ -2606,7 +2606,7 @@
 
     async function fetchRealtimeUsers() {
       try {
-        const response = await fetch('https://materioa.netlify.app/api/v1/insights');
+        const response = await fetch('/api/v2/features/insights');
         const data = await response.json();
 
         const userCount = parseInt(data.users);

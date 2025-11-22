@@ -72,7 +72,7 @@ function checkSummaryAccess() {
 
   if (token && summarySection) {
     // Verify user has admin or plus privileges
-    fetch('/api/v1/profile', {
+    fetch('/api/v2/profile', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -164,7 +164,7 @@ ${blogContent}
 
 Provide a ultra-concise summary:`;
 
-    const response = await fetch('/api/v1/chat', {
+    const response = await fetch('/api/v2/chat', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -428,7 +428,7 @@ REQUIREMENTS:
 
 Answer:`;
 
-    const response = await fetch('/api/v1/chat', {
+    const response = await fetch('/api/v2/chat', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -510,7 +510,7 @@ async function checkPrivatePostAccess() {
 
   try {
     // console.log('Making request to profile endpoint for post access...');
-    const response = await fetch('/api/v1/profile', {
+    const response = await fetch('/api/v2/profile', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,

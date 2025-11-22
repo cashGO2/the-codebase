@@ -2,7 +2,7 @@ const {
   supabase, 
   comparePassword, 
   generateToken 
-} = require('./utils');
+} = require('./_utils');
 
 module.exports = async (req, res) => {
   // Only allow POST requests

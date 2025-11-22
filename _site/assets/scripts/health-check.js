@@ -4,7 +4,7 @@
 
     async function checkHealth() {
         try {
-            const response = await fetch('/api/v1/health');
+            const response = await fetch('/api/v2/health');
             const data = await response.json();
             healthIndicator.classList.remove('ok', 'degraded', 'error');
             if (data.status === 'ok') {

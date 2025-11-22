@@ -5,7 +5,7 @@ const {
   verifyToken, 
   getTokenFromHeaders,
   generateRecoveryKey
-} = require('./utils');
+} = require('./_utils');
 const cors = require('./cors');
 
 module.exports = async (req, res) => {

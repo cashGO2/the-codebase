@@ -1134,7 +1134,7 @@ async function handleFileUpload(files) {
 
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('path', currentPath);      const response = await fetch('/api/v1/cdn', {
+      formData.append('path', currentPath);      const response = await fetch('/api/v2/cdn', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
@@ -1687,7 +1687,7 @@ async function handleCourseUploadSubmit(e) {
     progressText.textContent = `Uploading ${selectedFiles.length} files and updating database...`;
     
     // Send batch upload request to cdn.js with batch=true parameter
-    const response = await fetch('/api/v1/cdn?batch=true', {
+    const response = await fetch('/api/v2/cdn?batch=true', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
@@ -1769,7 +1769,7 @@ async function updateSemesterSubjectMappings_LEGACY(semester, subject) {
     formData.append('file', blob, 'semester-subjects.json');
     formData.append('path', 'databases');
     
-    await fetch('/api/v1/cdn', {
+    await fetch('/api/v2/cdn', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
@@ -1838,7 +1838,7 @@ async function updateResourceLibrary_LEGACY(semester, subject, category, uploade
     
     console.log('Updating resource library with content:', resourceLib);
     
-    const response = await fetch('/api/v1/cdn', {
+    const response = await fetch('/api/v2/cdn', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
@@ -1899,7 +1899,7 @@ async function createUploadNotification_LEGACY(subject, category, fileCount) {
     formData.append('file', blob, 'notifications.json');
     formData.append('path', '');
     
-    await fetch('/api/v1/cdn', {
+    await fetch('/api/v2/cdn', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
@@ -2276,7 +2276,7 @@ async function uploadPromoImage(file) {
     formData.append('path', 'assets/img');
     
     // Upload via CDN API
-    const response = await fetch('/api/v1/cdn', {
+    const response = await fetch('/api/v2/cdn', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
@@ -2379,7 +2379,7 @@ async function savePromotionToFile(data) {
     localStorage.setItem('materio_promo_data', JSON.stringify(data, null, 2));
       // Try to save via Netlify function
     try {
-      const response = await fetch('/api/v1/save-promo', {
+      const response = await fetch('/api/v2/features/save-promo', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -2414,7 +2414,7 @@ async function savePromotionToFile(data) {
       
       // Fallback: Try the standalone server (if running)
       try {
-        const response = await fetch('/api/save-promo', {
+        const response = await fetch('/api/v2/features/save-promo', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -2979,7 +2979,11 @@ function openShareModal(inviteCode) {
   document.getElementById('headingTemplate').value = '';
   
   // Check if sharelinks database is working
-  fetch('/debug-sharelink')
+  fetch('/api/v2/invites/diagnostic', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ inviteCode: inviteCode })
+  })
     .then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -2992,24 +2996,13 @@ function openShareModal(inviteCode) {
         showNotification('Sharelinks table not found. Attempting to create it...', 'warning');
         
         // Run the migration to create the table
-        fetch('/api/v2/run-migrations')
-          .then(response => response.json())
-          .then(migrationResult => {
-            console.log('Migration result:', migrationResult);
-            if (migrationResult.results && migrationResult.results[0] && migrationResult.results[0].success) {
-              showNotification('Sharelinks table created successfully! Try updating again.', 'success');
-            } else {
-              showNotification('Failed to create sharelinks table. Please contact support.', 'error');
-            }
-          })
-          .catch(error => {
-            console.error('Migration error:', error);
-            showNotification('Error running migrations: ' + error.message, 'error');
-          });
+        // Note: Migration endpoint removed, assuming manual migration or handled elsewhere
+        console.log('Migration endpoint removed');
       }
     })
     .catch(error => {
-      console.error('Error checking database:', error);
+      console.error('Debug check failed:', error);
+      // Don't show error to user, just log it
     });
   
   // Show modal
@@ -3060,7 +3053,7 @@ async function updateShareLink() {
     if (!successfulUpdate) {
       try {
         console.log('Attempting to update using sharelink endpoint...');
-        const response = await fetch('/api/v2/sharelink', {
+        const response = await fetch('/api/v2/invites/sharelink', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

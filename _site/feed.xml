@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:54011/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:54011/" rel="alternate" type="text/html" /><updated>2025-11-21T22:31:47+05:30</updated><id>http://localhost:54011/feed.xml</id><title type="html">The InsightRoom.</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">Software Engineering Important Questions</title><link href="http://localhost:54011/software-engineering-important-questions/" rel="alternate" type="text/html" title="Software Engineering Important Questions" /><published>2025-11-21T08:02:35+05:30</published><updated>2025-11-21T08:02:35+05:30</updated><id>http://localhost:54011/software-engineering-important-questions</id><content type="html" xml:base="http://localhost:54011/software-engineering-important-questions/"><![CDATA[<h1 id="important-questions-for-software-engineering">Important Questions for Software Engineering</h1>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:58889/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:58889/" rel="alternate" type="text/html" /><updated>2025-11-22T11:44:55+05:30</updated><id>http://localhost:58889/feed.xml</id><title type="html">The InsightRoom.</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">Software Engineering Important Questions</title><link href="http://localhost:58889/software-engineering-important-questions/" rel="alternate" type="text/html" title="Software Engineering Important Questions" /><published>2025-11-21T08:02:35+05:30</published><updated>2025-11-21T08:02:35+05:30</updated><id>http://localhost:58889/software-engineering-important-questions</id><content type="html" xml:base="http://localhost:58889/software-engineering-important-questions/"><![CDATA[<h1 id="important-questions-for-software-engineering">Important Questions for Software Engineering</h1>
 <p><strong>End Semester Preparation</strong></p>
 
 <hr />
@@ -177,7 +177,7 @@
   <li>Discuss the future trends in Advanced Software Engineering.</li>
 </ol>
 
-<hr />]]></content><author><name></name></author><summary type="html"><![CDATA[Resource provide important questions for exam]]></summary></entry><entry><title type="html">DAA Mid Sem</title><link href="http://localhost:54011/paper-solution/daa-mid/" rel="alternate" type="text/html" title="DAA Mid Sem" /><published>2025-09-25T15:13:26+05:30</published><updated>2025-09-25T15:13:26+05:30</updated><id>http://localhost:54011/paper-solution/daa-mid</id><content type="html" xml:base="http://localhost:54011/paper-solution/daa-mid/"><![CDATA[<h2 id="multiple-choice-questions">Multiple Choice Questions</h2>
+<hr />]]></content><author><name></name></author><summary type="html"><![CDATA[Resource provide important questions for exam]]></summary></entry><entry><title type="html">DAA Mid Sem</title><link href="http://localhost:58889/paper-solution/daa-mid/" rel="alternate" type="text/html" title="DAA Mid Sem" /><published>2025-09-25T15:13:26+05:30</published><updated>2025-09-25T15:13:26+05:30</updated><id>http://localhost:58889/paper-solution/daa-mid</id><content type="html" xml:base="http://localhost:58889/paper-solution/daa-mid/"><![CDATA[<h2 id="multiple-choice-questions">Multiple Choice Questions</h2>
 
 <p><strong>In recursion, the base case represents:</strong></p>
 
@@ -681,7 +681,7 @@ int main() {
     printf("%.2lf\\n", maxValue);
     return 0;
 }
-</code></pre>]]></content><author><name></name></author><category term="Paper Solution" /><summary type="html"><![CDATA[This resource covers all the questions with solutions from design and analysis of alogorithms mid semester exam.]]></summary></entry><entry><title type="html">Software Engineering Assignment</title><link href="http://localhost:54011/resource/software-engineering-assignment/" rel="alternate" type="text/html" title="Software Engineering Assignment" /><published>2025-09-20T11:20:10+05:30</published><updated>2025-09-20T11:20:10+05:30</updated><id>http://localhost:54011/resource/software-engineering-assignment</id><content type="html" xml:base="http://localhost:54011/resource/software-engineering-assignment/"><![CDATA[<div class="newtopic"></div>
+</code></pre>]]></content><author><name></name></author><category term="Paper Solution" /><summary type="html"><![CDATA[This resource covers all the questions with solutions from design and analysis of alogorithms mid semester exam.]]></summary></entry><entry><title type="html">Software Engineering Assignment</title><link href="http://localhost:58889/resource/software-engineering-assignment/" rel="alternate" type="text/html" title="Software Engineering Assignment" /><published>2025-09-20T11:20:10+05:30</published><updated>2025-09-20T11:20:10+05:30</updated><id>http://localhost:58889/resource/software-engineering-assignment</id><content type="html" xml:base="http://localhost:58889/resource/software-engineering-assignment/"><![CDATA[<div class="newtopic"></div>
 
 <h1 id="assignment-1">Assignment 1</h1>
 
@@ -1635,7 +1635,7 @@ Focuses on developing software systems where processing and data are spread acro
   </li>
 </ul>
 
-<div style="text-align: center">⁂</div>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This resource provides with the solution of questions given in assignments 1 to 8 of Software Engineering.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:54011/assets/img/covers/759dad03-6b05-4760-9e78-96860d8ce44b.webp" /><media:content medium="image" url="http://localhost:54011/assets/img/covers/759dad03-6b05-4760-9e78-96860d8ce44b.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Calling auth API from CLI using cURL</title><link href="http://localhost:54011/docs/api" rel="alternate" type="text/html" title="Calling auth API from CLI using cURL" /><published>2025-09-03T15:34:00+05:30</published><updated>2025-09-03T15:34:00+05:30</updated><id>http://localhost:54011/docs/auth-cli</id><content type="html" xml:base="http://localhost:54011/docs/api"><![CDATA[<h1 id="materio-api-v1-documentation">Materio API v1 Documentation</h1>
+<div style="text-align: center">⁂</div>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This resource provides with the solution of questions given in assignments 1 to 8 of Software Engineering.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:58889/assets/img/covers/759dad03-6b05-4760-9e78-96860d8ce44b.webp" /><media:content medium="image" url="http://localhost:58889/assets/img/covers/759dad03-6b05-4760-9e78-96860d8ce44b.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Calling auth API from CLI using cURL</title><link href="http://localhost:58889/docs/api" rel="alternate" type="text/html" title="Calling auth API from CLI using cURL" /><published>2025-09-03T15:34:00+05:30</published><updated>2025-09-03T15:34:00+05:30</updated><id>http://localhost:58889/docs/auth-cli</id><content type="html" xml:base="http://localhost:58889/docs/api"><![CDATA[<h1 id="materio-api-v2-documentation">Materio API v2 Documentation</h1>
 
 <p>This document provides comprehensive examples for calling all API endpoints using curl, PowerShell, and bash.</p>
 
@@ -1767,7 +1767,7 @@ Focuses on developing software systems where processing and data are spread acro
 </ul>
 
 <h4 id="curl-example">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/signup <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/signup <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
     "username": "johndoe",
@@ -1793,7 +1793,7 @@ Focuses on developing software systems where processing and data are spread acro
     </span><span class="nx">profilePicture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD..."</span><span class="w">
 </span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertTo-Json</span><span class="w">
 
-</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v1/signup"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$body</span><span class="w">
+</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/signup"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$body</span><span class="w">
 </span></code></pre></div></div>
 
 <h4 id="response">Response:</h4>
@@ -1827,7 +1827,7 @@ Focuses on developing software systems where processing and data are spread acro
 </ul>
 
 <h4 id="curl-example-1">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/login <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/login <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
     "username": "johndoe",
@@ -1845,7 +1845,7 @@ Focuses on developing software systems where processing and data are spread acro
     </span><span class="nx">password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"securePassword123"</span><span class="w">
 </span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertTo-Json</span><span class="w">
 
-</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v1/login"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$body</span><span class="w">
+</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/login"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$body</span><span class="w">
 </span></code></pre></div></div>
 
 <h4 id="response-1">Response:</h4>
@@ -1879,7 +1879,7 @@ Focuses on developing software systems where processing and data are spread acro
 
 <h4 id="curl-example-2">cURL Example:</h4>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Validate recovery key only</span>
-curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/forgot-password <span class="se">\</span>
+curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/forgot-password <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
     "email": "john@example.com",
@@ -1887,7 +1887,7 @@ curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/forgot-
   }'</span>
 
 <span class="c"># Reset password</span>
-curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/forgot-password <span class="se">\</span>
+curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/forgot-password <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
     "email": "john@example.com",
@@ -1907,7 +1907,7 @@ curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/forgot-
     </span><span class="nx">newPassword</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"newSecurePassword123"</span><span class="w">
 </span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertTo-Json</span><span class="w">
 
-</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v1/forgot-password"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$body</span><span class="w">
+</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/forgot-password"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$body</span><span class="w">
 </span></code></pre></div></div>
 
 <h3 id="14-user-logout">1.4 User Logout</h3>
@@ -1923,7 +1923,7 @@ curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/forgot-
 
 <h4 id="curl-example-simulating-logout">cURL Example (Simulating Logout):</h4>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># After logout, requests without token will return 401 Unauthorized</span>
-curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile <span class="se">\</span>
+curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v2/profile <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span>
   <span class="c"># No Authorization header = logged out state</span>
 </code></pre></div></div>
@@ -1938,7 +1938,7 @@ curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile 
         </span><span class="s2">"Content-Type"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w">
         </span><span class="c"># "Authorization" = "Bearer $token"  # No token = logged out</span><span class="w">
     </span><span class="p">}</span><span class="w">
-    </span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v1/profile"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">GET</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w">
+    </span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/profile"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">GET</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span><span class="kr">catch</span><span class="w"> </span><span class="p">{</span><span class="w">
     </span><span class="n">Write-Host</span><span class="w"> </span><span class="s2">"Successfully logged out - Authentication required"</span><span class="w">
@@ -1975,7 +1975,7 @@ curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile 
 </ul>
 
 <h4 id="curl-example-3">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v2/profile <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer YOUR_JWT_TOKEN"</span>
 </code></pre></div></div>
@@ -1986,7 +1986,7 @@ curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile 
     </span><span class="s2">"Authorization"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Bearer YOUR_JWT_TOKEN"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 
-</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v1/profile"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">GET</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w">
+</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/profile"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">GET</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w">
 </span></code></pre></div></div>
 
 <h4 id="response-2">Response:</h4>
@@ -2028,7 +2028,7 @@ curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile 
 </ul>
 
 <h4 id="curl-example-4">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> PUT https://materioa.netlify.app/api/v1/profile <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> PUT https://materioa.netlify.app/api/v2/profile <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer YOUR_JWT_TOKEN"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
@@ -2054,7 +2054,7 @@ curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile 
     </span><span class="nx">generateNewRecoveryKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">$true</span><span class="w">
 </span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertTo-Json</span><span class="w">
 
-</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v1/profile"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">PUT</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$body</span><span class="w">
+</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/profile"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">PUT</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$body</span><span class="w">
 </span></code></pre></div></div>
 
 <h3 id="23-delete-user-account">2.3 Delete User Account</h3>
@@ -2074,7 +2074,7 @@ curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile 
 </ul>
 
 <h4 id="curl-example-5">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> DELETE https://materioa.netlify.app/api/v1/profile <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> DELETE https://materioa.netlify.app/api/v2/profile <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer YOUR_JWT_TOKEN"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
@@ -2093,11 +2093,11 @@ curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile 
 <p>Checks if the server is running and healthy.</p>
 
 <h4 id="curl-example-6">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/health
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v2/health
 </code></pre></div></div>
 
 <h4 id="powershell-example-5">PowerShell Example:</h4>
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v1/health"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">GET</span><span class="w">
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/health"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">GET</span><span class="w">
 </span></code></pre></div></div>
 
 <h4 id="response-3">Response:</h4>
@@ -2139,7 +2139,7 @@ curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile 
 </ul>
 
 <h4 id="curl-example-7">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/chat <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/chat <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
     "message": "Explain quantum computing",
@@ -2159,7 +2159,7 @@ curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile 
     </span><span class="nx">messages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@()</span><span class="w">
 </span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertTo-Json</span><span class="w">
 
-</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v1/chat"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$body</span><span class="w">
+</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/chat"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$body</span><span class="w">
 </span></code></pre></div></div>
 
 <h3 id="42-get-available-models">4.2 Get Available Models</h3>
@@ -2169,7 +2169,7 @@ curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile 
 <p>Returns available AI models categorized by mode.</p>
 
 <h4 id="curl-example-8">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/chat/models
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v2/chat/models
 </code></pre></div></div>
 
 <h4 id="response-4">Response:</h4>
@@ -2199,7 +2199,7 @@ curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile 
 </ul>
 
 <h4 id="curl-example-9">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/invites/validate <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/invites/validate <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
     "inviteCode": "INVITE123"
@@ -2223,7 +2223,7 @@ curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile 
 </ul>
 
 <h4 id="curl-example-10">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/invites/toggle-admin <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/invites/toggle-admin <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer YOUR_ADMIN_JWT_TOKEN"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
@@ -2268,7 +2268,7 @@ curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile 
 </ul>
 
 <h4 id="curl-example-11">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/admin-recovery <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/admin-recovery <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer YOUR_ADMIN_JWT_TOKEN"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
@@ -2288,7 +2288,7 @@ curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile 
     </span><span class="nx">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"lostuser"</span><span class="w">
 </span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertTo-Json</span><span class="w">
 
-</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v1/admin-recovery"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$body</span><span class="w">
+</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/admin-recovery"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$body</span><span class="w">
 </span></code></pre></div></div>
 
 <h4 id="response-5">Response:</h4>
@@ -2343,7 +2343,7 @@ curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile 
 </ul>
 
 <h4 id="curl-example-12">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> GET <span class="s2">"https://materioa.netlify.app/api/v1/cdn?path=images"</span> <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> GET <span class="s2">"https://materioa.netlify.app/api/v2/cdn?path=images"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer YOUR_ADMIN_JWT_TOKEN"</span>
 </code></pre></div></div>
 
@@ -2366,7 +2366,7 @@ curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile 
 </ul>
 
 <h4 id="curl-example-13">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/cdn <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/cdn <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer YOUR_ADMIN_JWT_TOKEN"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
@@ -2446,7 +2446,7 @@ curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile 
 <p>Gets real-time user count from Google Analytics.</p>
 
 <h4 id="curl-example-14">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/insights
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v2/insights
 </code></pre></div></div>
 
 <h4 id="response-6">Response:</h4>
@@ -2473,7 +2473,7 @@ curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile 
 </ul>
 
 <h4 id="curl-example-15">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/dwn/downloads <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/dwn/downloads <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
     "url": "https://example.com/file.pdf",
@@ -2517,17 +2517,17 @@ curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile 
 
 <h4 id="curl-example-16">cURL Example:</h4>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Simple search for "os introduction"</span>
-curl <span class="s2">"https://materioa.netlify.app/api/v1/search?q=os%20introduction"</span>
+curl <span class="s2">"https://materioa.netlify.app/api/v2/search?q=os%20introduction"</span>
 
 <span class="c"># Search for "dadv qb"</span>
-curl <span class="s2">"https://materioa.netlify.app/api/v1/search?query=dadv%20qb"</span>
+curl <span class="s2">"https://materioa.netlify.app/api/v2/search?query=dadv%20qb"</span>
 </code></pre></div></div>
 
 <h4 id="powershell-example-8">PowerShell Example:</h4>
 <div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Simple search</span><span class="w">
 </span><span class="nv">$query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"os introduction"</span><span class="w">
 </span><span class="nv">$encodedQuery</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">System.Web.HttpUtility</span><span class="p">]::</span><span class="n">UrlEncode</span><span class="p">(</span><span class="nv">$query</span><span class="p">)</span><span class="w">
-</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v1/search?q=</span><span class="nv">$encodedQuery</span><span class="s2">"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">GET</span><span class="w">
+</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/search?q=</span><span class="nv">$encodedQuery</span><span class="s2">"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">GET</span><span class="w">
 </span></code></pre></div></div>
 
 <h4 id="response-7">Response:</h4>
@@ -2571,7 +2571,7 @@ curl <span class="s2">"https://materioa.netlify.app/api/v1/search?query=dadv%20q
 </ul>
 
 <h4 id="curl-example-algorithmic">cURL Example (Algorithmic):</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/search <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/search <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
     "query": "dadv qb",
@@ -2581,7 +2581,7 @@ curl <span class="s2">"https://materioa.netlify.app/api/v1/search?query=dadv%20q
 </code></pre></div></div>
 
 <h4 id="curl-example-with-ai">cURL Example (With AI):</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/search <span class="se">\</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/search <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
     "query": "EPJ servlets",
@@ -2597,7 +2597,7 @@ curl <span class="s2">"https://materioa.netlify.app/api/v1/search?query=dadv%20q
     </span><span class="nx">threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.4</span><span class="w">
 </span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertTo-Json</span><span class="w">
 
-</span><span class="nv">$results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v1/search"</span><span class="w"> </span><span class="se">`
+</span><span class="nv">$results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/search"</span><span class="w"> </span><span class="se">`
 </span><span class="w">    </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="se">`
 </span><span class="w">    </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$searchBody</span><span class="w"> </span><span class="se">`
 </span><span class="w">    </span><span class="nt">-ContentType</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w">
@@ -2611,7 +2611,7 @@ curl <span class="s2">"https://materioa.netlify.app/api/v1/search?query=dadv%20q
     </span><span class="nx">useAI</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">$true</span><span class="w">
 </span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertTo-Json</span><span class="w">
 
-</span><span class="nv">$aiResults</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v1/search"</span><span class="w"> </span><span class="se">`
+</span><span class="nv">$aiResults</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/search"</span><span class="w"> </span><span class="se">`
 </span><span class="w">    </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="se">`
 </span><span class="w">    </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$aiSearchBody</span><span class="w"> </span><span class="se">`
 </span><span class="w">    </span><span class="nt">-ContentType</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w">
@@ -2670,35 +2670,35 @@ curl <span class="s2">"https://materioa.netlify.app/api/v1/search?query=dadv%20q
 <p><strong>Query:</strong> <code class="language-plaintext highlighter-rouge">"os introduction"</code><br />
 <strong>Matches:</strong> Operating System → Chapters → Introduction</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="s2">"https://materioa.netlify.app/api/v1/search?q=os%20introduction"</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="s2">"https://materioa.netlify.app/api/v2/search?q=os%20introduction"</span>
 </code></pre></div></div>
 
 <h4 id="example-2-multiple-abbreviations">Example 2: Multiple Abbreviations</h4>
 <p><strong>Query:</strong> <code class="language-plaintext highlighter-rouge">"dadv qb"</code><br />
 <strong>Matches:</strong> Data Analytics and Data Visualization → Question Banks → Question Bank</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="s2">"https://materioa.netlify.app/api/v1/search?q=dadv%20qb"</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="s2">"https://materioa.netlify.app/api/v2/search?q=dadv%20qb"</span>
 </code></pre></div></div>
 
 <h4 id="example-3-subject--topic">Example 3: Subject + Topic</h4>
 <p><strong>Query:</strong> <code class="language-plaintext highlighter-rouge">"EPJ servlets"</code><br />
 <strong>Matches:</strong> Enterprise Programming with Java → Chapters → Servlets</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="s2">"https://materioa.netlify.app/api/v1/search?q=EPJ%20servlets"</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="s2">"https://materioa.netlify.app/api/v2/search?q=EPJ%20servlets"</span>
 </code></pre></div></div>
 
 <h4 id="example-4-partial-match">Example 4: Partial Match</h4>
 <p><strong>Query:</strong> <code class="language-plaintext highlighter-rouge">"intro os"</code><br />
 <strong>Matches:</strong> Operating System → Chapters → Introduction</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="s2">"https://materioa.netlify.app/api/v1/search?q=intro%20os"</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="s2">"https://materioa.netlify.app/api/v2/search?q=intro%20os"</span>
 </code></pre></div></div>
 
 <h4 id="example-5-full-text">Example 5: Full Text</h4>
 <p><strong>Query:</strong> <code class="language-plaintext highlighter-rouge">"python flask"</code><br />
 <strong>Matches:</strong> Programming in Python with Full Stack → Chapters → Flask Framework</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="s2">"https://materioa.netlify.app/api/v1/search?q=python%20flask"</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="s2">"https://materioa.netlify.app/api/v2/search?q=python%20flask"</span>
 </code></pre></div></div>
 
 <h3 id="104-search-configuration">10.4 Search Configuration</h3>
@@ -2782,12 +2782,12 @@ node search.js
 
 <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="kd">function</span> <span class="nf">smartSearch</span><span class="p">(</span><span class="nx">query</span><span class="p">)</span> <span class="p">{</span>
   <span class="c1">// Try algorithmic first</span>
-  <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">fetch</span><span class="p">(</span><span class="s2">`/api/v1/search?q=</span><span class="p">${</span><span class="nf">encodeURIComponent</span><span class="p">(</span><span class="nx">query</span><span class="p">)}</span><span class="s2">`</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">fetch</span><span class="p">(</span><span class="s2">`/api/v2/search?q=</span><span class="p">${</span><span class="nf">encodeURIComponent</span><span class="p">(</span><span class="nx">query</span><span class="p">)}</span><span class="s2">`</span><span class="p">);</span>
   <span class="kd">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nf">json</span><span class="p">();</span>
   
   <span class="c1">// If poor results, use AI</span>
   <span class="k">if </span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">results</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">data</span><span class="p">.</span><span class="nx">results</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">score</span> <span class="o">&lt;</span> <span class="mi">60</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">const</span> <span class="nx">aiResponse</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">/api/v1/search</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">aiResponse</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">/api/v2/search</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
       <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">POST</span><span class="dl">'</span><span class="p">,</span>
       <span class="na">headers</span><span class="p">:</span> <span class="p">{</span> <span class="dl">'</span><span class="s1">Content-Type</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">application/json</span><span class="dl">'</span> <span class="p">},</span>
       <span class="na">body</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nf">stringify</span><span class="p">({</span> <span class="nx">query</span><span class="p">,</span> <span class="na">useAI</span><span class="p">:</span> <span class="kc">true</span> <span class="p">})</span>
@@ -2925,12 +2925,12 @@ netlify dev
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
 
 <span class="c"># 1. Validate invite code</span>
-curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/invites/validate <span class="se">\</span>
+curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/invites/validate <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{"inviteCode": "TESTCODE123"}'</span>
 
 <span class="c"># 2. Sign up new user</span>
-<span class="nv">SIGNUP_RESPONSE</span><span class="o">=</span><span class="si">$(</span>curl <span class="nt">-s</span> <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/signup <span class="se">\</span>
+<span class="nv">SIGNUP_RESPONSE</span><span class="o">=</span><span class="si">$(</span>curl <span class="nt">-s</span> <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/signup <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
     "username": "testuser",
@@ -2944,11 +2944,11 @@ curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/invites
 <span class="nv">TOKEN</span><span class="o">=</span><span class="si">$(</span><span class="nb">echo</span> <span class="nv">$SIGNUP_RESPONSE</span> | jq <span class="nt">-r</span> <span class="s1">'.token'</span><span class="si">)</span>
 
 <span class="c"># 3. Get user profile</span>
-curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile <span class="se">\</span>
+curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v2/profile <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">"</span>
 
 <span class="c"># 4. Update profile</span>
-curl <span class="nt">-X</span> PUT https://materioa.netlify.app/api/v1/profile <span class="se">\</span>
+curl <span class="nt">-X</span> PUT https://materioa.netlify.app/api/v2/profile <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
@@ -2993,7 +2993,7 @@ curl <span class="nt">-X</span> PUT https://materioa.netlify.app/api/v1/profile 
 
 <h3 id="3-error-handling-examples">3. Error Handling Examples</h3>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Test invalid credentials</span>
-curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/login <span class="se">\</span>
+curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/login <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
     "username": "invalid",
@@ -3001,11 +3001,11 @@ curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/login <
   }'</span> | jq
 
 <span class="c"># Test unauthorized access</span>
-curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v1/profile <span class="se">\</span>
+curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v2/profile <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer invalid_token"</span> | jq
 
 <span class="c"># Test missing required fields</span>
-curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/signup <span class="se">\</span>
+curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/signup <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{"username": "test"}'</span> | jq
 </code></pre></div></div>
@@ -3014,7 +3014,7 @@ curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/signup 
 
 <h2 id="api-changelog">API Changelog</h2>
 
-<h3 id="version-100-current">Version 1.0.0 (Current)</h3>
+<h3 id="version-200-current">Version 2.0.0 (Current)</h3>
 <ul>
   <li>Initial API release</li>
   <li>User authentication system</li>
@@ -3079,7 +3079,7 @@ curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/signup 
 
 <h3 id="api-status">API Status</h3>
 <p>Check API health:</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl https://materioa.netlify.app/api/v1/health
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl https://materioa.netlify.app/api/v2/health
 </code></pre></div></div>
 
 <h3 id="contact-support">Contact Support</h3>
@@ -3099,7 +3099,7 @@ curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v1/signup 
 
 <p><strong>Data Privacy</strong>: User data is handled according to our Privacy Policy. Personal information is encrypted and securely stored.</p>
 
-<p><strong>API Versioning</strong>: This is version 1 of the API. Breaking changes will be introduced in new versions with proper migration guides.</p>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[Complete API documentation for Materio v1 with cURL and PowerShell examples covering authentication, profile management, chat AI, admin tools, CDN management, and premium account recovery features.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:54011/assets/img/covers/b82d9728-d54f-41c9-85be-3b0e5dcea670.webp" /><media:content medium="image" url="http://localhost:54011/assets/img/covers/b82d9728-d54f-41c9-85be-3b0e5dcea670.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Enterprise Java Assignment 2 &amp;amp; 3 Solutions</title><link href="http://localhost:54011/resource/epj-assignment-2/" rel="alternate" type="text/html" title="Enterprise Java Assignment 2 &amp;amp; 3 Solutions" /><published>2025-08-20T00:00:00+05:30</published><updated>2025-08-20T00:00:00+05:30</updated><id>http://localhost:54011/resource/epj-assignment-2</id><content type="html" xml:base="http://localhost:54011/resource/epj-assignment-2/"><![CDATA[<p><strong>1. What is a Servlet?<br />
+<p><strong>API Versioning</strong>: This is version 1 of the API. Breaking changes will be introduced in new versions with proper migration guides.</p>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[Complete API documentation for Materio v2 with cURL and PowerShell examples covering authentication, profile management, chat AI, admin tools, CDN management, and premium account recovery features.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:58889/assets/img/covers/b82d9728-d54f-41c9-85be-3b0e5dcea670.webp" /><media:content medium="image" url="http://localhost:58889/assets/img/covers/b82d9728-d54f-41c9-85be-3b0e5dcea670.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Enterprise Java Assignment 2 &amp;amp; 3 Solutions</title><link href="http://localhost:58889/resource/epj-assignment-2/" rel="alternate" type="text/html" title="Enterprise Java Assignment 2 &amp;amp; 3 Solutions" /><published>2025-08-20T00:00:00+05:30</published><updated>2025-08-20T00:00:00+05:30</updated><id>http://localhost:58889/resource/epj-assignment-2</id><content type="html" xml:base="http://localhost:58889/resource/epj-assignment-2/"><![CDATA[<p><strong>1. What is a Servlet?<br />
 Explain the basics of a web application and how servlets function within Java-enabled web servers.</strong></p>
 
 <p>A <strong>Servlet</strong> is a Java programming language class used to extend the capabilities of servers that host applications accessed by means of a request-response model. Servlets are commonly used to create dynamic web applications.</p>
@@ -3543,7 +3543,7 @@ JSP can embed Java code directly within HTML to generate dynamic personalization
 
 <p>If you need an explanation in bullet points, a summary sheet, or further descriptions on any answer, let me know!</p>
 
-<div style="text-align: center">⁂</div>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This resourse provides with the solutions of all the questions given in assignment 2 and 3 of enterprise programming in java.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:54011/assets/img/covers/0a918c7d-1856-493a-a9d5-c8252dd9ae36.webp" /><media:content medium="image" url="http://localhost:54011/assets/img/covers/0a918c7d-1856-493a-a9d5-c8252dd9ae36.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Design and Analysis of Algorithms Psuedo Codes</title><link href="http://localhost:54011/programming/psuedo-codes/" rel="alternate" type="text/html" title="Design and Analysis of Algorithms Psuedo Codes" /><published>2025-08-02T11:00:26+05:30</published><updated>2025-08-02T11:00:26+05:30</updated><id>http://localhost:54011/programming/psuedo-codes</id><content type="html" xml:base="http://localhost:54011/programming/psuedo-codes/"><![CDATA[<h1 id="algorithm-pseudocodes">Algorithm Pseudocodes</h1>
+<div style="text-align: center">⁂</div>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This resourse provides with the solutions of all the questions given in assignment 2 and 3 of enterprise programming in java.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:58889/assets/img/covers/0a918c7d-1856-493a-a9d5-c8252dd9ae36.webp" /><media:content medium="image" url="http://localhost:58889/assets/img/covers/0a918c7d-1856-493a-a9d5-c8252dd9ae36.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Design and Analysis of Algorithms Psuedo Codes</title><link href="http://localhost:58889/programming/psuedo-codes/" rel="alternate" type="text/html" title="Design and Analysis of Algorithms Psuedo Codes" /><published>2025-08-02T11:00:26+05:30</published><updated>2025-08-02T11:00:26+05:30</updated><id>http://localhost:58889/programming/psuedo-codes</id><content type="html" xml:base="http://localhost:58889/programming/psuedo-codes/"><![CDATA[<h1 id="algorithm-pseudocodes">Algorithm Pseudocodes</h1>
 
 <h2 id="sorting-algorithms">Sorting Algorithms</h2>
 
@@ -3855,7 +3855,7 @@ END
   <li><strong>Prim’s</strong>: O(V²) with adjacency matrix, O(E log V) with priority queue</li>
   <li><strong>Dijkstra’s</strong>: O(V²) with adjacency matrix, O(E log V) with priority queue</li>
   <li><strong>Knapsack</strong>: O(nW) where W is capacity</li>
-</ul>]]></content><author><name></name></author><category term="Programming" /><summary type="html"><![CDATA[This resource covers all the psuedo codes of sorting, searching and greedy algorithms like krushkals, prims,knapsack problem etc.]]></summary></entry><entry><title type="html">Data Analytics and Data Visualization Question Bank with Solutions</title><link href="http://localhost:54011/resource/data-analytics-and-data-analysis-question-bank-with-solutions/" rel="alternate" type="text/html" title="Data Analytics and Data Visualization Question Bank with Solutions" /><published>2025-07-30T20:18:32+05:30</published><updated>2025-07-30T20:18:32+05:30</updated><id>http://localhost:54011/resource/data-analytics-and-data-analysis-question-bank-with-solutions</id><content type="html" xml:base="http://localhost:54011/resource/data-analytics-and-data-analysis-question-bank-with-solutions/"><![CDATA[<h2 id="short-answers">Short Answers</h2>
+</ul>]]></content><author><name></name></author><category term="Programming" /><summary type="html"><![CDATA[This resource covers all the psuedo codes of sorting, searching and greedy algorithms like krushkals, prims,knapsack problem etc.]]></summary></entry><entry><title type="html">Data Analytics and Data Visualization Question Bank with Solutions</title><link href="http://localhost:58889/resource/data-analytics-and-data-analysis-question-bank-with-solutions/" rel="alternate" type="text/html" title="Data Analytics and Data Visualization Question Bank with Solutions" /><published>2025-07-30T20:18:32+05:30</published><updated>2025-07-30T20:18:32+05:30</updated><id>http://localhost:58889/resource/data-analytics-and-data-analysis-question-bank-with-solutions</id><content type="html" xml:base="http://localhost:58889/resource/data-analytics-and-data-analysis-question-bank-with-solutions/"><![CDATA[<h2 id="short-answers">Short Answers</h2>
 <h3 id="1-explain-the-importance-of-data-in-modern-decision-making-processes"><strong>1. Explain the importance of data in modern decision-making processes.</strong></h3>
 <p><strong>Answer:</strong><br />
 Data is vital in today’s decision-making because it provides a <strong>factual basis</strong> for analysis, rather than relying on intuition or guesswork. Key reasons include:</p>
@@ -4489,7 +4489,7 @@ s = \sqrt{240.7} \approx 15.5 \text{ kg}\)</p>
   <li><strong>Improve Predictions:</strong> Tight dispersion leads to better models.</li>
 </ul>
 
-<p><strong>Conclusion:</strong> Dispersion measures are essential for determining data reliability, variability, and comparisons.</p>]]></content><author><name></name></author><category term="Resource" /><summary type="html"><![CDATA[&#8206;]]></summary></entry><entry><title type="html">Theory of Computation</title><link href="http://localhost:54011/theory-of-computation/" rel="alternate" type="text/html" title="Theory of Computation" /><published>2025-07-29T00:00:00+05:30</published><updated>2025-07-29T00:00:00+05:30</updated><id>http://localhost:54011/theory-of-computation</id><content type="html" xml:base="http://localhost:54011/theory-of-computation/"><![CDATA[<h1 id="unit-1-alphabet-languages-grammars-chomsky-hierarchy">UNIT 1: Alphabet, Languages, Grammars, Chomsky Hierarchy</h1>
+<p><strong>Conclusion:</strong> Dispersion measures are essential for determining data reliability, variability, and comparisons.</p>]]></content><author><name></name></author><category term="Resource" /><summary type="html"><![CDATA[&#8206;]]></summary></entry><entry><title type="html">Theory of Computation</title><link href="http://localhost:58889/theory-of-computation/" rel="alternate" type="text/html" title="Theory of Computation" /><published>2025-07-29T00:00:00+05:30</published><updated>2025-07-29T00:00:00+05:30</updated><id>http://localhost:58889/theory-of-computation</id><content type="html" xml:base="http://localhost:58889/theory-of-computation/"><![CDATA[<h1 id="unit-1-alphabet-languages-grammars-chomsky-hierarchy">UNIT 1: Alphabet, Languages, Grammars, Chomsky Hierarchy</h1>
 
 <h2 id="alphabets-strings-and-languages">Alphabets, Strings, and Languages</h2>
 <ul>
@@ -4625,7 +4625,7 @@ s = \sqrt{240.7} \approx 15.5 \text{ kg}\)</p>
 <ul>
   <li>All rules: A → BC or A → a</li>
   <li>Used for certain algorithms (e.g., CYK parsing)</li>
-</ul>]]></content><author><name></name></author><summary type="html"><![CDATA[&#8206;]]></summary></entry><entry><title type="html">Greedy Algorithm Codes</title><link href="http://localhost:54011/programming/greedy-algorithm-codes/" rel="alternate" type="text/html" title="Greedy Algorithm Codes" /><published>2025-07-28T17:43:26+05:30</published><updated>2025-07-28T17:43:26+05:30</updated><id>http://localhost:54011/programming/greedy-algorithm-codes</id><content type="html" xml:base="http://localhost:54011/programming/greedy-algorithm-codes/"><![CDATA[<h2 id="dijkstras-algorithm">Dijkstra’s Algorithm</h2>
+</ul>]]></content><author><name></name></author><summary type="html"><![CDATA[&#8206;]]></summary></entry><entry><title type="html">Greedy Algorithm Codes</title><link href="http://localhost:58889/programming/greedy-algorithm-codes/" rel="alternate" type="text/html" title="Greedy Algorithm Codes" /><published>2025-07-28T17:43:26+05:30</published><updated>2025-07-28T17:43:26+05:30</updated><id>http://localhost:58889/programming/greedy-algorithm-codes</id><content type="html" xml:base="http://localhost:58889/programming/greedy-algorithm-codes/"><![CDATA[<h2 id="dijkstras-algorithm">Dijkstra’s Algorithm</h2>
 
 <pre><code class="language-C">#define MAX 100
 #define INFINITY 9999
@@ -5043,7 +5043,7 @@ int main() {
 	knapsack(num, weight, profit, capacity);
 	return(0);
 }
-</code></pre>]]></content><author><name></name></author><category term="Programming" /><summary type="html"><![CDATA[This resource covers all the codes of greedy algorithms like krushkals, prims, knapsack problem etc.]]></summary></entry><entry><title type="html">DADV Assigmnent - 2 Solutions</title><link href="http://localhost:54011/resource/dadv-assigmnent-2-solutions/" rel="alternate" type="text/html" title="DADV Assigmnent - 2 Solutions" /><published>2025-07-25T15:36:09+05:30</published><updated>2025-07-25T15:36:09+05:30</updated><id>http://localhost:54011/resource/dadv-assigmnent-2-solutions</id><content type="html" xml:base="http://localhost:54011/resource/dadv-assigmnent-2-solutions/"><![CDATA[<h3 id="1-what-do-you-mean-by-python-give-the-importance-of-python">1. What do you mean by Python? Give the importance of Python.</h3>
+</code></pre>]]></content><author><name></name></author><category term="Programming" /><summary type="html"><![CDATA[This resource covers all the codes of greedy algorithms like krushkals, prims, knapsack problem etc.]]></summary></entry><entry><title type="html">DADV Assigmnent - 2 Solutions</title><link href="http://localhost:58889/resource/dadv-assigmnent-2-solutions/" rel="alternate" type="text/html" title="DADV Assigmnent - 2 Solutions" /><published>2025-07-25T15:36:09+05:30</published><updated>2025-07-25T15:36:09+05:30</updated><id>http://localhost:58889/resource/dadv-assigmnent-2-solutions</id><content type="html" xml:base="http://localhost:58889/resource/dadv-assigmnent-2-solutions/"><![CDATA[<h3 id="1-what-do-you-mean-by-python-give-the-importance-of-python">1. What do you mean by Python? Give the importance of Python.</h3>
 
 <p><strong>Answer:</strong></p>
 
@@ -5289,4 +5289,4 @@ Mean = (51 + 38 + 79 + 46 + 57) / 5 = 271 / 5 = 54.2</p>
 = 78.8 / (5 - 1) = 78.8 / 4 = 19.7</p>
 
 <p>Step 5: Sample standard deviation (s)<br />
-= √19.7 ≈ 4.44</p>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This resource provides with the solutions of the questions given in the assignment - 2 of Data Analytics and Data Visualization.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:54011/assets/img/covers/dadv-2.webp" /><media:content medium="image" url="http://localhost:54011/assets/img/covers/dadv-2.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+= √19.7 ≈ 4.44</p>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This resource provides with the solutions of the questions given in the assignment - 2 of Data Analytics and Data Visualization.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:58889/assets/img/covers/dadv-2.webp" /><media:content medium="image" url="http://localhost:58889/assets/img/covers/dadv-2.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

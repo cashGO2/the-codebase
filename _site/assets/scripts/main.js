@@ -913,7 +913,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (token) {
             try {
-                const response = await fetch('/api/v1/profile', {
+                const response = await fetch('/api/v2/profile', {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -1336,7 +1336,7 @@ async function performQuickSearch(query) {
         currentSearchController = new AbortController();
         
         // Build API URL with useAI parameter and aiMode=pure
-        const apiUrl = `/api/v1/search?q=${encodeURIComponent(query)}${aiSearchEnabled ? '&useAI=true&aiMode=pure' : ''}`;
+        const apiUrl = `/api/v2/search?q=${encodeURIComponent(query)}${aiSearchEnabled ? '&useAI=true&aiMode=pure' : ''}`;
         
         // Call search API
         const response = await fetch(apiUrl, {

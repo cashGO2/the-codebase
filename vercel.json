@@ -50,6 +50,7 @@
     { "source": "/blog", "destination": "/room", "permanent": true },
     { "source": "/programming%20humor/(.*)", "destination": "/programming-humor/$1", "permanent": true },
     { "source": "/code%20craftsmanship/(.*)", "destination": "/code-craftsmanship/$1", "permanent": true },
-    { "source": "/paper%20solution/(.*)", "destination": "/paper-solution/$1", "permanent": true }
+    { "source": "/paper%20solution/(.*)", "destination": "/paper-solution/$1", "permanent": true },
+    { "source": "/status", "destination":"https://statuspage.incident.io/materio", "permanent":true}
   ]
 }
