@@ -5,7 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
 
 // Get config from our config file
-const supabaseConfig = require('../config/supabase');
+const supabaseConfig = require('../_config_shared/supabase');
 const SUPABASE_URL = supabaseConfig.SUPABASE_URL;
 const SUPABASE_ANON_KEY = supabaseConfig.SUPABASE_ANON_KEY;
 const SUPABASE_SERVICE_KEY = supabaseConfig.SUPABASE_SERVICE_KEY;

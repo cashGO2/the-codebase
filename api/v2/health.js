@@ -1,7 +1,7 @@
 const os = require('os');
 const { createClient } = require('@supabase/supabase-js');
-const { SUPABASE_URL, SUPABASE_SERVICE_KEY } = require('../config/supabase');
-const { logError, getErrorsLastHour } = require('../utils/error-tracker');
+const { SUPABASE_URL, SUPABASE_SERVICE_KEY } = require('../_config_shared/supabase');
+const { logError, getErrorsLastHour } = require('../_utils_shared/error-tracker');
 const fs = require('fs');
 const path = require('path');
 
