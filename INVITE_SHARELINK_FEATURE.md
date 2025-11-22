@@ -33,7 +33,7 @@ The `{name}` placeholder is currently replaced with "friend" in dynamic pages.
 
 ## API Endpoints
 
-### POST `/api/v1/invites/sharelink`
+### POST `/api/v2/features?action=sharelink`
 Creates or updates a sharelink with custom heading.
 
 **Request Body:**
@@ -79,7 +79,7 @@ CREATE TABLE sharelinks (
 ## Files Modified
 
 ### Backend
-- `api/v1/invites.js` - Added sharelink endpoint
+- `api/v2/features.js` - Added sharelink endpoint (merged from sharelink.js)
 - `api/invites.js` - New dynamic route handler
 - `netlify.toml` - Added redirect rule for dynamic routes
 - `migrations/create_sharelinks_table.sql` - Database migration

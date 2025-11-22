@@ -87,11 +87,14 @@
         resultDiv.textContent = 'Creating sharelink...';
         resultDiv.style.display = 'block';
         
-        // Use debug endpoint to avoid auth requirements
-        const response = await fetch('/debug-sharelink', {
+        // Use features endpoint
+        const response = await fetch('/api/v2/features?action=sharelink', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            // Note: This endpoint requires auth, so this test tool might need updating to include auth token
+            // or use a debug endpoint if available. For now, pointing to the new location.
+            'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
           },
           body: JSON.stringify({
             inviteCode,
@@ -126,7 +129,7 @@
         resultDiv.textContent = 'Looking up sharelink...';
         resultDiv.style.display = 'block';
         
-        const response = await fetch(`/sharelink-info?code=${inviteCode}`);
+        const response = await fetch(`/api/v2/invites/sharelink-info?code=${inviteCode}`);
         
         if (response.ok) {
           const data = await response.json();

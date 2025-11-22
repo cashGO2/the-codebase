@@ -2986,18 +2986,19 @@ function openShareModal(inviteCode) {
   })
     .then(response => {
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // If 404, it might be because the endpoint is not available or path is wrong
+        // Try the features endpoint as fallback if needed, or just ignore for now
+        console.warn(`Diagnostic check failed with status: ${response.status}`);
+        return null;
       }
       return response.json();
     })
     .then(data => {
-      console.log('Debug info:', data);
-      if (!data.tableExists) {
-        showNotification('Sharelinks table not found. Attempting to create it...', 'warning');
-        
-        // Run the migration to create the table
-        // Note: Migration endpoint removed, assuming manual migration or handled elsewhere
-        console.log('Migration endpoint removed');
+      if (data) {
+        console.log('Debug info:', data);
+        if (!data.tableExists && data.found === false && data.error && data.error.includes('relation "sharelinks" does not exist')) {
+          showNotification('Sharelinks table not found. Please contact admin.', 'warning');
+        }
       }
     })
     .catch(error => {
@@ -3053,7 +3054,7 @@ async function updateShareLink() {
     if (!successfulUpdate) {
       try {
         console.log('Attempting to update using sharelink endpoint...');
-        const response = await fetch('/api/v2/invites/sharelink', {
+        const response = await fetch('/api/v2/features?action=sharelink', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -3150,7 +3151,7 @@ async function updateShareLink() {
         // Try to check if the URL is available without parameters
         console.log('Verifying sharelink in database...');
         try {
-          const response = await fetch(`/sharelink-info?code=${currentInviteCode}`);
+          const response = await fetch(`/api/v2/invites/sharelink-info?code=${currentInviteCode}`);
           
           if (response.ok) {
             // Data exists in database, use a clean URL

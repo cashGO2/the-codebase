@@ -45,6 +45,7 @@ module.exports = async (req, res) => {
     const isToggleAdminEndpoint = pathAction === 'toggle-admin' || url.pathname.includes('/invites/toggle-admin');
     const isTogglePlusEndpoint = pathAction === 'toggle-plus' || url.pathname.includes('/invites/toggle-plus');
     const isDeleteEndpoint = pathAction === 'delete' || url.pathname.includes('/invites/delete');
+    // Sharelink endpoint moved to features.js
     const isSharelinkEndpoint = pathAction === 'sharelink' || url.pathname.includes('/sharelink') || bodyAction === 'sharelink';
     const isSharelinkInfoEndpoint = pathAction === 'sharelink-info' || url.pathname.includes('/sharelink-info');
     const isDynamicInviteEndpoint = pathAction === 'dynamic' || url.pathname.includes('/invites/dynamic') || req.query.inviteCode;
@@ -88,7 +89,7 @@ module.exports = async (req, res) => {
     }
 
     // Admin required endpoints
-    if (isToggleAdminEndpoint || isTogglePlusEndpoint || isDeleteEndpoint || isSharelinkEndpoint || (req.method === 'POST' && !isSharelinkEndpoint) || (req.method === 'GET' && !isSharelinkEndpoint)) {
+    if (isToggleAdminEndpoint || isTogglePlusEndpoint || isDeleteEndpoint || (req.method === 'POST' && !isSharelinkEndpoint) || (req.method === 'GET' && !isSharelinkEndpoint)) {
        if (!user.has_admin_privileges) {
          return res.status(403).json({ error: 'Admin privileges required' });
        }
@@ -106,8 +107,13 @@ module.exports = async (req, res) => {
       return await deleteInvite(req, res, origin, user.id);
     }
 
+    // Sharelink creation is now handled in features.js
     if (isSharelinkEndpoint && req.method === 'POST') {
-      return await createSharelink(req, res, origin, user.id);
+      return res.status(301).json({ 
+        error: 'Endpoint moved', 
+        message: 'Please use /api/v2/features?action=sharelink',
+        newEndpoint: '/api/v2/features?action=sharelink'
+      });
     }
 
     // Default CRUD for invites
@@ -273,7 +279,9 @@ async function diagnosticInvite(req, res, origin) {
     
     if (!inviteCode) {
       return res.status(400).json({ error: 'Invite code is required' });
-    }    // Get detailed invite information
+    }
+    
+    // Get detailed invite information
     const { data: invite, error } = await supabase
       .from('invites')
       .select('*')
@@ -414,81 +422,8 @@ async function deleteInvite(req, res, origin, adminUserId) {
   }
 }
 
-// Create shareable link for invite
-async function createSharelink(req, res, origin, userId) {
-  try {
-    // Parse request body and extract parameters
-    const bodyData = req.body;
-    
-    // Support both direct parameters and nested action format
-    let inviteCode, customHeading;
-    
-    if (bodyData.action === 'sharelink') {
-      // New format with action field
-      inviteCode = bodyData.inviteCode;
-      customHeading = bodyData.customHeading;
-    } else {
-      // Original format
-      inviteCode = bodyData.inviteCode;
-      customHeading = bodyData.customHeading;
-    }
-    
-    console.log('Parsed sharelink data:', { inviteCode, customHeading });
-    
-    if (!inviteCode) {
-      return res.status(400).json({ error: 'Invite code is required' });
-    }
-
-    // Verify that the invite exists and belongs to this user
-    const { data: invite, error: inviteError } = await supabase
-      .from('invites')
-      .select('id, code, created_by, contains_plus_perks')
-      .eq('code', inviteCode)
-      .eq('created_by', userId)
-      .single();
-
-    if (inviteError || !invite) {
-      return res.status(404).json({ error: 'Invite not found or access denied' });
-    }
-
-    // Create the sharelink record
-    const { data: sharelink, error: sharelinkError } = await supabase
-      .from('sharelinks')
-      .upsert({
-        invite_code: inviteCode,
-        custom_heading: customHeading || null,
-        created_by: userId,
-        updated_at: new Date().toISOString()
-      }, {
-        onConflict: 'invite_code'
-      })
-      .select()
-      .single();
-
-    if (sharelinkError) {
-      return res.status(500).json({ error: 'Failed to create sharelink', details: sharelinkError });
-    }
-
-    // Determine the base URL based on the environment
-    const isLocalhost = origin && (origin.includes('localhost') || origin.includes('127.0.0.1'));
-    const baseUrl = isLocalhost ? origin : 'https://materioa.netlify.app';
-
-    // Return the sharelink data
-    return res.status(200).json({
-      message: 'Sharelink created successfully',
-      sharelink: {
-        inviteCode: sharelink.invite_code,
-        customHeading: sharelink.custom_heading,
-        url: `${baseUrl}/invites/${sharelink.invite_code}`,
-        createdAt: sharelink.created_at,
-        updatedAt: sharelink.updated_at
-      }
-    });
-  } catch (error) {
-    console.error('Create sharelink error:', error);
-    return res.status(500).json({ error: 'Internal server error', details: error.message });
-  }
-}
+// Create shareable link for invite - DEPRECATED: Moved to features.js
+// async function createSharelink(req, res, origin, userId) { ... }
 
 async function handleSharelinkInfo(req, res, origin) {
   try {
@@ -784,3 +719,5 @@ async function handleDynamicInvite(req, res, origin) {
     return res.status(500).send('Internal Server Error');
   }
 }
+
+// Removed createSharelink function as it has been moved to features.js

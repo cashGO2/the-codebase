@@ -12,6 +12,8 @@ app.use(express.json({ limit: '10mb' }));
 
 // Import chat functionality
 const chatHandler = require('../api/v2/chat');
+const featuresHandler = require('../api/v2/features');
+const invitesHandler = require('../api/v2/invites');
 
 // Chat API routes
 app.get('/api/v2/chat/models', async (req, res) => {
@@ -38,6 +40,28 @@ app.post('/api/v2/chat', async (req, res) => {
 app.get('/api/v2/chat/health', async (req, res) => {
   try {
     await chatHandler(req, res);
+  } catch (error) {
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  }
+});
+
+// Invites API routes
+app.all('/api/v2/invites*', async (req, res) => {
+  try {
+    await invitesHandler(req, res);
+  } catch (error) {
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  }
+});
+
+// Features API routes (including sharelink)
+app.all('/api/v2/features', async (req, res) => {
+  try {
+    await featuresHandler(req, res);
   } catch (error) {
     if (!res.headersSent) {
       res.status(500).json({ success: false, error: error.message });
@@ -97,6 +121,8 @@ if (require.main === module) {
     console.log(`Chat API: POST /api/v2/chat`);
     console.log(`Chat Models: GET /api/v2/chat/models`);
     console.log(`Chat Health: GET /api/v2/chat/health`);
+    console.log(`Invites API: ALL /api/v2/invites*`);
+    console.log(`Features API: ALL /api/v2/features`);
   });
 }
 
