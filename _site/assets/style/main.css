@@ -292,6 +292,24 @@ body.dark-mode .health-status-text {
     box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
 }
 
+/* Mobile responsiveness for health indicator */
+@media (max-width: 768px) {
+    .health-status-container:hover {
+        background-color: transparent;
+        padding-right: 5px;
+    }
+    
+    body.dark-mode .health-status-container:hover {
+        background-color: transparent;
+    }
+
+    .health-status-container:hover .health-status-text {
+        max-width: 0;
+        margin-left: 0;
+        opacity: 0;
+    }
+}
+
 
 a,
 p {
@@ -3563,7 +3581,6 @@ body.dark-mode #downloadsTableWrapper::-webkit-scrollbar {
     font-family: 'Manrope', sans-serif;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    box-sizing: border-box;
 }
 
 #quickSearchInput.ai-mode {
