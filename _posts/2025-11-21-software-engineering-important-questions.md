@@ -2,13 +2,14 @@
 title: Software Engineering Important Questions
 layout: post
 date: '2025-11-21 08:02:35'
-excerpt: Resource provide important questions for exam
+excerpt: This Resource lists important questions for end semester exams
+category: Resource
+author: default
+summarize: true
+semester: "5"
+subject: "Software Engineering"
 ---
 
-# Important Questions for Software Engineering  
-**End Semester Preparation**
-
----
 
 ## UNIT 1: Introduction to Software Engineering
 
