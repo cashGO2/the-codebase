@@ -4,18 +4,20 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') {
     // Get the requesting origin
     const origin = req.headers.origin;
-    
+
     // Determine if this origin should be allowed
     const allowedOrigins = [
       'http://localhost:8888',
-      'https://materioa.netlify.app'
+      'https://materioa.netlify.app',
+      'https://materioa.vercel.app',
+      'https://materioapp.in'
     ];
-      // Set Origin to the requesting origin if it's allowed, otherwise use wildcard
+    // Set Origin to the requesting origin if it's allowed, otherwise use wildcard
     // CORS spec requires a single origin value, not a comma-separated list
     const corsOrigin = origin && allowedOrigins.includes(origin) ? origin : '*';
-    
+
     console.log(`CORS preflight request from origin: ${origin}, responding with: ${corsOrigin}`);
-    
+
     res.status(204).set({
       'Access-Control-Allow-Origin': corsOrigin, // Single origin, not a list
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',

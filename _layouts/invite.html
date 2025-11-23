@@ -584,7 +584,7 @@
       try {
         console.log('Fetching heading from database for invite code:', inviteCode);
         // First try to get the heading from the database
-        const response = await fetch(`/sharelink-info?code=${inviteCode}`);
+        const response = await fetch(`/api/v2/invites/sharelink-info?code=${inviteCode}`);
         console.log('Sharelink info response status:', response.status);
         
         if (response.ok) {
@@ -695,7 +695,7 @@
     async function validateInviteCode(code) {
       try {
         // Validate invite code with the server (same endpoint as signup page)
-        const response = await fetch('/api/v1/invites/validate', {
+        const response = await fetch('/api/v2/invites/validate', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

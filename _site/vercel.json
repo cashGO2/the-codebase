@@ -42,6 +42,11 @@
     }
   ],
   "rewrites": [
+    { "source": "/api/v2/features/:path*", "destination": "/api/v2/features.js" },
+    { "source": "/api/v2/invites/sharelink-info", "destination": "/api/v2/invites.js" },
+    { "source": "/api/v2/invites/:path*", "destination": "/api/v2/invites.js" },
+    { "source": "/sharelink-info", "destination": "/api/v2/invites.js" },
+    { "source": "/invites/:code", "destination": "/invite.html" },
     { "source": "/account/profile", "destination": "/account/profile.html" },
     { "source": "/sharelink-test", "destination": "/sharelink-test.html" },
     { "source": "/api/v1/:path*", "destination": "/api/v2/:path*" }

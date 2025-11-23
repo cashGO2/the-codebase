@@ -635,7 +635,7 @@ Remember: Only rank items from the search results above. Use exact values for se
                 headers: {
                     'Authorization': `Bearer ${API_KEY}`,
                     'Content-Type': 'application/json',
-                    'HTTP-Referer': 'https://materioa.netlify.app',
+                    'HTTP-Referer': 'https://materioa.vercel.app',
                     'X-Title': 'Materio Search'
                 },
                 body: JSON.stringify({

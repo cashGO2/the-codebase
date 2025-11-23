@@ -66,7 +66,9 @@ const corsHeaders = (origin) => {
   // Define allowed origins
   const allowedOrigins = [
     'http://localhost:8888',
-    'https://materioa.netlify.app'
+    'https://materioa.netlify.app',
+    'https://materioa.vercel.app',
+    'https://materioapp.in'
   ];
   
   // Set origin to the requesting origin if it's in allowedOrigins, otherwise use wildcard

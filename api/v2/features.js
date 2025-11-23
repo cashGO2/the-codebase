@@ -9,7 +9,7 @@ const { verifyToken, corsHeaders, getTokenFromHeaders, supabase } = require('./_
 // ==========================================
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'https://auth-materioa.netlify.app/account/profile.html';
+const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'https://materioa.vercel.app/account/profile.html';
 
 const oauth2Client = new google.auth.OAuth2(
   GOOGLE_CLIENT_ID,
@@ -44,6 +44,12 @@ module.exports = async (req, res) => {
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
     
+    // Parse query parameters manually if req.query is not available
+    const queryParams = {};
+    url.searchParams.forEach((value, key) => {
+      queryParams[key] = value;
+    });
+    
     // Determine which feature is being requested
     // Check path first
     const isInsights = url.pathname.includes('/insights');
@@ -52,7 +58,9 @@ module.exports = async (req, res) => {
     const isSharelink = url.pathname.includes('/sharelink');
     
     // Check query param action
-    const action = req.query.action;
+    const action = queryParams.action || req.query?.action;
+    
+    console.log('Features API - pathname:', url.pathname, 'action:', action);
     
     if (isInsights || action === 'insights') {
       return await handleInsights(req, res);
@@ -70,7 +78,14 @@ module.exports = async (req, res) => {
       return await handleSharelink(req, res);
     }
 
-    return res.status(404).json({ error: 'Feature not found' });
+    return res.status(404).json({ 
+      error: 'Feature not found',
+      debug: {
+        pathname: url.pathname,
+        action: action,
+        availableFeatures: ['insights', 'save-promo', 'google-drive', 'sharelink']
+      }
+    });
 
   } catch (error) {
     console.error('Features API error:', error);
@@ -89,6 +104,7 @@ async function handleInsights(req, res) {
   }
 
   try {
+    console.log('Handling insights request...');
     const [response] = await analyticsDataClient.runRealtimeReport({
       property: `properties/${process.env.GA4_PROPERTY_ID}`,
       dimensions: [{ name: 'unifiedScreenName' }],
@@ -97,9 +113,15 @@ async function handleInsights(req, res) {
 
     const users = response.rows?.[0]?.metricValues?.[0]?.value || '0';
 
-    // Set Cache-Control header
+    // Set headers
+    const origin = req.headers.origin || req.headers.Origin;
+    const headers = corsHeaders(origin);
+    Object.entries(headers).forEach(([key, value]) => {
+      res.setHeader(key, value);
+    });
     res.setHeader('Cache-Control', 'no-store');
     
+    console.log('Insights response:', { users });
     return res.status(200).json({ users });
   } catch (error) {
     console.error('Error fetching real-time users:', error);
@@ -588,7 +610,7 @@ async function createSharelink(req, res, origin, userId) {
     
     // Determine the base URL based on the environment
     const isLocalhost = origin && (origin.includes('localhost') || origin.includes('127.0.0.1'));
-    const baseUrl = isLocalhost ? origin : 'https://materioa.netlify.app';
+    const baseUrl = isLocalhost ? origin : 'https://materioa.vercel.app';
     
     // Even if we don't have a sharelink object, we can still return a valid URL
     // This handles the case where the database operation succeeded but didn't return data

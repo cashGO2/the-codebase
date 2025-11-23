@@ -186,7 +186,7 @@ module.exports = async (req, res) => {
                 headers: {
                     'Authorization': `Bearer ${API_KEY}`,
                     'Content-Type': 'application/json',
-                    'HTTP-Referer': req.headers.referer || 'https://materioa.netlify.app',
+                    'HTTP-Referer': req.headers.referer || 'https://materioa.vercel.app',
                     'X-Title': 'Materio AI Chat'
                 },
                 body: JSON.stringify({
