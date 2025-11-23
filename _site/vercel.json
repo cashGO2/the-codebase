@@ -3,6 +3,7 @@
   "buildCommand": "node scripts/generate-build-id.js && bundle exec jekyll build && node scripts/minify-assets.js",
   "outputDirectory": "_site",
   "framework": "jekyll",
+  "cleanUrls": true,
   "headers": [
     {
       "source": "/assets/data/(.*).json",
@@ -48,6 +49,8 @@
     { "source": "/sharelink-info", "destination": "/api/v2/invites.js" },
     { "source": "/invites/:code", "destination": "/invite.html" },
     { "source": "/account/profile", "destination": "/account/profile.html" },
+    { "source": "/account/signup", "destination": "/account/signup.html" },
+    { "source": "/account/forgot-password", "destination": "/account/forgot-password.html" },
     { "source": "/sharelink-test", "destination": "/sharelink-test.html" },
     { "source": "/api/v1/:path*", "destination": "/api/v2/:path*" }
   ],

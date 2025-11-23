@@ -4,6 +4,8 @@ const {
   getTokenFromHeaders,
   corsHeaders
 } = require('./_utils');
+const formidable = require('formidable');
+const fs = require('fs');
 
 // Load environment variables
 require('dotenv').config();
@@ -179,109 +181,42 @@ async function listGitHubFiles(octokit, owner, repo, path, origin, res) {
 async function uploadGitHubFile(req, octokit, owner, repo, origin, res) {
   try {
     console.log('Upload request received');
-    console.log('Content-Type:', req.headers['content-type']);
-    console.log('Body length:', req.body ? req.body.length : 0);
     
-    if (!req.body) {
-      return res.status(400).json({ error: 'No body provided' });
-    }
+    // Use formidable to parse the request
+    const form = new formidable.IncomingForm({
+      multiples: false, // Single file upload
+      maxFileSize: 6 * 1024 * 1024, // 6MB
+      keepExtensions: true,
+    });
 
-    // Parse multipart form data manually for serverless
-    // In Vercel/Express, req.body might already be parsed if using body-parser, 
-    // but for binary uploads we might need raw body. 
-    // Assuming req.body is a buffer or string depending on configuration.
-    // If using Vercel serverless functions, we might need to handle this differently.
-    // For now, assuming similar behavior to Netlify where we get raw body.
-    const body = Buffer.isBuffer(req.body) ? req.body : Buffer.from(req.body);
-    
-    // Check request size limit (Netlify Functions have a 6MB limit for synchronous functions)
-    // Note: 50MB is the desired limit but Netlify Functions are limited to 6MB
-    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB desired limit
-    const NETLIFY_LIMIT = 6 * 1024 * 1024; // 6MB actual Netlify limit
-    
-    if (body.length > NETLIFY_LIMIT) {
-      return res.status(413).json({ 
-        error: `File too large for current hosting. Maximum size is ${Math.round(NETLIFY_LIMIT / 1024 / 1024)}MB due to Netlify Functions limitations. Your file is ${Math.round(body.length / 1024 / 1024)}MB. Consider using a different upload method for larger files.` 
+    const [fields, files] = await new Promise((resolve, reject) => {
+      form.parse(req, (err, fields, files) => {
+        if (err) reject(err);
+        else resolve([fields, files]);
       });
+    });
+
+    // Helper to get single value from fields
+    const getValue = (key) => {
+      const val = fields[key];
+      return Array.isArray(val) ? val[0] : val;
+    };
+
+    const targetPath = getValue('path') || '';
+    const uploadedFile = files.file; // 'file' is the field name
+
+    if (!uploadedFile) {
+      return res.status(400).json({ error: 'No file provided' });
     }
     
-    const contentType = req.headers['content-type'] || req.headers['Content-Type'];
+    const file = Array.isArray(uploadedFile) ? uploadedFile[0] : uploadedFile;
+    const fileName = file.originalFilename;
     
-    if (!contentType || !contentType.includes('multipart/form-data')) {
-      return res.status(400).json({ error: 'Invalid content type. Expected multipart/form-data' });
-    }
-
-    // Extract boundary
-    const boundary = contentType.split('boundary=')[1];
-    if (!boundary) {
-      return res.status(400).json({ error: 'No boundary found in content-type' });
-    }
-
-    // Parse multipart data while preserving binary content
-    let fileContent = null;
-    let fileName = null;
-    let targetPath = '';
-    
-    try {
-      const boundaryBuffer = Buffer.from(`--${boundary}`);
-      const parts = [];
-      let startIndex = 0;
-      
-      while (true) {
-        const boundaryIndex = body.indexOf(boundaryBuffer, startIndex);
-        if (boundaryIndex === -1) break;
-        
-        if (startIndex !== 0) {
-          parts.push(body.slice(startIndex, boundaryIndex));
-        }
-        startIndex = boundaryIndex + boundaryBuffer.length;
-      }
-
-      for (const part of parts) {
-        const partStr = part.toString('utf8', 0, Math.min(part.length, 1000)); // Only convert headers to string
-        if (partStr.includes('Content-Disposition: form-data')) {
-          const lines = partStr.split('\r\n');
-          const disposition = lines.find(line => line.includes('Content-Disposition'));
-          
-          if (disposition && disposition.includes('name="file"')) {
-            // Extract filename
-            const filenameMatch = disposition.match(/filename="([^"]+)"/);
-            if (filenameMatch) {
-              fileName = filenameMatch[1];
-            }
-            
-            // Find content (after double CRLF) - preserve binary data
-            const headerEndPattern = Buffer.from('\r\n\r\n');
-            const contentStart = part.indexOf(headerEndPattern) + 4;
-            const contentEndPattern = Buffer.from('\r\n');
-            const contentEnd = part.lastIndexOf(contentEndPattern);
-            
-            if (contentStart < contentEnd) {
-              fileContent = part.slice(contentStart, contentEnd);
-            }
-          } else if (disposition && disposition.includes('name="path"')) {
-            // Extract path
-            const headerEndPattern = Buffer.from('\r\n\r\n');
-            const contentStart = part.indexOf(headerEndPattern) + 4;
-            const contentEndPattern = Buffer.from('\r\n');
-            const contentEnd = part.lastIndexOf(contentEndPattern);
-            
-            if (contentStart < contentEnd) {
-              targetPath = part.slice(contentStart, contentEnd).toString('utf8').trim();
-            }
-          }
-        }
-      }
-    } catch (parseError) {
-      console.error('Multipart parsing error:', parseError);
-      return res.status(400).json({ error: 'Failed to parse multipart data. File may be too large or corrupted.' });
-    }
-
-    if (!fileContent || !fileName) {
-      return res.status(400).json({ error: 'No file provided or file parsing failed' });
-    }
+    // Read file content
+    const fileContent = fs.readFileSync(file.filepath);
 
     // Additional file size validation for the actual file content
+    const NETLIFY_LIMIT = 6 * 1024 * 1024; // 6MB actual Netlify limit
     if (fileContent.length > NETLIFY_LIMIT) {
       return res.status(413).json({ 
         error: `File "${fileName}" is too large for current hosting. Maximum size is ${Math.round(NETLIFY_LIMIT / 1024 / 1024)}MB due to Netlify Functions limitations. Your file is ${Math.round(fileContent.length / 1024 / 1024)}MB.` 
@@ -678,63 +613,52 @@ async function createDeletionNotification(octokit, owner, repo, deletedPath, ori
 async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
   try {
     console.log('Upload request received');
-    console.log('Content-Type:', req.headers['content-type']);
-    console.log('Body length:', req.body ? req.body.length : 0);
     
-    if (!req.body) {
-      return res.status(400).json({ error: 'No body provided' });
-    }
+    // Use formidable to parse the request
+    const form = new formidable.IncomingForm({
+      multiples: true,
+      maxFileSize: 6 * 1024 * 1024, // 6MB
+      keepExtensions: true,
+    });
 
-    // Parse multipart form data manually for serverless
-    const body = Buffer.isBuffer(req.body) ? req.body : Buffer.from(req.body);
-    
-    // Check request size limit (Netlify Functions have a 6MB limit for synchronous functions)
-    const NETLIFY_LIMIT = 6 * 1024 * 1024; // 6MB actual Netlify limit
-    
-    if (body.length > NETLIFY_LIMIT) {
-      return res.status(413).json({ 
-        error: `Request too large for current hosting. Maximum size is ${Math.round(NETLIFY_LIMIT / 1024 / 1024)}MB due to Netlify Functions limitations.` 
+    const [fields, files] = await new Promise((resolve, reject) => {
+      form.parse(req, (err, fields, files) => {
+        if (err) reject(err);
+        else resolve([fields, files]);
       });
-    }
-    
-    const contentType = req.headers['content-type'] || req.headers['Content-Type'];
-    
-    if (!contentType || !contentType.includes('multipart/form-data')) {
-      return res.status(400).json({ error: 'Invalid content type. Expected multipart/form-data' });
-    }
+    });
 
-    // Extract boundary
-    const boundary = contentType.split('boundary=')[1];
-    if (!boundary) {
-      return res.status(400).json({ error: 'No boundary found in content-type' });
-    }
+    // Helper to get single value from fields (formidable v3 might return arrays)
+    const getValue = (key) => {
+      const val = fields[key];
+      return Array.isArray(val) ? val[0] : val;
+    };
 
-    // Parse multipart data
-    const parsedData = await parseBatchMultipartData(body, boundary);
-    
-    if (!parsedData.files || parsedData.files.length === 0) {
-      return res.status(400).json({ error: 'No files provided' });
-    }
-
-    // Extract form data
-    const semester = parsedData.fields.semester;
-    const subject = parsedData.fields.subject;
-    const category = parsedData.fields.category;
-    const autoPushNotify = parsedData.fields.autoPushNotify === 'true';
-    const basePath = parsedData.fields.basePath || `pdfs/${semester}/${subject}`;
+    const semester = getValue('semester');
+    const subject = getValue('subject');
+    const category = getValue('category');
+    const autoPushNotify = getValue('autoPushNotify') === 'true';
+    const basePath = getValue('basePath') || `pdfs/${semester}/${subject}`;
 
     if (!semester || !subject || !category) {
       return res.status(400).json({ error: 'Missing required fields: semester, subject, category' });
     }
 
+    const uploadedFilesList = files.files; // 'files' is the field name
+    if (!uploadedFilesList) {
+      return res.status(400).json({ error: 'No files provided' });
+    }
+    
+    const fileList = Array.isArray(uploadedFilesList) ? uploadedFilesList : [uploadedFilesList];
+
     // Validate all files are PDFs
-    for (const file of parsedData.files) {
-      if (!file.filename.toLowerCase().endsWith('.pdf')) {
-        return res.status(400).json({ error: `Only PDF files are allowed. File "${file.filename}" is not a PDF.` });
+    for (const file of fileList) {
+      if (!file.originalFilename.toLowerCase().endsWith('.pdf')) {
+        return res.status(400).json({ error: `Only PDF files are allowed. File "${file.originalFilename}" is not a PDF.` });
       }
     }
 
-    console.log(`Starting upload: ${parsedData.files.length} files for ${subject} - ${category}`);
+    console.log(`Starting upload: ${fileList.length} files for ${subject} - ${category}`);
 
     // Get current repository state
     const { data: ref } = await octokit.rest.git.getRef({
@@ -757,14 +681,17 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
     const uploadedFiles = [];
 
     // Add course files to tree by creating blobs first
-    for (const file of parsedData.files) {
-      const filePath = `${basePath}/${file.filename}`;
+    for (const file of fileList) {
+      const filePath = `${basePath}/${file.originalFilename}`;
+      
+      // Read file content
+      const content = fs.readFileSync(file.filepath);
       
       // Create blob for the file content (GitHub expects base64 for blob creation)
       const { data: blob } = await octokit.rest.git.createBlob({
         owner,
         repo,
-        content: file.content.toString('base64'),
+        content: content.toString('base64'),
         encoding: 'base64'
       });
       
@@ -776,10 +703,10 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
       });
 
       uploadedFiles.push({
-        name: file.filename.replace(/\.[^/.]+$/, ""), // Remove extension
+        name: file.originalFilename.replace(/\.[^/.]+$/, ""), // Remove extension
         path: filePath,
-        filename: file.filename,
-        size: file.content.length
+        filename: file.originalFilename,
+        size: file.size
       });
     }
 
@@ -947,70 +874,11 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
   }
 }
 
-// Helper function to parse multipart data for batch upload
-async function parseBatchMultipartData(body, boundary) {
-  const boundaryBuffer = Buffer.from(`--${boundary}`);
-  const parts = [];
-  let startIndex = 0;
-  
-  while (true) {
-    const boundaryIndex = body.indexOf(boundaryBuffer, startIndex);
-    if (boundaryIndex === -1) break;
-    
-    if (startIndex !== 0) {
-      parts.push(body.slice(startIndex, boundaryIndex));
-    }
-    startIndex = boundaryIndex + boundaryBuffer.length;
-  }
+// Disable body parser for this function to allow formidable to handle multipart data
+module.exports.config = {
+  api: {
+    bodyParser: false,
+  },
+};
 
-  const parsedData = {
-    fields: {},
-    files: []
-  };
 
-  for (const part of parts) {
-    if (part.length === 0) continue;
-    
-    const partStr = part.toString('utf8', 0, Math.min(part.length, 1000));
-    if (!partStr.includes('Content-Disposition: form-data')) continue;
-    
-    const lines = partStr.split('\r\n');
-    const disposition = lines.find(line => line.includes('Content-Disposition'));
-    
-    if (!disposition) continue;
-    
-    // Extract name attribute
-    const nameMatch = disposition.match(/name="([^"]+)"/);
-    if (!nameMatch) continue;
-    
-    const fieldName = nameMatch[1];
-    
-    // Find content start (after double CRLF)
-    const headerEndPattern = Buffer.from('\r\n\r\n');
-    const contentStart = part.indexOf(headerEndPattern) + 4;
-    const contentEndPattern = Buffer.from('\r\n');
-    const contentEnd = part.lastIndexOf(contentEndPattern);
-    
-    if (contentStart >= contentEnd) continue;
-    
-    const content = part.slice(contentStart, contentEnd);
-    
-    // Check if this is a file field
-    const filenameMatch = disposition.match(/filename="([^"]+)"/);
-    if (filenameMatch && fieldName === 'files') {
-      // This is a file
-      const filename = filenameMatch[1];
-      if (filename && content.length > 0) {
-        parsedData.files.push({
-          filename: filename,
-          content: content
-        });
-      }
-    } else {
-      // This is a regular form field
-      parsedData.fields[fieldName] = content.toString('utf8').trim();
-    }
-  }
-
-  return parsedData;
-}
