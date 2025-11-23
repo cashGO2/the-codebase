@@ -1,14 +1,15 @@
 {
   "enabled": true,
-  "category": "whats-new",
-  "frequency": "once",
+  "category": "notice",
+  "frequency": "everytime",
   "customFrequencyHours": "null",
-  "title": "What's New?",
-  "description": "1. AI Search was optimised so you can now ask something like `what to read?`, `resources with basics of turing machines` etc. and get suggestions based on it.\n 2. Improved user experience by revamping the items in the reading card.\n 3. Little improvements to PDF loading logic to reduce lag and faster loading (this will be improved more later).",
-  "link": "null",
+  "title": "Scheduled Maintenance Notice!",
+  "description": "Hey Everyone,\n Materio will be offline for a little while today as we move our systems from Netlify to Vercel. This migration is important to make Materio faster and more stable for all of you.\n We’ll be back soon - thank you for your understanding!\n You can check out our statuspage to remain updated.",
+  "link": "https://statuspage.incident.io/materio",
   "images": [
-    "assets/img/covers/211dbe97-430f-4637-b459-5bbc9e63ffcd.webp"
+    "assets/img/covers/f58a6024-35aa-4982-aec9-c8270cfa76c4.webp"
   ],
+  "showImageOnMaintenance": false,
   "imageRotationInterval": 5000,
   "imageAnimation": {
     "type": "cascade",
@@ -16,14 +17,14 @@
     "direction": "left"
   },
   "isLimitedOffer": true,
-  "startDate": "2025-11-14T19:00",
-  "endDate": "2025-11-15T19:00",
+  "startDate": "2025-11-22T20:20",
+  "endDate": "2025-11-23T15:00",
   "showDateInfo": false,
-  "lastUpdated": "2025-11-14T18:55:00.000Z",
+  "lastUpdated": "2025-11-22T20:21:00.000Z",
   "buttons": {
     "primary": {
-      "show": false,
-      "text": "Try Now",
+      "show": true,
+      "text": "View Status",
       "icon": "&#8206;"
     },
     "secondary": {

@@ -1,1 +1,0 @@
-import * as bootstrap from './___netlify-bootstrap.mjs';export const handler = bootstrap.getLambdaHandler('./api/v1/invites-test/invites-test.mjs')

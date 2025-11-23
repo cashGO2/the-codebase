@@ -25,7 +25,7 @@
         }
     }
     checkHealth();
-    setInterval(checkHealth, 10 * 60 * 1000);
+    setInterval(checkHealth, 60 * 60 * 1000);
     healthIndicator.addEventListener('click', async () => {
         await checkHealth();
     });

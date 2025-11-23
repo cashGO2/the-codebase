@@ -174,6 +174,10 @@ function checkFrequency(frequency, customFrequencyHours) {
       }
       break;
       
+    case "everytime":
+      // Show every time the page loads - no restrictions
+      return true;
+      
     default:
       // Unknown frequency - default to "once"
       if (lastShown) {
