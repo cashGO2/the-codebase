@@ -3581,6 +3581,7 @@ body.dark-mode #downloadsTableWrapper::-webkit-scrollbar {
     font-family: 'Manrope', sans-serif;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    box-sizing: border-box;
 }
 
 #quickSearchInput.ai-mode {
