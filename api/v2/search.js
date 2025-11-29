@@ -120,7 +120,8 @@ const GENERAL_MODELS = [
 
 // CDN URLs for resource library
 const RESOURCE_LIB_URLS = {
-    production: 'https://cdn-materioa.netlify.app/databases/beta/resource.lib.json',
+    const config = require('../../config.json');
+    production: `${config.cdn_base_url}/databases/beta/resource.lib.json`,
     local: 'http://localhost:8080/databases/beta/resource.lib.json'
 };
 

@@ -27,7 +27,7 @@ layout: base
           {% if reading_time == 0 %}
             {% assign reading_time = 1 %}
           {% endif %}
-          • {{ reading_time }} min read
+          <span class="reading-time">• {{ reading_time }} min read</span>
         </div>
         
         <!-- Print-only clean meta information -->
@@ -41,7 +41,7 @@ layout: base
           {% if reading_time == 0 %}
             {% assign reading_time = 1 %}
           {% endif %}
-          • {{ reading_time }} minute read
+          <span class="reading-time">• {{ reading_time }} minute read</span>
         </div>
         
         <!-- Previous Post Button -->

@@ -20,14 +20,7 @@
 <meta property="og:url" content="https://materioa.vercel.app">
 <meta property="og:type" content="website">
 
-<!-- PWA Configuration -->
-<meta name="theme-color" content="#333333">
-<link rel="manifest" href="/manifest.json">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Materio">
-<link rel="apple-touch-icon" href="/assets/img/icon.svg">
+
 
 <!-- Favicon and Icons -->
 <link rel="icon" type="image/x-icon" href="/assets/img/icon.svg" sizes="256x256">
@@ -43,19 +36,33 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
 
 <!-- Service Worker Registration -->
+
+
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
-            navigator.serviceWorker.register('/sw.js')
-                .then(function (registration) {
-                    // console.log('SW registered: ', registration);
+            // Unregister any existing service workers and clear caches.
+            navigator.serviceWorker.getRegistrations()
+                .then(function (registrations) {
+                    registrations.forEach(function (reg) {
+                        try { reg.unregister(); } catch (e) { console.log('SW unregister error', e); }
+                    });
                 })
-                .catch(function (registrationError) {
-                    console.log('SW registration failed: ', registrationError);
-                });
+                .catch(function (err) { console.log('Error getting SW registrations:', err); });
+
+            if (window.caches && caches.keys) {
+                caches.keys()
+                    .then(function (names) {
+                        return Promise.all(names.map(function (name) { return caches.delete(name); }));
+                    })
+                    .then(function () { console.log('Client caches cleared'); })
+                    .catch(function (e) { console.log('Cache clear failed', e); });
+            }
         });
     }
 </script>
+<!-- Service Worker registration is disabled. See docs/SERVICE_WORKER_DISABLE.md to re-enable. -->
+
 
 <!-- Google Tag Manager -->
 <script>(function (w, d, s, l, i) {
@@ -238,8 +245,24 @@
                     <div id="defaultPosts">
                         
                         
-                        <a href="/resource/software-engineering-important-questions/" style="text-decoration: none; color: inherit; display: block;" >
+                        <a href="/notes/number-system/" style="text-decoration: none; color: inherit; display: block;" >
                             <div class="card-layout blog-post-item" id="blogPost1" style="backdrop-filter: blur(2px); cursor: pointer; transition: transform 0.2s ease;">
+                                <h3 class="blog-post-title">
+                                    <span class="blog-post-link" style="color: #ff8200;">Number System</span>
+                                </h3>
+                                <p class="blog-post-excerpt">
+                                    
+                                        This resource provides detailed notes about Number systems with Important points, examples and other things which are helpful for exams...
+                                    
+                                </p>
+                                <div class="blog-post-meta">
+                                    <span class="blog-post-date">November 29, 2025</span>
+                                </div>
+                            </div>
+                        </a>
+                        
+                        <a href="/resource/software-engineering-important-questions/" style="text-decoration: none; color: inherit; display: block;" >
+                            <div class="card-layout blog-post-item" id="blogPost2" style="backdrop-filter: blur(2px); cursor: pointer; transition: transform 0.2s ease;">
                                 <h3 class="blog-post-title">
                                     <span class="blog-post-link" style="color: #ff8200;">Software Engineering Important Questions</span>
                                 </h3>
@@ -255,7 +278,7 @@
                         </a>
                         
                         <a href="/paper-solution/daa-mid/" style="text-decoration: none; color: inherit; display: block;" >
-                            <div class="card-layout blog-post-item" id="blogPost2" style="backdrop-filter: blur(2px); cursor: pointer; transition: transform 0.2s ease;">
+                            <div class="card-layout blog-post-item" id="blogPost3" style="backdrop-filter: blur(2px); cursor: pointer; transition: transform 0.2s ease;">
                                 <h3 class="blog-post-title">
                                     <span class="blog-post-link" style="color: #ff8200;">DAA Mid Sem</span>
                                 </h3>
@@ -271,7 +294,7 @@
                         </a>
                         
                         <a href="/resource/software-engineering-assignment/" style="text-decoration: none; color: inherit; display: block;" >
-                            <div class="card-layout blog-post-item" id="blogPost3" style="backdrop-filter: blur(2px); cursor: pointer; transition: transform 0.2s ease;">
+                            <div class="card-layout blog-post-item" id="blogPost4" style="backdrop-filter: blur(2px); cursor: pointer; transition: transform 0.2s ease;">
                                 <h3 class="blog-post-title">
                                     <span class="blog-post-link" style="color: #ff8200;">Software Engineering Assignment</span>
                                 </h3>
@@ -287,7 +310,7 @@
                         </a>
                         
                         <a href="/resource/epj-assignment-2/" style="text-decoration: none; color: inherit; display: block;" >
-                            <div class="card-layout blog-post-item" id="blogPost4" style="backdrop-filter: blur(2px); cursor: pointer; transition: transform 0.2s ease;">
+                            <div class="card-layout blog-post-item" id="blogPost5" style="backdrop-filter: blur(2px); cursor: pointer; transition: transform 0.2s ease;">
                                 <h3 class="blog-post-title">
                                     <span class="blog-post-link" style="color: #ff8200;">Enterprise Java Assignment 2 & 3 Solutions</span>
                                 </h3>
@@ -298,22 +321,6 @@
                                 </p>
                                 <div class="blog-post-meta">
                                     <span class="blog-post-date">August 20, 2025</span>
-                                </div>
-                            </div>
-                        </a>
-                        
-                        <a href="/programming/psuedo-codes/" style="text-decoration: none; color: inherit; display: block;" >
-                            <div class="card-layout blog-post-item" id="blogPost5" style="backdrop-filter: blur(2px); cursor: pointer; transition: transform 0.2s ease;">
-                                <h3 class="blog-post-title">
-                                    <span class="blog-post-link" style="color: #ff8200;">Design and Analysis of Algorithms Psuedo Codes</span>
-                                </h3>
-                                <p class="blog-post-excerpt">
-                                    
-                                        This resource covers all the psuedo codes of sorting, searching and greedy algorithms like krushkals, prims,knapsack problem etc.
-                                    
-                                </p>
-                                <div class="blog-post-meta">
-                                    <span class="blog-post-date">August 02, 2025</span>
                                 </div>
                             </div>
                         </a>
@@ -336,6 +343,17 @@
                 <script type="application/json" id="allPostsData">
                 [
                     
+                    
+                    {
+                        "title": "Number System",
+                        "url": "/notes/number-system/",
+                        "date": "November 29, 2025",
+                        "excerpt_home": "",
+                        "excerpt": "This resource provides detailed notes about Number systems with Important points, examples and other things which are helpful for exams...",
+                        "semester": "",
+                        "subject": "",
+                        "visibility": "public"
+                    },
                     
                     {
                         "title": "Software Engineering Important Questions",
@@ -1922,7 +1940,7 @@ document.addEventListener('DOMContentLoaded', () => {
     -->
 
     <!-- Webapp - essential for PWA -->
-    <script src="/assets/scripts/webapp/pwa.js" defer></script>
+    
 
 </body>
 

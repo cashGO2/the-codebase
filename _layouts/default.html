@@ -55,7 +55,9 @@
     -->
 
     <!-- Webapp - essential for PWA -->
+    {% unless site.disable_service_worker %}
     <script src="{{ '/assets/scripts/webapp/pwa.js' | relative_url }}" defer></script>
+    {% endunless %}
 
 </body>
 

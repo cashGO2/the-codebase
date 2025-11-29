@@ -372,31 +372,58 @@ document.addEventListener("DOMContentLoaded", function () {
     printContainer.style.cssText = `
           display: none;
           width: 100%;
-          height: 100px;
+          height: 120px; /* increased height so header contents aren't clipped */
           margin-bottom: 10px;
           position: relative;
           border-bottom: 1px solid #ddd;
+          padding-top: 8px; /* ensure content doesn't touch page margin */
           padding-bottom: 8px;
         `;
 
-    // Logo on the left
+    // Logo on the left (use printable header SVG for print outputs)
     const logoDiv = document.createElement('div');
-    logoDiv.style.cssText = 'position: absolute; left: 0; top: 3px;';
-    logoDiv.innerHTML = '<img src="/assets/img/materio_new_bk.svg" alt="Materio" style="height: 32px; width: auto;">';
+    // Move logo slightly further down so it aligns with the QR title and code
+    // Additional 4px downward adjustment requested
+    logoDiv.style.cssText = 'position: absolute; left: 0; top: 33px;';
+    logoDiv.innerHTML = '<img src="/assets/printables/header.svg" alt="Materio" style="height: 32px; width: auto;">';
 
     // QR section on the right - just placeholder for print
     const qrSection = document.createElement('div');
-    qrSection.style.cssText = 'position: absolute; right: 0; top: 0; text-align: center;';
+    // Move QR so its top aligns with the logo on the left
+    // Use flex column so the title remains visible above the QR image
+    // Move QR down by 4px for better alignment with the logo
+    qrSection.style.cssText = 'position: absolute; right: 0; top: -3px; text-align: center; display: flex; flex-direction: column; align-items: center;';
 
     // QR title
     const qrTitle = document.createElement('div');
-    qrTitle.style.cssText = 'font-family: "Libre Baskerville", serif; font-size: 8px; color: #666; margin-bottom: 3px;';
+    // Keep title above the QR by default; no relative vertical offset so flex controls spacing
+    qrTitle.style.cssText = 'font-family: "Libre Baskerville", serif; font-size: 9px; color: #666; margin: 0 0 6px 0; z-index: 2;';
     qrTitle.textContent = 'Scan to read online';
 
     // QR container - will use the pre-generated one
     const qrContainer = document.createElement('div');
     qrContainer.id = 'print-qr-display';
-    qrContainer.style.cssText = 'width: 90px; height: 90px;';
+    qrContainer.style.cssText = 'width: 90px; height: 90px; margin-top: 0; z-index: 1;';
+
+    // Append title then QR
+    qrSection.appendChild(qrTitle);
+    qrSection.appendChild(qrContainer);
+
+    // After insertion we may need to adjust if title is still outside printable area
+    function adjustQrTitlePlacement() {
+      try {
+        const printRect = printContainer.getBoundingClientRect();
+        const titleRect = qrTitle.getBoundingClientRect();
+        // If the title's top is above the printable area's top (clipped), move the title below the QR
+        if (titleRect.top < printRect.top + 4) {
+          // move title below the QR
+          qrSection.removeChild(qrTitle);
+          qrSection.appendChild(qrTitle);
+        }
+      } catch (err) {
+        // ignore measurement errors
+      }
+    }
 
     // Copy the pre-generated QR code from the hidden element
     const hiddenQR = document.getElementById('hidden-qr-code');
@@ -411,9 +438,6 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log('Using fallback QR (text URL)');
     }
 
-    qrSection.appendChild(qrTitle);
-    qrSection.appendChild(qrContainer);
-
     printContainer.appendChild(logoDiv);
     printContainer.appendChild(qrSection);
 
@@ -421,6 +445,9 @@ document.addEventListener("DOMContentLoaded", function () {
     postContainer.insertBefore(printContainer, postContainer.firstChild);
     console.log('Print container inserted into DOM');
     console.log('Print container element:', printContainer);
+
+    // Give browser a moment to layout, then adjust QR title placement if needed
+    setTimeout(adjustQrTitlePlacement, 40);
 
     // Add print styles
     addPrintStyles();

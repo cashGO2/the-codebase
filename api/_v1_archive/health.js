@@ -81,7 +81,8 @@ async function checkSupabase() {
 async function checkCdnAPI() {
   const startTime = Date.now();
   try {
-    const res = await fetch('https://cdn-materioa.netlify.app/api/health', { 
+    const config = require('../../config.json');
+    const res = await fetch(`${config.cdn_base_url}/api/health`, { 
       method: 'GET',
       headers: { 'User-Agent': 'Materio-Health-Check' }
     });

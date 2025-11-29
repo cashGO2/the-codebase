@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/assets/img/room-icon-x.svg" sizes="256x256">
+
+  <meta property="og:title" content="Materio - The InsightRoom">
+  <meta property="og:description" content="The InsightRoom is a place to find insightful reads">
+  <meta property="og:image" itemprop="image" content="https://materioa.vercel.app/assets/img/og-theinsroom.jpg">
+  <meta property="og:image:secure_url" itemprop="image"
+    content="https://materioa.vercel.app/assets/img/og-theinsroom.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://materioa.vercel.app/blog">
+  <meta property="og:type" content="website">
+  <title>Number System</title>
+  <link rel="stylesheet" href="/assets/style/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body);"></script>
+  <link id="highlight-theme"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- <script src="https://cdn.jsdelivr.net/npm/@r3dz0n3/fontawesome-pro@6.3.0/js/fontawesome.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@r3dz0n3/fontawesome-pro@6.3.0/css/all.css"> -->
+  <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/all.css">
+<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/sharp-solid.css">
+<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/sharp-regular.css">
+<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/sharp-light.css">
+<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/duotone.css">
+<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/brands.css">
+  <script>
+    window.addEventListener('load', function () {
+      if (typeof QRCode !== 'undefined') {
+      }
+    });
+  </script>
+  <style>
+    body.dark {
+      --bg: #121212;
+      --text: #eeeeee;
+      --link: #3ea6ff;
+      --card-bg: #1e1e1e;
+      --border: #333;
+    }
+    .dark .site-header {
+      background-color: rgba(33, 33, 33, 0.5);
+      background-image: url('/assets/img/materio_new_wh.svg');
+    }
+    body.blog-layout .site-header {
+      background-image: url('/assets/img/banner.svg');
+      width: 575px;
+    }
+    body.blog-layout.dark .site-header {
+      background-image: url('/assets/img/banner.svg');
+    }
+  </style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MJ4P8TZNBR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-MJ4P8TZNBR');
+</script>
+<body>
+  <header class="site-header">
+  <a href="/#" class="header-logo" role="button" aria-label="Go to homepage"></a>
+
+  <!-- Search box for home layout -->
+  
+
+  <!-- Exit icon for post pages -->
+  
+  <a href="javascript:void(0)"
+    style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--text); text-decoration: none; font-size: 1.2rem;"
+    onclick="if (document.referrer) history.back(); else window.location.href='/room';"
+    onmousedown="this.style.color='#ff8200'" onmouseup="this.style.color='var(--text)'"
+    onmouseleave="this.style.color='var(--text)'" aria-label="Back">
+    <i class="fa-regular fa-arrow-left-from-bracket"></i>
+  </a>
+
+  
+</header>
+  <link rel="stylesheet" href="/assets/style/post.css">
+
+<main class="post-container" style="font-family: 'Manrope', sans-serif;"  data-category="Notes">
+  <article class="post" style="max-width: 700px; margin: 0 auto;">
+    
+    
+    <div style="text-align: center;">
+      <!-- Date, Category, and Navigation Pills -->
+      <div style="display: flex; justify-content: center; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;">
+        <!-- Date and Category Pill -->
+        <div class="post-date-pill" style="border-radius: 20px; padding: 0.4rem 0.8rem; font-size: 12px;">
+          November 29, 2025
+          
+            • Notes
+          
+          
+          
+          
+          <span class="reading-time">• 21 min read</span>
+        </div>
+        
+        <!-- Print-only clean meta information -->
+        <div class="print-meta" style="display: none;">
+          November 29, 2025
+          
+            • Notes
+          
+          
+          
+          
+          <span class="reading-time">• 21 minute read</span>
+        </div>
+        
+        <!-- Previous Post Button -->
+        
+        
+        <!-- Next Post Button -->
+        
+      </div>
+
+      <p class="post-title" style="font-size: 32px;font-weight: bold;">
+        Number System
+        
+      </p>
+
+      
+      <p class="post-description" style="font-size: 14px; margin-top: 0.5rem; color: var(--gray);">
+        This resource provides detailed notes about Number systems with Important points, examples and other things which are helpful for exams as well as contributes to better understanding of the topic.
+      </p>
+      
+
+      
+      <div style="display: block; position: relative; margin: 1.5rem auto; max-width: 700px;">
+        <div class="post-image-frame" style="padding: 5px; border-radius: 17px;">
+          
+            <!-- Image cover -->
+            <img src="/assets/img/covers/b0ad7902-c47a-44d4-bbf0-d2694247aab7.webp" alt="Cover image" class="post-cover" style="border-radius: 12px; display: block; width: 100%; height: auto; object-fit: cover;" />
+          
+        </div>
+      </div>
+      
+      
+      <!-- Author and Share Row -->
+      <div class="author-share-row" style="display: flex; justify-content: space-between; align-items: center; margin: 0.5rem auto; max-width: 700px; padding: 0 1rem;">
+        <!-- Author Profile Section -->
+        <div style="display: flex; align-items: center; gap: 0.8rem;">
+          
+          
+          <div class="author-avatar" style="width: 35px; height: 35px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(0,0,0,0.1);">
+            <img src="data:image/webp;base64,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" alt="Materio" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <div class="author-info">
+            <div class="author-name" style="font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.2;">Materio</div>
+          </div>
+        </div>
+
+        <!-- Share, Print, and Listen icons -->
+        <div style="display: flex; justify-content: center; align-items: center; gap: 1rem;">
+          
+          <!-- Listen to Post Component -->
+          <div id="listen-component" class="listen-pill" style="display: flex; align-items: center; background: rgba(0,0,0,0.05); border-radius: 20px; padding: 0.3rem 0.6rem; cursor: pointer; transition: all 0.2s ease;" onclick="console.log('Listen clicked'); toggleListen();">
+            <i id="listen-icon" class="fa-solid fa-play" style="font-size: 12px; margin-right: 0.4rem; color: #333;"></i>
+            <div class="waveform-container" style="display: flex; align-items: center; gap: 1px; margin-right: 0.4rem;">
+              <div class="wave-bar" style="width: 2px; height: 8px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 12px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 6px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 10px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 8px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 14px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 9px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 11px; background: #666; border-radius: 1px;"></div>
+            </div>
+            <span id="listen-duration" style="font-size: 11px; color: #666; font-weight: 500;">Listen</span>
+          </div>
+          
+          <!-- Seek controls (only visible when playing/paused) -->
+          <div id="seek-controls" class="seek-controls" style="display: none; align-items: center; gap: 0.3rem; margin-left: 0.5rem;">
+            <button onclick="seekBackward()" class="seek-btn" title="Go back 5 seconds" style="background: none; border: none; color: #666; cursor: pointer; padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
+              <i class="fa-solid fa-backward" style="font-size: 10px;"></i>
+            </button>
+            <button onclick="seekForward()" class="seek-btn" title="Skip forward 5 seconds" style="background: none; border: none; color: #666; cursor: pointer; padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
+              <i class="fa-solid fa-forward" style="font-size: 10px;"></i>
+            </button>
+            <button onclick="stopAudio()" class="seek-btn stop-btn" title="Stop" style="background: none; border: none; color: #d32f2f; cursor: pointer; padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
+              <i class="fa-solid fa-stop" style="font-size: 10px;"></i>
+            </button>
+          </div>
+
+          <i class="fa-regular fa-link-simple" onclick="sharePost()" style="transform: rotate(-45deg); font-size: 14px; cursor: pointer; color: var(--text);" title="Share"></i>
+          <i class="fa-regular fa-print" onclick="printPost()" style="font-size: 14px; cursor: pointer; color: var(--text);" title="Print"></i>
+          
+        </div>
+      </div>
+    </div>
+
+    
+
+
+    <div class="post-body"><p>[attachment:https://static-materio.vercel.app/common/files/attach/de882c43-c10f-4708-81a3-31b027b5a289.pdf:Number System]</p>
+
+<p>The Number System is the framework used to represent and calculate quantities. Below are concise, exam-oriented notes starting from the basic building blocks up to Real numbers.</p>
+
+<h2 id="1-hierarchy-of-numbers">1. Hierarchy of Numbers</h2>
+<p>Understanding the “family tree” of numbers is the best way to remember them. Each subsequent type includes the previous ones (except for Irrational numbers, which are a separate branch).</p>
+
+<ul>
+  <li><strong>Natural Numbers (\(\mathbb{N}\))</strong> \(\subset\) <strong>Whole Numbers (\(\mathbb{W}\))</strong> \(\subset\) <strong>Integers (\(\mathbb{Z}\))</strong> \(\subset\) <strong>Rational Numbers (\(\mathbb{Q}\))</strong></li>
+  <li><strong>Real Numbers (\(\mathbb{R}\))</strong> = <strong>Rational (\(\mathbb{Q}\))</strong> + <strong>Irrational (\(\mathbb{P}\))</strong></li>
+</ul>
+
+<h2 id="2-basic-types-of-numbers">2. Basic Types of Numbers</h2>
+
+<h3 id="natural-numbers-mathbbn">Natural Numbers (\(\mathbb{N}\))</h3>
+<p>These are the basic “counting numbers” used in daily life.</p>
+
+<ul>
+  <li><strong>Definition:</strong> The set of positive integers starting from 1.</li>
+  <li><strong>Range:</strong> \(1, 2, 3, 4, \dots \infty\)</li>
+  <li><strong>Key Exam Point:</strong> The smallest natural number is <strong>1</strong>. There is no largest natural number.</li>
+</ul>
+
+<h3 id="whole-numbers-mathbbw">Whole Numbers (\(\mathbb{W}\))</h3>
+<p>These are Natural numbers plus zero.</p>
+
+<ul>
+  <li><strong>Definition:</strong> The set of natural numbers including <strong>0</strong>.</li>
+  <li><strong>Range:</strong> \(0, 1, 2, 3, \dots \infty\)</li>
+  <li><strong>Key Exam Point:</strong> Every Natural number is a Whole number, but <strong>0</strong> is a Whole number that is <em>not</em> a Natural number.</li>
+</ul>
+
+<h3 id="integers-mathbbz">Integers (\(\mathbb{Z}\))</h3>
+<p>This set expands to include negative values.</p>
+
+<ul>
+  <li><strong>Definition:</strong> Whole numbers plus their negative counterparts.</li>
+  <li><strong>Range:</strong> \(\dots -3, -2, -1, 0, 1, 2, 3 \dots\)</li>
+  <li><strong>Important:</strong> 0 is neither positive nor negative.</li>
+</ul>
+
+<h2 id="3-rational-vs-irrational-numbers-crucial-for-exams">3. Rational vs. Irrational Numbers (Crucial for Exams)</h2>
+
+<p>This distinction is often the source of most exam questions (MCQs and proofs).</p>
+
+<h3 id="rational-numbers-mathbbq">Rational Numbers (\(\mathbb{Q}\))</h3>
+
+<ul>
+  <li><strong>Definition:</strong> Any number that can be written in the form \(\frac{p}{q}\), where \(p\) and \(q\) are integers and \(q \neq 0\).</li>
+  <li><strong>Decimal Property:</strong> Their decimal expansion is either <strong>Terminating</strong> (e.g., \(0.5\)) OR <strong>Non-terminating but Repeating</strong> (e.g., \(0.333\dots\)).</li>
+  <li><strong>Examples:</strong>
+    <ul>
+      <li>‎ \(\frac{1}{2}\) ‎</li>
+      <li>\(5\) (can be written as \(\frac{5}{1}\))</li>
+      <li>\(0\) (can be written as \(\frac{0}{1}\))</li>
+      <li>‎ \(-3.5\) ‎</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="irrational-numbers">Irrational Numbers</h3>
+
+<ul>
+  <li><strong>Definition:</strong> Numbers that <strong>cannot</strong> be written as a simple fraction \(\frac{p}{q}\).</li>
+  <li><strong>Decimal Property:</strong> Their decimal expansion is <strong>Non-terminating AND Non-repeating</strong>.</li>
+  <li><strong>Examples:</strong>
+    <ul>
+      <li>\(\sqrt{2}\), \(\sqrt{3}\), \(\sqrt{5}\)</li>
+      <li>‎ \(\pi\) ‎</li>
+      <li>‎ \(0.1010010001\dots\) ‎</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="comparison-table-rational-vs-irrational">Comparison Table: Rational vs. Irrational</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>Rational Numbers (\(\mathbb{Q}\))</th>
+      <th>Irrational Numbers</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Form</strong></td>
+      <td>Can be written as \(\frac{p}{q}\)</td>
+      <td>Cannot be written as \(\frac{p}{q}\)</td>
+    </tr>
+    <tr>
+      <td><strong>Decimal Type</strong></td>
+      <td>Terminating or Repeating</td>
+      <td>Non-terminating and Non-repeating</td>
+    </tr>
+    <tr>
+      <td><strong>Examples</strong></td>
+      <td>\(2\), \(\frac{22}{7}\), \(0.333\dots\), \(\sqrt{4}\)</td>
+      <td>\(\pi\), \(\sqrt{2}\), \(1.414213\dots\)</td>
+    </tr>
+    <tr>
+      <td><strong>Perfect Squares</strong></td>
+      <td>Square roots of perfect squares (e.g., \(\sqrt{16} = 4\))</td>
+      <td>Square roots of non-perfect squares (e.g., \(\sqrt{17}\))</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="4-real-numbers-and-exam-traps">4. Real Numbers and Exam Traps</h2>
+
+<h3 id="real-numbers-mathbbr">Real Numbers (\(\mathbb{R}\))</h3>
+<ul>
+  <li><strong>Definition:</strong> The collection of <strong>all</strong> Rational and Irrational numbers together.</li>
+  <li><strong>Visualization:</strong> Every point on the number line represents a unique Real number.</li>
+</ul>
+
+<h3 id="common-exam-traps-and-notes">Common Exam Traps and Notes</h3>
+
+<ul>
+  <li><strong>Is Zero Rational?</strong> Yes, because \(0 = \frac{0}{1}\).</li>
+  <li><strong>Pi (\(\pi\)) vs. \(\frac{22}{7}\)</strong>
+    <ul>
+      <li>\(\pi\) is <strong>Irrational</strong>.</li>
+      <li>\(\frac{22}{7}\) is <strong>Rational</strong>.</li>
+      <li>\(\frac{22}{7}\) is just an approximation of \(\pi\).</li>
+    </ul>
+  </li>
+  <li><strong>Prime Roots:</strong> The square root of any prime number (\(\sqrt{2}, \sqrt{3}, \sqrt{5}\)) is always irrational.</li>
+  <li><strong>All Integers are Rational:</strong> Any integer \(n\) can be written as \(\frac{n}{1}\).</li>
+</ul>
+
+<hr />
+
+<h2 id="divisibility-and-divisibility-rules">Divisibility and Divisibility Rules</h2>
+
+<p><strong>Definition:</strong><br />
+Divisibility means that when you divide one number by another, the result is a whole number with <strong>zero remainder</strong>.</p>
+<ul>
+  <li><em>Example:</em> 10 is divisible by 5 because $10 \div 5 = 2$ (remainder 0).</li>
+  <li><em>Counter Example:</em> 10 is not divisible by 3 because $10 \div 3 = 3.33\dots$ (remainder 1).</li>
+</ul>
+
+<hr />
+
+<h2 id="divisibility-tests-1-to-20">Divisibility Tests (1 to 20)</h2>
+
+<h3 id="1-basic-rules-easy-to-remember">1. Basic Rules (Easy to remember)</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Number</th>
+      <th>Rule</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1</strong></td>
+      <td>All integers are divisible by 1.</td>
+      <td>5, 100, 987 are all divisible by 1.</td>
+    </tr>
+    <tr>
+      <td><strong>2</strong></td>
+      <td>Last digit is <strong>Even</strong> (0, 2, 4, 6, 8).</td>
+      <td><strong>124</strong> (ends in 4), <strong>50</strong> (ends in 0).</td>
+    </tr>
+    <tr>
+      <td><strong>3</strong></td>
+      <td><strong>Sum of digits</strong> is divisible by 3.</td>
+      <td><strong>123</strong> → \(1+2+3=6\). 6 is divisible by 3, so 123 is too.</td>
+    </tr>
+    <tr>
+      <td><strong>5</strong></td>
+      <td>Last digit is <strong>0</strong> or <strong>5</strong>.</td>
+      <td><strong>145</strong> (ends in 5), <strong>290</strong> (ends in 0).</td>
+    </tr>
+    <tr>
+      <td><strong>6</strong></td>
+      <td>Divisible by <strong>both 2 AND 3</strong>.</td>
+      <td><strong>24</strong>: Even (divisible by 2) AND \(2+4=6\) (divisible by 3).</td>
+    </tr>
+    <tr>
+      <td><strong>9</strong></td>
+      <td><strong>Sum of digits</strong> is divisible by 9.</td>
+      <td><strong>729</strong> → \(7+2+9=18\). 18 is divisible by 9.</td>
+    </tr>
+    <tr>
+      <td><strong>10</strong></td>
+      <td>Last digit is <strong>0</strong>.</td>
+      <td><strong>540</strong> ends in 0.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="2-the-last-digits-family-powers-of-2">2. The “Last Digits” Family (Powers of 2)</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Number</th>
+      <th>Rule</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>4</strong></td>
+      <td><strong>Last 2 digits</strong> are divisible by 4.</td>
+      <td><strong>3<u>12</u></strong>: 12 is divisible by 4.</td>
+    </tr>
+    <tr>
+      <td><strong>8</strong></td>
+      <td><strong>Last 3 digits</strong> are divisible by 8.</td>
+      <td><strong>3<u>816</u></strong>: 816 is divisible by 8 (\(816 \div 8 = 102\)).</td>
+    </tr>
+    <tr>
+      <td><strong>16</strong></td>
+      <td><strong>Last 4 digits</strong> are divisible by 16.</td>
+      <td><strong>1<u>3264</u></strong>: 3264 is divisible by 16 (\(3264 \div 16 = 204\)).</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="3-the-chunking-rule-for-7-11-13">3. The “Chunking” Rule (For 7, 11, 13)</h3>
+
+<p><em>A powerful unified method for large numbers.</em></p>
+
+<p><strong>The Rule:</strong><br />
+Form groups of <strong>3 digits</strong> from the right.<br />
+Subtract the sum of even-placed groups from the sum of odd-placed groups.<br />
+If the result is divisible by <strong>7, 11, or 13</strong>, the whole number is divisible.</p>
+
+<p><strong>For 7:</strong></p>
+<ul>
+  <li><em>Standard Method:</em> Double the last digit and subtract from the rest.</li>
+  <li><em>Example:</em> <strong>343</strong> → \(34 - (3 \times 2) = 28\).<br />
+28 is divisible by 7.</li>
+</ul>
+
+<p><strong>For 11:</strong></p>
+<ul>
+  <li><em>Standard Method:</em> Difference between the sum of digits in <strong>odd</strong> and <strong>even</strong> places must be 0 or a multiple of 11.</li>
+  <li><em>Example:</em> <strong>1331</strong> → \((1+3) - (3+1) = 4 - 4 = 0\).</li>
+</ul>
+
+<p><strong>For 13:</strong></p>
+<ul>
+  <li><em>Standard Method:</em> Multiply last digit by <strong>4</strong> and add to the rest.</li>
+  <li><em>Example:</em> <strong>169</strong> → \(16 + (9 \times 4) = 16 + 36 = 52\).<br />
+52 is divisible by 13.</li>
+</ul>
+
+<h3 id="4-composite-number-rules-factor-methods">4. Composite Number Rules (Factor Methods)</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Number</th>
+      <th>Components</th>
+      <th>Rule</th>
+      <th>Example: 420</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>12</strong></td>
+      <td>3 and 4</td>
+      <td>Divisible by <strong>3</strong> AND <strong>4</strong>.</td>
+      <td>\(4+2+0=6\) (div by 3). Ends in 20 (div by 4). Yes.</td>
+    </tr>
+    <tr>
+      <td><strong>14</strong></td>
+      <td>2 and 7</td>
+      <td>Divisible by <strong>2</strong> AND <strong>7</strong>.</td>
+      <td>Even. For 7: \(42 - 0 = 42\). Yes.</td>
+    </tr>
+    <tr>
+      <td><strong>15</strong></td>
+      <td>3 and 5</td>
+      <td>Divisible by <strong>3</strong> AND <strong>5</strong>.</td>
+      <td>\(4+2+0=6\) (div by 3). Ends in 0. Yes.</td>
+    </tr>
+    <tr>
+      <td><strong>18</strong></td>
+      <td>2 and 9</td>
+      <td>Divisible by <strong>2</strong> AND <strong>9</strong>.</td>
+      <td>Even. \(4+2+0=6\) (not div by 9). <strong>No.</strong></td>
+    </tr>
+    <tr>
+      <td><strong>20</strong></td>
+      <td>10 and 2</td>
+      <td>Ends in <strong>0</strong> AND tens digit <strong>even</strong>.</td>
+      <td><strong>420</strong> → ends in 0, tens digit 2 is even. Yes.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="5-special-prime-rules-17-and-19">5. Special Prime Rules (17 and 19)</h3>
+
+<p>These use “osculation” techniques like 7 and 13.</p>
+
+<p><strong>osculation</strong> is a Vedic-maths method,</p>
+
+<h3 id="simple-idea-for-divisibility">Simple idea (for divisibility)</h3>
+
+<p>For certain divisors (like 7, 13, 17, 19, etc.), you:</p>
+
+<ol>
+  <li>Take the <strong>last digit</strong> of the number.</li>
+  <li>Multiply it by a <strong>fixed small number</strong> (called the <em>osculator</em>).</li>
+  <li><strong>Add or subtract</strong> this from the remaining part of the number.</li>
+  <li>Repeat until you get a small number that’s easy to check.</li>
+</ol>
+
+<p>If that final small number is divisible by the divisor, the original big number is also divisible.</p>
+
+<p>Example for 19 (osculator = 2, add):</p>
+
+<ul>
+  <li>Check 361:<br />
+Last digit = 1 → \(1 \times 2 = 2\)<br />
+Remaining = 36 → \(36 + 2 = 38\)<br />
+38 is divisible by 19 → so 361 is divisible by 19.</li>
+</ul>
+
+<h4 id="17-negative-osculator-5"><strong>17 (Negative Osculator 5)</strong></h4>
+<p><em>Multiply last digit by 5 and subtract from the rest.</em></p>
+
+<p><em>Example:</em> <strong>289</strong></p>
+<ol>
+  <li>Last digit: 9 → \(9 \times 5 = 45\)</li>
+  <li>Subtract: \(28 - 45 = -17\)</li>
+  <li>17 is divisible by 17 → ✔</li>
+</ol>
+
+<h4 id="19-positive-osculator-2"><strong>19 (Positive Osculator 2)</strong></h4>
+<p><em>Multiply last digit by 2 and add to the rest.</em></p>
+
+<p><em>Example:</em> <strong>361</strong></p>
+<ol>
+  <li>Last digit: 1 → \(1 \times 2 = 2\)</li>
+  <li>Add: \(36 + 2 = 38\)</li>
+  <li>38 is divisible by 19 → ✔ (\(19 \times 2\))</li>
+</ol>
+
+<hr />
+<h2 id="prime-numbers-vs-composite-numbers">Prime Numbers vs. Composite Numbers</h2>
+
+<p>The distinction between Prime and Composite numbers is fundamental to arithmetic. It tells us whether a number is a “basic building block” or “made up of other numbers.”</p>
+
+<h3 id="1-prime-numbers-mathbbp">1. Prime Numbers (\(\mathbb{P}\))</h3>
+
+<p><strong>Definition:</strong> A natural number greater than 1 that has <strong>exactly two</strong> factors: 1 and itself.</p>
+<ul>
+  <li>It cannot be divided by any other number completely.</li>
+  <li><em>Analogy:</em> Think of prime numbers as “atoms” in math—they cannot be broken down any further.</li>
+</ul>
+
+<p><strong>Examples:</strong></p>
+<ul>
+  <li><strong>2</strong>: The smallest prime number (factors: 1, 2).</li>
+  <li><strong>13</strong>: (factors: 1, 13).</li>
+  <li><strong>29</strong>: (factors: 1, 29).</li>
+</ul>
+
+<p><strong>Key Properties:</strong></p>
+<ul>
+  <li><strong>The Number 1:</strong> 1 is <strong>NOT</strong> a prime number because it has only <em>one</em> factor (1 itself). It breaks the “exactly two factors” rule.</li>
+  <li><strong>Even Primes:</strong> <strong>2</strong> is the <strong>only</strong> even prime number. All other prime numbers are odd.</li>
+  <li><strong>Smallest Odd Prime:</strong> 3.</li>
+  <li><strong>Co-Primes:</strong> Any two prime numbers are always co-prime to each other (their Highest Common Factor is 1).</li>
+</ul>
+
+<h3 id="2-composite-numbers">2. Composite Numbers</h3>
+
+<p><strong>Definition:</strong> A natural number greater than 1 that has <strong>more than two</strong> factors.</p>
+<ul>
+  <li>These numbers can be “built” by multiplying smaller numbers together.</li>
+</ul>
+
+<p><strong>Examples:</strong></p>
+<ul>
+  <li><strong>4</strong>: Factors are 1, 2, 4 (3 factors).</li>
+  <li><strong>6</strong>: Factors are 1, 2, 3, 6 (4 factors).</li>
+  <li><strong>15</strong>: Factors are 1, 3, 5, 15.</li>
+</ul>
+
+<p><strong>Key Exam Properties:</strong></p>
+<ul>
+  <li><strong>Smallest Composite Number:</strong> <strong>4</strong>.</li>
+  <li><strong>Smallest Odd Composite Number:</strong> <strong>9</strong>.</li>
+  <li><strong>Fundamental Theorem of Arithmetic:</strong><br />
+Every composite number can be written as a unique product of prime numbers.<br />
+Example:<br />
+\(12 = 2 \times 2 \times 3\)</li>
+</ul>
+
+<hr />
+
+<h3 id="3-comparison-table-summary">3. Comparison Table (Summary)</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>Prime Number</th>
+      <th>Composite Number</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Factors</strong></td>
+      <td>Exactly 2 (1 and itself)</td>
+      <td>More than 2</td>
+    </tr>
+    <tr>
+      <td><strong>Smallest Number</strong></td>
+      <td>2</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td><strong>Examples</strong></td>
+      <td>2, 3, 5, 7, 11, 13</td>
+      <td>4, 6, 8, 9, 10, 12</td>
+    </tr>
+    <tr>
+      <td><strong>Parity</strong></td>
+      <td>All are odd (except 2)</td>
+      <td>Can be even or odd</td>
+    </tr>
+    <tr>
+      <td><strong>Status of 1</strong></td>
+      <td>1 is NEITHER prime NOR composite.</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="4-how-to-check-if-a-number-is-prime-step-by-step">4. How to Check if a Number is Prime (Step-by-Step)</h3>
+
+<p>For a large number \(N\), follow these steps instead of checking every number:</p>
+
+<ol>
+  <li>Find the approximate square root of \(N\) (\(\sqrt{N}\)).</li>
+  <li>List all prime numbers smaller than \(\sqrt{N}\).</li>
+  <li>Check divisibility <strong>only</strong> with these primes.</li>
+  <li>If none divide \(N\), then \(N\) is Prime.</li>
+</ol>
+
+<p><strong>Example: Is 103 Prime?</strong></p>
+
+<ol>
+  <li>\(\sqrt{103} \approx 10.1\) (since \(10^2 = 100\)).</li>
+  <li>Primes less than 10: <strong>2, 3, 5, 7</strong>.</li>
+  <li>Test divisibility:
+    <ul>
+      <li><strong>2?</strong> No (odd number).</li>
+      <li><strong>3?</strong> No (\(1+0+3=4\), not divisible by 3).</li>
+      <li><strong>5?</strong> No (doesn’t end in 0 or 5).</li>
+      <li><strong>7?</strong> No (\(103 \div 7 = 14\) rem 5).</li>
+    </ul>
+  </li>
+  <li>Final verdict: <strong>103 is Prime</strong>.</li>
+</ol>
+
+<hr />
+<h2 id="prime-factorization">Prime Factorization</h2>
+
+<p><strong>Definition:</strong><br />
+Prime Factorization is the process of breaking down a composite number into a product of its <strong>prime factors</strong>.</p>
+<ul>
+  <li>Think of it as finding the “DNA” of a number.</li>
+  <li>The result is unique for every number (except for the order of factors).</li>
+</ul>
+
+<p><strong>Prime Factors:</strong><br />
+The factors of a number that are also prime numbers.</p>
+<ul>
+  <li><em>Example for 12:</em> The factors are 1, 2, 3, 4, 6, 12. The <strong>Prime Factors</strong> are just <strong>2</strong> and <strong>3</strong>.</li>
+</ul>
+
+<hr />
+
+<h3 id="methods-to-find-prime-factorization">Methods to Find Prime Factorization</h3>
+
+<p>There are two standard methods used in exams.</p>
+
+<h4 id="1-division-method-ladder-method">1. Division Method (Ladder Method)</h4>
+
+<p>Best for large numbers and written exams.</p>
+
+<ul>
+  <li><strong>Steps:</strong>
+    <ol>
+      <li>Divide the number by the smallest prime number (2, 3, 5…) that divides it completely.</li>
+      <li>Take the quotient and divide it again by the smallest possible prime.</li>
+      <li>Repeat until the quotient becomes <strong>1</strong>.</li>
+      <li>Multiply all the divisors to get the prime factorization.</li>
+    </ol>
+  </li>
+  <li><strong>Example: Factorize 72</strong>
+    <ul>
+      <li>‎ \(72 \div 2 = 36\)‎</li>
+      <li>‎ \(36 \div 2 = 18\)‎</li>
+      <li>‎ \(18 \div 2 = 9\)‎</li>
+      <li>‎ \(9 \div 3 = 3\)‎</li>
+      <li>‎ \(3 \div 3 = 1\)‎</li>
+      <li><strong>Result:</strong><br />
+\(72 = 2 \times 2 \times 2 \times 3 \times 3 = 2^3 \times 3^2\)</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="2-factor-tree-method">2. Factor Tree Method</h4>
+
+<p>Best for visual learners and smaller numbers.</p>
+
+<ul>
+  <li><strong>Steps:</strong>
+    <ol>
+      <li>Write the number at the top.</li>
+      <li>Split it into any two factors (branches).</li>
+      <li>If a factor is composite, split it further.</li>
+      <li>Circle the prime numbers — stop when all ends are prime.</li>
+    </ol>
+  </li>
+  <li><strong>Example: Factorize 48</strong>
+    <ul>
+      <li><strong>48</strong> splits into <strong>8</strong> × <strong>6</strong>
+        <ul>
+          <li><strong>8</strong> → <strong>4</strong> × <strong>2</strong> (Circle 2)
+            <ul>
+              <li><strong>4</strong> → <strong>2</strong> × <strong>2</strong> (Circle both)</li>
+            </ul>
+          </li>
+          <li><strong>6</strong> → <strong>2</strong> × <strong>3</strong> (Circle both)</li>
+        </ul>
+      </li>
+      <li><strong>Result:</strong><br />
+\(48 = 2 \times 2 \times 2 \times 2 \times 3 = 2^4 \times 3\)</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h3 id="important-exam-notes">Important Exam Notes</h3>
+
+<ul>
+  <li>
+    <p><strong>Exponents:</strong> Always write the final answer using powers if a factor repeats.<br />
+<em>Correct:</em> \(2^3 \times 5^2\)<br />
+<em>Less standard:</em> \(2 \times 2 \times 2 \times 5 \times 5\)</p>
+  </li>
+  <li>
+    <p><strong>Order Doesn’t Matter:</strong><br />
+\(2 \times 3 \times 5\) is the same as \(5 \times 2 \times 3\).</p>
+  </li>
+  <li>
+    <p><strong>Uses:</strong><br />
+Prime factorization is the fastest way to find <strong>LCM</strong> and <strong>HCF (GCD)</strong> of numbers.</p>
+  </li>
+</ul>
+
+<hr />
+
+<h3 id="practice-examples">Practice Examples</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Number</th>
+      <th>Calculation</th>
+      <th>Prime Factorization</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>30</strong></td>
+      <td>\(30 \div 2 = 15 \rightarrow 15 \div 3 = 5 \rightarrow 5 \div 5 = 1\)</td>
+      <td>\(2 \times 3 \times 5\)</td>
+    </tr>
+    <tr>
+      <td><strong>36</strong></td>
+      <td>\(36 \div 2 = 18 \rightarrow 18 \div 2 = 9 \rightarrow 9 \div 3 = 3 \dots\)</td>
+      <td>\(2^2 \times 3^2\)</td>
+    </tr>
+    <tr>
+      <td><strong>100</strong></td>
+      <td>\(100 \div 2 = 50 \rightarrow 50 \div 2 = 25 \rightarrow 25 \div 5 = 5 \dots\)</td>
+      <td>\(2^2 \times 5^2\)</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+<h2 id="co-prime-numbers-or-relatively-prime-numbers">Co-prime Numbers (or Relatively Prime Numbers)</h2>
+
+<h3 id="1-definition">1. Definition</h3>
+
+<p><strong>Co-prime numbers</strong> are a set of two numbers that have <strong>only one common factor</strong>, which is <strong>1</strong>.</p>
+<ul>
+  <li>This means their Highest Common Factor (HCF) or Greatest Common Divisor (GCD) is exactly <strong>1</strong>.</li>
+  <li><strong>Important:</strong> The numbers themselves <strong>do not</strong> have to be prime. They just need to be “prime to each other”.</li>
+</ul>
+
+<hr />
+
+<h3 id="2-how-to-check-if-numbers-are-co-prime">2. How to Check if Numbers are Co-prime?</h3>
+
+<p>To check if \(A\) and \(B\) are co-prime, find the factors of both. If the only number appearing in both lists is <strong>1</strong>, they are co-prime.</p>
+
+<p><strong>Example 1: 8 and 15</strong> (Classic exam example)</p>
+
+<ul>
+  <li>Factors of <strong>8</strong>: <strong>1</strong>, 2, 4, 8</li>
+  <li>Factors of <strong>15</strong>: <strong>1</strong>, 3, 5, 15</li>
+  <li><strong>Common Factor:</strong> Only <strong>1</strong></li>
+  <li><strong>Result:</strong> 8 and 15 are <strong>Co-prime</strong> (even though both are composite numbers).</li>
+</ul>
+
+<p><strong>Example 2: 12 and 18</strong></p>
+
+<ul>
+  <li>Factors of <strong>12</strong>: <strong>1</strong>, <strong>2</strong>, <strong>3</strong>, 4, 6, 12</li>
+  <li>Factors of <strong>18</strong>: <strong>1</strong>, <strong>2</strong>, <strong>3</strong>, 6, 9, 18</li>
+  <li><strong>Common Factors:</strong> 1, 2, 3, 6</li>
+  <li><strong>Result:</strong> NOT Co-prime (they share more than just 1).</li>
+</ul>
+
+<hr />
+
+<h3 id="3-key-exam-properties-and-tricks">3. Key Exam Properties and Tricks</h3>
+
+<p>These appear frequently in MCQs and True/False questions.</p>
+
+<ol>
+  <li>
+    <p><strong>Consecutive Numbers:</strong> Any two consecutive integers are <strong>always</strong> co-prime.
+<em>Examples:</em> (5, 6), (24, 25), (99, 100)</p>
+  </li>
+  <li>
+    <p><strong>Two Prime Numbers:</strong> Any two prime numbers are <strong>always</strong> co-prime.
+<em>Examples:</em> (3, 5), (11, 13), (17, 23)</p>
+  </li>
+  <li>
+    <p><strong>Prime and Composite:</strong> A prime number and a composite number <em>can</em> be co-prime if the composite number is <strong>not</strong> a multiple of the prime.<br />
+<em>Examples:</em> (7, 16) → co-prime<br />
+(7, 21) → not co-prime</p>
+  </li>
+  <li>
+    <p><strong>One is Universal:</strong> The number <strong>1</strong> is co-prime to every other number.
+<em>Examples:</em> (1, 100), (1, 5)</p>
+  </li>
+</ol>
+
+<hr />
+
+<h3 id="4-summary-table">4. Summary Table</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Pair</th>
+      <th>Co-prime?</th>
+      <th>Reason</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>(4, 9)</strong></td>
+      <td><strong>Yes</strong></td>
+      <td>Factors {1,2,4} and {1,3,9}; only common factor is 1.</td>
+    </tr>
+    <tr>
+      <td><strong>(6, 8)</strong></td>
+      <td><strong>No</strong></td>
+      <td>Both are even (share factor 2).</td>
+    </tr>
+    <tr>
+      <td><strong>(17, 18)</strong></td>
+      <td><strong>Yes</strong></td>
+      <td>Consecutive numbers.</td>
+    </tr>
+    <tr>
+      <td><strong>(1, 1000)</strong></td>
+      <td><strong>Yes</strong></td>
+      <td>1 is co-prime to all numbers.</td>
+    </tr>
+    <tr>
+      <td><strong>(13, 39)</strong></td>
+      <td><strong>No</strong></td>
+      <td>\(39 = 13 \times 3\) → common factor 13.</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+<p>Here are detailed notes on LCM and HCF, structured for easy understanding and exam preparation.</p>
+
+<h2 id="1-concept-definition">1. Concept Definition</h2>
+
+<h3 id="hcf-highest-common-factor"><strong>HCF (Highest Common Factor)</strong></h3>
+
+<ul>
+  <li><strong>Also known as:</strong> GCD (Greatest Common Divisor) or GCM (Greatest Common Measure).</li>
+  <li><strong>Definition:</strong> The largest number that divides two or more numbers <strong>exactly</strong> (without remainder).</li>
+  <li><strong>Key Concept:</strong> It is a <strong>factor</strong>, so the answer will always be <strong>equal to or smaller</strong> than the smallest number in the set.<br />
+<em>Analogy:</em> The biggest measuring cup that can measure out both quantities exactly.</li>
+</ul>
+
+<h3 id="lcm-least-common-multiple"><strong>LCM (Least Common Multiple)</strong></h3>
+
+<ul>
+  <li><strong>Definition:</strong> The smallest number that is a <strong>multiple</strong> of two or more numbers.</li>
+  <li><strong>Key Concept:</strong> It is a <strong>multiple</strong>, so the answer will always be <strong>equal to or larger</strong> than the largest number in the set.<br />
+<em>Analogy:</em> The first time two events happening at different intervals occur together (bells ringing, lights blinking, etc.)</li>
+</ul>
+
+<hr />
+
+<h2 id="2-comparison-table">2. Comparison Table</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>HCF (Highest Common Factor)</th>
+      <th>LCM (Least Common Multiple)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>What is it?</strong></td>
+      <td>Largest divisor common to all numbers</td>
+      <td>Smallest number divisible by all numbers</td>
+    </tr>
+    <tr>
+      <td><strong>Result Size</strong></td>
+      <td>Small (\(\leq\) smallest number)</td>
+      <td>Large (\(\geq\) largest number)</td>
+    </tr>
+    <tr>
+      <td><strong>Prime Factors Rule</strong></td>
+      <td>Product of <strong>lowest</strong> powers of common primes</td>
+      <td>Product of <strong>highest</strong> powers of all primes</td>
+    </tr>
+    <tr>
+      <td><strong>Real-world Keyword</strong></td>
+      <td>“Maximum,” “Largest,” “Divide,” “Cut”</td>
+      <td>“Minimum,” “Smallest,” “Together,” “Simultaneous”</td>
+    </tr>
+    <tr>
+      <td><strong>Example (4, 6)</strong></td>
+      <td><strong>2</strong> (Common factors: 1, <strong>2</strong>)</td>
+      <td><strong>12</strong> (Smallest common multiple)</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="3-methods-to-calculate-with-examples">3. Methods to Calculate (With Examples)</h2>
+
+<h3 id="method-a-prime-factorization-best-for-exams"><strong>Method A: Prime Factorization (Best for Exams)</strong></h3>
+
+<p><strong>Steps:</strong></p>
+<ol>
+  <li>Find prime factors of all numbers.</li>
+  <li><strong>HCF</strong> = product of common primes with <strong>lowest powers</strong>.</li>
+  <li><strong>LCM</strong> = product of all primes with <strong>highest powers</strong>.</li>
+</ol>
+
+<hr />
+
+<p><strong>Example: Find HCF and LCM of 12 and 18.</strong></p>
+
+<ul>
+  <li>‎ \(12 = 2^2 \times 3^1\) ‎</li>
+  <li>‎ \(18 = 2^1 \times 3^2\) ‎</li>
+</ul>
+
+<p><strong>HCF:</strong><br />
+Lowest powers: \(2^1\) and \(3^1\)<br />
+Result:<br />
+\(\text{HCF} = 2 \times 3 = \mathbf{6}\)</p>
+
+<p><strong>LCM:</strong><br />
+Highest powers: \(2^2\) and \(3^2\)<br />
+\(\text{LCM} = 4 \times 9 = \mathbf{36}\)</p>
+
+<hr />
+
+<h3 id="method-b-division-method-euclids-algorithm--best-for-large-numbers"><strong>Method B: Division Method (Euclid’s Algorithm – Best for Large Numbers)</strong></h3>
+
+<p><strong>HCF Steps:</strong></p>
+<ol>
+  <li>Divide the larger number by the smaller one.</li>
+  <li>Replace the larger number with the smaller and the smaller with the remainder.</li>
+  <li>Repeat until remainder = 0.</li>
+  <li>The last non-zero remainder is the HCF.</li>
+</ol>
+
+<p><strong>Example: HCF of 24 and 36</strong></p>
+
+<ol>
+  <li>\(36 \div 24 \rightarrow\) remainder = 12</li>
+  <li>\(24 \div 12 \rightarrow\) remainder = 0</li>
+  <li>Last divisor = <strong>12</strong><br />
+<strong>HCF = 12</strong></li>
+</ol>
+
+<hr />
+
+<h2 id="4-golden-formula-huge-exam-trick">4. Golden Formula (Huge Exam Trick)</h2>
+
+<p>For any two numbers \(A\) and \(B\):</p>
+
+\[A \times B = \text{HCF}(A, B) \times \text{LCM}(A, B)\]
+
+<p><strong>Important:</strong> Works <strong>only for 2 numbers</strong>, not for 3 or more.</p>
+
+<hr />
+
+<p><strong>Example:</strong></p>
+
+<p>HCF of two numbers = 5<br />
+Product of numbers = 150<br />
+Find LCM.</p>
+
+<p>\(150 = 5 \times \text{LCM}\)<br />
+\(\text{LCM} = \frac{150}{5} = 30\)</p>
+
+<hr />
+
+<h2 id="5-tips-tricks--word-problem-keywords">5. Tips, Tricks &amp; Word Problem Keywords</h2>
+
+<h3 id="1-co-prime-shortcut"><strong>1. Co-prime Shortcut</strong></h3>
+<p>If numbers are co-prime:</p>
+<ul>
+  <li><strong>HCF = 1</strong></li>
+  <li><strong>LCM = product of numbers</strong><br />
+Example: \(8 \times 9 = 72\)</li>
+</ul>
+
+<h3 id="2-multiples-trick"><strong>2. Multiples Trick</strong></h3>
+<p>If one number is a multiple of the other (like 5 and 20):</p>
+<ul>
+  <li><strong>HCF = smaller number</strong></li>
+  <li><strong>LCM = larger number</strong></li>
+</ul>
+
+<h3 id="3-word-problem-clues"><strong>3. Word Problem Clues</strong></h3>
+<p>Use <strong>LCM</strong> when the question uses words like:</p>
+<ul>
+  <li>“When will they meet again?”</li>
+  <li>“Repeat together”</li>
+  <li>“Smallest number divisible by…”</li>
+</ul>
+
+<p>Use <strong>HCF</strong> when the question has:</p>
+<ul>
+  <li>“Maximum possible groups”</li>
+  <li>“Largest size”</li>
+  <li>“Cut into equal parts”</li>
+</ul>
+
+<h3 id="the-master-trick-the-difference-method">The Master Trick: “The Difference Method”</h3>
+
+<p>Instead of dividing or factorizing, you simply use <strong>subtraction</strong>.</p>
+
+<hr />
+
+<h2 id="1-hcf-of-2-numbers">1. HCF of 2 Numbers</h2>
+
+<h3 id="trick-rule"><strong>Trick Rule</strong></h3>
+<p>The HCF of two numbers is always equal to their <strong>Difference</strong> or a <strong>factor of that Difference</strong>.</p>
+
+<p><strong>Steps:</strong></p>
+
+<ol>
+  <li>Subtract the smaller number from the larger one.</li>
+  <li>Check if the <strong>Difference divides both</strong> original numbers.
+    <ul>
+      <li>If <strong>YES</strong> → That difference is the HCF.</li>
+      <li>If <strong>NO</strong> → Find the <strong>factors</strong> of the difference.<br />
+The <strong>largest factor</strong> that divides both numbers is the HCF.</li>
+    </ul>
+  </li>
+</ol>
+
+<hr />
+
+<h3 id="example-a-direct-difference-hcf-of-12-and-18"><strong>Example A (Direct Difference):</strong> HCF of 12 and 18</h3>
+
+<ol>
+  <li>Difference: \(18 - 12 = 6\)</li>
+  <li>Check 6:
+    <ul>
+      <li>\(12 \div 6 = 2\) → Yes</li>
+      <li>\(18 \div 6 = 3\) → Yes</li>
+    </ul>
+  </li>
+  <li><strong>HCF = 6</strong></li>
+</ol>
+
+<hr />
+
+<h3 id="example-b-factor-of-difference-hcf-of-48-and-60"><strong>Example B (Factor of Difference):</strong> HCF of 48 and 60</h3>
+
+<ol>
+  <li>Difference: \(60 - 48 = 12\)</li>
+  <li>Check 12:
+    <ul>
+      <li>\(48 \div 12 = 4\) → Yes</li>
+      <li>\(60 \div 12 = 5\) → Yes</li>
+    </ul>
+  </li>
+  <li><strong>HCF = 12</strong></li>
+</ol>
+
+<hr />
+
+<h3 id="example-c-harder-hcf-of-26-and-34"><strong>Example C (Harder):</strong> HCF of 26 and 34</h3>
+
+<ol>
+  <li>Difference: \(34 - 26 = 8\)</li>
+  <li>Check 8 → Does NOT divide 26</li>
+  <li>Factors of 8: <strong>8, 4, 2, 1</strong>
+    <ul>
+      <li>Try 4 → No</li>
+      <li>Try 2 →
+        <ul>
+          <li>\(26 \div 2\) → Yes</li>
+          <li>\(34 \div 2\) → Yes</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><strong>HCF = 2</strong></li>
+</ol>
+
+<hr />
+
+<h2 id="2-hcf-of-3-numbers-or-more">2. HCF of 3 Numbers (or More)</h2>
+
+<h3 id="trick-rule-1"><strong>Trick Rule</strong></h3>
+<p>Find the <strong>smallest difference</strong> between any two numbers in the set.<br />
+The HCF will be either <strong>that difference</strong> or a <strong>factor</strong> of it.</p>
+
+<p><strong>Steps:</strong></p>
+
+<ol>
+  <li>Pick the pair of numbers that are <strong>closest</strong> to each other.</li>
+  <li>Find their <strong>difference</strong>.</li>
+  <li>Check if this difference divides <strong>all</strong> numbers.
+    <ul>
+      <li>If <strong>YES</strong> → That is the HCF.</li>
+      <li>If <strong>NO</strong> → Test the <strong>factors</strong> of the difference (largest to smallest).</li>
+    </ul>
+  </li>
+</ol>
+
+<hr />
+
+<h3 id="example-1-hcf-of-30-42-135"><strong>Example 1:</strong> HCF of 30, 42, 135</h3>
+
+<ol>
+  <li>Closest pair → 30 and 42</li>
+  <li>Difference: \(42 - 30 = 12\)</li>
+  <li>Check 12 → Does NOT divide 30</li>
+  <li>
+    <p>Factors of 12: <strong>12, 6, 4, 3, 2, 1</strong></p>
+
+    <ul>
+      <li>Try 6 →
+        <ul>
+          <li>\(30 \div 6\) → Yes</li>
+          <li>\(42 \div 6\) → Yes</li>
+          <li>\(135 \div 6\) → No</li>
+        </ul>
+      </li>
+      <li>
+        <p>Try 4 → No (135 is odd)</p>
+      </li>
+      <li>Try 3 →
+        <ul>
+          <li>\(30 \div 3\) → Yes</li>
+          <li>\(42 \div 3\) → Yes</li>
+          <li>\(135 \div 3\) → Yes (\(1+3+5=9\) → divisible by 3)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><strong>HCF = 3</strong></li>
+</ol>
+
+<hr />
+
+<h3 id="example-2-hcf-of-36-48-72"><strong>Example 2:</strong> HCF of 36, 48, 72</h3>
+
+<ol>
+  <li>Closest difference:
+    <ul>
+      <li>‎ \(48 - 36 = 12\)  ‎</li>
+      <li>‎ \(72 - 48 = 24\)  ‎ 
+→ Smallest difference = <strong>12</strong></li>
+    </ul>
+  </li>
+  <li>Check 12:
+    <ul>
+      <li>\(36 \div 12\) → Yes</li>
+      <li>\(48 \div 12\) → Yes</li>
+      <li>\(72 \div 12\) → Yes</li>
+    </ul>
+  </li>
+  <li><strong>HCF = 12</strong></li>
+</ol>
+
+<hr />
+
+<h2 id="summary-of-trick"><strong>Summary of Trick</strong></h2>
+
+<ol>
+  <li><strong>Calculate the Difference</strong> (smallest gap between any two numbers).</li>
+  <li><strong>Test the Difference</strong> (does it divide all numbers?).</li>
+  <li><strong>If NO</strong>, test its <strong>factors</strong>, starting from the <strong>largest</strong>.</li>
+</ol>
+
+<hr />
+
+<h2 id="6-practice-question">6. Practice Question</h2>
+
+<p><strong>Q:</strong> Three bells ring at intervals of 12, 15, and 20 minutes. If they rang together at 9:00 AM, when will they ring together again?</p>
+
+<p><strong>Solution:</strong></p>
+
+<p><strong>Step 1:</strong> Use LCM (because it’s a repeat cycle).<br />
+Prime factorize:</p>
+
+<ul>
+  <li>‎ \(12 = 2^2 \times 3\) ‎</li>
+  <li>‎ \(15 = 3 \times 5\) ‎</li>
+  <li>‎ \(20 = 2^2 \times 5\) ‎</li>
+</ul>
+
+<p><strong>Step 2:</strong> Take highest powers:<br />
+\(\text{LCM} = 2^2 \times 3^1 \times 5^1 = 4 \times 3 \times 5 = 60\)</p>
+
+<p>They ring together every <strong>60 minutes</strong>.</p>
+
+<p><strong>Final Answer:</strong><br />
+\(9:00\ \text{AM} + 1\ \text{hour} = \mathbf{10:00\ AM}\)</p>
+
+<hr />
+<h2 id="1-multiplication-of-two-digit-numbers">1. Multiplication of Two-Digit Numbers</h2>
+<p>Let’s multiply <strong>23 by 14</strong>.</p>
+
+<h3 id="method-1-traditional-method-standard-school-method"><strong>Method 1: Traditional Method (Standard School Method)</strong></h3>
+
+<ol>
+  <li><strong>Multiply by the Ones Digit:</strong><br />
+Multiply the top number (23) by the ones digit of the bottom number (4).
+    <ul>
+      <li>‎ \(23 \times 4 = 92\) ‎</li>
+    </ul>
+  </li>
+  <li><strong>Multiply by the Tens Digit:</strong><br />
+Multiply 23 by the tens digit (1). Place a zero as placeholder.
+    <ul>
+      <li>‎ \(23 \times 10 = 230\)  ‎</li>
+    </ul>
+  </li>
+  <li><strong>Add the Results:</strong>
+    <ul>
+      <li>‎ \(92 + 230 = 322\)  ‎</li>
+    </ul>
+  </li>
+</ol>
+
+<p><strong>Visual Layout:</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>23
+x 14
+----
+92   &lt;-- (23 × 4)
+x 230   &lt;-- (23 × 1) with a 0 placeholder
+---
+322
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="method-2-vedic-maths-trick-vertical--crosswise"><strong>Method 2: Vedic Maths Trick (Vertical &amp; Crosswise)</strong></h3>
+
+<p>Let the numbers be \(AB \times CD\) (i.e., \(23 \times 14\)).</p>
+
+<ol>
+  <li><strong>Step 1: Vertical (Right)</strong>
+    <ul>
+      <li>Multiply rightmost digits: \(3 \times 4 = 12\)</li>
+      <li>Write <strong>2</strong>, carry <strong>1</strong></li>
+    </ul>
+  </li>
+  <li><strong>Step 2: Crosswise</strong>
+    <ul>
+      <li>Inner + outer: \((2 \times 4) + (3 \times 1) = 8 + 3 = 11\)</li>
+      <li>Add carry: \(11 + 1 = 12\)</li>
+      <li>Write <strong>2</strong>, carry <strong>1</strong></li>
+    </ul>
+  </li>
+  <li><strong>Step 3: Vertical (Left)</strong>
+    <ul>
+      <li>Multiply leftmost digits: \(2 \times 1 = 2\)</li>
+      <li>Add carry: \(2 + 1 = 3\)</li>
+    </ul>
+  </li>
+</ol>
+
+<p><strong>Final Answer:</strong> \(\;322\)</p>
+
+<hr />
+
+<h2 id="2-multiplication-of-three-digit-numbers">2. Multiplication of Three-Digit Numbers</h2>
+<p>Let’s multiply <strong>123 by 456</strong>.</p>
+
+<h3 id="method-1-traditional-method"><strong>Method 1: Traditional Method</strong></h3>
+
+<ol>
+  <li>
+    <p><strong>Ones place:</strong><br />
+\(123 \times 6 = 738\)</p>
+  </li>
+  <li>
+    <p><strong>Tens place:</strong><br />
+\(123 \times 50 = 6150\)</p>
+  </li>
+  <li>
+    <p><strong>Hundreds place:</strong><br />
+\(123 \times 400 = 49200\)</p>
+  </li>
+  <li>
+    <p><strong>Add all results:</strong></p>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>738
+6150
++49200
+------
+56088
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<hr />
+
+<h3 id="method-2-vedic-maths-trick-vertical--crosswise-1"><strong>Method 2: Vedic Maths Trick (Vertical &amp; Crosswise)</strong></h3>
+
+<p>Let the numbers be \(ABC \times DEF\) (i.e., \(123 \times 456\)).</p>
+
+<ul>
+  <li>
+    <p><strong>Step 1 (Right):</strong><br />
+\(3 \times 6 = 18\) → write <strong>8</strong>, carry <strong>1</strong></p>
+  </li>
+  <li>
+    <p><strong>Step 2 (Crosswise – Right 2):</strong><br />
+\((2 \times 6) + (3 \times 5) + 1 = 12 + 15 + 1 = 28\)<br />
+Write <strong>8</strong>, carry <strong>2</strong></p>
+  </li>
+  <li>
+    <p><strong>Step 3 (Crosswise – All 3):</strong><br />
+\((1 \times 6) + (3 \times 4) + (2 \times 5) + 2 = 6 + 12 + 10 + 2 = 30\)<br />
+Write <strong>0</strong>, carry <strong>3</strong></p>
+  </li>
+  <li>
+    <p><strong>Step 4 (Crosswise – Left 2):</strong><br />
+\((1 \times 5) + (2 \times 4) + 3 = 5 + 8 + 3 = 16\)<br />
+Write <strong>6</strong>, carry <strong>1</strong></p>
+  </li>
+  <li>
+    <p><strong>Step 5 (Left):</strong><br />
+\(1 \times 4 + 1 = 4 + 1 = 5\)<br />
+Write <strong>5</strong></p>
+  </li>
+</ul>
+
+<p><strong>Final Answer:</strong> \(\;56088\)</p>
+
+</div>
+  </article>
+</main>
+
+<!-- PDF.js Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+
+<!-- Google AdSense Script -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7539227284131407"
+     crossorigin="anonymous"></script>
+
+<script src="/assets/scripts/post.js"></script>
+  <footer class="site-footer">
+  <!-- Back to blog button for post pages -->
+  
+  
+  <div class="footer-img">
+    <img src="/assets/img/banner.svg">
+  </div>
+  <div class="footer-content">
+    <p>&copy; 2025 The InsightRoom. All rights reserved.</p>
+  </div>
+
+  <div class="theme-switcher" style="margin: 1rem auto 0; background: var(--bg); border: 1px solid lightgray; border-radius: 9999px; display: flex; gap: 0.5rem; padding: 0.5rem 1rem; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); align-items: center; width: fit-content;">
+    <button aria-label="Light Mode" onclick="setTheme('light')" id="light-btn" style="background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--text);">
+      <i class="fa-regular fa-sun-bright"></i>
+    </button>
+    <button aria-label="Dark Mode" onclick="setTheme('dark')" id="dark-btn" style="background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--text);">
+      <i class="fa-regular fa-moon"></i>
+    </button>
+    <button aria-label="System Theme" onclick="setTheme('system')" id="system-btn" style="background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--text);">
+      <i class="fa-regular fa-computer-classic"></i>
+    </button>
+  </div>
+
+
+    
+</footer>
+  <script src="/assets/scripts/post-base.js"></script>
+  </body>
+  
+
+</html>

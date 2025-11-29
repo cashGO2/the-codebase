@@ -17,6 +17,7 @@
 <meta property="og:url" content="https://materioa.vercel.app">
 <meta property="og:type" content="website">
 
+{% unless site.disable_service_worker %}
 <!-- PWA Configuration -->
 <meta name="theme-color" content="#333333">
 <link rel="manifest" href="/manifest.json">
@@ -25,6 +26,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Materio">
 <link rel="apple-touch-icon" href="/assets/img/icon.svg">
+{% endunless %}
 
 <!-- Favicon and Icons -->
 <link rel="icon" type="image/x-icon" href="/assets/img/icon.svg" sizes="256x256">
@@ -40,6 +42,33 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
 
 <!-- Service Worker Registration -->
+{% comment %} Service worker control: respects `_config.yml:disable_service_worker` {% endcomment %}
+{% if site.disable_service_worker %}
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+            // Unregister any existing service workers and clear caches.
+            navigator.serviceWorker.getRegistrations()
+                .then(function (registrations) {
+                    registrations.forEach(function (reg) {
+                        try { reg.unregister(); } catch (e) { console.log('SW unregister error', e); }
+                    });
+                })
+                .catch(function (err) { console.log('Error getting SW registrations:', err); });
+
+            if (window.caches && caches.keys) {
+                caches.keys()
+                    .then(function (names) {
+                        return Promise.all(names.map(function (name) { return caches.delete(name); }));
+                    })
+                    .then(function () { console.log('Client caches cleared'); })
+                    .catch(function (e) { console.log('Cache clear failed', e); });
+            }
+        });
+    }
+</script>
+<!-- Service Worker registration is disabled. See docs/SERVICE_WORKER_DISABLE.md to re-enable. -->
+{% else %}
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
@@ -53,6 +82,7 @@
         });
     }
 </script>
+{% endif %}
 
 <!-- Google Tag Manager -->
 <script>(function (w, d, s, l, i) {

@@ -900,6 +900,27 @@ table td code {
     display: none !important;
   }
 
+  /* Hide scroll-to-top button in print */
+  #scroll-to-top {
+    display: none !important;
+  }
+
+  /* Hide reading time text in print (wrapped by layout) */
+  .reading-time {
+    display: none !important;
+  }
+
+  /* Hide AdSense in-article ad blocks in print */
+  ins.adsbygoogle,
+  ins.adsbygoogle iframe,
+  .adsbygoogle {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+  }
+
   /* Hide attachments section */
   .attachment-card,
   .attachment-grid {

@@ -680,7 +680,9 @@ function processAttachmentTags() {
   console.log('Processing attachments in:', postBody.innerHTML.substring(0, 200));
 
   // Look for custom attachment tags like: [attachment:/path/to/file.pdf:Display Name]
-  const attachmentPattern = /\[attachment:([^:]+):([^\]]+)\]/g;
+  // Updated to accept URLs (which may contain colons, e.g. http://)
+  // Capture everything up to the last colon as the file path, and after it as the display name
+  const attachmentPattern = /\[attachment:(.+):([^\]]+)\]/g;
   let content = postBody.innerHTML;
   let match;
   let replacements = 0;
