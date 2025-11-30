@@ -75,6 +75,10 @@
     })(window, document, 'script', 'dataLayer', 'GTM-M6PC6RJL');</script>
 
 <!-- Google AdSense - Load conditionally based on user subscription -->
+ <script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 <script>
     function hasAdFreePrivileges() {
         try {  
@@ -85,7 +89,6 @@
             const userData = JSON.parse(userDataStr);
             return userData.isPlusUser === true || userData.hasAdminPrivileges === true;
         } catch (error) {
-            console.log('Error checking user privileges for ads:', error);
             return false;
         }
     }
@@ -350,8 +353,8 @@
                         "date": "November 29, 2025",
                         "excerpt_home": "",
                         "excerpt": "This resource provides detailed notes about Number systems with Important points, examples and other things which are helpful for exams...",
-                        "semester": "",
-                        "subject": "",
+                        "semester": "6",
+                        "subject": "Quant and Reasoning",
                         "visibility": "public"
                     },
                     
@@ -478,7 +481,7 @@
                     
                     {
                         "title": "Introducing Account in Materio and more...",
-                        "url": "/announcement/Introducing-Accounts-in-Materio/",
+                        "url": "/whats-new/Introducing-Accounts-in-Materio/",
                         "date": "June 24, 2025",
                         "excerpt_home": "",
                         "excerpt": "Materio v4.5.6.0 brings many changes to underlying system including UI changes and feature additions opening ways from being just a...",
@@ -1643,6 +1646,21 @@ document.addEventListener('DOMContentLoaded', () => {
             <div id="preferences-content" class="tab-content-section active">
                 <!-- Reading Modes -->
                 <p style="margin-left: 5px;"><b>Reading Modes</b></p>
+                
+                <!-- Invert Colors Mode -->
+                <div class="card-layout" id="invertMode">
+                    <div class="toggle-container">
+                        <div class="paper-mode-info">
+                            <div class="paper-mode-title">Inversion</div>
+                            <div class="paper-mode-description">Reverses colors of content except some images and media</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="invertModeToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
                 <div class="card-layout" id="paperModeCard">
                     <div class="toggle-container">
                         <div class="paper-mode-info">

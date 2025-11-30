@@ -63,7 +63,8 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById('getinsights'),
             document.getElementById('storageInfoCard'),
             document.getElementById('localCdnCard'),
-            document.getElementById('serverTerminal')
+            document.getElementById('serverTerminal'),
+            document.getElementById('invertMode')
 
         ];
         const notifyCards = document.querySelectorAll('#notify');

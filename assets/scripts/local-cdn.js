@@ -77,7 +77,7 @@
         }
         
         // Replace CDN domain with local path
-        const cdnDomain = 'https://cdn-materioa.netlify.app';
+        const cdnDomain = 'https://cdn-materioa.vercel.app';
         if (url.includes(cdnDomain)) {
             // Extract the path after the domain
             let resourcePath = url.replace(cdnDomain + '/', '');

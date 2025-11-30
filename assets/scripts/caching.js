@@ -199,10 +199,10 @@ document.addEventListener('DOMContentLoaded', function () {
             // Special handling for Vault (semester 9999)
             if (semester === '9999') {
                 // Format: pdfs/9999/UUID/vault/filename.pdf
-                pdfUrl = `https://cdn-materioa.netlify.app/pdfs/${semester}/${subject}/vault/${topic}.pdf`;
+                pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/vault/${topic}.pdf`;
             } else {
                 // Normal format: pdfs/semester/subject/topic.pdf
-                pdfUrl = `https://cdn-materioa.netlify.app/pdfs/${semester}/${subject}/${topic}.pdf`;
+                pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/${topic}.pdf`;
             }
             
             // Transform to local CDN if enabled

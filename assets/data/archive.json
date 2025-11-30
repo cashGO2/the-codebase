@@ -2,6 +2,48 @@
   "archive": [
     {
       "enabled": true,
+      "category": "notice",
+      "frequency": "once",
+      "customFrequencyHours": "null",
+      "title": "A New Home for Materio’s Reliability",
+      "description": "Materio has officially completed its move to Vercel. The platform is now live again, powered by faster delivery, improved stability, and a more resilient infrastructure. You’re all set to continue using Materio with a smoother, more reliable experience than before.\n Thank you for your patience during the transition. For ongoing updates, our status page is always available.",
+      "link": "https://statuspage.incident.io/materio",
+      "images": [
+        "assets/img/covers/f58a6024-35aa-4982-aec9-c8270cfa76c4.webp"
+      ],
+      "showImageOnMaintenance": false,
+      "imageRotationInterval": 5000,
+      "imageAnimation": {
+        "type": "cascade",
+        "duration": 600,
+        "direction": "left"
+      },
+      "isLimitedOffer": true,
+      "startDate": "2025-11-23T14:00",
+      "endDate": "2025-11-24T00:00",
+      "showDateInfo": false,
+      "lastUpdated": "2025-11-23T13:31:00",
+      "buttons": {
+        "primary": {
+          "show": true,
+          "text": "View Status",
+          "icon": "&#8206;"
+        },
+        "secondary": {
+          "show": true,
+          "text": "Got it",
+          "icon": "&#8206;"
+        }
+      },
+      "disclaimer": {
+        "show": false,
+        "text": "Terms and conditions.",
+        "linkText": "Read more",
+        "linkUrl": ""
+      }
+    },
+    {
+      "enabled": true,
       "category": "whats-new",
       "frequency": "once",
       "customFrequencyHours": "null",

@@ -775,10 +775,14 @@ function applyMediaAnimation(imageEl, videoEl, container, newMediaSrc, animation
   // Determine animation class based on type and direction
   let animationClass = 'fade'; // default
   
-  switch (animationConfig.type) {
-    case 'slide':
-      animationClass = `slide-${animationConfig.direction || 'left'}`;
-      break;
+  // Support both shorthand "slide" + direction and explicit types like "slide-left"
+  if (typeof animationConfig.type === 'string' && animationConfig.type.indexOf('slide-') === 0) {
+    animationClass = animationConfig.type; // e.g. 'slide-left'
+  } else {
+    switch (animationConfig.type) {
+      case 'slide':
+        animationClass = `slide-${animationConfig.direction || 'left'}`;
+        break;
     case 'fade':
       animationClass = 'fade';
       break;
@@ -797,8 +801,9 @@ function applyMediaAnimation(imageEl, videoEl, container, newMediaSrc, animation
     case 'bounce':
       animationClass = 'bounce';
       break;
-    default:
-      animationClass = 'fade';
+      default:
+        animationClass = 'fade';
+    }
   }
   
   // Hide current elements

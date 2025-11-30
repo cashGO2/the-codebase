@@ -64,6 +64,359 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
+
+  // Build fallback TOC if server-side TOC not generated
+  try {
+    buildTOCFallback();
+  } catch (e) {
+    console.error('TOC fallback failed:', e);
+  }
+});
+
+function slugify(text) {
+  return text.toString().toLowerCase().trim()
+    .replace(/[\u2018\u2019\u201C\u201D]/g, '')
+    .replace(/[^a-z0-9\s\-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/\-+/g, '-');
+}
+
+function buildTOCFallback() {
+  const aside = document.querySelector('.post-toc');
+  if (!aside) return;
+
+  // If server-side plugin already produced content, do nothing
+  if (aside.querySelector('.toc') && aside.querySelector('.toc').children.length > 0) return;
+
+  const postBody = document.querySelector('.post-body');
+  if (!postBody) return;
+
+  // Collect headings (skip h1 which is usually the title)
+  // include only h1, h2, h3 as requested (#, ##, ###)
+  const headings = postBody.querySelectorAll('h1, h2, h3');
+  if (!headings || headings.length === 0) return;
+
+  // Create nav.toc
+  const nav = document.createElement('nav');
+  nav.className = 'toc';
+
+  const title = document.createElement('h2');
+  title.textContent = 'On this page';
+  nav.appendChild(title);
+
+  const ul = document.createElement('ul');
+  nav.appendChild(ul);
+
+  headings.forEach(h => {
+    let id = h.id;
+    if (!id) {
+      id = slugify(h.textContent || h.innerText || '');
+      // ensure unique
+      let uniq = id;
+      let i = 1;
+      while (document.getElementById(uniq)) {
+        uniq = id + '-' + i++;
+      }
+      id = uniq;
+      h.id = id;
+    }
+
+    const li = document.createElement('li');
+    li.className = 'toc-level-' + (parseInt(h.tagName.replace('H', ''), 10));
+
+    const a = document.createElement('a');
+    a.href = '#' + id;
+    // Use innerHTML so any math delimiters or inline HTML remains intact for KaTeX auto-render
+    a.innerHTML = h.innerHTML || (h.textContent || h.innerText);
+    a.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      const target = document.getElementById(id);
+      if (target) {
+        const offset = 80; // adjust for sticky header
+        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+
+  aside.appendChild(nav);
+
+  // If KaTeX auto-render isn't available, remove raw latex markers from links to avoid ugly $$...$$ showing
+  if (typeof window.renderMathInElement !== 'function') {
+    const mathStripRegex = /(\$\$[\s\S]*?\$\$|\$[^\$]*\$)/g;
+    const anchors = aside.querySelectorAll('a');
+    anchors.forEach(a => {
+      a.innerHTML = a.innerHTML.replace(mathStripRegex, '').trim();
+    });
+  }
+}
+
+// Move `.post-toc` into `#site-toc-sidebar` and wire toggle handlers
+function wireTOCSidebar() {
+  const siteSidebar = document.getElementById('site-toc-sidebar');
+  const postToc = document.querySelector('.post-toc');
+
+  if (!siteSidebar || !postToc) return;
+
+  // Move postToc directly into sidebar (preserve content)
+  siteSidebar.appendChild(postToc);
+  postToc.style.display = 'block';
+  siteSidebar.setAttribute('aria-hidden', 'true');
+  document.getElementById('site-toc-overlay').setAttribute('aria-hidden', 'true');
+
+  // Toggle handlers
+  const toggleBtn = document.querySelector('.toc-toggle');
+  const overlay = document.getElementById('site-toc-overlay');
+
+  function openTOC() {
+    document.body.classList.add('toc-open');
+    siteSidebar.setAttribute('aria-hidden', 'false');
+    overlay.setAttribute('aria-hidden', 'false');
+    // focus first link for accessibility
+    const firstLink = siteSidebar.querySelector('a');
+    if (firstLink) firstLink.focus();
+    // update header icon to 'regular' when open
+    if (toggleBtn) {
+      const icon = toggleBtn.querySelector('i');
+      if (icon) {
+        icon.classList.remove('fa-light');
+        icon.classList.add('fa-regular');
+      }
+    }
+    // center currently active TOC item so user sees where they are
+    setTimeout(() => { centerActiveInSidebar('auto'); }, 120);
+  }
+
+  function closeTOC() {
+    document.body.classList.remove('toc-open');
+    siteSidebar.setAttribute('aria-hidden', 'true');
+    overlay.setAttribute('aria-hidden', 'true');
+    if (toggleBtn) toggleBtn.focus();
+    // update header icon to 'light' when closed
+    if (toggleBtn) {
+      const icon = toggleBtn.querySelector('i');
+      if (icon) {
+        icon.classList.remove('fa-regular');
+        icon.classList.add('fa-light');
+      }
+    }
+  }
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', function () {
+      if (document.body.classList.contains('toc-open')) closeTOC(); else openTOC();
+    });
+  }
+
+  // close button removed; overlay and ESC still close the sidebar
+  if (overlay) overlay.addEventListener('click', closeTOC);
+
+  // Also support tapping/clicking outside the sidebar to close it even when
+  // the overlay does not intercept pointer events (we intentionally allow
+  // page scrolling while sidebar is open). Use a document-level click and
+  // touch tap detector so simple taps outside close the sidebar while
+  // allowing scroll gestures to pass through.
+  let _touchStart = null;
+
+  document.addEventListener('touchstart', function (ev) {
+    if (!document.body.classList.contains('toc-open')) return;
+    if (!ev.touches || !ev.touches[0]) return;
+    _touchStart = { x: ev.touches[0].clientX, y: ev.touches[0].clientY, t: Date.now() };
+  }, { passive: true });
+
+  document.addEventListener('touchend', function (ev) {
+    if (!document.body.classList.contains('toc-open')) return;
+    if (!ev.changedTouches || !ev.changedTouches[0]) return;
+    if (!_touchStart) return;
+    const touch = ev.changedTouches[0];
+    const dx = Math.abs(touch.clientX - _touchStart.x);
+    const dy = Math.abs(touch.clientY - _touchStart.y);
+    const dt = Date.now() - _touchStart.t;
+    // Treat as a tap only if movement is small and within a short timespan
+    if (dx < 12 && dy < 12 && dt < 600) {
+      const target = ev.target;
+      if (!siteSidebar.contains(target) && !(toggleBtn && toggleBtn.contains(target))) {
+        closeTOC();
+      }
+    }
+    _touchStart = null;
+  }, { passive: true });
+
+  // Mouse clicks: close if click is outside sidebar and not on the toggle.
+  document.addEventListener('click', function (ev) {
+    if (!document.body.classList.contains('toc-open')) return;
+    const target = ev.target;
+    if (!siteSidebar.contains(target) && !(toggleBtn && toggleBtn.contains(target))) {
+      closeTOC();
+    }
+  }, true);
+
+  // Close on ESC
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && document.body.classList.contains('toc-open')) {
+      closeTOC();
+    }
+  });
+}
+
+// Render math inside the sidebar TOC if KaTeX auto-render is available
+function renderMathInTOC() {
+  const sidebar = document.getElementById('site-toc-sidebar');
+  if (!sidebar) return;
+  if (typeof window.renderMathInElement === 'function') {
+    try {
+      // run auto-render on the sidebar so $$...$$ is converted
+      window.renderMathInElement(sidebar, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+    } catch (e) {
+      console.warn('Math render in TOC failed', e);
+    }
+  }
+}
+
+// Center the currently active TOC link inside the sidebar (used on open and on load)
+function centerActiveInSidebar(behavior = 'smooth') {
+  const sidebarEl = document.getElementById('site-toc-sidebar');
+  if (!sidebarEl) return;
+  const active = sidebarEl.querySelector('.toc a.active');
+  if (!active) return;
+  try {
+    active.scrollIntoView({ behavior, block: 'center', inline: 'nearest' });
+  } catch (e) {
+    try {
+      const activeRect = active.getBoundingClientRect();
+      const sidebarRect = sidebarEl.getBoundingClientRect();
+      const currentScroll = sidebarEl.scrollTop;
+      const offset = (activeRect.top - sidebarRect.top) - (sidebarEl.clientHeight / 2) + (activeRect.height / 2);
+      sidebarEl.scrollTo({ top: currentScroll + offset, behavior });
+    } catch (e2) {
+      active.scrollIntoView(false);
+    }
+  }
+}
+
+// Track active TOC link based on scroll position and clicks
+function wireTOCActiveTracking() {
+  const sidebar = document.getElementById('site-toc-sidebar');
+  const postBody = document.querySelector('.post-body');
+  if (!sidebar || !postBody) return;
+
+  const links = Array.from(sidebar.querySelectorAll('.toc a'));
+  if (!links.length) return;
+
+  // Map link -> target heading
+  const linkTargets = links.map(a => {
+    const hash = a.getAttribute('href') || '';
+    const id = hash.replace(/^#/, '');
+    return document.getElementById(id);
+  });
+
+  // When we programmatically navigate (click -> smooth scroll), suspend
+  // the scroll-based active calculation briefly to avoid jitter between
+  // the click-set active state and scroll-based recalculation.
+  let suspendScrollHandler = false;
+  let suspendTimeoutId = null;
+
+  function setActive(index) {
+    links.forEach((a, i) => {
+      if (i === index) a.classList.add('active'); else a.classList.remove('active');
+    });
+    // keep the active item visible inside the sidebar
+    const active = links[index];
+    if (active) {
+      try {
+        // Prefer centering the active item in the sidebar
+        active.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+      } catch (e) {
+        // Fallback: compute manual scroll to center the element
+        try {
+          const sidebarEl = document.getElementById('site-toc-sidebar');
+          if (sidebarEl) {
+            const activeRect = active.getBoundingClientRect();
+            const sidebarRect = sidebarEl.getBoundingClientRect();
+            const currentScroll = sidebarEl.scrollTop;
+            const offset = (activeRect.top - sidebarRect.top) - (sidebarEl.clientHeight / 2) + (activeRect.height / 2);
+            sidebarEl.scrollTo({ top: currentScroll + offset, behavior: 'smooth' });
+          } else {
+            active.scrollIntoView(false);
+          }
+        } catch (e2) {
+          active.scrollIntoView(false);
+        }
+      }
+    }
+  }
+
+  // on click, mark active
+  links.forEach((a, i) => {
+    // use capture so we run before other bubble-phase handlers that may
+    // trigger smooth scrolling; this lets us suspend the scroll handler
+    // before the browser/other handlers start scrolling.
+    a.addEventListener('click', (ev) => {
+      // set active immediately for instant visual feedback
+      setActive(i);
+      // suspend scroll-driven updates for a short period to avoid jitter
+      suspendScrollHandler = true;
+      if (suspendTimeoutId) clearTimeout(suspendTimeoutId);
+      suspendTimeoutId = setTimeout(() => {
+        suspendScrollHandler = false;
+        suspendTimeoutId = null;
+      }, 700);
+    }, true);
+  });
+
+  // on scroll, find heading nearest to top
+  function onScroll() {
+    if (suspendScrollHandler) return;
+    let best = -1;
+    let bestOffset = Infinity;
+    for (let i = 0; i < linkTargets.length; i++) {
+      const el = linkTargets[i];
+      if (!el) continue;
+      const rect = el.getBoundingClientRect();
+      const offset = Math.abs(rect.top - 120); // 120px offset for header
+      if (rect.top <= 150 && offset < bestOffset) {
+        best = i; bestOffset = offset;
+      }
+    }
+    if (best >= 0) setActive(best);
+  }
+
+  document.addEventListener('scroll', throttle(onScroll, 150));
+  // initial highlight and center active item inside sidebar
+  setTimeout(() => { onScroll(); centerActiveInSidebar('auto'); }, 600);
+}
+
+// small throttle to avoid too many scroll events
+function throttle(fn, wait) {
+  let last = 0;
+  return function (...args) {
+    const now = Date.now();
+    if (now - last >= wait) { last = now; fn.apply(this, args); }
+  };
+}
+
+// Ensure sidebar wiring happens after DOM ready and after TOC fallback runs
+document.addEventListener('DOMContentLoaded', function () {
+  try {
+    wireTOCSidebar();
+  } catch (e) {
+    console.error('Error wiring TOC sidebar:', e);
+  }
+  try {
+    renderMathInTOC();
+  } catch (e) {}
+  try {
+    wireTOCActiveTracking();
+  } catch (e) {}
 });
 
 function checkSummaryAccess() {
@@ -145,38 +498,31 @@ async function generateSummary() {
     // Calculate target summary length (keep it very short)
     const wordCount = blogContent.split(/\s+/).length;
     const targetWords = Math.max(30, Math.min(80, Math.floor(wordCount / 6))); // Even shorter: 1/6 instead of 1/4
+    // Build concise prompt for the summary API
+    const summaryPrompt = `Please provide an ultra-concise summary (max ${targetWords} words). Focus ONLY on the main point and 2-3 key takeaways. Use simple, clear language and bullet points for multiple points. Preserve LaTeX ($...$ and $$...$$) where present.
 
-    // Prepare the optimized summary request
-    const summaryPrompt = `Summarize this blog post titled "${postTitle}" in EXACTLY ${targetWords} words or less.
+  Title: ${postTitle}
 
-STRICT REQUIREMENTS:
-- Maximum ${targetWords} words total
-- Focus ONLY on the main point and 2-3 key takeaways
-- Use simple, clear language - no fluff
-- For tables: briefly explain what the table shows, don't recreate it
-- For math: use LaTeX ($inline$ or $$display$$) 
-- Use bullet points for multiple points
-- NO unnecessary line breaks or spacing
-- Be extremely concise but informative
+  ${blogContent}`;
 
-Content to summarize:
-${blogContent}
+    const payload = {
+      message: summaryPrompt,
+      messages: [],
+      mode: 'general',
+      model: 'openai/gpt-oss-20b:free'
+    };
 
-Provide a ultra-concise summary:`;
-
-    const response = await fetch('/api/v2/chat', {
+    const fetchOptions = {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        message: summaryPrompt,
-        messages: [],
-        mode: 'general',
-        model: 'openai/gpt-oss-20b:free'
-      })
-    });
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    };
+
+    if (token) {
+      fetchOptions.headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch('/api/v2/chat', fetchOptions);
 
     if (!response.ok) {
       throw new Error(`Failed to generate summary: ${response.status}`);
@@ -670,41 +1016,105 @@ function printPost() {
 }
 
 function processAttachmentTags() {
-  // Find all attachment tags in the post content
+  // Safer attachment replacement: walk text nodes and replace matches with DOM nodes
   const postBody = document.querySelector('.post-body');
   if (!postBody) {
     console.log('No post body found');
     return;
   }
 
-  console.log('Processing attachments in:', postBody.innerHTML.substring(0, 200));
-
-  // Look for custom attachment tags like: [attachment:/path/to/file.pdf:Display Name]
-  // Updated to accept URLs (which may contain colons, e.g. http://)
-  // Capture everything up to the last colon as the file path, and after it as the display name
+  // Pattern: capture everything up to the LAST colon as filePath, and the last segment as displayName
   const attachmentPattern = /\[attachment:(.+):([^\]]+)\]/g;
-  let content = postBody.innerHTML;
-  let match;
+
   let replacements = 0;
 
-  while ((match = attachmentPattern.exec(content)) !== null) {
-    const [fullMatch, filePath, displayName] = match;
-    console.log('Found attachment:', filePath, displayName);
-    const attachmentHTML = createAttachmentCard(filePath, displayName);
-    content = content.replace(fullMatch, attachmentHTML);
-    replacements++;
+  // Walk text nodes recursively
+  function walk(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.nodeValue;
+      let match;
+      let lastIndex = 0;
+      const frag = document.createDocumentFragment();
+      attachmentPattern.lastIndex = 0;
+      let found = false;
+      while ((match = attachmentPattern.exec(text)) !== null) {
+        found = true;
+        const [fullMatch, filePath, displayName] = match;
+        const start = match.index;
+        // Append text before match
+        if (start > lastIndex) {
+          frag.appendChild(document.createTextNode(text.slice(lastIndex, start)));
+        }
+        // Create attachment element and append
+        const attachmentEl = createAttachmentElement(filePath.trim(), displayName.trim());
+        frag.appendChild(attachmentEl);
+        lastIndex = start + fullMatch.length;
+        replacements++;
+      }
+      if (found) {
+        // Append remaining text
+        if (lastIndex < text.length) {
+          frag.appendChild(document.createTextNode(text.slice(lastIndex)));
+        }
+        node.parentNode.replaceChild(frag, node);
+      }
+    } else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName !== 'A' && node.nodeName !== 'SCRIPT' && node.nodeName !== 'STYLE') {
+      // Recurse into children (avoid replacing inside anchors/scripts/styles)
+      const children = Array.from(node.childNodes);
+      for (const child of children) walk(child);
+    }
   }
 
-  console.log('Made', replacements, 'attachment replacements');
+  walk(postBody);
 
   if (replacements > 0) {
-    postBody.innerHTML = content;
-
     // Initialize all attachment cards after rendering
     setTimeout(() => {
       initializeAttachmentCards();
     }, 100);
   }
+}
+
+// Create attachment DOM element from filePath and displayName
+function createAttachmentElement(filePath, displayName) {
+  const container = document.createElement('div');
+  const attachmentId = 'attachment-' + Math.random().toString(36).substr(2, 9);
+  const fileExtension = (filePath.split('.').pop() || '').toLowerCase();
+
+  container.className = 'attachment-card';
+  container.setAttribute('data-file-path', filePath);
+  container.setAttribute('data-attachment-id', attachmentId);
+
+  const details = document.createElement('div');
+  details.className = 'attachment-details';
+
+  const title = document.createElement('div');
+  title.className = 'attachment-title';
+  title.textContent = displayName || (filePath.split('/').pop() || filePath);
+
+  const meta = document.createElement('div');
+  meta.className = 'attachment-meta';
+  meta.innerHTML = `<span class="file-type">${fileExtension.toUpperCase()}</span> • <span class="file-size">Click to view</span>`;
+
+  details.appendChild(title);
+  details.appendChild(meta);
+
+  const preview = document.createElement('div');
+  preview.className = 'attachment-preview';
+  const canvas = document.createElement('canvas');
+  canvas.id = `canvas-${attachmentId}`;
+  canvas.width = 100;
+  canvas.height = 130;
+  const img = document.createElement('img');
+  img.id = `img-${attachmentId}`;
+  img.style.display = 'none';
+  preview.appendChild(canvas);
+  preview.appendChild(img);
+
+  container.appendChild(details);
+  container.appendChild(preview);
+
+  return container;
 }
 
 // Process video tags in post content
@@ -1025,9 +1435,15 @@ function injectInArticleAds() {
     }
   }
 
-  // Check post category - exclude ads for certain categories
+  // Check post container and attributes
   const postContainer = document.querySelector('.post-container');
   const postCategory = postContainer ? postContainer.getAttribute('data-category') : null;
+  // Respect per-post no-ads flag emitted by the layout (data-no-ads="true")
+  const noAdsFlag = postContainer ? postContainer.getAttribute('data-no-ads') === 'true' : false;
+  if (noAdsFlag) {
+    // Post explicitly requests no ads
+    return;
+  }
 
   // List of categories that should not show ads
   const excludedCategories = ['Announcement', 'What\'s New', 'Legal'];

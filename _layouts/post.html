@@ -4,7 +4,7 @@ layout: base
 
 <link rel="stylesheet" href="{{ '/assets/style/post.css' | relative_url }}">
 
-<main class="post-container" style="font-family: 'Manrope', sans-serif;" {% if page.visibility == 'private' %}data-visibility="private"{% endif %} {% if page.category %}data-category="{{ page.category }}"{% endif %}>
+<main class="post-container" style="font-family: 'Manrope', sans-serif;" {% if page.visibility == 'private' %}data-visibility="private"{% endif %} {% if page.category %}data-category="{{ page.category }}"{% endif %} {% if page["no-ads"] %}data-no-ads="true"{% endif %}>
   <article class="post" style="max-width: 700px; margin: 0 auto;">
     {% if page.visibility == 'private' %}
     <!-- <div id="private-post-notice" style="background: rgb(255 139 51 / 15%); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; text-align: center;"> -->
@@ -99,10 +99,12 @@ layout: base
       </div>
       {% endif %}
       
-      <!-- Author and Share Row -->
+      <!-- Author and Share Row (can be disabled via front matter flags) -->
+      {% unless page.hide_author_share_row %}
       <div class="author-share-row" style="display: flex; justify-content: space-between; align-items: center; margin: 0.5rem auto; max-width: 700px; padding: 0 1rem;">
         <!-- Author Profile Section -->
         <div style="display: flex; align-items: center; gap: 0.8rem;">
+          {% unless page.hide_author %}
           {% if page.author %}
             {% assign author_data = site.data.authors[page.author] %}
           {% else %}
@@ -115,11 +117,12 @@ layout: base
           <div class="author-info">
             <div class="author-name" style="font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.2;">{{ author_data.name | default: 'Default Author' }}</div>
           </div>
+          {% endunless %}
         </div>
 
         <!-- Share, Print, and Listen icons -->
         <div style="display: flex; justify-content: center; align-items: center; gap: 1rem;">
-          
+          {% unless page.hide_listen %}
           <!-- Listen to Post Component -->
           <div id="listen-component" class="listen-pill" style="display: flex; align-items: center; background: rgba(0,0,0,0.05); border-radius: 20px; padding: 0.3rem 0.6rem; cursor: pointer; transition: all 0.2s ease;" onclick="console.log('Listen clicked'); toggleListen();">
             <i id="listen-icon" class="fa-solid fa-play" style="font-size: 12px; margin-right: 0.4rem; color: #333;"></i>
@@ -135,6 +138,7 @@ layout: base
             </div>
             <span id="listen-duration" style="font-size: 11px; color: #666; font-weight: 500;">Listen</span>
           </div>
+          {% endunless %}
           
           <!-- Seek controls (only visible when playing/paused) -->
           <div id="seek-controls" class="seek-controls" style="display: none; align-items: center; gap: 0.3rem; margin-left: 0.5rem;">
@@ -149,11 +153,15 @@ layout: base
             </button>
           </div>
 
+          {% unless page.hide_share %}
           <i class="fa-regular fa-link-simple" onclick="sharePost()" style="transform: rotate(-45deg); font-size: 14px; cursor: pointer; color: var(--text);" title="Share"></i>
+          {% endunless %}
+          {% unless page.hide_print %}
           <i class="fa-regular fa-print" onclick="printPost()" style="font-size: 14px; cursor: pointer; color: var(--text);" title="Print"></i>
-          
+          {% endunless %}
         </div>
       </div>
+      {% endunless %}
     </div>
 
     {% if page.summarize %}
@@ -199,9 +207,23 @@ layout: base
     {% endif %}
 
 
-    <div class="post-body">{{ content }}</div>
+    <div class="post-layout">
+      <div class="post-body">{{ content }}</div>
+
+      <aside class="post-toc" aria-label="Table of contents">
+        {% if page.toc != false %}
+          {% toc %}
+        {% endif %}
+      </aside>
+    </div>
   </article>
 </main>
+
+<!-- Site-level TOC sidebar (content will be moved here by JS) -->
+<div id="site-toc-sidebar" class="site-toc-sidebar" aria-hidden="true">
+  <!-- `.post-toc` content will be moved directly into this sidebar (no extra wrapper) -->
+</div>
+<div id="site-toc-overlay" class="site-toc-overlay" tabindex="-1" aria-hidden="true"></div>
 
 <!-- PDF.js Library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>

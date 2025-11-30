@@ -9,10 +9,33 @@
             const { mode, enable } = event.data;
             
             if (mode && typeof enable === 'boolean') {
-                if (enable) {
-                    document.body.classList.add(mode);
+                // For most modes we apply to body (paper/night/eink)
+                if (mode === 'invert') {
+                    // Invert applies to the viewer element (PDF canvas)
+                    const viewerElem = document.getElementById('viewer');
+                    if (viewerElem) {
+                        if (enable) {
+                            viewerElem.classList.add('invert');
+                        } else {
+                            viewerElem.classList.remove('invert');
+                        }
+                        // Force PDF.js to repaint so canvas pages pick up the CSS filter.
+                        setTimeout(() => {
+                            try {
+                                if (window.PDFViewerApplication && window.PDFViewerApplication.pdfViewer) {
+                                    window.PDFViewerApplication.pdfViewer.update();
+                                }
+                            } catch (e) {
+                                // ignore
+                            }
+                        }, 50);
+                    }
                 } else {
-                    document.body.classList.remove(mode);
+                    if (enable) {
+                        document.body.classList.add(mode);
+                    } else {
+                        document.body.classList.remove(mode);
+                    }
                 }
             }
         }        // Handle theme synchronization
@@ -123,3 +146,25 @@
         initializeOverlays();
     }
 })();
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const toggleInvertBtn = document.getElementById('toggleInvert');
+    if (toggleInvertBtn) {
+        toggleInvertBtn.addEventListener('click', () => {
+            const viewer = document.getElementById('viewer');
+            if (viewer) {
+                viewer.classList.toggle('invert');
+
+                if (window.PDFViewerApplication && window.PDFViewerApplication.pdfViewer) {
+                    setTimeout(() => {
+                        try {
+                            window.PDFViewerApplication.pdfViewer.update();
+                        } catch (e) {
+                        }
+                    }, 50);
+                }
+            }
+        });
+    }
+});

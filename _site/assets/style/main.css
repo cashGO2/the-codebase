@@ -2204,6 +2204,112 @@ body.dark-mode #notices a {
     object-fit: cover;
 }
 
+/* Promo media animations (used by promotions.js) */
+.promo-image img,
+.promo-image video {
+    will-change: transform, opacity;
+}
+
+:root {
+    --promo-default-animation-duration: 600ms;
+}
+
+.slide-left {
+    animation-name: slide-left;
+    animation-duration: var(--animation-duration, var(--promo-default-animation-duration));
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+    animation-fill-mode: both;
+}
+
+.slide-right {
+    animation-name: slide-right;
+    animation-duration: var(--animation-duration, var(--promo-default-animation-duration));
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+    animation-fill-mode: both;
+}
+
+.slide-up {
+    animation-name: slide-up;
+    animation-duration: var(--animation-duration, var(--promo-default-animation-duration));
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+    animation-fill-mode: both;
+}
+
+.slide-down {
+    animation-name: slide-down;
+    animation-duration: var(--animation-duration, var(--promo-default-animation-duration));
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+    animation-fill-mode: both;
+}
+
+.fade {
+    animation-name: fade-in;
+    animation-duration: var(--animation-duration, var(--promo-default-animation-duration));
+    animation-timing-function: ease;
+    animation-fill-mode: both;
+}
+
+.fade-scale {
+    animation-name: fade-scale-in;
+    animation-duration: var(--animation-duration, var(--promo-default-animation-duration));
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+    animation-fill-mode: both;
+}
+
+@keyframes slide-left {
+    from {
+        transform: translateX(30%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slide-right {
+    from {
+        transform: translateX(-30%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slide-up {
+    from {
+        transform: translateY(30%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slide-down {
+    from {
+        transform: translateY(-30%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: none; }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes fade-scale-in {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+}
+
 /* When no image is available, adjust modal layout */
 .promo-modal.no-image {
     max-width: 750px;
@@ -4021,3 +4127,7 @@ body.dark-mode .search-result-item:hover {
         font-size: 13px;
     }
 }
+  /* ensure small gap after injected break on mobile */
+    @media (max-width: 600px) {
+        .paper-mode-description br { display:block; margin-bottom:4px; }
+    }

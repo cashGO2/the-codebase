@@ -1,0 +1,252 @@
+---
+title: Post Front-matters — Fields, Usage & Best Practices
+layout: post
+date: '2025-11-30 15:00:00'
+category: Documentation
+excerpt: "Reference for post front-matter keys used in this site: meanings, examples, common pitfalls (YAML quoting, dates), and templates authors can reuse."
+summarize: true
+permalink: /docs/frontmatters
+hidden: true
+no-ads: true
+---
+
+# Post Front-matters — Fields, Usage & Best Practices
+
+This document explains the YAML front-matter keys used across the Materio site, gives common templates you can copy, and highlights pitfalls (for example: unquoted strings containing `:` break YAML). Use this as a quick authoring reference when creating or editing `_posts` entries.
+
+## Why front-matter matters
+
+Front-matter is how Jekyll (and many static-site setups) receives metadata for a page or post. It controls where a post appears, which layout to use, SEO hints (excerpt/image), visibility, and more. Invalid YAML here will break the build (see earlier YAML parsing error example).
+
+## Common fields you will see in this repo
+
+- `title` (string) — The post title shown in lists and the page `<title>`.
+- `layout` (string) — Which layout template to use (e.g., `post`, `page`, `documentation`).
+- `date` (string / datetime) — Publication date/time. Format used in this repo: `'YYYY-MM-DD HH:MM:SS'` (wrap in quotes to be safe).
+- `category` (string) — A single category. Many posts use `Documentation` or other categories.
+- `tags` (array) — A list of tags used for filtering/search (optional): `tags: [yaml, guides]`.
+- `excerpt` (string) — Short summary used in lists and meta; if it contains `:` or other special characters, wrap it in quotes.
+- `image` (string) — Path to a cover image (relative to site root).
+- `summarize` (boolean) — Used in our templates to control whether the post is summarized on index pages.
+ - `summarize` (boolean) — Used in our templates to control whether the post is summarized on index pages.
+- `no-ads` (boolean) — When `true` the `post` layout will emit `data-no-ads="true"` and `assets/scripts/post.js` will skip injecting in-article ads for that post. Useful for sponsor posts, documentation, or internal notes where ads are inappropriate.
+- `permalink` (string) — When present, overrides the generated URL.
+- `hidden` (boolean) — When `true`, hides the post from lists/indexes (still published).
+- `author` (string/object) — Who wrote the post (optional; check `_data/authors.yml` for site authorship conventions).
+- `draft` (boolean) — If true, Jekyll may skip publishing depending on build flags (commonly used locally).
+
+Other keys you might encounter depending on needs:
+- `redirect_from` (array|string) — Build-time redirects.
+- `canonical` (string) — Canonical URL for SEO.
+- `robots` (string) — `noindex` / `nofollow` hints if needed.
+
+## YAML safety tips and common pitfalls
+
+- Always quote strings that contain `:` or begin with characters that YAML treats specially. Example:
+
+  - Bad (unquoted excerpt containing colon):
+
+    ```yaml
+    excerpt: How the Materio promotions system works: JSON schema, ...
+    ```
+
+    This will produce a YAML parse error.
+
+  - Good:
+
+    ```yaml
+    excerpt: "How the Materio promotions system works: JSON schema, ..."
+    ```
+
+
+    ## Keys Used By Templates & Client-side Scripts
+
+    The templates (especially `_layouts/post.html`) and the client-side scripts (`assets/scripts/post.js` and `assets/scripts/post-base.js`) rely on a small set of front-matter keys and on a couple of in-content tag syntaxes. Below is a canonical reference you can copy into posts and rely on to get the expected runtime behavior.
+
+    - `visibility` (string) — If set to `'private'` the `post` layout emits `data-visibility="private"` on the main post container (`<main class="post-container">`). Client scripts and some templates use this to hide/show private posts.
+
+    - `category` (string) — A single category value. The `post` layout sets `data-category="{{ page.category }}"` on the main post container. Client scripts read that attribute to decide ad-injection and for client-side filtering on index pages.
+
+    - `categories` (array) — A list of categories; used by templates for display (joined and shown in the date/category pill). Use `categories: [one, two]` when needed.
+
+    - `previous_post` / `next_post` (string) — Optional URLs used by the template to render previous/next navigation buttons.
+
+    - `title`, `date`, `excerpt`, `permalink`, `hidden`, `author` — Standard metadata used by templates (author resolves to entries in `_data/authors.yml`). `excerpt` should be quoted if it contains `:`.
+
+    - `image` (string) — Cover media; the template checks whether `page.image` contains video extensions (`.mp4`, `.webm`, `.mov`) and will render a video cover when appropriate. Otherwise an `<img>` is emitted.
+
+    - `summarize` (boolean) — When `true` the template renders the AI Summary UI block (`#ai-summary-section`). Client-side summary actions (in `post.js`) will activate within that block.
+
+    - `toc` (boolean) — The layout checks `page.toc != false`; by default the TOC is shown. Set `toc: false` to suppress the generated in-page TOC.
+
+  ### Author & Share Row Flags
+
+  The `post` layout supports a small set of front-matter boolean flags authors can use to hide the author/share UI that normally appears under a post's title. These are useful for short notes, automated posts, or when you want to suppress share/print/listen affordances on a per-post basis.
+
+  - `hide_author_share_row` (boolean) — When `true` the entire author/share row is not rendered.
+  - `hide_author` (boolean) — When `true` the author column is suppressed but other controls (listen/share/print) remain if present.
+  - `hide_listen` (boolean) — When `true` the "listen" audio control is not rendered.
+  - `hide_share` (boolean) — When `true` the share button/menu is not rendered.
+  - `hide_print` (boolean) — When `true` the print action/icon is not rendered.
+
+  Defaults: all flags default to `false` (behaviour unchanged). Use `true` in the post front-matter to hide the corresponding UI.
+
+  Example — hide the whole author/share row:
+
+  ```yaml
+  ---
+  title: Minimal Announcement
+  layout: post
+  date: '2025-11-30 15:00:00'
+  category: Announcement
+  excerpt: "Short announcement."
+  hide_author_share_row: true
+  ---
+  ```
+
+  Example — hide only the share and print controls:
+
+  ```yaml
+  ---
+  title: Internal Note
+  layout: post
+  date: '2025-11-30 15:00:00'
+  category: Documentation
+  excerpt: "Internal guidance."
+  hide_share: true
+  hide_print: true
+  ---
+  ```
+
+  Client-side keys and behaviors (authors should be aware):
+
+    - data-attributes emitted by templates:
+      - `data-category` — mapped from `page.category`; read by `injectInArticleAds()` and by the home/index filtering scripts.
+      - `data-visibility` — mapped when `page.visibility == 'private'`; used by several client-side filters and by home page listing code.
+
+    - In-content tags parsed by `assets/scripts/post.js` (literal examples below):
+
+      ```text
+      - Attachment tag: pattern exactly `/\[attachment:(.+):([^\]]+)\]/g`
+        - Capture groups: 1=filePath (greedy up to the last colon), 2=displayName.
+        - Example: [attachment:/assets/files/guide.pdf:Download Guide]
+        - Replacement: The script replaces the tag with an `.attachment-card` element and sets `data-file-path` and `data-attachment-id` on the rendered card. `initializeAttachmentCards()` then generates previews and click handlers.
+
+      - Video tag: pattern exactly `/\[video:([^\]]+)\]/g`
+        - Parsed by splitting on `:`; parts[0] is the videoPath, parts[1] (optional) may be the string `cover` to make the video a cover element.
+        - Example: [video:/assets/video/intro.mp4] or [video:/assets/video/intro.mp4:cover]
+        - Replacement: The script emits a `<video>` block with `video-embed` or `video-cover` wrapper and initializes play/pause controls (`toggleVideo`, `initializeVideoControls`).
+      ```
+
+    - Code blocks and language hints:
+      - `assets/scripts/post-base.js` detects language labels using common patterns (Rouge `language-...` classes, highlight.js classes, `pre` classes) and will also read `data-language` on the `code` or `pre` elements. Authors can set the language explicitly by using fenced code blocks (```js) which generate `language-...` classes, or by adding `data-language="python"` to the `pre`/`code` when needed.
+
+    - Ads & user-exemptions:
+      - `post.js` reads the `materio_user` entry in `localStorage` (if present) and parses it to skip ad injection for Plus/Super users (`user.isPlusUser` or `user.hasAdminPrivileges`). This is not front-matter but affects runtime behavior.
+      - `injectInArticleAds()` also checks the post category and has a built-in excluded list: `['Announcement', "What's New", 'Legal']`. If the post category is missing or matches one of those, ads are not injected.
+
+    - Print / QR generation:
+      - The print header and QR are created only on pages with a `.post-container` (i.e., posts using the `post` layout). No additional front-matter is required for print, but the presence of `page.visibility`/`page.category` affects whether the header is inserted (the script checks for the post container before proceeding).
+
+- Prefer single-quoted or double-quoted timestamps in front-matter if you include a time portion: `date: '2025-11-30 15:00:00'`.
+- Lists should be YAML sequences: `tags: [education, algorithms]` or:
+
+  ```yaml
+  tags:
+    - education
+    - algorithms
+  ```
+
+- Indentation matters — use 2 spaces consistently for nested objects.
+- If you see `mapping values are not allowed` or `found character that cannot start any token`, open the front-matter and look for unescaped `:` or stray characters.
+
+## Common templates (copy-paste)
+
+Minimal post (public listing):
+
+```yaml
+---
+title: My Post Title
+layout: post
+date: '2025-11-30 15:00:00'
+category: Documentation
+excerpt: "Short description — quote if you include ':' or special chars."
+image: /assets/img/covers/example.webp
+tags: [howto, docs]
+permalink: /posts/my-post
+---
+```
+
+Hidden / internal doc (published but not in lists):
+
+```yaml
+---
+title: Internal Notes
+layout: post
+date: '2025-11-30 15:00:00'
+category: Documentation
+excerpt: "Internal guide for maintainers."
+hidden: true
+---
+```
+
+Redirecting old URL(s) to new permalink:
+
+```yaml
+---
+title: Renamed Post
+layout: post
+date: '2024-05-20 12:00:00'
+permalink: /docs/renamed
+redirect_from:
+  - /old/path/renamed-post
+  - /old/alias
+---
+```
+
+Advanced metadata (author, canonical, robots):
+
+```yaml
+---
+title: Deep Dive: Feature X
+layout: post
+date: '2025-10-01 09:30:00'
+category: Guides
+tags: [feature-x, developer]
+author: jinansh
+canonical: https://materioa.netlify.app/docs/feature-x
+robots: noindex
+---
+```
+
+## Quick validation & testing steps
+
+- Before committing: run a YAML linter on modified posts if you have one (many editors have plugins).
+- Build locally (Jekyll) to surface YAML/front-matter errors quickly:
+
+```powershell
+# If you use Bundler and Jekyll
+# bundle exec jekyll build
+# or serve locally
+# bundle exec jekyll serve --incremental
+```
+
+- Check the terminal output — a YAML parsing error will point to the file and line number.
+- On CI, ensure build flags treat drafts/hidden consistently. If your local build shows a parse error, fix the quoting/indentation and rebuild.
+
+## Best practices & style
+
+- Keep front-matter minimal for short posts; move long metadata into the post body or data files (`_data`).
+- Use `hidden: true` for ephemeral or maintenance posts that must be published but not shown in lists.
+- Prefer `permalink` for canonical location when migrating old content.
+- Use `tags` for filtering and `category` for broad grouping.
+- Use `author` values that correspond to `_data/authors.yml` entries so author pages render correctly.
+
+## Troubleshooting checklist (when a post fails to build)
+
+1. Open the post and inspect the first block (`---` to `---`) for unquoted strings with `:`.
+2. Validate indentation and list syntax (`- item` under `tags:`).
+3. Ensure the file starts with `---` and ends the front-matter with `---` before the content.
+4. Run a local build to get a line/column pointer to the error.
+5. If you still can't find it, temporarily remove parts of the front-matter (binary search) until the build error disappears, then re-add carefully.
+

@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (!window.devMode) {
-    const notifyUrl = window.MaterioLocalCDN?.transformUrl('https://cdn-materioa.netlify.app/notifications.json') || 'https://cdn-materioa.netlify.app/notifications.json';
+    const notifyUrl = window.MaterioLocalCDN?.transformUrl('https://cdn-materioa.vercel.app/notifications.json') || 'https://cdn-materioa.vercel.app/notifications.json';
     fetch(notifyUrl)
       .then(response => {
         if (!response.ok) {

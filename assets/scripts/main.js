@@ -204,10 +204,10 @@ submitButton.addEventListener('click', async () => {
         // Special handling for Vault (semester 9999)
         if (semester === '9999') {
             // Format: pdfs/9999/UUID/vault/filename.pdf
-            pdfUrl = `https://cdn-materioa.netlify.app/pdfs/${semester}/${subject}/vault/${topic}.pdf`;
+            pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/vault/${topic}.pdf`;
         } else {
             // Normal format: pdfs/semester/subject/topic.pdf
-            pdfUrl = `https://cdn-materioa.netlify.app/pdfs/${semester}/${subject}/${topic}.pdf`;
+            pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/${topic}.pdf`;
         }
         
         // Transform to local CDN if enabled
@@ -224,10 +224,10 @@ submitButton.addEventListener('click', async () => {
         // Special handling for Vault (semester 9999)
         if (semester === '9999') {
             // Format: pdfs/9999/UUID/vault/filename.pdf
-            pdfUrl = `https://cdn-materioa.netlify.app/pdfs/${semester}/${subject}/vault/${topic}.pdf`;
+            pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/vault/${topic}.pdf`;
         } else {
             // Normal format: pdfs/semester/subject/topic.pdf
-            pdfUrl = `https://cdn-materioa.netlify.app/pdfs/${semester}/${subject}/${topic}.pdf`;
+            pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/${topic}.pdf`;
         }
         
         // Transform to local CDN if enabled
@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    const libUrl = window.MaterioLocalCDN?.transformUrl('https://cdn-materioa.netlify.app/databases/beta/resource.lib.json') || 'https://cdn-materioa.netlify.app/databases/beta/resource.lib.json';
+    const libUrl = window.MaterioLocalCDN?.transformUrl('https://cdn-materioa.vercel.app/databases/beta/resource.lib.json') || 'https://cdn-materioa.vercel.app/databases/beta/resource.lib.json';
     fetch(libUrl)
         .then(response => {
             if (!response.ok) {
@@ -313,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const option = document.createElement('option');
                 option.value = sem;
                 option.textContent = semesterMapping[sem] ? semesterMapping[sem] : "Semester " + sem;
-                if (sem === "5") {
+                if (sem === "6") {
                     option.selected = true;
                 }
                 semesterSelect.appendChild(option);
@@ -535,7 +535,7 @@ fullscreenButton.addEventListener('click', () => {
 
 // Function to load resources data
 function loadResourcesData(restoreSemester = null) {
-    const libUrl = window.MaterioLocalCDN?.transformUrl('https://cdn-materioa.netlify.app/databases/beta/resource.lib.json') || 'https://cdn-materioa.netlify.app/databases/beta/resource.lib.json';
+    const libUrl = window.MaterioLocalCDN?.transformUrl('https://cdn-materioa.vercel.app/databases/beta/resource.lib.json') || 'https://cdn-materioa.vercel.app/databases/beta/resource.lib.json';
     return fetch(libUrl)
         .then(response => {
             if (!response.ok) {
@@ -580,7 +580,7 @@ function loadResourcesData(restoreSemester = null) {
                 finalSemesterSelect.value = currentSemester;
             } else {
                 // Default to semester 5
-                finalSemesterSelect.value = "5";
+                finalSemesterSelect.value = "6";
             }
 
             finalSemesterSelect.addEventListener('change', function () {
@@ -626,7 +626,7 @@ function loadResourcesData(restoreSemester = null) {
 // Initial load
 loadResourcesData();
 
-const libUrl = window.MaterioLocalCDN?.transformUrl('https://cdn-materioa.netlify.app/databases/beta/resource.lib.json') || 'https://cdn-materioa.netlify.app/databases/beta/resource.lib.json';
+const libUrl = window.MaterioLocalCDN?.transformUrl('https://cdn-materioa.vercel.app/databases/beta/resource.lib.json') || 'https://cdn-materioa.vercel.app/databases/beta/resource.lib.json';
 fetch(libUrl)
     .then(response => {
         if (!response.ok) {
@@ -1578,10 +1578,10 @@ function openSearchResultPdf(event, semester, subject, topic) {
     let pdfUrl;
     if (semester === '9999') {
         // Special handling for Vault (semester 9999)
-        pdfUrl = `https://cdn-materioa.netlify.app/pdfs/${semester}/${subject}/vault/${topic}.pdf`;
+        pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/vault/${topic}.pdf`;
     } else {
         // Normal format: pdfs/semester/subject/topic.pdf
-        pdfUrl = `https://cdn-materioa.netlify.app/pdfs/${semester}/${subject}/${topic}.pdf`;
+        pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/${topic}.pdf`;
     }
     
     // Transform to local CDN if enabled
@@ -1710,3 +1710,39 @@ function selectSearchResult(semester, subject, category, topic) {
 
 // Expose function globally
 window.selectSearchResult = selectSearchResult;
+
+(function(){
+    var breakAfter = 4; // change to 5 if you prefer 5 words
+    var mobileWidth = 600;
+
+    function applyWordWrap() {
+        document.querySelectorAll('.paper-mode-description').forEach(function(el){
+            // store original text once
+            var original = el.getAttribute('data-original-text');
+            if (!original) {
+                original = (el.textContent || '').trim();
+                el.setAttribute('data-original-text', original);
+            }
+            if (window.innerWidth <= mobileWidth) {
+                var words = original.split(/\s+/);
+                if (words.length > breakAfter) {
+                    var first = words.slice(0, breakAfter).join(' ');
+                    var rest = words.slice(breakAfter).join(' ');
+                    el.innerHTML = first + '<br>' + rest;
+                } else {
+                    el.textContent = original;
+                }
+            } else {
+                // restore original on larger screens
+                el.textContent = original;
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', applyWordWrap);
+    var _t;
+    window.addEventListener('resize', function(){
+        clearTimeout(_t);
+        _t = setTimeout(applyWordWrap, 120);
+    });
+})();

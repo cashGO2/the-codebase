@@ -4,10 +4,10 @@
   "description": "Materio - all in one place for all your study needs. read, discuss, contribute",
   "main": "main.js",
   "scripts": {
-    "dev": "node scripts/generate_cdn_config.js && netlify dev",
-    "vercel-dev": "node scripts/generate_cdn_config.js && vercel dev",
-    "build": "node scripts/generate_cdn_config.js && bundle exec jekyll build && netlify build",
-    "functions": "node scripts/generate_cdn_config.js && netlify functions:serve --functions=api/v1",
+    "generate:oread-icons": "node scripts/generate-oread-icons-css.js",
+    "vercel-dev": "node scripts/vercel dev",
+    "build": "node scripts/bundle exec jekyll build && netlify build",
+    "functions": "node scripts/netlify functions:serve --functions=api/v1",
     "minify-js": "uglifyjs assets/scripts/auth.js assets/scripts/login.js assets/scripts/signup.js assets/scripts/forgot-password.js assets/scripts/profile-management.js -o _site/assets/scripts/auth.min.js --source-map --compress --mangle",
     "optimize": "npm run minify-js && npm run copy-min",
     "copy-min": "shx cp _site/assets/scripts/auth.min.js _site/assets/scripts/auth.min.js.map public/js/"
@@ -17,6 +17,7 @@
     "@netlify/functions": "^3.1.10",
     "@octokit/rest": "^22.0.0",
     "@supabase/supabase-js": "^2.49.4",
+    "@vercel/analytics": "^1.5.0",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.5.0",
     "formidable": "^3.5.4",

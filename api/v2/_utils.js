@@ -65,10 +65,11 @@ const getTokenFromHeaders = (headers) => {
 const corsHeaders = (origin) => {
   // Define allowed origins
   const allowedOrigins = [
-    'http://localhost:8888',
+    'http://localhost:*',
     'https://materioa.netlify.app',
     'https://materioa.vercel.app',
-    'https://materioapp.in'
+    'https://materioapp.in',
+    'https://auth-materioa.netlify.app'
   ];
   
   // Set origin to the requesting origin if it's in allowedOrigins, otherwise use wildcard

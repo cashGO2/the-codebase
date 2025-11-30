@@ -2,7 +2,7 @@
 title: Introducing Account in Materio and more...
 layout: post
 date: '2025-06-24 18:30:00'
-category: Announcement
+category: whats-new
 excerpt: Materio v4.5.6.0 brings many changes to underlying system including UI changes
   and feature additions opening ways from being just a reading material library.
 image: /assets/img/covers/cover.webp

@@ -371,12 +371,27 @@ document.addEventListener('DOMContentLoaded', function () {
         if (pdfIframe) {
             // Try direct access first (same-origin)
             try {
-                const iframeBody = pdfIframe.contentDocument?.body;
-                if (iframeBody) {
-                    if (enable) {
-                        iframeBody.classList.add(mode);
+                const iframeDoc = pdfIframe.contentDocument;
+                if (iframeDoc) {
+                    // If invert mode, target the #viewer element so filters apply to PDF pages.
+                    if (mode === 'invert') {
+                        const viewer = iframeDoc.getElementById('viewer');
+                        if (viewer) {
+                            if (enable) {
+                                viewer.classList.add('invert');
+                            } else {
+                                viewer.classList.remove('invert');
+                            }
+                        }
                     } else {
-                        iframeBody.classList.remove(mode);
+                        const iframeBody = iframeDoc.body;
+                        if (iframeBody) {
+                            if (enable) {
+                                iframeBody.classList.add(mode);
+                            } else {
+                                iframeBody.classList.remove(mode);
+                            }
+                        }
                     }
                     return; // Success with direct access
                 }
@@ -720,6 +735,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // E-Ink Mode functionality
     const einkModeToggle = document.getElementById("einkModeToggle");
+    const invertModeToggle = document.getElementById("invertModeToggle");
 
     function initializeEinkMode() {
         const savedEinkMode = getCookie("einkMode");
@@ -746,6 +762,46 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize e-ink mode on page load
     initializeEinkMode();
+
+    // Invert Mode functionality
+    function initializeInvertMode() {
+        const savedInvert = getCookie("invertMode");
+        if (savedInvert === "true") {
+            if (invertModeToggle) {
+                invertModeToggle.checked = true;
+            }
+            enableInvertMode();
+        }
+    }
+
+    function enableInvertMode() {
+        if (popup) {
+            popup.classList.add('invert');
+        }
+        applyOverlayToPDFIframe('invert', true);
+    }
+
+    function disableInvertMode() {
+        if (popup) {
+            popup.classList.remove('invert');
+        }
+        applyOverlayToPDFIframe('invert', false);
+    }
+
+    // Initialize invert mode on page load
+    initializeInvertMode();
+
+    if (invertModeToggle) {
+        invertModeToggle.addEventListener('change', function () {
+            if (this.checked) {
+                enableInvertMode();
+                setCookie('invertMode', 'true', 30);
+            } else {
+                disableInvertMode();
+                setCookie('invertMode', 'false', 30);
+            }
+        });
+    }
 
     if (einkModeToggle) {
         einkModeToggle.addEventListener("change", function () {

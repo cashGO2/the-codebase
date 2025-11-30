@@ -4247,6 +4247,10 @@ body.eink-mode .pdfViewer .canvasWrapper::before {
   transform: translateZ(0); /* Force GPU layer */
 }
 
+.pdfViewer.invert .page {
+    filter: invert(100%) hue-rotate(180deg);
+}
+
 body:is(.paper-mode, .night-reading, .eink-mode) :is(.pdfViewer .canvasWrapper) canvas {
   will-change: filter;
   transform: translateZ(0); /* Force GPU layer */

@@ -95,6 +95,10 @@
     })(window, document, 'script', 'dataLayer', 'GTM-M6PC6RJL');</script>
 
 <!-- Google AdSense - Load conditionally based on user subscription -->
+ <script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 <script>
     function hasAdFreePrivileges() {
         try {  
@@ -105,7 +109,6 @@
             const userData = JSON.parse(userDataStr);
             return userData.isPlusUser === true || userData.hasAdminPrivileges === true;
         } catch (error) {
-            console.log('Error checking user privileges for ads:', error);
             return false;
         }
     }

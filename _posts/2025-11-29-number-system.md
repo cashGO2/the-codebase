@@ -8,6 +8,9 @@ excerpt: This resource provides detailed notes about Number systems with Importa
   points, examples and other things which are helpful for exams as well as contributes
   to better understanding of the topic.
 attachment: true
+summarize: true
+semester: "6"
+subject: "Quant and Reasoning"
 ---
 
 [attachment:https://static-materio.vercel.app/common/files/attach/de882c43-c10f-4708-81a3-31b027b5a289.pdf:Number System]
@@ -98,8 +101,8 @@ This distinction is often the source of most exam questions (MCQs and proofs).
 
 **Definition:**  
 Divisibility means that when you divide one number by another, the result is a whole number with **zero remainder**.  
-* *Example:* 10 is divisible by 5 because $10 \div 5 = 2$ (remainder 0).  
-* *Counter Example:* 10 is not divisible by 3 because $10 \div 3 = 3.33\dots$ (remainder 1).
+* *Example:* 10 is divisible by 5 because $$10 \div 5 = 2$$ (remainder 0).  
+* *Counter Example:* 10 is not divisible by 3 because $$10 \div 3 = 3.33\dots$$ (remainder 1).
 
 ---
 

@@ -30,6 +30,7 @@
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <!-- <script src="https://cdn.jsdelivr.net/npm/@r3dz0n3/fontawesome-pro@6.3.0/js/fontawesome.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@r3dz0n3/fontawesome-pro@6.3.0/css/all.css"> -->
@@ -46,6 +47,8 @@
     });
   </script>
   <style>
+    /* Default link color for light mode */
+    body { --link: #000000; }
     body.dark {
       --bg: #121212;
       --text: #eeeeee;
@@ -64,6 +67,66 @@
     body.blog-layout.dark .site-header {
       background-image: url('/assets/img/banner.svg');
     }
+    /* Use Libre Baskerville for emphasized/italic text in posts */
+    article em, article i, .post-content em, .post-content i, .changelog-excerpt em, .changelog-excerpt i {
+      font-family: 'Libre Baskerville', serif;
+      font-style: italic;
+      font-weight: 400;
+    }
+    /* Link pill styling for in-post links */
+    .post-body a.link-pill,
+    .post-content a.link-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.04);
+      color: var(--link, #0b66c3);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      line-height: 1;
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    .post-body a.link-pill i.fa-regular,
+    .post-content a.link-pill i.fa-regular {
+      opacity: 0.9;
+      font-size: 0.9rem;
+      margin-left: 0.1rem;
+    }
+    /* Label inside the pill; truncates with ellipsis when long */
+    .post-body a.link-pill .pill-label,
+    .post-content a.link-pill .pill-label {
+      display: inline-block;
+      max-width: 18ch;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    body.dark .post-body a.link-pill,
+    body.dark .post-content a.link-pill {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.04);
+      color: var(--text);
+    }
+    /* (previously used ::after for domain) */
+    /* Skip pill styling for images inside anchors */
+    .post-body a.link-pill img,
+    .post-content a.link-pill img {
+      display: inline-block;
+      max-height: 1.2rem;
+    }
+    /* Ensure the icon sits at the very end of the pill */
+    .post-body a.link-pill i.fa-regular,
+    .post-content a.link-pill i.fa-regular { order: 2; }
+    .post-body a.link-pill .pill-label,
+    .post-content a.link-pill .pill-label { order: 1; }
+    @media (max-width: 640px) {
+      .post-body a.link-pill::after,
+      .post-content a.link-pill::after { display: none; }
+      .post-body a.link-pill, .post-content a.link-pill { font-size: 0.92rem; }
+    }
   </style>
 </head>
 <!-- Google tag (gtag.js) -->
@@ -78,6 +141,11 @@
 <body>
   <header class="site-header">
   <a href="/#" class="header-logo" role="button" aria-label="Go to homepage"></a>
+  
+  <button class="toc-toggle" aria-label="Toggle table of contents" title="Toggle table of contents">
+    <i class="fa-light fa-sidebar"></i>
+  </button>
+  
 
   <!-- Search box for home layout -->
   
@@ -96,7 +164,7 @@
 </header>
   <link rel="stylesheet" href="/assets/style/post.css">
 
-<main class="post-container" style="font-family: 'Manrope', sans-serif;"  data-category="Notes">
+<main class="post-container" style="font-family: 'Manrope', sans-serif;"  data-category="Notes" >
   <article class="post" style="max-width: 700px; margin: 0 auto;">
     
     
@@ -156,10 +224,12 @@
       </div>
       
       
-      <!-- Author and Share Row -->
+      <!-- Author and Share Row (can be disabled via front matter flags) -->
+      
       <div class="author-share-row" style="display: flex; justify-content: space-between; align-items: center; margin: 0.5rem auto; max-width: 700px; padding: 0 1rem;">
         <!-- Author Profile Section -->
         <div style="display: flex; align-items: center; gap: 0.8rem;">
+          
           
           
           <div class="author-avatar" style="width: 35px; height: 35px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(0,0,0,0.1);">
@@ -168,6 +238,7 @@
           <div class="author-info">
             <div class="author-name" style="font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.2;">Materio</div>
           </div>
+          
         </div>
 
         <!-- Share, Print, and Listen icons -->
@@ -189,6 +260,7 @@
             <span id="listen-duration" style="font-size: 11px; color: #666; font-weight: 500;">Listen</span>
           </div>
           
+          
           <!-- Seek controls (only visible when playing/paused) -->
           <div id="seek-controls" class="seek-controls" style="display: none; align-items: center; gap: 0.3rem; margin-left: 0.5rem;">
             <button onclick="seekBackward()" class="seek-btn" title="Go back 5 seconds" style="background: none; border: none; color: #666; cursor: pointer; padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
@@ -202,11 +274,15 @@
             </button>
           </div>
 
+          
           <i class="fa-regular fa-link-simple" onclick="sharePost()" style="transform: rotate(-45deg); font-size: 14px; cursor: pointer; color: var(--text);" title="Share"></i>
+          
+          
           <i class="fa-regular fa-print" onclick="printPost()" style="font-size: 14px; cursor: pointer; color: var(--text);" title="Print"></i>
           
         </div>
       </div>
+      
     </div>
 
     
@@ -252,7 +328,8 @@
     
 
 
-    <div class="post-body"><h3 id="course-objectives">Course Objectives</h3>
+    <div class="post-layout">
+      <div class="post-body"><h3 id="course-objectives">Course Objectives</h3>
 
 <ul>
   <li>Understand how two computers communicate over the Internet.</li>
@@ -772,8 +849,21 @@
 
 <div style="text-align: center">⁂</div>
 </div>
+
+      <aside class="post-toc" aria-label="Table of contents">
+        
+          
+        
+      </aside>
+    </div>
   </article>
 </main>
+
+<!-- Site-level TOC sidebar (content will be moved here by JS) -->
+<div id="site-toc-sidebar" class="site-toc-sidebar" aria-hidden="true">
+  <!-- `.post-toc` content will be moved directly into this sidebar (no extra wrapper) -->
+</div>
+<div id="site-toc-overlay" class="site-toc-overlay" tabindex="-1" aria-hidden="true"></div>
 
 <!-- PDF.js Library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
@@ -809,6 +899,58 @@
 
     
 </footer>
+  <script>
+    (function () {
+      // Enhance links inside post content to look like pills.
+      function enhancePostLinks(rootSelector) {
+        var roots = document.querySelectorAll(rootSelector);
+        if (!roots.length) return;
+        roots.forEach(function (root) {
+          var anchors = root.querySelectorAll('a[href]:not(.no-pill)');
+          anchors.forEach(function (a) {
+            // Skip anchors that wrap block elements or images (image links)
+            if (a.querySelector('img')) return;
+            // Skip anchors inside code or pre
+            if (a.closest('code, pre')) return;
+            // Add pill class if not already present
+            if (!a.classList.contains('link-pill')) a.classList.add('link-pill');
+            // Ensure FontAwesome arrow exists
+            if (!a.querySelector('i.fa-arrow-up-right')) {
+              var i = document.createElement('i');
+              i.className = 'fa-regular fa-arrow-up-right';
+              a.appendChild(i);
+            }
+            // Add data-domain (short host or path) for ::after display
+            try {
+              var href = a.getAttribute('href');
+              var url = new URL(href, window.location.href);
+              var domain = url.host + (url.pathname && url.pathname !== '/' ? url.pathname.replace(/\/$/, '') : '');
+              // If relative link on same host, show path only
+              if (url.origin === window.location.origin) domain = url.pathname.replace(/\/$/, '') || url.pathname || url.href;
+              a.setAttribute('data-domain', domain);
+              // For external links, open in new tab and add rel
+              if (url.origin && url.origin !== window.location.origin) {
+                a.setAttribute('target', '_blank');
+                a.setAttribute('rel', 'noopener noreferrer');
+              }
+            } catch (e) {
+              // ignore parse errors
+            }
+          });
+        });
+      }
+      // Run on DOMContentLoaded
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+          enhancePostLinks('.post-body');
+          enhancePostLinks('.post-content');
+        });
+      } else {
+        enhancePostLinks('.post-body');
+        enhancePostLinks('.post-content');
+      }
+    })();
+  </script>
   <script src="/assets/scripts/post-base.js"></script>
   </body>
   

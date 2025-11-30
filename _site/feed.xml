@@ -1,4 +1,548 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:62250/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:62250/" rel="alternate" type="text/html" /><updated>2025-11-29T15:01:35+05:30</updated><id>http://localhost:62250/feed.xml</id><title type="html">The InsightRoom.</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">Number System</title><link href="http://localhost:62250/notes/number-system/" rel="alternate" type="text/html" title="Number System" /><published>2025-11-29T09:03:06+05:30</published><updated>2025-11-29T09:03:06+05:30</updated><id>http://localhost:62250/notes/number-system</id><content type="html" xml:base="http://localhost:62250/notes/number-system/"><![CDATA[<p>[attachment:https://static-materio.vercel.app/common/files/attach/de882c43-c10f-4708-81a3-31b027b5a289.pdf:Number System]</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-11-30T22:18:57+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">The InsightRoom.</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">What We Shipped - December 1st</title><link href="http://localhost:4000/whats-new/what-we-shipped-december-1st/" rel="alternate" type="text/html" title="What We Shipped - December 1st" /><published>2025-12-01T22:18:22+05:30</published><updated>2025-12-01T22:18:22+05:30</updated><id>http://localhost:4000/whats-new/what-we-shipped-december-1st</id><content type="html" xml:base="http://localhost:4000/whats-new/what-we-shipped-december-1st/"><![CDATA[<h2 id="a-new-home-for-materios-reliability">A New Home for Materio’s Reliability</h2>
+<p>This week marks an important milestone for Materio.
+After months of growth, higher traffic, and increasing demand from students across multiple semesters, Materio has officially shifted its deployment to Vercel.</p>
+
+<p>This is more than just a hosting change. It’s a strategic upgrade to speed, reliability, and long-term scalability.
+<img src="/assets/img/covers/f58a6024-35aa-4982-aec9-c8270cfa76c4.webp" alt="moved-to-vercel" /></p>
+
+<h3 id="why-move-to-vercel">Why Move to Vercel?</h3>
+
+<p>Materio has been steadily expanding — more users, more PDFs, more interactions, and more load on the platform. The previous deployment setup had started showing limits, especially with:</p>
+
+<p>Heavy static asset delivery, constantly updating databases and More edge functions incoming (auth, search, analytics)</p>
+
+<p>Vercel provides a modern setup that aligns perfectly with Materio’s goals.
+The move brings noticeably faster load times, smoother navigation, and a more stable experience overall, especially during peak exam traffic. Updates now ship instantly with zero downtime, and every new feature can be tested safely through automatic preview builds before going live.</p>
+
+<p>Behind the scenes, this migration gives Materio a stronger foundation for upcoming features, cleaner development workflows, and better long-term scalability as more students rely on the platform.</p>
+
+<h2 id="introducing-materio-originals">Introducing Materio Originals</h2>
+
+<p><img src="/assets/img/covers/8abb551b-2bb4-4879-800e-e936a1c44632.webp" alt="materio-originals" /></p>
+<ul>
+  <li>A brand-new category of resources created, curated, and refined entirely by Materio - to help students understand concepts faster and more clearly.
+    <ul>
+      <li>We just published the first Materio Original in Quant and Resoning, which you can read - <a href="https://materioa.vercel.app/notes/number-system">Number System</a> complete with:
+A clean printable format which you can print yourself or get pre-made PDF linearized for fast web view.</li>
+      <li>Clear explanations designed specifically for university syllabus. Fully optimized formatting for revision and exam preparations.</li>
+    </ul>
+  </li>
+  <li>This marks the beginning of a new phase for Materio: original, high-quality academic content made for students, by Materio.</li>
+</ul>
+
+<h2 id="inversion-filter-in-openreader-viewer">Inversion Filter in OpenReader viewer</h2>
+<p><em>Comfort reading for long study sessions.</em></p>
+<ul>
+  <li>Reading long academic PDFs late at night can be exhausting. Bright white pages strain the eyes, especially when you’re switching between dark UI themes and a glowing document. To solve this, OpenReader now supports an Inversion Filter that smartly flips document colors for a comfortable, night-friendly reading experience.</li>
+</ul>
+
+<p><img src="/assets/img/post-content/e49f7381-57e3-4e0a-938f-e3ada0c7fc4e.webp" alt="inversion-toggle" /></p>
+
+<ul>
+  <li>The filter can be toggled from settings tab where the filter is listed under <code class="language-plaintext highlighter-rouge">Reading Modes</code>.
+    <h4 id="heres-a-preview-of-the-inversion-filter"><em>here’s a preview of the inversion filter</em></h4>
+    <p><img src="/assets/img/post-content/016cfcba-db52-4ccf-88e5-48e5ca1c6872.webp" alt="preview" /></p>
+  </li>
+</ul>
+
+<h3 id="other-changes">Other changes</h3>
+<p>This update includes fixes for various bugs and issues accross the site.
+ Few of the known bugs which are addressed here are:</p>
+<ul>
+  <li>Issue with service worker which constantly cached files which introduced lag and degraded performance and increased usage of edge requests, This issue also included some cases where tools like Internet Download Manager (IDM) were constantly getting a trigger to download <code class="language-plaintext highlighter-rouge">compressed-tracemonkey-pldi-09.pdf</code> which is essentially a left behind sample file which comes bundled with pdfjs.</li>
+  <li>Health indicator falsely indicating ‘degraded’ health.</li>
+  <li>The OpenReader has been optimised by removing unneccessary files and compiling individual icons to a single css file reducing overhead on load and offers faster loading.</li>
+</ul>]]></content><author><name></name></author><category term="whats-new" /><summary type="html"><![CDATA[This week Materio moved to vercel, launched Materio Originals, and feature drops to like Native dark-mode to PDFs with inversion filter, addition of the table of contents sidebar to the insightroom]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp" /><media:content medium="image" url="http://localhost:4000/assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Post Front-matters — Fields, Usage &amp;amp; Best Practices</title><link href="http://localhost:4000/docs/frontmatters" rel="alternate" type="text/html" title="Post Front-matters — Fields, Usage &amp;amp; Best Practices" /><published>2025-11-30T15:00:00+05:30</published><updated>2025-11-30T15:00:00+05:30</updated><id>http://localhost:4000/docs/post-frontmatters</id><content type="html" xml:base="http://localhost:4000/docs/frontmatters"><![CDATA[<h1 id="post-front-matters--fields-usage--best-practices">Post Front-matters — Fields, Usage &amp; Best Practices</h1>
+
+<p>This document explains the YAML front-matter keys used across the Materio site, gives common templates you can copy, and highlights pitfalls (for example: unquoted strings containing <code class="language-plaintext highlighter-rouge">:</code> break YAML). Use this as a quick authoring reference when creating or editing <code class="language-plaintext highlighter-rouge">_posts</code> entries.</p>
+
+<h2 id="why-front-matter-matters">Why front-matter matters</h2>
+
+<p>Front-matter is how Jekyll (and many static-site setups) receives metadata for a page or post. It controls where a post appears, which layout to use, SEO hints (excerpt/image), visibility, and more. Invalid YAML here will break the build (see earlier YAML parsing error example).</p>
+
+<h2 id="common-fields-you-will-see-in-this-repo">Common fields you will see in this repo</h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">title</code> (string) — The post title shown in lists and the page <code class="language-plaintext highlighter-rouge">&lt;title&gt;</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">layout</code> (string) — Which layout template to use (e.g., <code class="language-plaintext highlighter-rouge">post</code>, <code class="language-plaintext highlighter-rouge">page</code>, <code class="language-plaintext highlighter-rouge">documentation</code>).</li>
+  <li><code class="language-plaintext highlighter-rouge">date</code> (string / datetime) — Publication date/time. Format used in this repo: <code class="language-plaintext highlighter-rouge">'YYYY-MM-DD HH:MM:SS'</code> (wrap in quotes to be safe).</li>
+  <li><code class="language-plaintext highlighter-rouge">category</code> (string) — A single category. Many posts use <code class="language-plaintext highlighter-rouge">Documentation</code> or other categories.</li>
+  <li><code class="language-plaintext highlighter-rouge">tags</code> (array) — A list of tags used for filtering/search (optional): <code class="language-plaintext highlighter-rouge">tags: [yaml, guides]</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">excerpt</code> (string) — Short summary used in lists and meta; if it contains <code class="language-plaintext highlighter-rouge">:</code> or other special characters, wrap it in quotes.</li>
+  <li><code class="language-plaintext highlighter-rouge">image</code> (string) — Path to a cover image (relative to site root).</li>
+  <li><code class="language-plaintext highlighter-rouge">summarize</code> (boolean) — Used in our templates to control whether the post is summarized on index pages.</li>
+  <li><code class="language-plaintext highlighter-rouge">summarize</code> (boolean) — Used in our templates to control whether the post is summarized on index pages.</li>
+  <li><code class="language-plaintext highlighter-rouge">no-ads</code> (boolean) — When <code class="language-plaintext highlighter-rouge">true</code> the <code class="language-plaintext highlighter-rouge">post</code> layout will emit <code class="language-plaintext highlighter-rouge">data-no-ads="true"</code> and <code class="language-plaintext highlighter-rouge">assets/scripts/post.js</code> will skip injecting in-article ads for that post. Useful for sponsor posts, documentation, or internal notes where ads are inappropriate.</li>
+  <li><code class="language-plaintext highlighter-rouge">permalink</code> (string) — When present, overrides the generated URL.</li>
+  <li><code class="language-plaintext highlighter-rouge">hidden</code> (boolean) — When <code class="language-plaintext highlighter-rouge">true</code>, hides the post from lists/indexes (still published).</li>
+  <li><code class="language-plaintext highlighter-rouge">author</code> (string/object) — Who wrote the post (optional; check <code class="language-plaintext highlighter-rouge">_data/authors.yml</code> for site authorship conventions).</li>
+  <li><code class="language-plaintext highlighter-rouge">draft</code> (boolean) — If true, Jekyll may skip publishing depending on build flags (commonly used locally).</li>
+</ul>
+
+<p>Other keys you might encounter depending on needs:</p>
+<ul>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td><code class="language-plaintext highlighter-rouge">redirect_from</code> (array</td>
+          <td>string) — Build-time redirects.</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">canonical</code> (string) — Canonical URL for SEO.</li>
+  <li><code class="language-plaintext highlighter-rouge">robots</code> (string) — <code class="language-plaintext highlighter-rouge">noindex</code> / <code class="language-plaintext highlighter-rouge">nofollow</code> hints if needed.</li>
+</ul>
+
+<h2 id="yaml-safety-tips-and-common-pitfalls">YAML safety tips and common pitfalls</h2>
+
+<ul>
+  <li>
+    <p>Always quote strings that contain <code class="language-plaintext highlighter-rouge">:</code> or begin with characters that YAML treats specially. Example:</p>
+
+    <ul>
+      <li>
+        <p>Bad (unquoted excerpt containing colon):</p>
+
+        <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">excerpt: How the Materio promotions system works</span><span class="pi">:</span> <span class="s">JSON schema, ...</span>
+</code></pre></div>        </div>
+
+        <p>This will produce a YAML parse error.</p>
+      </li>
+      <li>
+        <p>Good:</p>
+
+        <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">excerpt</span><span class="pi">:</span> <span class="s2">"</span><span class="s">How</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">Materio</span><span class="nv"> </span><span class="s">promotions</span><span class="nv"> </span><span class="s">system</span><span class="nv"> </span><span class="s">works:</span><span class="nv"> </span><span class="s">JSON</span><span class="nv"> </span><span class="s">schema,</span><span class="nv"> </span><span class="s">..."</span>
+</code></pre></div>        </div>
+
+        <h2 id="keys-used-by-templates--client-side-scripts">Keys Used By Templates &amp; Client-side Scripts</h2>
+
+        <p>The templates (especially <code class="language-plaintext highlighter-rouge">_layouts/post.html</code>) and the client-side scripts (<code class="language-plaintext highlighter-rouge">assets/scripts/post.js</code> and <code class="language-plaintext highlighter-rouge">assets/scripts/post-base.js</code>) rely on a small set of front-matter keys and on a couple of in-content tag syntaxes. Below is a canonical reference you can copy into posts and rely on to get the expected runtime behavior.</p>
+
+        <ul>
+          <li>
+            <p><code class="language-plaintext highlighter-rouge">visibility</code> (string) — If set to <code class="language-plaintext highlighter-rouge">'private'</code> the <code class="language-plaintext highlighter-rouge">post</code> layout emits <code class="language-plaintext highlighter-rouge">data-visibility="private"</code> on the main post container (<code class="language-plaintext highlighter-rouge">&lt;main class="post-container"&gt;</code>). Client scripts and some templates use this to hide/show private posts.</p>
+          </li>
+          <li>
+            <p><code class="language-plaintext highlighter-rouge">category</code> (string) — A single category value. The <code class="language-plaintext highlighter-rouge">post</code> layout sets <code class="language-plaintext highlighter-rouge">data-category="Documentation"</code> on the main post container. Client scripts read that attribute to decide ad-injection and for client-side filtering on index pages.</p>
+          </li>
+          <li>
+            <p><code class="language-plaintext highlighter-rouge">categories</code> (array) — A list of categories; used by templates for display (joined and shown in the date/category pill). Use <code class="language-plaintext highlighter-rouge">categories: [one, two]</code> when needed.</p>
+          </li>
+          <li>
+            <p><code class="language-plaintext highlighter-rouge">previous_post</code> / <code class="language-plaintext highlighter-rouge">next_post</code> (string) — Optional URLs used by the template to render previous/next navigation buttons.</p>
+          </li>
+          <li>
+            <p><code class="language-plaintext highlighter-rouge">title</code>, <code class="language-plaintext highlighter-rouge">date</code>, <code class="language-plaintext highlighter-rouge">excerpt</code>, <code class="language-plaintext highlighter-rouge">permalink</code>, <code class="language-plaintext highlighter-rouge">hidden</code>, <code class="language-plaintext highlighter-rouge">author</code> — Standard metadata used by templates (author resolves to entries in <code class="language-plaintext highlighter-rouge">_data/authors.yml</code>). <code class="language-plaintext highlighter-rouge">excerpt</code> should be quoted if it contains <code class="language-plaintext highlighter-rouge">:</code>.</p>
+          </li>
+          <li>
+            <p><code class="language-plaintext highlighter-rouge">image</code> (string) — Cover media; the template checks whether <code class="language-plaintext highlighter-rouge">page.image</code> contains video extensions (<code class="language-plaintext highlighter-rouge">.mp4</code>, <code class="language-plaintext highlighter-rouge">.webm</code>, <code class="language-plaintext highlighter-rouge">.mov</code>) and will render a video cover when appropriate. Otherwise an <code class="language-plaintext highlighter-rouge">&lt;img&gt;</code> is emitted.</p>
+          </li>
+          <li>
+            <p><code class="language-plaintext highlighter-rouge">summarize</code> (boolean) — When <code class="language-plaintext highlighter-rouge">true</code> the template renders the AI Summary UI block (<code class="language-plaintext highlighter-rouge">#ai-summary-section</code>). Client-side summary actions (in <code class="language-plaintext highlighter-rouge">post.js</code>) will activate within that block.</p>
+          </li>
+          <li>
+            <p><code class="language-plaintext highlighter-rouge">toc</code> (boolean) — The layout checks <code class="language-plaintext highlighter-rouge">page.toc != false</code>; by default the TOC is shown. Set <code class="language-plaintext highlighter-rouge">toc: false</code> to suppress the generated in-page TOC.</p>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3 id="author--share-row-flags">Author &amp; Share Row Flags</h3>
+
+    <p>The <code class="language-plaintext highlighter-rouge">post</code> layout supports a small set of front-matter boolean flags authors can use to hide the author/share UI that normally appears under a post’s title. These are useful for short notes, automated posts, or when you want to suppress share/print/listen affordances on a per-post basis.</p>
+
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">hide_author_share_row</code> (boolean) — When <code class="language-plaintext highlighter-rouge">true</code> the entire author/share row is not rendered.</li>
+      <li><code class="language-plaintext highlighter-rouge">hide_author</code> (boolean) — When <code class="language-plaintext highlighter-rouge">true</code> the author column is suppressed but other controls (listen/share/print) remain if present.</li>
+      <li><code class="language-plaintext highlighter-rouge">hide_listen</code> (boolean) — When <code class="language-plaintext highlighter-rouge">true</code> the “listen” audio control is not rendered.</li>
+      <li><code class="language-plaintext highlighter-rouge">hide_share</code> (boolean) — When <code class="language-plaintext highlighter-rouge">true</code> the share button/menu is not rendered.</li>
+      <li><code class="language-plaintext highlighter-rouge">hide_print</code> (boolean) — When <code class="language-plaintext highlighter-rouge">true</code> the print action/icon is not rendered.</li>
+    </ul>
+
+    <p>Defaults: all flags default to <code class="language-plaintext highlighter-rouge">false</code> (behaviour unchanged). Use <code class="language-plaintext highlighter-rouge">true</code> in the post front-matter to hide the corresponding UI.</p>
+
+    <p>Example — hide the whole author/share row:</p>
+
+    <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">---</span>
+<span class="na">title</span><span class="pi">:</span> <span class="s">Minimal Announcement</span>
+<span class="na">layout</span><span class="pi">:</span> <span class="s">post</span>
+<span class="na">date</span><span class="pi">:</span> <span class="s1">'</span><span class="s">2025-11-30</span><span class="nv"> </span><span class="s">15:00:00'</span>
+<span class="na">category</span><span class="pi">:</span> <span class="s">Announcement</span>
+<span class="na">excerpt</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Short</span><span class="nv"> </span><span class="s">announcement."</span>
+<span class="na">hide_author_share_row</span><span class="pi">:</span> <span class="kc">true</span>
+<span class="nn">---</span>
+</code></pre></div>    </div>
+
+    <p>Example — hide only the share and print controls:</p>
+
+    <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">---</span>
+<span class="na">title</span><span class="pi">:</span> <span class="s">Internal Note</span>
+<span class="na">layout</span><span class="pi">:</span> <span class="s">post</span>
+<span class="na">date</span><span class="pi">:</span> <span class="s1">'</span><span class="s">2025-11-30</span><span class="nv"> </span><span class="s">15:00:00'</span>
+<span class="na">category</span><span class="pi">:</span> <span class="s">Documentation</span>
+<span class="na">excerpt</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Internal</span><span class="nv"> </span><span class="s">guidance."</span>
+<span class="na">hide_share</span><span class="pi">:</span> <span class="kc">true</span>
+<span class="na">hide_print</span><span class="pi">:</span> <span class="kc">true</span>
+<span class="nn">---</span>
+</code></pre></div>    </div>
+
+    <p>Client-side keys and behaviors (authors should be aware):</p>
+
+    <ul>
+      <li>data-attributes emitted by templates:
+        <ul>
+          <li><code class="language-plaintext highlighter-rouge">data-category</code> — mapped from <code class="language-plaintext highlighter-rouge">page.category</code>; read by <code class="language-plaintext highlighter-rouge">injectInArticleAds()</code> and by the home/index filtering scripts.</li>
+          <li><code class="language-plaintext highlighter-rouge">data-visibility</code> — mapped when <code class="language-plaintext highlighter-rouge">page.visibility == 'private'</code>; used by several client-side filters and by home page listing code.</li>
+        </ul>
+      </li>
+      <li>
+        <p>In-content tags parsed by <code class="language-plaintext highlighter-rouge">assets/scripts/post.js</code> (literal examples below):</p>
+
+        <div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- Attachment tag: pattern exactly `/\[attachment:(.+):([^\]]+)\]/g`
+  - Capture groups: 1=filePath (greedy up to the last colon), 2=displayName.
+  - Example: [attachment:/assets/files/guide.pdf:Download Guide]
+  - Replacement: The script replaces the tag with an `.attachment-card` element and sets `data-file-path` and `data-attachment-id` on the rendered card. `initializeAttachmentCards()` then generates previews and click handlers.
+
+- Video tag: pattern exactly `/\[video:([^\]]+)\]/g`
+  - Parsed by splitting on `:`; parts[0] is the videoPath, parts[1] (optional) may be the string `cover` to make the video a cover element.
+  - Example: [video:/assets/video/intro.mp4] or [video:/assets/video/intro.mp4:cover]
+  - Replacement: The script emits a `&lt;video&gt;` block with `video-embed` or `video-cover` wrapper and initializes play/pause controls (`toggleVideo`, `initializeVideoControls`).
+</code></pre></div>        </div>
+      </li>
+      <li>Code blocks and language hints:
+        <ul>
+          <li><code class="language-plaintext highlighter-rouge">assets/scripts/post-base.js</code> detects language labels using common patterns (Rouge <code class="language-plaintext highlighter-rouge">language-...</code> classes, highlight.js classes, <code class="language-plaintext highlighter-rouge">pre</code> classes) and will also read <code class="language-plaintext highlighter-rouge">data-language</code> on the <code class="language-plaintext highlighter-rouge">code</code> or <code class="language-plaintext highlighter-rouge">pre</code> elements. Authors can set the language explicitly by using fenced code blocks (```js) which generate <code class="language-plaintext highlighter-rouge">language-...</code> classes, or by adding <code class="language-plaintext highlighter-rouge">data-language="python"</code> to the <code class="language-plaintext highlighter-rouge">pre</code>/<code class="language-plaintext highlighter-rouge">code</code> when needed.</li>
+        </ul>
+      </li>
+      <li>Ads &amp; user-exemptions:
+        <ul>
+          <li><code class="language-plaintext highlighter-rouge">post.js</code> reads the <code class="language-plaintext highlighter-rouge">materio_user</code> entry in <code class="language-plaintext highlighter-rouge">localStorage</code> (if present) and parses it to skip ad injection for Plus/Super users (<code class="language-plaintext highlighter-rouge">user.isPlusUser</code> or <code class="language-plaintext highlighter-rouge">user.hasAdminPrivileges</code>). This is not front-matter but affects runtime behavior.</li>
+          <li><code class="language-plaintext highlighter-rouge">injectInArticleAds()</code> also checks the post category and has a built-in excluded list: <code class="language-plaintext highlighter-rouge">['Announcement', "What's New", 'Legal']</code>. If the post category is missing or matches one of those, ads are not injected.</li>
+        </ul>
+      </li>
+      <li>Print / QR generation:
+        <ul>
+          <li>The print header and QR are created only on pages with a <code class="language-plaintext highlighter-rouge">.post-container</code> (i.e., posts using the <code class="language-plaintext highlighter-rouge">post</code> layout). No additional front-matter is required for print, but the presence of <code class="language-plaintext highlighter-rouge">page.visibility</code>/<code class="language-plaintext highlighter-rouge">page.category</code> affects whether the header is inserted (the script checks for the post container before proceeding).</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Prefer single-quoted or double-quoted timestamps in front-matter if you include a time portion: <code class="language-plaintext highlighter-rouge">date: '2025-11-30 15:00:00'</code>.</li>
+  <li>
+    <p>Lists should be YAML sequences: <code class="language-plaintext highlighter-rouge">tags: [education, algorithms]</code> or:</p>
+
+    <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">tags</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">education</span>
+  <span class="pi">-</span> <span class="s">algorithms</span>
+</code></pre></div>    </div>
+  </li>
+  <li>Indentation matters — use 2 spaces consistently for nested objects.</li>
+  <li>If you see <code class="language-plaintext highlighter-rouge">mapping values are not allowed</code> or <code class="language-plaintext highlighter-rouge">found character that cannot start any token</code>, open the front-matter and look for unescaped <code class="language-plaintext highlighter-rouge">:</code> or stray characters.</li>
+</ul>
+
+<h2 id="common-templates-copy-paste">Common templates (copy-paste)</h2>
+
+<p>Minimal post (public listing):</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">---</span>
+<span class="na">title</span><span class="pi">:</span> <span class="s">My Post Title</span>
+<span class="na">layout</span><span class="pi">:</span> <span class="s">post</span>
+<span class="na">date</span><span class="pi">:</span> <span class="s1">'</span><span class="s">2025-11-30</span><span class="nv"> </span><span class="s">15:00:00'</span>
+<span class="na">category</span><span class="pi">:</span> <span class="s">Documentation</span>
+<span class="na">excerpt</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Short</span><span class="nv"> </span><span class="s">description</span><span class="nv"> </span><span class="s">—</span><span class="nv"> </span><span class="s">quote</span><span class="nv"> </span><span class="s">if</span><span class="nv"> </span><span class="s">you</span><span class="nv"> </span><span class="s">include</span><span class="nv"> </span><span class="s">':'</span><span class="nv"> </span><span class="s">or</span><span class="nv"> </span><span class="s">special</span><span class="nv"> </span><span class="s">chars."</span>
+<span class="na">image</span><span class="pi">:</span> <span class="s">/assets/img/covers/example.webp</span>
+<span class="na">tags</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">howto</span><span class="pi">,</span> <span class="nv">docs</span><span class="pi">]</span>
+<span class="na">permalink</span><span class="pi">:</span> <span class="s">/posts/my-post</span>
+<span class="nn">---</span>
+</code></pre></div></div>
+
+<p>Hidden / internal doc (published but not in lists):</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">---</span>
+<span class="na">title</span><span class="pi">:</span> <span class="s">Internal Notes</span>
+<span class="na">layout</span><span class="pi">:</span> <span class="s">post</span>
+<span class="na">date</span><span class="pi">:</span> <span class="s1">'</span><span class="s">2025-11-30</span><span class="nv"> </span><span class="s">15:00:00'</span>
+<span class="na">category</span><span class="pi">:</span> <span class="s">Documentation</span>
+<span class="na">excerpt</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Internal</span><span class="nv"> </span><span class="s">guide</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">maintainers."</span>
+<span class="na">hidden</span><span class="pi">:</span> <span class="kc">true</span>
+<span class="nn">---</span>
+</code></pre></div></div>
+
+<p>Redirecting old URL(s) to new permalink:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">---</span>
+<span class="na">title</span><span class="pi">:</span> <span class="s">Renamed Post</span>
+<span class="na">layout</span><span class="pi">:</span> <span class="s">post</span>
+<span class="na">date</span><span class="pi">:</span> <span class="s1">'</span><span class="s">2024-05-20</span><span class="nv"> </span><span class="s">12:00:00'</span>
+<span class="na">permalink</span><span class="pi">:</span> <span class="s">/docs/renamed</span>
+<span class="na">redirect_from</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">/old/path/renamed-post</span>
+  <span class="pi">-</span> <span class="s">/old/alias</span>
+<span class="nn">---</span>
+</code></pre></div></div>
+
+<p>Advanced metadata (author, canonical, robots):</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">---</span>
+<span class="na">title: Deep Dive</span><span class="pi">:</span> <span class="s">Feature X</span>
+<span class="na">layout</span><span class="pi">:</span> <span class="s">post</span>
+<span class="na">date</span><span class="pi">:</span> <span class="s1">'</span><span class="s">2025-10-01</span><span class="nv"> </span><span class="s">09:30:00'</span>
+<span class="na">category</span><span class="pi">:</span> <span class="s">Guides</span>
+<span class="na">tags</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">feature-x</span><span class="pi">,</span> <span class="nv">developer</span><span class="pi">]</span>
+<span class="na">author</span><span class="pi">:</span> <span class="s">jinansh</span>
+<span class="na">canonical</span><span class="pi">:</span> <span class="s">https://materioa.netlify.app/docs/feature-x</span>
+<span class="na">robots</span><span class="pi">:</span> <span class="s">noindex</span>
+<span class="nn">---</span>
+</code></pre></div></div>
+
+<h2 id="quick-validation--testing-steps">Quick validation &amp; testing steps</h2>
+
+<ul>
+  <li>Before committing: run a YAML linter on modified posts if you have one (many editors have plugins).</li>
+  <li>Build locally (Jekyll) to surface YAML/front-matter errors quickly:</li>
+</ul>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># If you use Bundler and Jekyll</span><span class="w">
+</span><span class="c"># bundle exec jekyll build</span><span class="w">
+</span><span class="c"># or serve locally</span><span class="w">
+</span><span class="c"># bundle exec jekyll serve --incremental</span><span class="w">
+</span></code></pre></div></div>
+
+<ul>
+  <li>Check the terminal output — a YAML parsing error will point to the file and line number.</li>
+  <li>On CI, ensure build flags treat drafts/hidden consistently. If your local build shows a parse error, fix the quoting/indentation and rebuild.</li>
+</ul>
+
+<h2 id="best-practices--style">Best practices &amp; style</h2>
+
+<ul>
+  <li>Keep front-matter minimal for short posts; move long metadata into the post body or data files (<code class="language-plaintext highlighter-rouge">_data</code>).</li>
+  <li>Use <code class="language-plaintext highlighter-rouge">hidden: true</code> for ephemeral or maintenance posts that must be published but not shown in lists.</li>
+  <li>Prefer <code class="language-plaintext highlighter-rouge">permalink</code> for canonical location when migrating old content.</li>
+  <li>Use <code class="language-plaintext highlighter-rouge">tags</code> for filtering and <code class="language-plaintext highlighter-rouge">category</code> for broad grouping.</li>
+  <li>Use <code class="language-plaintext highlighter-rouge">author</code> values that correspond to <code class="language-plaintext highlighter-rouge">_data/authors.yml</code> entries so author pages render correctly.</li>
+</ul>
+
+<h2 id="troubleshooting-checklist-when-a-post-fails-to-build">Troubleshooting checklist (when a post fails to build)</h2>
+
+<ol>
+  <li>Open the post and inspect the first block (<code class="language-plaintext highlighter-rouge">---</code> to <code class="language-plaintext highlighter-rouge">---</code>) for unquoted strings with <code class="language-plaintext highlighter-rouge">:</code>.</li>
+  <li>Validate indentation and list syntax (<code class="language-plaintext highlighter-rouge">- item</code> under <code class="language-plaintext highlighter-rouge">tags:</code>).</li>
+  <li>Ensure the file starts with <code class="language-plaintext highlighter-rouge">---</code> and ends the front-matter with <code class="language-plaintext highlighter-rouge">---</code> before the content.</li>
+  <li>Run a local build to get a line/column pointer to the error.</li>
+  <li>If you still can’t find it, temporarily remove parts of the front-matter (binary search) until the build error disappears, then re-add carefully.</li>
+</ol>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[Reference for post front-matter keys used in this site: meanings, examples, common pitfalls (YAML quoting, dates), and templates authors can reuse.]]></summary></entry><entry><title type="html">Promotions System — Configuration &amp;amp; Capabilities</title><link href="http://localhost:4000/docs/promotions" rel="alternate" type="text/html" title="Promotions System — Configuration &amp;amp; Capabilities" /><published>2025-11-30T12:00:00+05:30</published><updated>2025-11-30T12:00:00+05:30</updated><id>http://localhost:4000/docs/promotions-system</id><content type="html" xml:base="http://localhost:4000/docs/promotions"><![CDATA[<h1 id="promotions-system--configuration--capabilities">Promotions System — Configuration &amp; Capabilities</h1>
+
+<p>This note describes the promotions (promo modal) system used across Materio: the JSON fields available in <code class="language-plaintext highlighter-rouge">assets/data/promo.json</code>, the supported animation and button options, frequency controls, and quick testing tips. It’s written in the same practical style as the API docs so you can author promos confidently.</p>
+
+<h2 id="table-of-contents">Table of contents</h2>
+
+<ol>
+  <li><a href="#overview">Overview</a></li>
+  <li><a href="#json-schema-key-fields">JSON Schema (key fields)</a></li>
+  <li><a href="#image--media-animation-options">Image / Media Animation Options</a></li>
+  <li><a href="#buttons-disclaimer--options">Buttons, Disclaimer &amp; Options</a></li>
+  <li><a href="#frequency--scheduling">Frequency &amp; Scheduling</a></li>
+  <li><a href="#how-js-maps-to-css-classes">How JS maps to CSS classes</a></li>
+  <li><a href="#authoring-examples">Authoring examples</a></li>
+  <li><a href="#testing--debugging-tips">Testing &amp; debugging tips</a></li>
+  <li><a href="#faq--notes">FAQ / Notes</a></li>
+</ol>
+
+<hr />
+
+<h2 id="overview">Overview</h2>
+
+<p>Promotions are configured through <code class="language-plaintext highlighter-rouge">assets/data/promo.json</code> (and deployed copies under <code class="language-plaintext highlighter-rouge">_site/</code>). The frontend JS (<code class="language-plaintext highlighter-rouge">assets/scripts/promotions.js</code>) reads that file, decides whether to show the modal (based on <code class="language-plaintext highlighter-rouge">enabled</code>, frequency, date range, and localStorage), and renders the modal UI. Images and videos can rotate, and simple animations are supported through classes like <code class="language-plaintext highlighter-rouge">slide-left</code>, <code class="language-plaintext highlighter-rouge">fade</code>, and <code class="language-plaintext highlighter-rouge">fade-scale</code>.</p>
+
+<p>The system supports:</p>
+<ul>
+  <li>One-off or recurring promos via <code class="language-plaintext highlighter-rouge">frequency</code> and <code class="language-plaintext highlighter-rouge">customFrequencyHours</code>.</li>
+  <li>Limited-time offers with <code class="language-plaintext highlighter-rouge">startDate</code> / <code class="language-plaintext highlighter-rouge">endDate</code> and optional date display.</li>
+  <li>Multiple images/videos with rotation and per-rotation animation config.</li>
+  <li>Primary and secondary buttons with flexible link handling (internal anchors vs external links).</li>
+  <li>A “Don’t show again” option that persists in <code class="language-plaintext highlighter-rouge">localStorage</code>.</li>
+</ul>
+
+<h2 id="json-schema-key-fields">JSON Schema (key fields)</h2>
+
+<p>Here are the most commonly used fields and what they do:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">enabled</code> (boolean): turn the promotion on/off.</li>
+  <li><code class="language-plaintext highlighter-rouge">category</code> (string): free-form tag to categorize promotions (e.g., “whats-new”).</li>
+  <li><code class="language-plaintext highlighter-rouge">frequency</code> (string): how often to show — see Frequency section below.</li>
+  <li><code class="language-plaintext highlighter-rouge">customFrequencyHours</code> (number or “null”): used when <code class="language-plaintext highlighter-rouge">frequency</code> is <code class="language-plaintext highlighter-rouge">custom</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">title</code> (string): promo title displayed in modal.</li>
+  <li><code class="language-plaintext highlighter-rouge">description</code> (string): markdown-like text parsed by the script.</li>
+  <li><code class="language-plaintext highlighter-rouge">link</code> (string): primary action URL (can be <code class="language-plaintext highlighter-rouge">""</code>, <code class="language-plaintext highlighter-rouge">null</code>, or <code class="language-plaintext highlighter-rouge">#anchor</code>).</li>
+  <li><code class="language-plaintext highlighter-rouge">images</code> (array): list of media URLs (images or videos). If a video extension is detected, the script treats it as video.</li>
+  <li><code class="language-plaintext highlighter-rouge">imageRotationInterval</code> (number): milliseconds between rotations.</li>
+  <li><code class="language-plaintext highlighter-rouge">imageAnimation</code> (object): describes per-rotation animation (see below).</li>
+  <li><code class="language-plaintext highlighter-rouge">isLimitedOffer</code>, <code class="language-plaintext highlighter-rouge">startDate</code>, <code class="language-plaintext highlighter-rouge">endDate</code>: control showing within a date range.</li>
+  <li><code class="language-plaintext highlighter-rouge">showDateInfo</code> (boolean): show human-friendly date in modal.</li>
+  <li><code class="language-plaintext highlighter-rouge">buttons</code> (object): <code class="language-plaintext highlighter-rouge">primary</code> and <code class="language-plaintext highlighter-rouge">secondary</code> button configuration.</li>
+  <li><code class="language-plaintext highlighter-rouge">disclaimer</code> (object): controls small text below actions.</li>
+  <li><code class="language-plaintext highlighter-rouge">options</code> (object): e.g., <code class="language-plaintext highlighter-rouge">showDontShowAgain</code> and related text.</li>
+</ul>
+
+<h2 id="image--media-animation-options">Image / Media Animation Options</h2>
+
+<p>You can control how rotated images enter via <code class="language-plaintext highlighter-rouge">imageAnimation</code>. The JavaScript accepts two styles:</p>
+
+<ol>
+  <li>Shorthand: <code class="language-plaintext highlighter-rouge">{ "type": "slide", "direction": "left", "duration": 600 }</code></li>
+  <li>Explicit type: <code class="language-plaintext highlighter-rouge">{ "type": "slide-left", "duration": 600 }</code></li>
+</ol>
+
+<p>Supported <code class="language-plaintext highlighter-rouge">type</code> values (script and CSS provide matching handlers):</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">slide-left</code>, <code class="language-plaintext highlighter-rouge">slide-right</code>, <code class="language-plaintext highlighter-rouge">slide-up</code>, <code class="language-plaintext highlighter-rouge">slide-down</code> — slide in from direction</li>
+  <li><code class="language-plaintext highlighter-rouge">slide</code> + <code class="language-plaintext highlighter-rouge">direction: left|right|up|down</code> — shorthand equivalent</li>
+  <li><code class="language-plaintext highlighter-rouge">fade</code> — simple opacity fade</li>
+  <li><code class="language-plaintext highlighter-rouge">fade-scale</code> — fade + subtle scale</li>
+  <li><code class="language-plaintext highlighter-rouge">cascade</code>, <code class="language-plaintext highlighter-rouge">flip</code>, <code class="language-plaintext highlighter-rouge">zoom</code>, <code class="language-plaintext highlighter-rouge">bounce</code> — additional options (tuned in CSS/JS)</li>
+</ul>
+
+<p><code class="language-plaintext highlighter-rouge">duration</code> is in milliseconds. The script sets a CSS custom property <code class="language-plaintext highlighter-rouge">--animation-duration</code> to the configured duration; CSS falls back to a default if not supplied.</p>
+
+<p>Important: The JS applies the animation class to the incoming (active) media element. The outgoing element is hidden to avoid visual overlap. If you want a cross-slide (both in/out animate), we can add paired exit classes.</p>
+
+<h2 id="buttons-disclaimer--options">Buttons, Disclaimer &amp; Options</h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">buttons.primary</code> and <code class="language-plaintext highlighter-rouge">buttons.secondary</code> — objects with <code class="language-plaintext highlighter-rouge">show</code> (boolean), <code class="language-plaintext highlighter-rouge">text</code>, and <code class="language-plaintext highlighter-rouge">icon</code> (font-awesome class or blank char). Primary button uses <code class="language-plaintext highlighter-rouge">link</code> from top-level if present.</li>
+  <li>Anchor behaviour: if <code class="language-plaintext highlighter-rouge">link</code> starts with <code class="language-plaintext highlighter-rouge">#</code>, the script closes the modal and scrolls to the anchor instead of opening a new tab.</li>
+  <li>Secondary button is often used as a dismiss / “Got it” / “Remind me later” control.</li>
+  <li><code class="language-plaintext highlighter-rouge">disclaimer</code> contains <code class="language-plaintext highlighter-rouge">show</code>, <code class="language-plaintext highlighter-rouge">text</code>, <code class="language-plaintext highlighter-rouge">linkText</code>, <code class="language-plaintext highlighter-rouge">linkUrl</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">options.showDontShowAgain</code> controls rendering of the checkbox and persists to <code class="language-plaintext highlighter-rouge">localStorage</code> when the user closes the promo.</li>
+</ul>
+
+<h2 id="frequency--scheduling">Frequency &amp; Scheduling</h2>
+
+<p><code class="language-plaintext highlighter-rouge">frequency</code> controls when a user sees a promo. Supported values implemented in <code class="language-plaintext highlighter-rouge">promotions.js</code>:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">once</code> — show only once per browser (localStorage record)</li>
+  <li><code class="language-plaintext highlighter-rouge">everytime</code> — show every page load</li>
+  <li><code class="language-plaintext highlighter-rouge">custom</code> — use <code class="language-plaintext highlighter-rouge">customFrequencyHours</code> to define hours between shows</li>
+  <li><code class="language-plaintext highlighter-rouge">every-3hr</code>, <code class="language-plaintext highlighter-rouge">every-6hr</code>, <code class="language-plaintext highlighter-rouge">every-12hr</code>, <code class="language-plaintext highlighter-rouge">daily</code>, <code class="language-plaintext highlighter-rouge">every-3days</code> — fixed presets</li>
+  <li><code class="language-plaintext highlighter-rouge">random</code> — special behaviour: uses <code class="language-plaintext highlighter-rouge">promoRemindLaterTime</code> and a probabilistic window (script-specific)</li>
+</ul>
+
+<p>The script stores <code class="language-plaintext highlighter-rouge">promoLastShown</code> and (for reminders) <code class="language-plaintext highlighter-rouge">promoRemindLaterTime</code> in <code class="language-plaintext highlighter-rouge">localStorage</code>.</p>
+
+<h3 id="limited-time-offers">Limited-time offers</h3>
+
+<p>Set <code class="language-plaintext highlighter-rouge">isLimitedOffer: true</code> and include <code class="language-plaintext highlighter-rouge">startDate</code> / <code class="language-plaintext highlighter-rouge">endDate</code> (ISO-like string). The script will only show the promo while <code class="language-plaintext highlighter-rouge">now</code> falls inside that range.</p>
+
+<h2 id="how-js-maps-to-css-classes">How JS maps to CSS classes</h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">promotions.js</code> computes an <code class="language-plaintext highlighter-rouge">animationClass</code> (e.g. <code class="language-plaintext highlighter-rouge">slide-left</code>) and adds it to the active element (<code class="language-plaintext highlighter-rouge">&lt;img&gt;</code> or <code class="language-plaintext highlighter-rouge">&lt;video&gt;</code>).</li>
+  <li>CSS should provide animations for those classes. In the repo we add <code class="language-plaintext highlighter-rouge">.slide-left</code>, <code class="language-plaintext highlighter-rouge">.slide-right</code>, <code class="language-plaintext highlighter-rouge">.fade</code>, <code class="language-plaintext highlighter-rouge">.fade-scale</code>, etc., and corresponding <code class="language-plaintext highlighter-rouge">@keyframes</code> in <code class="language-plaintext highlighter-rouge">assets/style/main.css</code>.</li>
+</ul>
+
+<p>If you author a promo with <code class="language-plaintext highlighter-rouge">imageAnimation.type = "slide-left"</code> the script will respect that value directly. It also supports <code class="language-plaintext highlighter-rouge">{ type: 'slide', direction: 'left' }</code> for backwards compatibility.</p>
+
+<h2 id="authoring-examples">Authoring examples</h2>
+
+<p>Minimal promo (single image, simple fade):</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"enabled"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"New: Materio Originals"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Check out curated resources created by Materio."</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"images"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp"</span><span class="p">],</span><span class="w">
+  </span><span class="nl">"imageRotationInterval"</span><span class="p">:</span><span class="w"> </span><span class="mi">5000</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"imageAnimation"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"fade"</span><span class="p">,</span><span class="w"> </span><span class="nl">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mi">600</span><span class="w"> </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"frequency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"everytime"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"buttons"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"primary"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"show"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nl">"secondary"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"show"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nl">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Got it"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Slide-left rotation (explicit type):</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"images"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="s2">"assets/img/covers/a.webp"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"assets/img/covers/b.webp"</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"imageRotationInterval"</span><span class="p">:</span><span class="w"> </span><span class="mi">3000</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"imageAnimation"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"slide-left"</span><span class="p">,</span><span class="w"> </span><span class="nl">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mi">450</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Shorthand slide with direction:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"imageAnimation"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"slide"</span><span class="p">,</span><span class="w"> </span><span class="nl">"direction"</span><span class="p">:</span><span class="w"> </span><span class="s2">"left"</span><span class="p">,</span><span class="w"> </span><span class="nl">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mi">450</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Button example with internal anchor:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"link"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#quickSearchBox"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"buttons"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"primary"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"show"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nl">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Go to search"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>If <code class="language-plaintext highlighter-rouge">link</code> is <code class="language-plaintext highlighter-rouge">""</code> or <code class="language-plaintext highlighter-rouge">null</code>, the primary button will simply close the modal (script handles this case).</p>
+
+<h2 id="testing--debugging-tips">Testing &amp; debugging tips</h2>
+
+<ul>
+  <li>Hard-refresh the page to pick up CSS/JS changes (or rebuild <code class="language-plaintext highlighter-rouge">_site</code> if you’re testing the generated build).</li>
+  <li>Use the browser console to trigger the modal without waiting for frequency checks:</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Show modal immediately</span>
+<span class="nf">testPromoModal</span><span class="p">()</span>
+
+<span class="c1">// Force reload promotion data (fetches promo.json with cache-bust)</span>
+<span class="nf">forceLoadPromo</span><span class="p">()</span>
+
+<span class="c1">// Manually setup rotation with a short interval for testing</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">setupImageRotation</span> <span class="o">&amp;&amp;</span> <span class="nb">window</span><span class="p">.</span><span class="nf">setupImageRotation</span><span class="p">(</span>
+  <span class="p">(</span><span class="nx">promoData</span> <span class="o">&amp;&amp;</span> <span class="nx">promoData</span><span class="p">.</span><span class="nx">images</span><span class="p">)</span> <span class="o">||</span> <span class="p">[],</span>
+  <span class="mi">2000</span><span class="p">,</span>
+  <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="dl">'</span><span class="s1">slide-left</span><span class="dl">'</span><span class="p">,</span> <span class="na">duration</span><span class="p">:</span> <span class="mi">450</span> <span class="p">}</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Inspect the active media element in devtools to confirm the animation class is added (e.g., <code class="language-plaintext highlighter-rouge">slide-left</code>).</li>
+  <li>If it looks like a fade but you expected a slide:
+    <ul>
+      <li>Ensure CSS defines <code class="language-plaintext highlighter-rouge">.slide-left</code> and related <code class="language-plaintext highlighter-rouge">@keyframes</code> (we added them to <code class="language-plaintext highlighter-rouge">assets/style/main.css</code>).</li>
+      <li>Confirm the browser loaded the updated CSS file (network tab or hard refresh).</li>
+      <li>Check for inline styles overriding <code class="language-plaintext highlighter-rouge">transform</code> or <code class="language-plaintext highlighter-rouge">transition</code>.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="faq--notes">FAQ / Notes</h2>
+
+<ul>
+  <li>Q: Can I animate both outgoing and incoming images?
+    <ul>
+      <li>A: Not by default — the script animates the incoming media and hides the outgoing. We can add paired enter/exit classes for smoother cross-transitions.</li>
+    </ul>
+  </li>
+  <li>Q: Where are promo assets served from?
+    <ul>
+      <li>A: Usually under <code class="language-plaintext highlighter-rouge">/assets/img/covers/...</code> and referenced relative to the site root. When testing locally, ensure paths resolve to the dev server root.</li>
+    </ul>
+  </li>
+  <li>Q: How does the “Don’t show again” checkbox work?
+    <ul>
+      <li>A: When enabled via <code class="language-plaintext highlighter-rouge">options.showDontShowAgain</code>, the close handler stores <code class="language-plaintext highlighter-rouge">promoDoNotShowAgain = 'true'</code> in <code class="language-plaintext highlighter-rouge">localStorage</code> and subsequent checks skip the promo.</li>
+    </ul>
+  </li>
+</ul>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[How the Materio promotions system works: JSON schema, animation options, button/config tags, frequency controls, and tips to test and author promos.]]></summary></entry><entry><title type="html">Number System</title><link href="http://localhost:4000/notes/number-system/" rel="alternate" type="text/html" title="Number System" /><published>2025-11-29T09:03:06+05:30</published><updated>2025-11-29T09:03:06+05:30</updated><id>http://localhost:4000/notes/number-system</id><content type="html" xml:base="http://localhost:4000/notes/number-system/"><![CDATA[<p>[attachment:https://static-materio.vercel.app/common/files/attach/de882c43-c10f-4708-81a3-31b027b5a289.pdf:Number System]</p>
 
 <p>The Number System is the framework used to represent and calculate quantities. Below are concise, exam-oriented notes starting from the basic building blocks up to Real numbers.</p>
 
@@ -136,8 +680,8 @@
 <p><strong>Definition:</strong><br />
 Divisibility means that when you divide one number by another, the result is a whole number with <strong>zero remainder</strong>.</p>
 <ul>
-  <li><em>Example:</em> 10 is divisible by 5 because $10 \div 5 = 2$ (remainder 0).</li>
-  <li><em>Counter Example:</em> 10 is not divisible by 3 because $10 \div 3 = 3.33\dots$ (remainder 1).</li>
+  <li><em>Example:</em> 10 is divisible by 5 because \(10 \div 5 = 2\) (remainder 0).</li>
+  <li><em>Counter Example:</em> 10 is not divisible by 3 because \(10 \div 3 = 3.33\dots\) (remainder 1).</li>
 </ul>
 
 <hr />
@@ -1183,7 +1727,7 @@ Write <strong>5</strong></p>
   </li>
 </ul>
 
-<p><strong>Final Answer:</strong> \(\;56088\)</p>]]></content><author><name></name></author><category term="Notes" /><summary type="html"><![CDATA[This resource provides detailed notes about Number systems with Important points, examples and other things which are helpful for exams as well as contributes to better understanding of the topic.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:62250/assets/img/covers/b0ad7902-c47a-44d4-bbf0-d2694247aab7.webp" /><media:content medium="image" url="http://localhost:62250/assets/img/covers/b0ad7902-c47a-44d4-bbf0-d2694247aab7.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Software Engineering Important Questions</title><link href="http://localhost:62250/resource/software-engineering-important-questions/" rel="alternate" type="text/html" title="Software Engineering Important Questions" /><published>2025-11-21T08:02:35+05:30</published><updated>2025-11-21T08:02:35+05:30</updated><id>http://localhost:62250/resource/software-engineering-important-questions</id><content type="html" xml:base="http://localhost:62250/resource/software-engineering-important-questions/"><![CDATA[<h2 id="unit-1-introduction-to-software-engineering">UNIT 1: Introduction to Software Engineering</h2>
+<p><strong>Final Answer:</strong> \(\;56088\)</p>]]></content><author><name></name></author><category term="Notes" /><summary type="html"><![CDATA[This resource provides detailed notes about Number systems with Important points, examples and other things which are helpful for exams as well as contributes to better understanding of the topic.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/img/covers/b0ad7902-c47a-44d4-bbf0-d2694247aab7.webp" /><media:content medium="image" url="http://localhost:4000/assets/img/covers/b0ad7902-c47a-44d4-bbf0-d2694247aab7.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Software Engineering Important Questions</title><link href="http://localhost:4000/resource/software-engineering-important-questions/" rel="alternate" type="text/html" title="Software Engineering Important Questions" /><published>2025-11-21T08:02:35+05:30</published><updated>2025-11-21T08:02:35+05:30</updated><id>http://localhost:4000/resource/software-engineering-important-questions</id><content type="html" xml:base="http://localhost:4000/resource/software-engineering-important-questions/"><![CDATA[<h2 id="unit-1-introduction-to-software-engineering">UNIT 1: Introduction to Software Engineering</h2>
 
 <ol>
   <li>Define Software Engineering.</li>
@@ -1357,7 +1901,7 @@ Write <strong>5</strong></p>
   <li>Discuss the future trends in Advanced Software Engineering.</li>
 </ol>
 
-<hr />]]></content><author><name>Materio</name></author><category term="Resource" /><summary type="html"><![CDATA[This Resource lists important questions for end semester exams]]></summary></entry><entry><title type="html">DAA Mid Sem</title><link href="http://localhost:62250/paper-solution/daa-mid/" rel="alternate" type="text/html" title="DAA Mid Sem" /><published>2025-09-25T15:13:26+05:30</published><updated>2025-09-25T15:13:26+05:30</updated><id>http://localhost:62250/paper-solution/daa-mid</id><content type="html" xml:base="http://localhost:62250/paper-solution/daa-mid/"><![CDATA[<h2 id="multiple-choice-questions">Multiple Choice Questions</h2>
+<hr />]]></content><author><name>Materio</name></author><category term="Resource" /><summary type="html"><![CDATA[This Resource lists important questions for end semester exams]]></summary></entry><entry><title type="html">DAA Mid Sem</title><link href="http://localhost:4000/paper-solution/daa-mid/" rel="alternate" type="text/html" title="DAA Mid Sem" /><published>2025-09-25T15:13:26+05:30</published><updated>2025-09-25T15:13:26+05:30</updated><id>http://localhost:4000/paper-solution/daa-mid</id><content type="html" xml:base="http://localhost:4000/paper-solution/daa-mid/"><![CDATA[<h2 id="multiple-choice-questions">Multiple Choice Questions</h2>
 
 <p><strong>In recursion, the base case represents:</strong></p>
 
@@ -1861,7 +2405,7 @@ int main() {
     printf("%.2lf\\n", maxValue);
     return 0;
 }
-</code></pre>]]></content><author><name></name></author><category term="Paper Solution" /><summary type="html"><![CDATA[This resource covers all the questions with solutions from design and analysis of alogorithms mid semester exam.]]></summary></entry><entry><title type="html">Software Engineering Assignment</title><link href="http://localhost:62250/resource/software-engineering-assignment/" rel="alternate" type="text/html" title="Software Engineering Assignment" /><published>2025-09-20T11:20:10+05:30</published><updated>2025-09-20T11:20:10+05:30</updated><id>http://localhost:62250/resource/software-engineering-assignment</id><content type="html" xml:base="http://localhost:62250/resource/software-engineering-assignment/"><![CDATA[<div class="newtopic"></div>
+</code></pre>]]></content><author><name></name></author><category term="Paper Solution" /><summary type="html"><![CDATA[This resource covers all the questions with solutions from design and analysis of alogorithms mid semester exam.]]></summary></entry><entry><title type="html">Software Engineering Assignment</title><link href="http://localhost:4000/resource/software-engineering-assignment/" rel="alternate" type="text/html" title="Software Engineering Assignment" /><published>2025-09-20T11:20:10+05:30</published><updated>2025-09-20T11:20:10+05:30</updated><id>http://localhost:4000/resource/software-engineering-assignment</id><content type="html" xml:base="http://localhost:4000/resource/software-engineering-assignment/"><![CDATA[<div class="newtopic"></div>
 
 <h1 id="assignment-1">Assignment 1</h1>
 
@@ -2815,7 +3359,7 @@ Focuses on developing software systems where processing and data are spread acro
   </li>
 </ul>
 
-<div style="text-align: center">⁂</div>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This resource provides with the solution of questions given in assignments 1 to 8 of Software Engineering.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:62250/assets/img/covers/759dad03-6b05-4760-9e78-96860d8ce44b.webp" /><media:content medium="image" url="http://localhost:62250/assets/img/covers/759dad03-6b05-4760-9e78-96860d8ce44b.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Calling auth API from CLI using cURL</title><link href="http://localhost:62250/docs/api" rel="alternate" type="text/html" title="Calling auth API from CLI using cURL" /><published>2025-09-03T15:34:00+05:30</published><updated>2025-09-03T15:34:00+05:30</updated><id>http://localhost:62250/docs/auth-cli</id><content type="html" xml:base="http://localhost:62250/docs/api"><![CDATA[<h1 id="materio-api-v2-documentation">Materio API v2 Documentation</h1>
+<div style="text-align: center">⁂</div>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This resource provides with the solution of questions given in assignments 1 to 8 of Software Engineering.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/img/covers/759dad03-6b05-4760-9e78-96860d8ce44b.webp" /><media:content medium="image" url="http://localhost:4000/assets/img/covers/759dad03-6b05-4760-9e78-96860d8ce44b.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Calling auth API from CLI using cURL</title><link href="http://localhost:4000/docs/api" rel="alternate" type="text/html" title="Calling auth API from CLI using cURL" /><published>2025-09-03T15:34:00+05:30</published><updated>2025-09-03T15:34:00+05:30</updated><id>http://localhost:4000/docs/auth-cli</id><content type="html" xml:base="http://localhost:4000/docs/api"><![CDATA[<h1 id="materio-api-v2-documentation">Materio API v2 Documentation</h1>
 
 <p>This document provides comprehensive examples for calling all API endpoints using curl, PowerShell, and bash.</p>
 
@@ -4279,7 +4823,7 @@ curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/signup 
 
 <p><strong>Data Privacy</strong>: User data is handled according to our Privacy Policy. Personal information is encrypted and securely stored.</p>
 
-<p><strong>API Versioning</strong>: This is version 1 of the API. Breaking changes will be introduced in new versions with proper migration guides.</p>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[Complete API documentation for Materio v2 with cURL and PowerShell examples covering authentication, profile management, chat AI, admin tools, CDN management, and premium account recovery features.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:62250/assets/img/covers/b82d9728-d54f-41c9-85be-3b0e5dcea670.webp" /><media:content medium="image" url="http://localhost:62250/assets/img/covers/b82d9728-d54f-41c9-85be-3b0e5dcea670.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Enterprise Java Assignment 2 &amp;amp; 3 Solutions</title><link href="http://localhost:62250/resource/epj-assignment-2/" rel="alternate" type="text/html" title="Enterprise Java Assignment 2 &amp;amp; 3 Solutions" /><published>2025-08-20T00:00:00+05:30</published><updated>2025-08-20T00:00:00+05:30</updated><id>http://localhost:62250/resource/epj-assignment-2</id><content type="html" xml:base="http://localhost:62250/resource/epj-assignment-2/"><![CDATA[<p><strong>1. What is a Servlet?<br />
+<p><strong>API Versioning</strong>: This is version 1 of the API. Breaking changes will be introduced in new versions with proper migration guides.</p>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[Complete API documentation for Materio v2 with cURL and PowerShell examples covering authentication, profile management, chat AI, admin tools, CDN management, and premium account recovery features.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/img/covers/b82d9728-d54f-41c9-85be-3b0e5dcea670.webp" /><media:content medium="image" url="http://localhost:4000/assets/img/covers/b82d9728-d54f-41c9-85be-3b0e5dcea670.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Enterprise Java Assignment 2 &amp;amp; 3 Solutions</title><link href="http://localhost:4000/resource/epj-assignment-2/" rel="alternate" type="text/html" title="Enterprise Java Assignment 2 &amp;amp; 3 Solutions" /><published>2025-08-20T00:00:00+05:30</published><updated>2025-08-20T00:00:00+05:30</updated><id>http://localhost:4000/resource/epj-assignment-2</id><content type="html" xml:base="http://localhost:4000/resource/epj-assignment-2/"><![CDATA[<p><strong>1. What is a Servlet?<br />
 Explain the basics of a web application and how servlets function within Java-enabled web servers.</strong></p>
 
 <p>A <strong>Servlet</strong> is a Java programming language class used to extend the capabilities of servers that host applications accessed by means of a request-response model. Servlets are commonly used to create dynamic web applications.</p>
@@ -4723,7 +5267,7 @@ JSP can embed Java code directly within HTML to generate dynamic personalization
 
 <p>If you need an explanation in bullet points, a summary sheet, or further descriptions on any answer, let me know!</p>
 
-<div style="text-align: center">⁂</div>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This resourse provides with the solutions of all the questions given in assignment 2 and 3 of enterprise programming in java.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:62250/assets/img/covers/0a918c7d-1856-493a-a9d5-c8252dd9ae36.webp" /><media:content medium="image" url="http://localhost:62250/assets/img/covers/0a918c7d-1856-493a-a9d5-c8252dd9ae36.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Design and Analysis of Algorithms Psuedo Codes</title><link href="http://localhost:62250/programming/psuedo-codes/" rel="alternate" type="text/html" title="Design and Analysis of Algorithms Psuedo Codes" /><published>2025-08-02T11:00:26+05:30</published><updated>2025-08-02T11:00:26+05:30</updated><id>http://localhost:62250/programming/psuedo-codes</id><content type="html" xml:base="http://localhost:62250/programming/psuedo-codes/"><![CDATA[<h1 id="algorithm-pseudocodes">Algorithm Pseudocodes</h1>
+<div style="text-align: center">⁂</div>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This resourse provides with the solutions of all the questions given in assignment 2 and 3 of enterprise programming in java.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/img/covers/0a918c7d-1856-493a-a9d5-c8252dd9ae36.webp" /><media:content medium="image" url="http://localhost:4000/assets/img/covers/0a918c7d-1856-493a-a9d5-c8252dd9ae36.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Design and Analysis of Algorithms Psuedo Codes</title><link href="http://localhost:4000/programming/psuedo-codes/" rel="alternate" type="text/html" title="Design and Analysis of Algorithms Psuedo Codes" /><published>2025-08-02T11:00:26+05:30</published><updated>2025-08-02T11:00:26+05:30</updated><id>http://localhost:4000/programming/psuedo-codes</id><content type="html" xml:base="http://localhost:4000/programming/psuedo-codes/"><![CDATA[<h1 id="algorithm-pseudocodes">Algorithm Pseudocodes</h1>
 
 <h2 id="sorting-algorithms">Sorting Algorithms</h2>
 
@@ -5035,1192 +5579,4 @@ END
   <li><strong>Prim’s</strong>: O(V²) with adjacency matrix, O(E log V) with priority queue</li>
   <li><strong>Dijkstra’s</strong>: O(V²) with adjacency matrix, O(E log V) with priority queue</li>
   <li><strong>Knapsack</strong>: O(nW) where W is capacity</li>
-</ul>]]></content><author><name></name></author><category term="Programming" /><summary type="html"><![CDATA[This resource covers all the psuedo codes of sorting, searching and greedy algorithms like krushkals, prims,knapsack problem etc.]]></summary></entry><entry><title type="html">Data Analytics and Data Visualization Question Bank with Solutions</title><link href="http://localhost:62250/resource/data-analytics-and-data-analysis-question-bank-with-solutions/" rel="alternate" type="text/html" title="Data Analytics and Data Visualization Question Bank with Solutions" /><published>2025-07-30T20:18:32+05:30</published><updated>2025-07-30T20:18:32+05:30</updated><id>http://localhost:62250/resource/data-analytics-and-data-analysis-question-bank-with-solutions</id><content type="html" xml:base="http://localhost:62250/resource/data-analytics-and-data-analysis-question-bank-with-solutions/"><![CDATA[<h2 id="short-answers">Short Answers</h2>
-<h3 id="1-explain-the-importance-of-data-in-modern-decision-making-processes"><strong>1. Explain the importance of data in modern decision-making processes.</strong></h3>
-<p><strong>Answer:</strong><br />
-Data is vital in today’s decision-making because it provides a <strong>factual basis</strong> for analysis, rather than relying on intuition or guesswork. Key reasons include:</p>
-<ul>
-  <li><strong>Evidence-Based Decisions:</strong> Data enables organizations to make informed choices.</li>
-  <li><strong>Trend Analysis:</strong> Patterns in data help predict future outcomes.</li>
-  <li><strong>Improved Efficiency:</strong> Data-driven insights optimize processes and reduce costs.</li>
-  <li><strong>Personalization:</strong> Businesses use data to offer tailored services (e.g., Netflix or Amazon recommendations).</li>
-  <li><strong>Performance Measurement:</strong> Data helps track progress via KPIs and metrics.</li>
-</ul>
-
-<h3 id="2-define-random-variable-and-differentiate-between-discrete-and-continuous-random-variables"><strong>2. Define random variable and differentiate between discrete and continuous random variables.</strong></h3>
-<p><strong>Answer:</strong><br />
-A <strong>random variable</strong> is a variable whose outcome is determined by a random process.</p>
-
-<ul>
-  <li><strong>Discrete Random Variable:</strong>
-    <ul>
-      <li>Takes countable values (e.g., number of students in a class).</li>
-      <li>Example: Number of heads in 10 coin tosses.</li>
-    </ul>
-  </li>
-  <li><strong>Continuous Random Variable:</strong>
-    <ul>
-      <li>Takes infinite values within a range (e.g., weight, height, temperature).</li>
-      <li>Example: Weight of a randomly selected person.</li>
-    </ul>
-  </li>
-</ul>
-
-<h3 id="3-compare-the-roles-of-a-data-analyst-and-a-data-scientist">3. Compare the roles of a data analyst and a data scientist.</h3>
-
-<p><strong>Answer:</strong></p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Feature</th>
-      <th>Data Analyst</th>
-      <th>Data Scientist</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><strong>Focus</strong></td>
-      <td>Descriptive and diagnostic analytics</td>
-      <td>Predictive and prescriptive analytics</td>
-    </tr>
-    <tr>
-      <td><strong>Tools</strong></td>
-      <td>Excel, SQL, Tableau</td>
-      <td>Python, R, Machine Learning</td>
-    </tr>
-    <tr>
-      <td><strong>Goal</strong></td>
-      <td>Identify trends and patterns</td>
-      <td>Build models, make predictions</td>
-    </tr>
-    <tr>
-      <td><strong>Skills</strong></td>
-      <td>Data cleaning, visualization</td>
-      <td>Statistics, Machine Learning, Programming</td>
-    </tr>
-    <tr>
-      <td><strong>Example</strong></td>
-      <td>Create sales dashboards</td>
-      <td>Predict customer churn rate</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3 id="4-define-central-tendency-and-explain-its-types">4. Define central tendency and explain its types.</h3>
-
-<p><strong>Answer:</strong><br />
-<strong>Central tendency</strong> refers to the central or typical value of a dataset.<br />
-<strong>Types include:</strong></p>
-<ul>
-  <li><strong>Mean:</strong> Arithmetic average.</li>
-  <li><strong>Median:</strong> Middle value when data is sorted.</li>
-  <li><strong>Mode:</strong> Most frequent value in the dataset.</li>
-</ul>
-
-<h3 id="5-explain-variance-and-standard-deviation-how-do-they-differ"><strong>5. Explain variance and standard deviation. How do they differ?</strong></h3>
-<p><strong>Answer:</strong></p>
-<ul>
-  <li><strong>Variance (σ²):</strong> Measures how far each data point is from the mean, on average.
-\(\text{Variance} = \frac{\sum (x_i - \mu)^2}{N}\)</li>
-  <li><strong>Standard Deviation (σ):</strong> Square root of variance.<br />
-\(\sigma = \sqrt{\text{Variance}}\)</li>
-  <li><strong>Difference:</strong> Variance gives result in squared units; standard deviation brings it to the original units.</li>
-</ul>
-
-<h3 id="6-define-probability-and-explain-its-role-in-data-analytics"><strong>6. Define probability and explain its role in data analytics.</strong></h3>
-<p><strong>Answer:</strong><br />
-<strong>Probability</strong> is a measure of the likelihood that an event will occur (between 0 and 1).<br />
-In data analytics, probability helps:</p>
-<ul>
-  <li><strong>Model Uncertainty:</strong> Predict outcomes in uncertain conditions.</li>
-  <li><strong>Statistical Inference:</strong> Estimate population parameters using sample data.</li>
-  <li><strong>Risk Analysis:</strong> Assess likelihood of possible risks.</li>
-</ul>
-
-<h3 id="7-how-is-the-confidence-interval-estimated-and-why-is-it-important"><strong>7. How is the confidence interval estimated, and why is it important?</strong></h3>
-<p><strong>Answer:</strong><br />
-<strong>Confidence Interval (CI)</strong> provides a range of values within which the true population parameter lies with a certain confidence level (e.g., 95%).</p>
-
-<p><strong>Formula:</strong>
-\(CI = \bar{x} \pm Z \left(\frac{\sigma}{\sqrt{n}}\right)\)</p>
-
-<ul>
-  <li>\(\bar{x}\): Sample mean</li>
-  <li>\(Z\): Z-score from normal distribution</li>
-  <li>\(\sigma\): Population standard deviation</li>
-  <li>\(n\): Sample size</li>
-</ul>
-
-<p><strong>Importance:</strong><br />
-Gives an estimate with a degree of certainty, accounts for sample variability.</p>
-
-<h3 id="8-describe-the-concept-of-the-distribution-of-sample-means"><strong>8. Describe the concept of the distribution of sample means.</strong></h3>
-<p><strong>Answer:</strong><br />
-The <strong>distribution of sample means</strong> (also called the <strong>sampling distribution</strong>) is the distribution formed by means of all possible samples from a population.</p>
-
-<p>By the <strong>Central Limit Theorem</strong>:</p>
-<ul>
-  <li>The sampling distribution of the mean will be approximately normal if the sample size is large enough.</li>
-  <li>Mean of sampling distribution = population mean (μ)</li>
-  <li>Standard deviation = population standard deviation / √n (called <strong>standard error</strong>)</li>
-</ul>
-
-<h3 id="9-list-three-real-world-applications-of-python-and-explain-their-significance"><strong>9. List three real-world applications of Python and explain their significance.</strong></h3>
-<p><strong>Answer:</strong></p>
-<ol>
-  <li><strong>Web Development</strong> – Using Django, Flask: Build dynamic websites (e.g., Instagram backend).</li>
-  <li><strong>Data Science &amp; AI</strong> – With libraries like NumPy, Pandas, scikit-learn: Analyze data, build ML models.</li>
-  <li><strong>Automation/Scripting</strong> – Automating tasks like file handling, reporting (e.g., writing a Python script to send automated emails).</li>
-</ol>
-
-<p>These applications make Python versatile and highly valuable across industries due to its simplicity, broad libraries, and community support.</p>
-
-<h3 id="10-explain-the-relationship-between-confidence-level-sample-size-and-margin-of-error"><strong>10. Explain the relationship between confidence level, sample size, and margin of error.</strong></h3>
-<p><strong>Answer:</strong></p>
-<ul>
-  <li><strong>Confidence Level ↑ → Margin of Error ↑</strong> (wider interval for more certainty)</li>
-  <li><strong>Sample Size ↑ → Margin of Error ↓</strong> (more precise estimate)</li>
-  <li><strong>Margin of Error:</strong> Indicates the level of uncertainty around the sample estimate.</li>
-</ul>
-
-\[\text{Margin of Error} = Z \left(\frac{\sigma}{\sqrt{n}}\right)\]
-
-<p>Larger samples give more accurate population estimates.</p>
-
-<h2 id="long-answers--4-marks">Long Answers ( 4 Marks)</h2>
-
-<h3 id="1-find-the-population-variance-for-the-following-set-of-data-representing-tree-heights-in-feet-3-21-98-203-17-9"><strong>1. Find the population variance for the following set of data representing tree heights in feet: 3, 21, 98, 203, 17, 9.</strong></h3>
-
-<p><strong>Solution:</strong></p>
-
-<p>Let the data be:<br />
-x = {3, 21, 98, 203, 17, 9}</p>
-
-<p><strong>Step 1: Find the mean (μ)</strong><br />
-\(\mu = \frac{3 + 21 + 98 + 203 + 17 + 9}{6} = \frac{351}{6} = 58.5\)</p>
-
-<p><strong>Step 2: Find the squared differences from the mean</strong><br />
-\((3 - 58.5)^2 = 3080.25 \\
-(21 - 58.5)^2 = 1416.25 \\
-(98 - 58.5)^2 = 1580.25 \\
-(203 - 58.5)^2 = 20880.25 \\
-(17 - 58.5)^2 = 1722.25 \\
-(9 - 58.5)^2 = 2450.25\)</p>
-
-<p><strong>Step 3: Compute variance</strong>
-\(\sigma^2 = \frac{\sum (x_i - \mu)^2}{N} = \frac{3080.25 + 1416.25 + 1580.25 + 20880.25 + 1722.25 + 2450.25}{6} \\
-= \frac{31129.5}{6} = 5188.25\)</p>
-
-<p><strong>Answer: Population variance = 5188.25 ft²</strong></p>
-
-<h3 id="2-there-are-45-students-in-a-class-5-students-were-randomly-selected-and-their-weights-in-kg-were-51-38-79-46-57"><strong>2. There are 45 students in a class. 5 students were randomly selected and their weights (in kg) were: 51, 38, 79, 46, 57.</strong></h3>
-
-<p><strong>Solution:</strong></p>
-
-<p>This is <strong>sample data</strong>, so use <strong>sample mean and sample variance</strong>.</p>
-
-<p><strong>Step 1: Find mean</strong>
-\(\bar{x} = \frac{51 + 38 + 79 + 46 + 57}{5} = \frac{271}{5} = 54.2 \text{ kg}\)</p>
-
-<p><strong>Step 2: Find squared differences</strong>
-\((51 - 54.2)^2 = 10.24 \\
-(38 - 54.2)^2 = 262.44 \\
-(79 - 54.2)^2 = 615.04 \\
-(46 - 54.2)^2 = 67.24 \\
-(57 - 54.2)^2 = 7.84\)</p>
-
-<p><strong>Step 3: Calculate sample variance and standard deviation</strong>
-\(s^2 = \frac{\sum (x_i - \bar{x})^2}{n - 1} = \frac{962.8}{4} = 240.7 \\
-s = \sqrt{240.7} \approx 15.5 \text{ kg}\)</p>
-
-<p><strong>Answer:</strong></p>
-<ul>
-  <li>Sample mean = 54.2 kg</li>
-  <li>Sample variance = 240.7 kg²</li>
-  <li>Sample standard deviation ≈ 15.5 kg</li>
-</ul>
-
-<h3 id="3-a-population-has-mean-75-and-standard-deviation-12-random-samples-of-size-121-are-taken"><strong>3. A population has mean 75 and standard deviation 12. Random samples of size 121 are taken.</strong></h3>
-
-<p><strong>(a) Find mean and standard deviation of the sample mean.</strong><br />
-\(\mu_{\bar{x}} = \mu = 75 \\
-\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}} = \frac{12}{\sqrt{121}} = \frac{12}{11} = 1.09\)</p>
-
-<p><strong>(b) If sample size = 400?</strong><br />
-\(\sigma_{\bar{x}} = \frac{12}{\sqrt{400}} = \frac{12}{20} = 0.6\)</p>
-
-<p><strong>Answer:</strong></p>
-<ul>
-  <li>(a) Sample mean = 75, Sample std. dev. = 1.09</li>
-  <li>(b) If n=400, Sample std. dev. = 0.6</li>
-</ul>
-
-<h3 id="4-what-are-the-measures-of-dispersion-how-are-they-useful-in-data-analysis"><strong>4. What are the measures of dispersion? How are they useful in data analysis?</strong></h3>
-
-<p><strong>Answer:</strong></p>
-
-<p><strong>Measures of dispersion</strong> describe the spread or variability in a dataset. Key types include:</p>
-
-<ul>
-  <li><strong>Range:</strong> Difference between highest and lowest value.</li>
-  <li><strong>Variance:</strong> Average squared deviation from the mean.</li>
-  <li><strong>Standard Deviation:</strong> Square root of variance; interpretable in original units.</li>
-  <li><strong>Interquartile Range (IQR):</strong> Difference between 75th and 25th percentile.</li>
-</ul>
-
-<p><strong>Importance in Data Analysis:</strong></p>
-<ul>
-  <li>Identify consistency and variability.</li>
-  <li>Understand reliability of mean.</li>
-  <li>Detect outliers and anomalies.</li>
-  <li>Compare spread between different datasets.</li>
-</ul>
-
-<h3 id="5-a-machine-fills-bottles-with-soda-a-sample-of-100-bottles-showed-mean--201l-population-σ--005l-find-90-confidence-interval"><strong>5. A machine fills bottles with soda. A sample of 100 bottles showed mean = 2.01L, population σ = 0.05L. Find 90% confidence interval.</strong></h3>
-
-<p><strong>Solution:</strong></p>
-
-<p><strong>Given:</strong></p>
-<ul>
-  <li>
-\[\bar{x} = 2.01 \text{ L},\ \sigma = 0.05 \text{ L},\ n = 100\]
-  </li>
-  <li>For 90% CI, Z = 1.645</li>
-</ul>
-
-<p><strong>CI formula:</strong>
-\(CI = \bar{x} \pm Z \left( \frac{\sigma}{\sqrt{n}} \right) = 2.01 \pm 1.645 \times \frac{0.05}{10} \\
-= 2.01 \pm 0.008225\)</p>
-
-\[\text{CI} = [2.0018,\ 2.0182] \text{ L}\]
-
-<p><strong>Answer: 90% Confidence Interval = [2.0018 L, 2.0182 L]</strong></p>
-
-<h3 id="6-survey-of-81-households-mean-bill--110-σ--15-find-95-ci"><strong>6. Survey of 81 households: mean bill = $110, σ = $15. Find 95% CI.</strong></h3>
-
-<p><strong>Given:</strong></p>
-<ul>
-  <li>
-\[\bar{x} = 110, \ \sigma = 15, \ n = 81\]
-  </li>
-  <li>Z = 1.96 for 95%</li>
-</ul>
-
-\[CI = 110 \pm 1.96 \times \frac{15}{\sqrt{81}} = 110 \pm 1.96 \times \frac{15}{9} \\
-= 110 \pm 3.27\]
-
-<p><strong>Answer: 95% Confidence Interval = [$106.73,\ 113.27$]</strong></p>
-
-<h3 id="7-differentiate-between-discrete-and-continuous-probability-distributions-give-one-example-of-each"><strong>7. Differentiate between discrete and continuous probability distributions. Give one example of each.</strong></h3>
-
-<p><strong>Answer:</strong></p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Aspect</th>
-      <th>Discrete</th>
-      <th>Continuous</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Takes values</td>
-      <td>Countable</td>
-      <td>Infinite within a range</td>
-    </tr>
-    <tr>
-      <td>Distribution</td>
-      <td>Probability Mass Function (PMF)</td>
-      <td>Probability Density Function (PDF)</td>
-    </tr>
-    <tr>
-      <td>Example</td>
-      <td>Binomial Distribution</td>
-      <td>Normal Distribution</td>
-    </tr>
-  </tbody>
-</table>
-
-<p><strong>Example:</strong></p>
-<ul>
-  <li><strong>Discrete:</strong> Number of customers entering a store.</li>
-  <li><strong>Continuous:</strong> Heights of students in a class.</li>
-</ul>
-
-<h3 id="8-random-samples-of-size-225-drawn-from-population-with-μ--100-σ--20-find-mean-and-standard-deviation-of-sample-mean"><strong>8. Random samples of size 225 drawn from population with μ = 100, σ = 20. Find mean and standard deviation of sample mean.</strong></h3>
-
-\[\mu_{\bar{x}} = \mu = 100 \\
-\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}} = \frac{20}{\sqrt{225}} = \frac{20}{15} = 1.33\]
-
-<p><strong>Answer:</strong></p>
-<ul>
-  <li>Mean of sample means = 100</li>
-  <li>Std. dev. of sample mean = 1.33</li>
-</ul>
-
-<h3 id="9-define-range-variance-and-standard-deviation-how-are-they-useful-in-data-analysis"><strong>9. Define range, variance, and standard deviation. How are they useful in data analysis?</strong></h3>
-
-<p><strong>Definitions:</strong></p>
-<ul>
-  <li><strong>Range:</strong> Max value – Min value.</li>
-  <li><strong>Variance:</strong> Average of squared differences from mean.</li>
-  <li><strong>Standard Deviation:</strong> Square root of variance.</li>
-</ul>
-
-<p><strong>Use in analysis:</strong></p>
-<ul>
-  <li>Shows how data is spread.</li>
-  <li>High standard deviation means more variability.</li>
-  <li>Critical for comparing datasets, risk assessment, and anomaly detection.</li>
-</ul>
-
-<h2 id="long-answers-5-marks">Long Answers (5 Marks)</h2>
-<h3 id="1-define-probability-distribution-explain-its-types-with-example"><strong>1. Define probability distribution. Explain its types with example.</strong></h3>
-
-<p><strong>Answer:</strong></p>
-
-<p>A <strong>probability distribution</strong> is a function that provides the probabilities of occurrence of different possible outcomes in an experiment.</p>
-
-<h4 id="types-of-probability-distributions"><strong>Types of Probability Distributions:</strong></h4>
-
-<ol>
-  <li><strong>Discrete Probability Distribution:</strong>
-    <ul>
-      <li>Deals with discrete random variables (finite/countable outcomes).</li>
-      <li>Represented by <strong>Probability Mass Function (PMF)</strong>.</li>
-      <li><strong>Example: Binomial Distribution</strong>
-        <ul>
-          <li>Tossing a coin 3 times: P(X = number of heads)</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li><strong>Continuous Probability Distribution:</strong>
-    <ul>
-      <li>Deals with continuous random variables (infinite outcomes in an interval).</li>
-      <li>Represented by <strong>Probability Density Function (PDF)</strong>.</li>
-      <li><strong>Example: Normal Distribution</strong>
-        <ul>
-          <li>Heights of students follow a bell-shaped curve.</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-</ol>
-
-<p><strong>Key Differences:</strong></p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Feature</th>
-      <th>Discrete</th>
-      <th>Continuous</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Variable type</td>
-      <td>Countable</td>
-      <td>Uncountably infinite</td>
-    </tr>
-    <tr>
-      <td>Probability Function</td>
-      <td>PMF</td>
-      <td>PDF</td>
-    </tr>
-    <tr>
-      <td>Example</td>
-      <td>Poisson, Binomial</td>
-      <td>Normal, Exponential</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3 id="2-a-sample-of-49-students-had-a-mean-course-completion-time-of-38-hours-population-standard-deviation-is-5-hours-find-99-confidence-interval-for-the-mean"><strong>2. A sample of 49 students had a mean course completion time of 38 hours. Population standard deviation is 5 hours. Find 99% confidence interval for the mean.</strong></h3>
-
-<p><strong>Solution:</strong></p>
-
-<p><strong>Given:</strong></p>
-<ul>
-  <li>Sample mean, \(\bar{x} = 38\)</li>
-  <li>Population standard deviation, \(\sigma = 5\)</li>
-  <li>Sample size, \(n = 49\)</li>
-  <li>Z-value for 99% CI = 2.576</li>
-</ul>
-
-<p><strong>Step 1: Standard error:</strong>
-\(SE = \frac{\sigma}{\sqrt{n}} = \frac{5}{\sqrt{49}} = \frac{5}{7} = 0.714\)</p>
-
-<p><strong>Step 2: Margin of error:</strong>
-\(ME = Z \times SE = 2.576 \times 0.714 = 1.839\)</p>
-
-<p><strong>Step 3: Confidence Interval:</strong>
-\(CI = \bar{x} \pm ME = 38 \pm 1.839 = [36.161,\ 39.839]\)</p>
-
-<p><strong>Answer: 99% Confidence Interval = [36.161, 39.839] hours</strong></p>
-
-<h3 id="3-explain-how-python-is-used-in-data-science-artificial-intelligence-and-web-development-discuss-examples-and-libraries"><strong>3. Explain how Python is used in Data Science, Artificial Intelligence, and Web Development. Discuss examples and libraries.</strong></h3>
-
-<p><strong>Answer:</strong></p>
-
-<p>Python’s simplicity, rich libraries, and active community make it ideal for various tech domains:</p>
-
-<h4 id="1-data-science"><strong>1. Data Science</strong></h4>
-<p>Used for data processing, analysis, visualization.<br />
-<strong>Libraries:</strong></p>
-<ul>
-  <li><strong>Pandas</strong> – For data manipulation</li>
-  <li><strong>NumPy</strong> – Numeric computations</li>
-  <li><strong>Matplotlib / Seaborn</strong> – Data visualization<br />
-<strong>Example:</strong> Analyze sales data and generate graphs.</li>
-</ul>
-
-<h4 id="2-artificial-intelligence"><strong>2. Artificial Intelligence</strong></h4>
-<p>Used to build ML and deep learning models.<br />
-<strong>Libraries:</strong></p>
-<ul>
-  <li><strong>Scikit-learn</strong> – ML algorithms (classification, regression)</li>
-  <li><strong>TensorFlow / PyTorch</strong> – Deep learning<br />
-<strong>Example:</strong> Predict house prices, classify emails as spam.</li>
-</ul>
-
-<h4 id="3-web-development"><strong>3. Web Development</strong></h4>
-<p>Used to develop backends and dynamic websites.<br />
-<strong>Libraries/Frameworks:</strong></p>
-<ul>
-  <li><strong>Flask</strong> and <strong>Django</strong> – Web frameworks<br />
-<strong>Example:</strong> Build a blog website or e-commerce platform backend.</li>
-</ul>
-
-<p><strong>Conclusion:</strong> Python’s versatility enables integration between data handling, AI logic, and deployment via web interfaces.</p>
-
-<h3 id="4-differentiate-between-population-and-sample-statistics-explain-formulas-for-population-mean-and-variance-with-example"><strong>4. Differentiate between population and sample statistics. Explain formulas for population mean and variance with example.</strong></h3>
-
-<p><strong>Answer:</strong></p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Feature</th>
-      <th>Population</th>
-      <th>Sample</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Data</td>
-      <td>Entire group</td>
-      <td>Subset of the population</td>
-    </tr>
-    <tr>
-      <td>Size notation</td>
-      <td>\(N\)</td>
-      <td>\(n\)</td>
-    </tr>
-    <tr>
-      <td>Mean notation</td>
-      <td>\(\mu\) (mu)</td>
-      <td>\(\bar{x}\)</td>
-    </tr>
-    <tr>
-      <td>Variance</td>
-      <td>\(\sigma^2 = \frac{\sum (x_i - \mu)^2}{N}\)</td>
-      <td>\(s^2 = \frac{\sum (x_i - \bar{x})^2}{n-1}\)</td>
-    </tr>
-  </tbody>
-</table>
-
-<h4 id="example"><strong>Example:</strong></h4>
-
-<p>Population data: {2, 5, 7, 9, 10}</p>
-
-<ul>
-  <li>
-    <p><strong>Mean (μ):</strong>
-\(\mu = \frac{2 + 5 + 7 + 9 + 10}{5} = \frac{33}{5} = 6.6\)</p>
-  </li>
-  <li>
-    <p><strong>Variance (σ²):</strong>
-\(\sigma^2 = \frac{(2 - 6.6)^2 + (5 - 6.6)^2 + \dots + (10 - 6.6)^2}{5} \\
-= \frac{21.16 + 2.56 + 0.16 + 5.76 + 11.56}{5} = \frac{41.2}{5} = 8.24\)</p>
-  </li>
-</ul>
-
-<p><strong>Answer:</strong></p>
-<ul>
-  <li>Population Mean = 6.6</li>
-  <li>Population Variance = 8.24</li>
-</ul>
-
-<h3 id="5-explain-in-detail-how-confidence-intervals-are-constructed-derive-the-formula-and-interpret-a-numerical-result"><strong>5. Explain in detail how confidence intervals are constructed. Derive the formula and interpret a numerical result.</strong></h3>
-
-<p><strong>Answer:</strong></p>
-
-<p>A <strong>confidence interval (CI)</strong> gives a range of values within which the true population parameter is likely to fall, with a certain confidence level (e.g., 95%).</p>
-
-<h4 id="confidence-interval-formula-for-large-sample-or-known-σ"><strong>Confidence Interval Formula (for large sample or known σ):</strong></h4>
-<p>\(CI = \bar{x} \pm Z \left(\frac{\sigma}{\sqrt{n}}\right)\)</p>
-
-<p>Where:</p>
-<ul>
-  <li>\(\bar{x}\) = sample mean</li>
-  <li>\(Z\) = Z-score based on confidence level</li>
-  <li>\(\sigma\) = population standard deviation</li>
-  <li>\(n\) = sample size</li>
-</ul>
-
-<h4 id="steps"><strong>Steps:</strong></h4>
-<ol>
-  <li>Compute standard error:<br />
-\(SE = \frac{\sigma}{\sqrt{n}}\)</li>
-  <li>Find margin of error (ME):<br />
-\(ME = Z \cdot SE\)</li>
-  <li>Apply the CI formula.</li>
-</ol>
-
-<h4 id="numerical-example"><strong>Numerical Example:</strong></h4>
-<p>Sample mean \(\bar{x} = 80\), σ = 10, n = 64, 95% CI (Z = 1.96)</p>
-
-<ol>
-  <li>
-\[SE = \frac{10}{8} = 1.25\]
-  </li>
-  <li>
-\[ME = 1.96 \cdot 1.25 = 2.45\]
-  </li>
-  <li>
-\[CI = 80 \pm 2.45 = [77.55,\ 82.45]\]
-  </li>
-</ol>
-
-<p><strong>Interpretation:</strong> We are 95% confident that the true population mean lies between 77.55 and 82.45.</p>
-
-<h3 id="6-why-is-data-considered-a-valuable-asset-for-organizations"><strong>6. Why is data considered a valuable asset for organizations?</strong></h3>
-
-<p><strong>Answer:</strong></p>
-
-<p>Data is often called the “new oil” due to its importance in driving modern business decisions.</p>
-
-<h4 id="reasons-why-data-is-a-valuable-asset"><strong>Reasons why data is a valuable asset:</strong></h4>
-<ol>
-  <li><strong>Informed Decision-Making:</strong> Data supports evidence-based strategies.
-    <ul>
-      <li>E.g., Amazon uses customer behavior data to improve suggestions.</li>
-    </ul>
-  </li>
-  <li><strong>Efficiency &amp; Cost Reduction:</strong> Helps automate processes and avoid waste.
-    <ul>
-      <li>E.g., Predictive maintenance in manufacturing.</li>
-    </ul>
-  </li>
-  <li><strong>Customer Insights &amp; Personalization:</strong>
-    <ul>
-      <li>Tailors services to individual preferences (Netflix, Spotify).</li>
-    </ul>
-  </li>
-  <li><strong>Competitive Advantage:</strong>
-    <ul>
-      <li>Data-driven firms outperform others.</li>
-    </ul>
-  </li>
-  <li><strong>Risk Management:</strong>
-    <ul>
-      <li>Fraud detection, credit scoring using data analytics.</li>
-    </ul>
-  </li>
-</ol>
-
-<p><strong>Conclusion:</strong> Proper use of data empowers smarter, faster, and more accurate decisions across all sectors.</p>
-
-<h3 id="7-what-are-the-measures-of-dispersion-how-are-they-useful-in-data-analysis"><strong>7. What are the measures of dispersion? How are they useful in data analysis?</strong></h3>
-
-<p><strong>Answer:</strong></p>
-
-<p><strong>Measures of dispersion</strong> indicate how data points in a dataset are spread or scattered around the central value.</p>
-
-<h4 id="main-types"><strong>Main Types:</strong></h4>
-<ol>
-  <li><strong>Range = Max – Min</strong></li>
-  <li><strong>Variance (σ² or s²):</strong>
-    <ul>
-      <li>Shows average of squared deviations from mean.</li>
-    </ul>
-  </li>
-  <li><strong>Standard Deviation (σ or s):</strong>
-    <ul>
-      <li>Square root of variance; used widely due to interpretable units.</li>
-    </ul>
-  </li>
-  <li><strong>Interquartile Range (IQR):</strong>
-    <ul>
-      <li>Spread of middle 50% data = Q3 – Q1</li>
-    </ul>
-  </li>
-</ol>
-
-<h4 id="importance-in-data-analysis"><strong>Importance in Data Analysis:</strong></h4>
-<ul>
-  <li><strong>Detect Variability:</strong> High dispersion → low consistency</li>
-  <li><strong>Compare Datasets:</strong> One dataset may have the same mean but higher variance.</li>
-  <li><strong>Identify Outliers:</strong> Dispersion helps flag anomalies.</li>
-  <li><strong>Improve Predictions:</strong> Tight dispersion leads to better models.</li>
-</ul>
-
-<p><strong>Conclusion:</strong> Dispersion measures are essential for determining data reliability, variability, and comparisons.</p>]]></content><author><name></name></author><category term="Resource" /><summary type="html"><![CDATA[&#8206;]]></summary></entry><entry><title type="html">Theory of Computation</title><link href="http://localhost:62250/theory-of-computation/" rel="alternate" type="text/html" title="Theory of Computation" /><published>2025-07-29T00:00:00+05:30</published><updated>2025-07-29T00:00:00+05:30</updated><id>http://localhost:62250/theory-of-computation</id><content type="html" xml:base="http://localhost:62250/theory-of-computation/"><![CDATA[<h1 id="unit-1-alphabet-languages-grammars-chomsky-hierarchy">UNIT 1: Alphabet, Languages, Grammars, Chomsky Hierarchy</h1>
-
-<h2 id="alphabets-strings-and-languages">Alphabets, Strings, and Languages</h2>
-<ul>
-  <li><strong>Alphabet (Σ):</strong> A finite non-empty set of symbols.</li>
-  <li><strong>String:</strong> A finite sequence of symbols from Σ.</li>
-  <li><strong>Language:</strong> A set of strings over an alphabet.</li>
-</ul>
-
-<h2 id="grammar-and-derivations">Grammar and Derivations</h2>
-<ul>
-  <li><strong>Grammar:</strong> A set of rules for generating strings in a language.</li>
-  <li><strong>Derivation:</strong> A sequence of rule applications to produce a string from the start symbol.</li>
-</ul>
-
-<h2 id="chomsky-hierarchy">Chomsky Hierarchy</h2>
-<ul>
-  <li><strong>Type 0:</strong> Unrestricted Grammars</li>
-  <li><strong>Type 1:</strong> Context-Sensitive Grammars (CSG)</li>
-  <li><strong>Type 2:</strong> Context-Free Grammars (CFG)</li>
-  <li><strong>Type 3:</strong> Regular Grammars</li>
-</ul>
-
-<h1 id="unit-2-regular-languages-and-finite-automata">UNIT 2: Regular Languages and Finite Automata</h1>
-
-<h2 id="regular-expressions-re">Regular Expressions (RE)</h2>
-<h3 id="basic-symbols-and-operations">Basic Symbols and Operations</h3>
-<ul>
-  <li><strong>∅:</strong> Empty set</li>
-  <li><strong>ε:</strong> Empty string</li>
-  <li><strong>a:</strong> Symbol from alphabet</li>
-  <li><strong>+ :</strong> Union</li>
-  <li><strong>. :</strong> Concatenation</li>
-  <li><strong>* :</strong> Kleene Star (repetition)</li>
-</ul>
-
-<h3 id="building-regular-expressions">Building Regular Expressions</h3>
-<ul>
-  <li>Formulate RE for specific languages; e.g., (a+b)* for all strings over {a,b}</li>
-  <li>Construct RE for described languages/constraints</li>
-</ul>
-
-<h3 id="re-to-nfadfa-and-vice-versa">RE to NFA/DFA and vice versa</h3>
-<ul>
-  <li><strong>RE → NFA:</strong> Use construction rules (Thompson’s construction)</li>
-  <li><strong>NFA → DFA:</strong> Subset/power-set construction</li>
-  <li><strong>DFA/NFA → RE:</strong> State elimination method</li>
-</ul>
-
-<h2 id="finite-automata">Finite Automata</h2>
-
-<h3 id="dfa-deterministic-finite-automata">DFA (Deterministic Finite Automata)</h3>
-<ul>
-  <li>Definition: 5-tuple (Q, Σ, δ, q₀, F)</li>
-  <li>Transition diagram/table</li>
-  <li>Language accepted: All strings leading to a final state</li>
-  <li>Example: DFA for even number of a’s, etc.</li>
-</ul>
-
-<h3 id="nfa-nondeterministic-finite-automata">NFA (Nondeterministic Finite Automata)</h3>
-<ul>
-  <li>Multiple transitions for (state, symbol)</li>
-  <li>May have ε-transitions (move without input)</li>
-  <li><strong>Equivalence:</strong> Every NFA has an equivalent DFA (subset construction)</li>
-</ul>
-
-<h3 id="nfa-construction-examples">NFA Construction (Examples)</h3>
-<ul>
-  <li>Language ending with ‘ab’</li>
-  <li>Strings with at least one ‘a’</li>
-</ul>
-
-<h3 id="epsilon-nfa-ε-nfa">Epsilon-NFA (ε-NFA)</h3>
-<ul>
-  <li>NFA with ε-transitions</li>
-  <li>Conversion: <strong>Epsilon-closure</strong> + subset construction = DFA</li>
-</ul>
-
-<h3 id="nfa-to-dfa-conversion">NFA to DFA Conversion</h3>
-<ul>
-  <li>List all epsilon-closures and construct DFA states</li>
-</ul>
-
-<h3 id="dfa--regular-expressions">DFA ⇄ Regular Expressions</h3>
-<ul>
-  <li>DFA → RE: State elimination</li>
-  <li>RE → DFA: Via NFA conversion</li>
-</ul>
-
-<h2 id="moore-and-mealy-machines">Moore and Mealy Machines</h2>
-<ul>
-  <li><strong>Moore:</strong> Output depends on state</li>
-  <li><strong>Mealy:</strong> Output depends on state &amp; input</li>
-  <li><strong>Conversion:</strong>
-    <ul>
-      <li>Mealy to Moore: Assign output from transition to state</li>
-      <li>Moore to Mealy: Transfer output from states to relevant transitions</li>
-    </ul>
-  </li>
-</ul>
-
-<h2 id="regular-grammars-and-finite-automata">Regular Grammars and Finite Automata</h2>
-<ul>
-  <li>Regular grammars represented by FA; Right-linear or left-linear</li>
-</ul>
-
-<h2 id="pumping-lemma-for-regular-languages">Pumping Lemma for Regular Languages</h2>
-<ul>
-  <li>Used to prove non-regularity of languages</li>
-</ul>
-
-<h2 id="minimization-of-dfa">Minimization of DFA</h2>
-<ul>
-  <li>Identify and merge equivalent states</li>
-  <li>Remove unreachable states</li>
-</ul>
-
-<h1 id="unit-3-partial-context-free-grammars-cfg-and-context-free-languages-cfl">UNIT 3 (Partial): Context-Free Grammars (CFG) and Context-Free Languages (CFL)</h1>
-
-<h2 id="cfg-basics">CFG Basics</h2>
-<ul>
-  <li>Grammar where left side is a single non-terminal</li>
-  <li>Generates CFLs</li>
-</ul>
-
-<h2 id="simplification-of-cfg">Simplification of CFG</h2>
-<ul>
-  <li>Remove useless symbols</li>
-  <li>Remove epsilon-productions (nullable)</li>
-  <li>Remove unit productions</li>
-</ul>
-
-<h2 id="chomsky-normal-form-cnf">Chomsky Normal Form (CNF)</h2>
-<ul>
-  <li>All rules: A → BC or A → a</li>
-  <li>Used for certain algorithms (e.g., CYK parsing)</li>
-</ul>]]></content><author><name></name></author><summary type="html"><![CDATA[&#8206;]]></summary></entry><entry><title type="html">Greedy Algorithm Codes</title><link href="http://localhost:62250/programming/greedy-algorithm-codes/" rel="alternate" type="text/html" title="Greedy Algorithm Codes" /><published>2025-07-28T17:43:26+05:30</published><updated>2025-07-28T17:43:26+05:30</updated><id>http://localhost:62250/programming/greedy-algorithm-codes</id><content type="html" xml:base="http://localhost:62250/programming/greedy-algorithm-codes/"><![CDATA[<h2 id="dijkstras-algorithm">Dijkstra’s Algorithm</h2>
-
-<pre><code class="language-C">#define MAX 100
-#define INFINITY 9999
-
-void dijkstra(int G[MAX][MAX], int n, int startnode) {
-    int cost[MAX][MAX], distance[MAX], pred[MAX];
-    int visited[MAX], count, mindistance, nextnode;
-    int i, j;
-
-    // Build cost matrix: use INFINITY where there is no edge
-    for (i = 1; i &lt;= n; i++)
-        for (j = 1; j &lt;= n; j++)
-            if (G[i][j] == 0)
-                cost[i][j] = INFINITY;
-            else
-                cost[i][j] = G[i][j];
-
-    // Initialize distance, predecessor, visited
-    for (i = 1; i &lt;= n; i++) {
-        distance[i] = cost[startnode][i];
-        pred[i] = startnode;
-        visited[i] = 0;
-    }
-
-    distance[startnode] = 0;
-    visited[startnode] = 1;
-    count = 1;
-
-    // Find shortest paths to all other nodes
-    while (count &lt; n - 1) {
-        mindistance = INFINITY;
-
-        // Find the next unvisited node with smallest distance
-        for (i = 1; i &lt;= n; i++)
-            if (distance[i] &lt; mindistance &amp;&amp; !visited[i]) {
-                mindistance = distance[i];
-                nextnode = i;
-            }
-
-        visited[nextnode] = 1;
-
-        // Update distances of neighbors of nextnode
-        for (i = 1; i &lt;= n; i++)
-            if (!visited[i])
-                if (mindistance + cost[nextnode][i] &lt; distance[i]) {
-                    distance[i] = mindistance + cost[nextnode][i];
-                    pred[i] = nextnode;
-                }
-
-        count++;
-    }
-
-    // Print the shortest path and distance to each node
-    printf("Node\tDistance\tPath\n");
-    for (i = 1; i &lt;= n; i++) {
-        if (i != startnode) {
-            if (distance[i] == INFINITY) {
-                printf("%4d\t%8s\tNO PATH\n", i, "INF");
-            } else {
-                printf("%4d\t%8d\t%d", i, distance[i], i);
-                j = i;
-                while (j != startnode) {
-                    j = pred[j];
-                    printf(" &lt;- %d", j);
-                }
-                printf("\n");
-            }
-        }
-    }
-}
-</code></pre>
-
-<h2 id="kruskals-algorithm">Kruskal’s Algorithm</h2>
-<p>A Minimum Spanning Tree (MST) is a tree that spans all the vertices of a connected, weighted graph with the minimum possible total edge weight. The key idea behind MST is to find a subset of edges that connects all vertices of the graph with the minimum total weight.</p>
-
-<p>Consider the following example:</p>
-<pre><code class="language-TEXT">                    A
-         /        \
-      2          3
-    /            \
-   B--1---C---5---D  
-    \            /
-      4          6
-       \         /
-                   E
-	```
-
-In the given graph, we have vertices A, B, C, D, and E connected by weighted edges. We want to find the Minimum Spanning Tree for this graph.
-
-To construct an MST, we choose a subset of edges that connects all vertices without forming any cycles. The resulting MST will have the minimum total weight.
-
-
-
-Let's see one possible MST for the above graph:
-```TEXT
-             A
-       /     \
-      2       3
-   /         \
-  B---1---C  D  
-   \                
-    4         
-      \       
-        E
-</code></pre>
-
-<p>In the MST, we have removed certain edges to eliminate cycles and connect all the vertices. The total weight of this MST is 10.</p>
-
-<p>Here are some key points about MST:</p>
-
-<p>An MST is a spanning tree because it spans all the vertices of the graph.
-It is a tree because there are no cycles in the MST.
-It is a minimum spanning tree because it has the minimum total weight among all possible spanning trees.</p>
-
-<p>To find the MST, various algorithms can be used, such as Kruskal’s algorithm, Prim’s algorithm, or Boruvka’s algorithm. These algorithms differ in their approach and efficiency.</p>
-
-<p>MSTs have applications in network design, clustering, and optimization problems. They help find the most efficient way to connect nodes in a network, minimizing the cost or distance between them.</p>
-
-<p>Remember, an MST is not unique. In graphs with multiple edges or equal weights, there can be different MSTs with the same minimum total weight.</p>
-
-<p>Spanning Tree</p>
-
-<p>Given an undirected and connected graph G = (V, E), a spanning tree of the graph G is a tree that spans all vertices of G (that is, it includes every vertex of G) and is a subgraph of G (every edge in the tree belongs to G).</p>
-
-<p>Cost of spanning tree</p>
-
-<p>The cost of the spanning tree is the sum of the weights of all the edges in the spanning tree. There can be many spanning trees. The minimum spanning tree is the spanning tree where the cost is the minimum among all the spanning trees. There also can be many minimum spanning trees.</p>
-
-<p>Minimum spanning tree has many applications in the design of networks. It is used in algorithms like the traveling salesman problem, multi-terminal minimum cut problem, and minimum cost weighted perfect matching.</p>
-
-<p>Other practical applications are:</p>
-
-<ul>
-  <li>Cluster Analysis
-Handwriting recognition
-Image segmentation</li>
-</ul>
-
-<p>There are two famous algorithms for finding the Minimum Spanning Tree (MST):</p>
-
-<p>Kruskal’s Algorithm
-Prim’s Algorithm</p>
-
-<p>Kruskal’s Algorithm</p>
-
-<p>It builds the spanning tree by adding edges one by one into a growing spanning tree. Kruskal’s algorithm follows the greedy approach as in each iteration it finds an edge that has least weight and adds it to the growing spanning tree.</p>
-
-<p>Algorithm:</p>
-
-<p>Initialization:
-Set ne (number of edges included in the MST) to 0.
-Initialize mincost (the minimum cost of the spanning tree) to 0.
-Initialize parent[] array to store the parent of each vertex, initially set all values to 0.</p>
-
-<p>Main Loop:
-While ne (number of edges in the MST) is less than n-1 (number of vertices - 1):
-Find the minimum weight edge:
-Set min to a very large value (e.g., 999).
-For each vertex i from 1 to n:
-For each vertex j from 1 to n:
-If cost[i][j] is less than min:
-Set min to cost[i][j].
-Set a and u to i.
-Set b and v to j.
-Check for cycle using find function:
-Call find(u) to get the root of vertex u.
-Call find(v) to get the root of vertex v.
-Union of sets:
-If find(u) is not equal to find(v):
-Call uni(u, v) to perform union of sets containing u and v.
-Print the edge and its cost.
-Add the min to mincost.
-Increment ne by 1.</p>
-
-<p>Remove the edge from the cost matrix:
-Set cost[a][b] and cost[b][a] to a very large value (e.g., 999) to mark the edge as visited.
-Output the result:
-Print the mincost which is the cost of the minimum spanning tree.</p>
-
-<p>Helper Functions:
-Find Function:
-Input: A vertex i.
-While parent[i] is not 0:
-Set i to parent[i].
-Return i
-Union Function:
-Input: Vertices i and j.
-If i is not equal to j:
-Set parent[j] to i.
-Return 1 (indicating a successful union).
-Return 0 (indicating that i and j are already in the same set).</p>
-
-<p>This algorithm effectively finds the minimum spanning tree using Kruskal’s method by iteratively selecting the smallest edge and ensuring no cycles are formed using the union-find data structure.</p>
-
-<h3 id="c-program-for-constructing-a-minimum-cost-spanning-tree-of-a-graph-using-kruskals-algorithm">C program for constructing a minimum cost spanning tree of a graph using Kruskal’s Algorithm.</h3>
-<pre><code class="language-C">#include &lt;stdio.h&gt;
-
-#define MAX 9
-#define INF 999
-
-int cost[MAX][MAX], parent[MAX];
-int i, j, a, b, u, v, n, e, s, d, w;
-int mincost = 0, ne = 1;
-
-// Find root of the set
-int find(int i) {
-    while (parent[i])
-        i = parent[i];
-    return i;
-}
-
-// Union two sets
-int uni(int i, int j) {
-    if (i != j) {
-        parent[j] = i;
-        return 1;
-    }
-    return 0;
-}
-
-void kruskal() {
-    while (ne &lt; n) {
-        int min = INF;
-
-        for (i = 1; i &lt;= n; i++) {
-            for (j = 1; j &lt;= n; j++) {
-                if (cost[i][j] &lt; min) {
-                    min = cost[i][j];
-                    a = u = i;
-                    b = v = j;
-                }
-            }
-        }
-
-        u = find(u);
-        v = find(v);
-
-        if (uni(u, v)) {
-            printf("Edge %d: (%d -&gt; %d) cost = %d\n", ne++, a, b, min);
-            mincost += min;
-        }
-
-        cost[a][b] = cost[b][a] = INF; // Mark edge as visited
-    }
-
-    printf("Minimum cost of spanning tree = %d\n", mincost);
-}
-
-int main() {
-    printf("Enter the number of vertices: ");
-    scanf("%d", &amp;n);
-
-    printf("Enter the number of edges: ");
-    scanf("%d", &amp;e);
-
-    // Initialize cost matrix to INF
-    for (i = 1; i &lt;= n; i++)
-        for (j = 1; j &lt;= n; j++)
-            cost[i][j] = INF;
-
-    for (i = 1; i &lt;= e; i++) {
-        printf("Edge %d\n", i);
-        printf("  Enter source: ");
-        scanf("%d", &amp;s);
-        printf("  Enter destination: ");
-        scanf("%d", &amp;d);
-        printf("  Enter weight: ");
-        scanf("%d", &amp;w);
-
-        if (s &lt;= 0 || d &lt;= 0 || s &gt; n || d &gt; n || w &lt; 0) {
-            printf("  Invalid input! Try again.\n");
-            i--;
-            continue;
-        }
-
-        cost[s][d] = cost[d][s] = w; // Undirected graph
-    }
-
-    printf("\nThe edges of the Minimum Cost Spanning Tree are:\n");
-    kruskal();
-
-    return 0;
-}
-</code></pre>
-
-<h2 id="prims-algorithm">Prim’s Algorithm</h2>
-<pre><code class="language-C">
-#include&lt;stdio.h&gt;
-#include&lt;conio.h&gt;
-
-#define MAX 20
-
-int cost[MAX][MAX];     // Adjacency matrix
-int visited[MAX];       // Visited vertices
-int n, e;               // Number of vertices and edges
-int s, d, w;            // Source, destination, weight
-int i, j;               // Loop variables
-int a, b;               // For storing edge ends
-int min;                // Minimum edge cost
-int ne = 1;             // Edge count initialized to 1
-int mincost = 0; 
-// complete the missing code..
-void prims() {
-    visited[1] = 1;
-    while (ne &lt; n) {
-        min = 999;
-        for (i = 1; i &lt;= n; i++) {
-            if (visited[i] == 1) {
-                for (j = 1; j &lt;= n; j++) {
-                    if (visited[j] == 0 &amp;&amp; cost[i][j] &lt; min) {
-                        min = cost[i][j];
-                        a = i;
-                        b = j;
-                    }
-                }
-            }
-        }
-        printf("Edge cost from %d to %d : %d\n", a, b, cost[a][b]);
-        visited[b] = 1;
-        mincost += cost[a][b];
-        cost[a][b] = cost[b][a] = 999;
-        ne++;
-    }
-    printf("Minimum cost of spanning tree = %d\n", mincost);
-}
-void main() {
-	printf("Enter the number of vertices : ");
-	scanf("%d", &amp;n);
-	printf("Enter the number of edges : ");
-	scanf("%d", &amp;e);
-	for(i=1; i&lt;=e; i++) {
-		printf("Enter source : ");
-		scanf("%d", &amp;s);
-		printf("Enter destination : ");
-		scanf("%d", &amp;d);
-		printf("Enter weight : ");
-		scanf("%d", &amp;w);
-		if(s &lt;= 0 || d &lt;= 0 || s &gt; n || d &gt; n || w &lt; 0 ) {
-			printf("Invalid data.Try again.\n");
-			i--;
-			continue;
-		}
-		cost[s][d] = w;
-		cost[d][s] = w;
-	}
-	for(i=1; i &lt;= n; i++) {
-	    for(j=1; j&lt;=n; j++) {
-			if(cost[i][j] == 0)
-			    cost[i][j] = 999;
-	    }
-	}
-	printf("The edges of Minimum Cost Spanning Tree are : \n");
-	prims();
-}
-</code></pre>
-
-<h2 id="knapsack-problem">Knapsack Problem</h2>
-<pre><code class="language-C"># include&lt;stdio.h&gt;
-void knapsack(int n, float weight[], float profit[], float capacity) {
-  // write your code here
-  float x[20], tp = 0;
-	int i, j, u;
-	u = capacity;
-	for (i = 0; i &lt; n; i++)
-		x[i] = 0.0;
-		for (i = 0; i &lt; n; i++) {
-			if (weight[i] &gt; u)
-				break;
-			else {
-				x[i] = 1.0;
-				tp = tp + profit[i];
-				u = u - weight[i];
-			}
-		}
-	if (i &lt; n)
-		x[i] = u / weight[i];
-		tp = tp + (x[i] * profit[i]);
-		printf("Maximum profit is:- %f\n", tp);
-  
-  
-  
-}
-
-int main() {
-	float weight[20], profit[20], capacity;
-	int num, i, j;
-	float ratio[20], temp;
-	printf("Enter the no. of objects: ");
-	scanf("%d", &amp;num);
-	printf("Enter the weights and profits of each object:\n");
-	for (i = 0; i &lt; num; i++) {
-		scanf("%f %f", &amp;weight[i], &amp;profit[i]);
-	}
-	printf("Enter the capacity of knapsack:");
-	scanf("%f", &amp;capacity);
-	for (i = 0; i &lt; num; i++) {
-		ratio[i] = profit[i] / weight[i];
-	}
-
-	for (i = 0; i &lt; num; i++) {
-		for (j = i + 1; j &lt; num; j++) {
-			if (ratio[i] &lt; ratio[j]) {
-				temp = ratio[j];
-				ratio[j] = ratio[i];
-				ratio[i] = temp;
-				temp = weight[j];
-				weight[j] = weight[i];
-				weight[i] = temp;
-				temp = profit[j];
-				profit[j] = profit[i];
-				profit[i] = temp;
-			}
-		}
-	}
-	knapsack(num, weight, profit, capacity);
-	return(0);
-}
-</code></pre>]]></content><author><name></name></author><category term="Programming" /><summary type="html"><![CDATA[This resource covers all the codes of greedy algorithms like krushkals, prims, knapsack problem etc.]]></summary></entry></feed>
+</ul>]]></content><author><name></name></author><category term="Programming" /><summary type="html"><![CDATA[This resource covers all the psuedo codes of sorting, searching and greedy algorithms like krushkals, prims,knapsack problem etc.]]></summary></entry></feed>

@@ -1,7 +1,3 @@
-// Enhanced PDF.js blob cache integration script
-// This script optimizes PDF loading by intercepting requests and using cached blobs
-// PERFORMANCE OPTIMIZED: Reduced logging, faster matching
-
 (function() {
     'use strict';
     
