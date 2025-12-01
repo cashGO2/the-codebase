@@ -5,7 +5,7 @@ excerpt: This week Materio moved to vercel, launched Materio Originals, and feat
   dark-mode to PDFs with inversion filter, addition of the table of contents sidebar
   to the insightroom
 category: whats-new
-date: '2025-12-01 22:18:22'
+date: '2025-12-01 00:00:00'
 hidden: true
 image: "/assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp"
 no-ads: true
