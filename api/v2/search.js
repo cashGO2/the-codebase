@@ -819,12 +819,17 @@ function getCorsHeaders() {
     };
 }
 
-exports.handler = async (req, res) => {
+module.exports = async (req, res) => {
     const headers = getCorsHeaders();
+    
+    // Set CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     // Handle preflight OPTIONS request
     if (req.method === 'OPTIONS') {
-        return res.status(200).json({});
+        return res.status(200).end();
     }
 
     try {

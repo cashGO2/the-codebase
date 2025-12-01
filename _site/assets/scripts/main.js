@@ -579,7 +579,7 @@ function loadResourcesData(restoreSemester = null) {
             if (currentSemester && data[currentSemester]) {
                 finalSemesterSelect.value = currentSemester;
             } else {
-                // Default to semester 5
+                // Default to semester 6
                 finalSemesterSelect.value = "6";
             }
 
@@ -1319,6 +1319,18 @@ function repositionSearchDropdown() {
 // Perform search using the API
 async function performQuickSearch(query) {
     const searchResults = document.getElementById('quickSearchResults');
+    const searchInput = document.getElementById('quickSearchInput');
+    
+    // If query is not provided, get it from the input field
+    if (!query && searchInput) {
+        query = searchInput.value.trim();
+    }
+    
+    // Don't search if query is empty
+    if (!query) {
+        searchResults.style.display = 'none';
+        return;
+    }
     
     // Cancel previous request if any
     if (currentSearchController) {
@@ -1408,7 +1420,7 @@ function displaySearchResults(results, query) {
                         <i class="far fa-lightbulb"></i> AI Suggestions:
                     </p>
                     ${aiData.suggestions.map(s => `
-                        <div onclick="document.getElementById('quickSearchInput').value='${s.replace(/'/g, "\\'")}'; performQuickSearch()" 
+                        <div onclick="document.getElementById('quickSearchInput').value='${s.replace(/'/g, "\\'")}'; performQuickSearch('${s.replace(/'/g, "\\'")}')" 
                              style="padding: 6px 8px; margin: 4px 0; background: rgba(255, 130, 0, 0.05); border-radius: 4px; font-size: 11px; color: #666; cursor: pointer; transition: all 0.2s;"
                              onmouseover="this.style.background='rgba(255, 130, 0, 0.1)'"
                              onmouseout="this.style.background='rgba(255, 130, 0, 0.05)'">
@@ -1708,8 +1720,12 @@ function selectSearchResult(semester, subject, category, topic) {
     populateAllFields();
 }
 
-// Expose function globally
+// Expose functions globally for inline onclick handlers
 window.selectSearchResult = selectSearchResult;
+window.performQuickSearch = performQuickSearch;
+window.openSearchResultPdf = openSearchResultPdf;
+window.showMoreSearchResults = showMoreSearchResults;
+window.collapseSearchResults = collapseSearchResults;
 
 (function(){
     var breakAfter = 4; // change to 5 if you prefer 5 words
