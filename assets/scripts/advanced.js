@@ -161,16 +161,24 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(events => {
                 const now = new Date();
-                let activeEvents = events.filter(ev => new Date(ev.setDate) <= now && (!ev.default || ev.default == 0));
-                let eventToApply = null;
+                const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
+                
+                // First, try to find default event
+                let defaultEvents = events.filter(ev => ev.default == 1);
+                let eventToApply = defaultEvents.length > 0 ? defaultEvents[0] : null;
+                
+                // Then check for recent non-default active events (these override the default)
+                // Only consider events from the last 30 days to avoid old events taking precedence
+                let activeEvents = events.filter(ev => {
+                    const eventDate = new Date(ev.setDate);
+                    return eventDate <= now && eventDate >= thirtyDaysAgo && ev.default == 0;
+                });
+                
                 if (activeEvents.length > 0) {
+                    // Use the most recent non-default event
                     eventToApply = activeEvents.sort((a, b) => new Date(b.setDate) - new Date(a.setDate))[0];
-                } else {
-                    let defaultEvents = events.filter(ev => ev.default == 1);
-                    if (defaultEvents.length > 0) {
-                        eventToApply = defaultEvents[0];
-                    }
                 }
+                
                 if (eventToApply) {
                     cachedEventToApply = eventToApply;
                     updateBgFromEvent(eventToApply);
@@ -185,8 +193,8 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Check if a custom wallpaper is selected
-        const selectedWallpaper = getCookie("selectedWallpaper");
+        // Check if a custom wallpaper is selected, default to 'dynamic' if none selected
+        const selectedWallpaper = getCookie("selectedWallpaper") || 'dynamic';
         if (selectedWallpaper && selectedWallpaper !== 'default') {
             setWallpaperAsBackground(selectedWallpaper);
             return;
@@ -292,21 +300,20 @@ document.addEventListener('DOMContentLoaded', function () {
         // Initialize dynamic preview
         updateDynamicPreview();
         
-        const savedWallpaper = getCookie("selectedWallpaper");
-        if (savedWallpaper) {
-            setWallpaperAsBackground(savedWallpaper);
-            // Update UI to show selected wallpaper
-            wallpaperCards.forEach(card => {
-                card.classList.remove('selected');
-                if (card.dataset.wallpaper === savedWallpaper) {
-                    card.classList.add('selected');
-                }
-            });
-            
-            // Start timer if dynamic wallpaper is selected
-            if (savedWallpaper === 'dynamic') {
-                startDynamicWallpaperTimer();
+        const savedWallpaper = getCookie("selectedWallpaper") || 'dynamic'; // Default to dynamic wallpaper
+        
+        setWallpaperAsBackground(savedWallpaper);
+        // Update UI to show selected wallpaper
+        wallpaperCards.forEach(card => {
+            card.classList.remove('selected');
+            if (card.dataset.wallpaper === savedWallpaper) {
+                card.classList.add('selected');
             }
+        });
+        
+        // Start timer if dynamic wallpaper is selected
+        if (savedWallpaper === 'dynamic') {
+            startDynamicWallpaperTimer();
         }
     }
     

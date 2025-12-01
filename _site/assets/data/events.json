@@ -1,16 +1,16 @@
 [
     {
-        "event": " ",
-        "url_pc": "/static/res/e1pc.jpg",
-        "url_mobile": "/static/res/e1mobile.jpg",
-        "setDate": "2025-11-30T24:00:00Z",
-        "default": 0
-    },
-    {
         "event": "Default",
         "url_pc": "dynamic",
         "url_mobile": "dynamic",
-        "setDate": "2000-01-01T00:00:00Z",
+        "setDate": "2025-01-01T00:00:00Z",
         "default": 1
+    },
+    {
+        "event": "old",
+        "url_pc": "/assets/img/events/hero.webp",
+        "url_mobile": "/assets/img/events/hero_mobile.webp",
+        "setDate": "2020-01-01T00:00:00Z",
+        "default": 0
     }
 ]

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:61876/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:61876/" rel="alternate" type="text/html" /><updated>2025-12-01T10:09:45+05:30</updated><id>http://localhost:61876/feed.xml</id><title type="html">The InsightRoom.</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">What We Shipped - December 1st</title><link href="http://localhost:61876/whats-new/what-we-shipped-december-1st/" rel="alternate" type="text/html" title="What We Shipped - December 1st" /><published>2025-12-01T00:00:00+05:30</published><updated>2025-12-01T00:00:00+05:30</updated><id>http://localhost:61876/whats-new/what-we-shipped-december-1st</id><content type="html" xml:base="http://localhost:61876/whats-new/what-we-shipped-december-1st/"><![CDATA[<h2 id="a-new-home-for-materios-reliability">A New Home for Materio’s Reliability</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:61876/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:61876/" rel="alternate" type="text/html" /><updated>2025-12-01T10:53:53+05:30</updated><id>http://localhost:61876/feed.xml</id><title type="html">The InsightRoom.</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">What We Shipped - December 1st</title><link href="http://localhost:61876/whats-new/what-we-shipped-december-1st/" rel="alternate" type="text/html" title="What We Shipped - December 1st" /><published>2025-12-01T00:00:00+05:30</published><updated>2025-12-01T00:00:00+05:30</updated><id>http://localhost:61876/whats-new/what-we-shipped-december-1st</id><content type="html" xml:base="http://localhost:61876/whats-new/what-we-shipped-december-1st/"><![CDATA[<h2 id="a-new-home-for-materios-reliability">A New Home for Materio’s Reliability</h2>
 <p>This week marks an important milestone for Materio.
 After months of growth, higher traffic, and increasing demand from students across multiple semesters, Materio has officially shifted its deployment to Vercel.</p>
 
@@ -29,6 +29,17 @@ A clean printable format which you can print yourself or get pre-made PDF linear
   </li>
   <li>This marks the beginning of a new phase for Materio: original, high-quality academic content made for students, by Materio.</li>
 </ul>
+
+<h2 id="table-of-contents-sidebar">Table of contents sidebar</h2>
+<p>Insightroom just became a lot more pleasant to read. This week, we introduced a fully dynamic table of contents sidebar that automatically maps every heading inside a post and turns it into an easy-to-use navigation panel. Instead of scrolling endlessly to find a specific section, you can now glide through long posts with a single click.</p>
+
+<p><img src="/assets/img/post-content/b5e904bd-0d87-42f0-97e4-d915e815d24f.webp" alt="toc-sidebar" /></p>
+
+<p>The sidebar quietly sits beside the content and updates in real time while you read, highlighting your current section so you always know where you are in the article. It’s especially helpful for extended deep-dives, multi-topic breakdowns, and any of the longer Materio Originals posts that usually pack a lot of detail.</p>
+
+<p>What makes this change feel even smoother is how unobtrusive it is. The layout stays clean, the reading flow feels natural, and you get the convenience of structured navigation without anything blocking or crowding the page. With this update, Insightroom moves closer to a proper reading environment – one that respects your focus while still giving you quick, precise control over where you want to go in the article.</p>
+
+<p>If you read lengthy posts often or revisit specific explanations for exam prep, this quality-of-life upgrade will make a noticeable difference. Insightroom now feels faster to explore, easier to reference, and far more organized than before.</p>
 
 <h2 id="inversion-filter-in-openreader-viewer">Inversion Filter in OpenReader viewer</h2>
 <p><em>Comfort reading for long study sessions.</em></p>

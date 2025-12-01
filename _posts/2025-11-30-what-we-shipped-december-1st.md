@@ -39,6 +39,16 @@ A clean printable format which you can print yourself or get pre-made PDF linear
   - Clear explanations designed specifically for university syllabus. Fully optimized formatting for revision and exam preparations.
 - This marks the beginning of a new phase for Materio: original, high-quality academic content made for students, by Materio.
 
+## Table of contents sidebar 
+Insightroom just became a lot more pleasant to read. This week, we introduced a fully dynamic table of contents sidebar that automatically maps every heading inside a post and turns it into an easy-to-use navigation panel. Instead of scrolling endlessly to find a specific section, you can now glide through long posts with a single click.
+
+![toc-sidebar](/assets/img/post-content/b5e904bd-0d87-42f0-97e4-d915e815d24f.webp)
+
+The sidebar quietly sits beside the content and updates in real time while you read, highlighting your current section so you always know where you are in the article. It’s especially helpful for extended deep-dives, multi-topic breakdowns, and any of the longer Materio Originals posts that usually pack a lot of detail.
+
+What makes this change feel even smoother is how unobtrusive it is. The layout stays clean, the reading flow feels natural, and you get the convenience of structured navigation without anything blocking or crowding the page. With this update, Insightroom moves closer to a proper reading environment – one that respects your focus while still giving you quick, precise control over where you want to go in the article.
+
+If you read lengthy posts often or revisit specific explanations for exam prep, this quality-of-life upgrade will make a noticeable difference. Insightroom now feels faster to explore, easier to reference, and far more organized than before.
 
 ## Inversion Filter in OpenReader viewer
 *Comfort reading for long study sessions.*
