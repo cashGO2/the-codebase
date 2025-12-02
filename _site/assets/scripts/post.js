@@ -286,20 +286,20 @@ function renderMathInTOC() {
 function centerActiveInSidebar(behavior = 'smooth') {
   const sidebarEl = document.getElementById('site-toc-sidebar');
   if (!sidebarEl) return;
+  // Skip if sidebar is not visible to prevent scroll fighting
+  if (sidebarEl.offsetParent === null || getComputedStyle(sidebarEl).display === 'none') return;
   const active = sidebarEl.querySelector('.toc a.active');
   if (!active) return;
+  // Use scrollTo on the sidebar container directly instead of scrollIntoView
+  // to avoid accidentally scrolling the main document
   try {
-    active.scrollIntoView({ behavior, block: 'center', inline: 'nearest' });
+    const activeRect = active.getBoundingClientRect();
+    const sidebarRect = sidebarEl.getBoundingClientRect();
+    const currentScroll = sidebarEl.scrollTop;
+    const offset = (activeRect.top - sidebarRect.top) - (sidebarEl.clientHeight / 2) + (activeRect.height / 2);
+    sidebarEl.scrollTo({ top: currentScroll + offset, behavior });
   } catch (e) {
-    try {
-      const activeRect = active.getBoundingClientRect();
-      const sidebarRect = sidebarEl.getBoundingClientRect();
-      const currentScroll = sidebarEl.scrollTop;
-      const offset = (activeRect.top - sidebarRect.top) - (sidebarEl.clientHeight / 2) + (activeRect.height / 2);
-      sidebarEl.scrollTo({ top: currentScroll + offset, behavior });
-    } catch (e2) {
-      active.scrollIntoView(false);
-    }
+    // Silent fail - don't use scrollIntoView as fallback to prevent scroll fighting
   }
 }
 
@@ -329,28 +329,24 @@ function wireTOCActiveTracking() {
     links.forEach((a, i) => {
       if (i === index) a.classList.add('active'); else a.classList.remove('active');
     });
-    // keep the active item visible inside the sidebar
+    // Only scroll the sidebar's active item into view if the sidebar is actually visible
+    // This prevents scroll fighting when the sidebar is hidden on mobile/tablet
+    const sidebarEl = document.getElementById('site-toc-sidebar');
+    if (!sidebarEl || sidebarEl.offsetParent === null || getComputedStyle(sidebarEl).display === 'none') {
+      return; // Sidebar not visible, skip scrollIntoView to avoid scroll fighting
+    }
     const active = links[index];
     if (active) {
+      // Use scrollTo on the sidebar container directly instead of scrollIntoView
+      // to avoid accidentally scrolling the main document
       try {
-        // Prefer centering the active item in the sidebar
-        active.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+        const activeRect = active.getBoundingClientRect();
+        const sidebarRect = sidebarEl.getBoundingClientRect();
+        const currentScroll = sidebarEl.scrollTop;
+        const offset = (activeRect.top - sidebarRect.top) - (sidebarEl.clientHeight / 2) + (activeRect.height / 2);
+        sidebarEl.scrollTo({ top: currentScroll + offset, behavior: 'smooth' });
       } catch (e) {
-        // Fallback: compute manual scroll to center the element
-        try {
-          const sidebarEl = document.getElementById('site-toc-sidebar');
-          if (sidebarEl) {
-            const activeRect = active.getBoundingClientRect();
-            const sidebarRect = sidebarEl.getBoundingClientRect();
-            const currentScroll = sidebarEl.scrollTop;
-            const offset = (activeRect.top - sidebarRect.top) - (sidebarEl.clientHeight / 2) + (activeRect.height / 2);
-            sidebarEl.scrollTo({ top: currentScroll + offset, behavior: 'smooth' });
-          } else {
-            active.scrollIntoView(false);
-          }
-        } catch (e2) {
-          active.scrollIntoView(false);
-        }
+        // Silent fail - don't use scrollIntoView as fallback to prevent scroll fighting
       }
     }
   }
@@ -2233,17 +2229,7 @@ function initializeScrollToTop() {
     }
   });
 
-  // Scroll to top on button click
   scrollBtn.addEventListener('click', function() {
-    const scrollDuration = 1200; // Duration in milliseconds
-    const scrollStep = -window.scrollY / (scrollDuration / 15);
-    
-    const scrollInterval = setInterval(function() {
-      if (window.scrollY !== 0) {
-        window.scrollBy(0, scrollStep);
-      } else {
-        clearInterval(scrollInterval);
-      }
-    }, 15);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }

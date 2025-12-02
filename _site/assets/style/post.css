@@ -897,3 +897,29 @@ html, body {
   white-space: pre-wrap !important;
   word-break: break-word !important;
 }
+
+/* Scroll performance optimizations */
+.post-container, .post-body, .post-layout {
+  /* Promote to compositing layer for smoother scrolling */
+  will-change: auto;
+  contain: layout style;
+}
+
+/* Prevent sticky TOC from causing layout recalculations during scroll */
+.post-toc {
+  will-change: auto;
+  contain: layout style paint;
+  backface-visibility: hidden;
+}
+
+/* Ensure smooth scrolling on the main document */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Disable smooth scroll for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

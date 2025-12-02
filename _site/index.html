@@ -19,6 +19,7 @@
 <meta property="og:image:height" content="630">
 <meta property="og:url" content="https://materioa.vercel.app">
 <meta property="og:type" content="website">
+<meta name="theme-color" content="#333333">
 
 
 
@@ -75,10 +76,22 @@
     })(window, document, 'script', 'dataLayer', 'GTM-M6PC6RJL');</script>
 
 <!-- Google AdSense - Load conditionally based on user subscription -->
- <script>
+<!-- Vercel Analytics & Speed Insights -->
+<script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  // Only load Vercel scripts on Vercel deployments (not localhost)
+  if (window.location.hostname.includes('vercel.app') || window.location.hostname === 'materioa.vercel.app') {
+    var s1 = document.createElement('script');
+    s1.defer = true;
+    s1.src = '/_vercel/insights/script.js';
+    document.head.appendChild(s1);
+    
+    var s2 = document.createElement('script');
+    s2.defer = true;
+    s2.src = '/_vercel/speed-insights/script.js';
+    document.head.appendChild(s2);
+  }
 </script>
-<script defer src="/_vercel/insights/script.js"></script>
 <script>
     function hasAdFreePrivileges() {
         try {  
@@ -160,15 +173,15 @@
                 <div id="profile-dropdown" class="profile-dropdown" role="menu" aria-hidden="true">
                     <a href="/account/profile" class="dropdown-item" data-action="profile" role="menuitem" tabindex="0">
                         <i class="fas fa-user"></i>
-                        <span style="font-size: 15px;">Profile</span>
+                        <span>Profile</span>
                     </a>
                      <a href="#5" class="dropdown-item" data-action="downloads" role="menuitem" tabindex="0">
                 <i class="fa-solid fa-folder-arrow-down"></i>
-                <span style="font-size: 15px;">Downloads</span>
+                <span>Downloads</span>
             </a>
                     <a href="#4" class="dropdown-item" data-action="settings" role="menuitem" tabindex="0">
                         <i class="fas fa-cog"></i>
-                        <span style="font-size: 15px;">Settings</span>
+                        <span>Settings</span>
                     </a>
                 </div>
             </div>
