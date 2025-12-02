@@ -176,7 +176,7 @@
         </div>
 
         <div class="post-cell">
-          <article class="changelog-item" style="display:block; padding:1rem; border-radius:8px; border:1px solid var(--border-color, #e6e6e9);">
+          <article class="changelog-item" style="display:block; padding:1rem; border-radius:8px;">
             <div class="date-inline" aria-hidden="true" style="display:none; margin-bottom:0.5rem;"><a class="date-link" href="/whats-new/what-we-shipped-december-1st/" aria-label="Open What We Shipped - December 1st"><span class="date-pill">01.12.2025</span></a></div>
             <h2 style="margin:0; font-size:1.125rem;"><a href="/whats-new/what-we-shipped-december-1st/" style="color:inherit; text-decoration:none;">What We Shipped - December 1st</a></h2>
 
@@ -207,7 +207,7 @@
         </div>
 
         <div class="post-cell">
-          <article class="changelog-item" style="display:block; padding:1rem; border-radius:8px; border:1px solid var(--border-color, #e6e6e9);">
+          <article class="changelog-item" style="display:block; padding:1rem; border-radius:8px;">
             <div class="date-inline" aria-hidden="true" style="display:none; margin-bottom:0.5rem;"><a class="date-link" href="/whats-new/Introducing-Accounts-in-Materio/" aria-label="Open Introducing Account in Materio and more..."><span class="date-pill">24.06.2025</span></a></div>
             <h2 style="margin:0; font-size:1.125rem;"><a href="/whats-new/Introducing-Accounts-in-Materio/" style="color:inherit; text-decoration:none;">Introducing Account in Materio and more...</a></h2>
 
@@ -251,7 +251,7 @@
       /* inline date shown on small screens above title */
       .date-inline { display:none; }
 
-      @media (max-width: 860px) {
+      @media (max-width: 768px) {
         .changelog-columns { grid-template-columns: 1fr !important; }
         /* On mobile: hide left date column, switch to single-column grid, show inline date */
         .changelog-row { grid-template-columns: 1fr !important; }
@@ -261,6 +261,7 @@
         .date-inline .date-pill { font-size:0.85rem; padding:0.35rem 0.6rem; border-radius:6px; background:#e1e1e1; color:#3a3a3a; display:inline-block; }
         .posts-list { order:1; }
         .changelog-cover img, .changelog-cover div { width:100%; max-width:none; height:auto; }
+        .changelogs-header { text-align:left !important; padding-left:1rem; }
       }
     </style>
 

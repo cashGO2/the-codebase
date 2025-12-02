@@ -71,3 +71,4 @@ The filter can be toggled from settings tab where the filter is listed under `Re
  - Issue with service worker which constantly cached files which introduced lag and degraded performance and increased usage of edge requests, This issue also included some cases where tools like Internet Download Manager (IDM) were constantly getting a trigger to download `compressed-tracemonkey-pldi-09.pdf` which is essentially a left behind sample file which comes bundled with pdfjs.
  - Health indicator falsely indicating 'degraded' health. 
  - The OpenReader has been optimised by removing unneccessary files and compiling individual icons to a single css file reducing overhead on load and offers faster loading.
+ - Fixed Scroll-shake issue in insightroom. 
