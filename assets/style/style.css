@@ -718,20 +718,20 @@ table td code {
 /* Responsive */
 @media (max-width: 768px) {
   body {
-    padding: 70px 0 0;
+    padding: 60px 0 0;
   }
 
   .site-header {
     background-size: 100px 26px;
     background-position: 15px center;
-    height: 50px;
+    height: 60px;
     padding: 5px 15px;
   }
 
   .container,
   .home-container,
   .post-container {
-    padding: 0.5rem;
+    padding: 1rem;
   }
 
   .nav {
@@ -744,6 +744,10 @@ table td code {
     width: 100%;
     height: 320px;
     object-position: center center;
+  }
+
+  .hero-post {
+    margin-top: 1rem;
   }
 
   .hero-meta {

@@ -62,6 +62,14 @@
     body.blog-layout.dark .site-header {
       background-image: url('/assets/img/banner.svg');
     }
+    /* Mobile: ensure header is full width and properly sized */
+    @media (max-width: 768px) {
+      body.blog-layout .site-header,
+      body.blog-layout.dark .site-header {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+    }
     /* Use Libre Baskerville for emphasized/italic text in posts */
     article em, article i, .post-content em, .post-content i, .changelog-excerpt em, .changelog-excerpt i {
       font-family: 'Libre Baskerville', serif;

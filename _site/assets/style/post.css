@@ -648,7 +648,8 @@ body.dark-mode .post-toc .toc a {
   position: fixed;
   left: 0;
   top: 60px; /* start below the header so it doesn't overlap */
-  height: calc(100vh - 60px);
+  height: calc(100dvh - 60px); /* Use dvh for stable mobile height */
+  height: calc(100vh - 60px); /* Fallback for older browsers */
   width: 320px;
   max-width: 100%;
   transform: translateX(-110%);
@@ -712,6 +713,14 @@ body.dark-mode .site-toc-sidebar {
     max-width: 100% !important;
     left: 0 !important;
     right: 0 !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Adjust sidebar top position for header */
+  .site-toc-sidebar {
+    top: 60px !important;
+    height: calc(100dvh - 60px) !important;
+    height: calc(100vh - 60px) !important;
   }
 
   /* Prevent post container from creating horizontal overflow */
@@ -844,6 +853,17 @@ body.dark-mode .site-toc-sidebar {
   word-break: break-word !important;
   overflow-wrap: anywhere !important;
   hyphens: auto;
+}
+
+/* Prevent mobile scroll shake from address bar show/hide */
+html, body {
+  overscroll-behavior-y: none;
+}
+
+@supports (height: 100dvh) {
+  .site-toc-sidebar {
+    height: calc(100dvh - 60px) !important;
+  }
 }
 
 /* Ensure media and generated previews scale to container */
