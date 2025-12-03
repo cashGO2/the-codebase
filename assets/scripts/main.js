@@ -193,7 +193,11 @@ submitButton.addEventListener('click', async () => {
     const topic = document.getElementById('topicSelect').value;
 
     if (!semester || !subject || categorySelect.selectedIndex === 0 || !topic) {
-        alert('Please select a semester, subject, category, and topic.');
+        materioAlert('Please select a semester, subject, category, and topic.', {
+            title: 'Selection Required',
+            type: 'warning',
+            buttonText: 'OK'
+        });
         return;
     }
 
@@ -855,14 +859,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Close tooltip when scrolling on mobile
+    // Close tooltip when scrolling on mobile - use passive listener
     document.addEventListener('scroll', function() {
         if (window.innerWidth <= 768) {
             infoIcons.forEach(icon => {
                 icon.classList.remove('active');
             });
         }
-    });
+    }, { passive: true });
     
     // Reposition tooltips on window resize
     window.addEventListener('resize', function() {
@@ -1201,6 +1205,109 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ================================================
+// CLEAR SITE DATA FUNCTIONALITY
+// ================================================
+
+// Function to clear all site data (cookies, cache, IndexedDB, service workers)
+async function clearAllSiteData() {
+    // Show confirmation dialog using custom modal
+    const confirmed = await materioConfirm(
+        'This will clear all site data including:\n\n• Cookies and local storage\n• Cached files\n• Your Downloaded files\n• Service workers\n\nYou will be logged out and all preferences will be reset.',
+        {
+            title: 'Clear All Data?',
+            type: 'danger',
+            confirmText: 'Clear All Data',
+            cancelText: 'Cancel',
+            danger: true
+        }
+    );
+    
+    if (!confirmed) return;
+    
+    try {
+        // Show loading state
+        const card = document.getElementById('clearSiteDataCard');
+        if (card) {
+            card.style.opacity = '0.5';
+            card.style.pointerEvents = 'none';
+        }
+        
+        // 1. Clear all cookies
+        document.cookie.split(';').forEach(function(c) {
+            const name = c.split('=')[0].trim();
+            document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+            document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=' + window.location.hostname;
+        });
+        console.log('Cookies cleared');
+        
+        // 2. Clear localStorage
+        localStorage.clear();
+        console.log('localStorage cleared');
+        
+        // 3. Clear sessionStorage
+        sessionStorage.clear();
+        console.log('sessionStorage cleared');
+        
+        // 4. Clear IndexedDB databases
+        if (window.indexedDB && indexedDB.databases) {
+            const databases = await indexedDB.databases();
+            for (const db of databases) {
+                if (db.name) {
+                    indexedDB.deleteDatabase(db.name);
+                    console.log('Deleted IndexedDB:', db.name);
+                }
+            }
+        }
+        
+        // 5. Unregister all service workers
+        if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            for (const registration of registrations) {
+                await registration.unregister();
+                console.log('Unregistered service worker:', registration.scope);
+            }
+        }
+        
+        // 6. Clear Cache Storage
+        if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            for (const cacheName of cacheNames) {
+                await caches.delete(cacheName);
+                console.log('Deleted cache:', cacheName);
+            }
+        }
+        
+        // Show success message using custom modal
+        await materioAlert('All site data has been cleared successfully.\n\nThe page will now reload.', {
+            title: 'Data Cleared',
+            type: 'success',
+            buttonText: 'Reload'
+        });
+        
+        // Reload the page to apply changes
+        window.location.reload(true);
+        
+    } catch (error) {
+        console.error('Error clearing site data:', error);
+        await materioAlert('An error occurred while clearing site data. Some data may not have been cleared.', {
+            title: 'Error',
+            type: 'danger',
+            buttonText: 'OK'
+        });
+        
+        // Restore card state
+        const card = document.getElementById('clearSiteDataCard');
+        if (card) {
+            card.style.opacity = '1';
+            card.style.pointerEvents = 'auto';
+        }
+    }
+}
+
+// Make function globally accessible for onclick handler
+window.clearAllSiteData = clearAllSiteData;
+
+// ================================================
 // QUICK RESOURCE SEARCH FUNCTIONALITY
 // ================================================
 
@@ -1293,9 +1400,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Reposition dropdown on scroll and resize (for position: fixed)
-    window.addEventListener('scroll', repositionSearchDropdown);
-    window.addEventListener('resize', repositionSearchDropdown);
+    // Reposition dropdown on scroll and resize (for position: fixed) - use passive listener
+    window.addEventListener('scroll', repositionSearchDropdown, { passive: true });
+    window.addEventListener('resize', repositionSearchDropdown, { passive: true });
 });
 
 // Reposition search dropdown (needed for position: absolute at body level)
@@ -1726,6 +1833,176 @@ window.performQuickSearch = performQuickSearch;
 window.openSearchResultPdf = openSearchResultPdf;
 window.showMoreSearchResults = showMoreSearchResults;
 window.collapseSearchResults = collapseSearchResults;
+
+// ================================================
+// CUSTOM MODAL SYSTEM (Alert & Confirm)
+// ================================================
+
+/**
+ * Custom alert modal - replaces browser's native alert()
+ * @param {string} message - The message to display
+ * @param {Object} options - Optional configuration
+ * @param {string} options.title - Modal title (default: "Notice")
+ * @param {string} options.type - Icon type: 'info', 'success', 'warning', 'danger' (default: 'info')
+ * @param {string} options.buttonText - OK button text (default: "OK")
+ * @returns {Promise<void>} Resolves when user clicks OK
+ */
+function materioAlert(message, options = {}) {
+    return new Promise((resolve) => {
+        const {
+            title = 'Notice',
+            type = 'info',
+            buttonText = 'OK'
+        } = options;
+        
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'materio-modal-overlay';
+        overlay.innerHTML = `
+            <div class="materio-modal" role="alertdialog" aria-modal="true" aria-labelledby="materio-modal-title">
+                <div class="materio-modal-icon ${type}">
+                    <i class="fa-solid ${getIconForType(type)}"></i>
+                </div>
+                <h3 class="materio-modal-title" id="materio-modal-title">${escapeHtml(title)}</h3>
+                <p class="materio-modal-message">${escapeHtml(message)}</p>
+                <div class="materio-modal-buttons">
+                    <button class="materio-modal-btn primary" id="materio-modal-ok">${escapeHtml(buttonText)}</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(overlay);
+        
+        // Trigger animation
+        requestAnimationFrame(() => {
+            overlay.classList.add('visible');
+        });
+        
+        // Focus the button
+        const okBtn = overlay.querySelector('#materio-modal-ok');
+        setTimeout(() => okBtn.focus(), 100);
+        
+        // Close function
+        function closeModal() {
+            overlay.classList.remove('visible');
+            setTimeout(() => {
+                overlay.remove();
+                resolve();
+            }, 250);
+        }
+        
+        // Event listeners
+        okBtn.addEventListener('click', closeModal);
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeModal();
+        });
+        document.addEventListener('keydown', function escHandler(e) {
+            if (e.key === 'Escape' || e.key === 'Enter') {
+                document.removeEventListener('keydown', escHandler);
+                closeModal();
+            }
+        });
+    });
+}
+
+/**
+ * Custom confirm modal - replaces browser's native confirm()
+ * @param {string} message - The message to display
+ * @param {Object} options - Optional configuration
+ * @param {string} options.title - Modal title (default: "Confirm")
+ * @param {string} options.type - Icon type: 'info', 'success', 'warning', 'danger' (default: 'warning')
+ * @param {string} options.confirmText - Confirm button text (default: "Confirm")
+ * @param {string} options.cancelText - Cancel button text (default: "Cancel")
+ * @param {boolean} options.danger - If true, confirm button is red (default: false)
+ * @returns {Promise<boolean>} Resolves true if confirmed, false if cancelled
+ */
+function materioConfirm(message, options = {}) {
+    return new Promise((resolve) => {
+        const {
+            title = 'Confirm',
+            type = 'warning',
+            confirmText = 'Confirm',
+            cancelText = 'Cancel',
+            danger = false
+        } = options;
+        
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'materio-modal-overlay';
+        overlay.innerHTML = `
+            <div class="materio-modal" role="alertdialog" aria-modal="true" aria-labelledby="materio-modal-title">
+                <div class="materio-modal-icon ${type}">
+                    <i class="fa-solid ${getIconForType(type)}"></i>
+                </div>
+                <h3 class="materio-modal-title" id="materio-modal-title">${escapeHtml(title)}</h3>
+                <p class="materio-modal-message">${escapeHtml(message)}</p>
+                <div class="materio-modal-buttons">
+                    <button class="materio-modal-btn secondary" id="materio-modal-cancel">${escapeHtml(cancelText)}</button>
+                    <button class="materio-modal-btn ${danger ? 'danger' : 'primary'}" id="materio-modal-confirm">${escapeHtml(confirmText)}</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(overlay);
+        
+        // Trigger animation
+        requestAnimationFrame(() => {
+            overlay.classList.add('visible');
+        });
+        
+        // Focus the cancel button (safer default)
+        const cancelBtn = overlay.querySelector('#materio-modal-cancel');
+        const confirmBtn = overlay.querySelector('#materio-modal-confirm');
+        setTimeout(() => cancelBtn.focus(), 100);
+        
+        // Close function
+        function closeModal(result) {
+            overlay.classList.remove('visible');
+            setTimeout(() => {
+                overlay.remove();
+                resolve(result);
+            }, 250);
+        }
+        
+        // Event listeners
+        confirmBtn.addEventListener('click', () => closeModal(true));
+        cancelBtn.addEventListener('click', () => closeModal(false));
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeModal(false);
+        });
+        document.addEventListener('keydown', function escHandler(e) {
+            if (e.key === 'Escape') {
+                document.removeEventListener('keydown', escHandler);
+                closeModal(false);
+            } else if (e.key === 'Enter') {
+                document.removeEventListener('keydown', escHandler);
+                closeModal(true);
+            }
+        });
+    });
+}
+
+// Helper: Get FontAwesome icon class for modal type
+function getIconForType(type) {
+    const icons = {
+        'info': 'fa-circle-info',
+        'success': 'fa-circle-check',
+        'warning': 'fa-triangle-exclamation',
+        'danger': 'fa-circle-xmark'
+    };
+    return icons[type] || icons.info;
+}
+
+// Helper: Escape HTML to prevent XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Make modal functions globally accessible
+window.materioAlert = materioAlert;
+window.materioConfirm = materioConfirm;
 
 (function(){
     var breakAfter = 4; // change to 5 if you prefer 5 words

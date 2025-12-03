@@ -1841,6 +1841,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         </label>
                     </div>
                 </div>
+
+                <!-- Clear Site Data -->
+                <div class="card-layout" id="clearSiteDataCard">
+                    <div class="toggle-container" style="cursor: pointer;" onclick="clearAllSiteData()">
+                        <div class="paper-mode-info">
+                            <div class="paper-mode-title">Clear Data</div>
+                            <div class="paper-mode-description">Clear all data from storage</div>
+                        </div>
+                        <i class="fa-regular fa-trash" style="color: #DC3545; font-size: 18px;"></i>
+                    </div>
+                </div>
             </div>
 
             <!-- About the App Section -->
@@ -1856,6 +1867,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <!-- log will appear here -->
                         </div>
                     </details>
+                    <a href="/changelog" style="display: block; margin-top: 10px; font-size: 14px; color: #ff8200; text-decoration: none;">Show all →</a>
                 </div>
 
                 <p style="margin-left: 5px;"><b>Legal</b></p>

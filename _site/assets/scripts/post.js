@@ -40,6 +40,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // Process video tags
   processVideoTags();
 
+  // Add anchor links to headings
+  addHeadingAnchorLinks();
+
   // Initialize video controls for cover video
   setTimeout(() => {
     initializeVideoControls();
@@ -72,6 +75,91 @@ document.addEventListener('DOMContentLoaded', function () {
     console.error('TOC fallback failed:', e);
   }
 });
+
+// Add anchor links to h1, h2, h3 headings for sharing sections
+function addHeadingAnchorLinks() {
+  const postBody = document.querySelector('.post-body');
+  if (!postBody) return;
+
+  const headings = postBody.querySelectorAll('h1, h2, h3');
+  
+  headings.forEach(heading => {
+    // Ensure heading has an ID
+    if (!heading.id) {
+      heading.id = slugify(heading.textContent || heading.innerText || '');
+      // Ensure unique ID
+      let uniqueId = heading.id;
+      let counter = 1;
+      while (document.querySelectorAll(`#${CSS.escape(uniqueId)}`).length > 1) {
+        uniqueId = heading.id + '-' + counter++;
+      }
+      heading.id = uniqueId;
+    }
+
+    // Create anchor link
+    const anchor = document.createElement('a');
+    anchor.className = 'heading-anchor';
+    anchor.href = '#' + heading.id;
+    anchor.innerHTML = '<i class="fa-solid fa-link"></i>';
+    anchor.title = 'Copy link to this section';
+    anchor.setAttribute('aria-label', 'Copy link to section: ' + heading.textContent);
+
+    // Handle click - copy link to clipboard
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const url = window.location.origin + window.location.pathname + '#' + heading.id;
+      
+      // Copy to clipboard
+      navigator.clipboard.writeText(url).then(() => {
+        showAnchorToast('Link copied to clipboard!');
+      }).catch(() => {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = url;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+          document.execCommand('copy');
+          showAnchorToast('Link copied to clipboard!');
+        } catch (err) {
+          showAnchorToast('Failed to copy link');
+        }
+        document.body.removeChild(textArea);
+      });
+    });
+
+    // Append anchor at the end of the heading
+    heading.appendChild(anchor);
+  });
+}
+
+// Show toast notification for anchor copy
+function showAnchorToast(message) {
+  // Remove existing toast
+  const existingToast = document.querySelector('.anchor-toast');
+  if (existingToast) {
+    existingToast.remove();
+  }
+
+  // Create toast
+  const toast = document.createElement('div');
+  toast.className = 'anchor-toast';
+  toast.innerHTML = `<i class="fa-solid fa-check"></i>${message}`;
+  document.body.appendChild(toast);
+
+  // Show toast
+  requestAnimationFrame(() => {
+    toast.classList.add('show');
+  });
+
+  // Hide and remove after 2 seconds
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 2000);
+}
 
 function slugify(text) {
   return text.toString().toLowerCase().trim()
@@ -325,20 +413,28 @@ function wireTOCActiveTracking() {
   let suspendScrollHandler = false;
   let suspendTimeoutId = null;
 
-  function setActive(index) {
+  // Track the last active index to avoid redundant updates
+  let lastActiveIndex = -1;
+
+  function setActive(index, shouldScrollSidebar = false) {
+    // Skip if same index to avoid unnecessary DOM updates
+    if (index === lastActiveIndex) return;
+    lastActiveIndex = index;
+    
     links.forEach((a, i) => {
       if (i === index) a.classList.add('active'); else a.classList.remove('active');
     });
-    // Only scroll the sidebar's active item into view if the sidebar is actually visible
-    // This prevents scroll fighting when the sidebar is hidden on mobile/tablet
+    
+    // Only scroll sidebar if explicitly requested (e.g., on TOC open, not during page scroll)
+    // This prevents scroll fighting between page scroll and sidebar scroll
+    if (!shouldScrollSidebar) return;
+    
     const sidebarEl = document.getElementById('site-toc-sidebar');
     if (!sidebarEl || sidebarEl.offsetParent === null || getComputedStyle(sidebarEl).display === 'none') {
-      return; // Sidebar not visible, skip scrollIntoView to avoid scroll fighting
+      return;
     }
     const active = links[index];
     if (active) {
-      // Use scrollTo on the sidebar container directly instead of scrollIntoView
-      // to avoid accidentally scrolling the main document
       try {
         const activeRect = active.getBoundingClientRect();
         const sidebarRect = sidebarEl.getBoundingClientRect();
@@ -346,30 +442,25 @@ function wireTOCActiveTracking() {
         const offset = (activeRect.top - sidebarRect.top) - (sidebarEl.clientHeight / 2) + (activeRect.height / 2);
         sidebarEl.scrollTo({ top: currentScroll + offset, behavior: 'smooth' });
       } catch (e) {
-        // Silent fail - don't use scrollIntoView as fallback to prevent scroll fighting
+        // Silent fail
       }
     }
   }
 
-  // on click, mark active
+  // on click, mark active and scroll sidebar
   links.forEach((a, i) => {
-    // use capture so we run before other bubble-phase handlers that may
-    // trigger smooth scrolling; this lets us suspend the scroll handler
-    // before the browser/other handlers start scrolling.
     a.addEventListener('click', (ev) => {
-      // set active immediately for instant visual feedback
-      setActive(i);
-      // suspend scroll-driven updates for a short period to avoid jitter
+      setActive(i, true); // true = scroll sidebar to active item
       suspendScrollHandler = true;
       if (suspendTimeoutId) clearTimeout(suspendTimeoutId);
       suspendTimeoutId = setTimeout(() => {
         suspendScrollHandler = false;
         suspendTimeoutId = null;
-      }, 700);
+      }, 1000); // longer suspend to avoid jitter
     }, true);
   });
 
-  // on scroll, find heading nearest to top
+  // on scroll, find heading nearest to top (don't scroll sidebar - just update active class)
   function onScroll() {
     if (suspendScrollHandler) return;
     let best = -1;
@@ -378,17 +469,28 @@ function wireTOCActiveTracking() {
       const el = linkTargets[i];
       if (!el) continue;
       const rect = el.getBoundingClientRect();
-      const offset = Math.abs(rect.top - 120); // 120px offset for header
+      const offset = Math.abs(rect.top - 120);
       if (rect.top <= 150 && offset < bestOffset) {
         best = i; bestOffset = offset;
       }
     }
-    if (best >= 0) setActive(best);
+    if (best >= 0) setActive(best, false); // false = don't scroll sidebar during page scroll
   }
 
-  document.addEventListener('scroll', throttle(onScroll, 150));
-  // initial highlight and center active item inside sidebar
-  setTimeout(() => { onScroll(); centerActiveInSidebar('auto'); }, 600);
+  // Use requestAnimationFrame-based throttle for smoother performance
+  let ticking = false;
+  document.addEventListener('scroll', function() {
+    if (!ticking && !suspendScrollHandler) {
+      requestAnimationFrame(function() {
+        onScroll();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+  
+  // initial highlight
+  setTimeout(() => { onScroll(); }, 600);
 }
 
 // small throttle to avoid too many scroll events
@@ -634,10 +736,8 @@ async function typeText(element, text) {
       }
     }
 
-    // Scroll to keep the typing text in view occasionally
-    if (i % 3 === 0) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
+    // Removed scrollIntoView to prevent scroll glitches
+    // Users can scroll manually if needed
   }
 }
 
@@ -1122,8 +1222,27 @@ function processVideoTags() {
 
   let videoReplacements = 0;
 
-  // Process video tags: [video:path] or [video:path:cover]
-  postBody.innerHTML = postBody.innerHTML.replace(/\[video:([^\]]+)\]/g, function (match, params) {
+  // Find all text nodes and elements containing video tags
+  const videoTagRegex = /\[video:([^\]]+)\]/g;
+  
+  // First pass: find and replace in HTML (but create elements properly after)
+  const matches = [...postBody.innerHTML.matchAll(videoTagRegex)];
+  
+  if (matches.length === 0) {
+    console.log('No video tags found');
+    return;
+  }
+
+  // Create placeholder spans for each video
+  let html = postBody.innerHTML;
+  matches.forEach((match, index) => {
+    html = html.replace(match[0], `<span class="video-placeholder" data-video-index="${index}" data-video-params="${match[1]}"></span>`);
+  });
+  postBody.innerHTML = html;
+
+  // Now replace placeholders with actual video elements using DOM APIs
+  document.querySelectorAll('.video-placeholder').forEach(placeholder => {
+    const params = placeholder.dataset.videoParams;
     const parts = params.split(':');
     const videoPath = parts[0].trim();
     const isCover = parts[1] && parts[1].trim() === 'cover';
@@ -1135,91 +1254,254 @@ function processVideoTags() {
 
     // Determine video type from file extension
     const fileExtension = videoPath.split('.').pop().toLowerCase();
-    let videoType = 'video/mp4'; // default
+    let videoType = 'video/mp4';
+    if (fileExtension === 'webm') videoType = 'video/webm';
+    else if (fileExtension === 'mov') videoType = 'video/quicktime';
+    else if (fileExtension === 'avi') videoType = 'video/x-msvideo';
+    else if (fileExtension === 'mkv') videoType = 'video/x-matroska';
 
-    if (fileExtension === 'webm') {
-      videoType = 'video/webm';
-    } else if (fileExtension === 'mov') {
-      videoType = 'video/quicktime';
-    } else if (fileExtension === 'avi') {
-      videoType = 'video/x-msvideo';
-    } else if (fileExtension === 'mkv') {
-      videoType = 'video/x-matroska';
-    }
+    // Create elements using DOM APIs
+    const container = document.createElement('div');
+    container.className = coverClass;
 
+    const video = document.createElement('video');
+    video.id = videoId;
+    video.muted = true;
+    video.loop = true;
+    video.autoplay = true;
+    video.playsInline = true;
+    video.preload = 'auto';
+    // Set src directly on video element (more reliable on mobile)
+    video.src = videoPath;
+    // Set all necessary attributes for mobile
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+    video.setAttribute('autoplay', '');
+    video.setAttribute('muted', '');
+    // For iOS
+    video.defaultMuted = true;
+
+    const controls = document.createElement('div');
+    controls.className = 'video-controls playing';
+    controls.onclick = () => toggleVideo(videoId);
+    controls.innerHTML = '<i class="fa-solid fa-pause"></i>';
+
+    container.appendChild(video);
+    container.appendChild(controls);
+
+    // Replace placeholder with actual video container
+    placeholder.replaceWith(container);
+    
     videoReplacements++;
-
-    return `
-      <div class="${coverClass}">
-        <video id="${videoId}" muted loop>
-          <source src="${videoPath}" type="${videoType}">
-          Your browser does not support the video tag.
-        </video>
-        <div class="video-controls paused" onclick="toggleVideo('${videoId}')">
-          <i class="fa-solid fa-play"></i>
-        </div>
-      </div>
-    `;
   });
 
   console.log('Made', videoReplacements, 'video replacements');
 
   // Initialize video controls after processing
   if (videoReplacements > 0) {
+    // Wait a bit for DOM to settle
     setTimeout(() => {
+      document.querySelectorAll('.video-embed video, .video-cover video').forEach(video => {
+        // Ensure muted (required for autoplay on mobile)
+        video.muted = true;
+        video.defaultMuted = true;
+        
+        // Force load
+        video.load();
+        
+        // Try to play with user gesture simulation
+        function attemptPlay() {
+          const playPromise = video.play();
+          if (playPromise !== undefined) {
+            playPromise.then(() => {
+              console.log('Video playing:', video.id);
+              updateControlsState(video, true);
+            }).catch(e => {
+              console.log('Autoplay blocked:', e.message);
+              updateControlsState(video, false);
+            });
+          }
+        }
+        
+        // Try playing when video is ready
+        if (video.readyState >= 3) {
+          attemptPlay();
+        } else {
+          video.addEventListener('canplay', attemptPlay, { once: true });
+        }
+      });
+      
       initializeVideoControls();
-    }, 100);
+    }, 200);
+  }
+}
+
+// Helper to update controls state
+function updateControlsState(video, isPlaying) {
+  const controls = video.parentElement?.querySelector('.video-controls');
+  if (!controls) return;
+  const icon = controls.querySelector('i');
+  
+  if (isPlaying) {
+    if (icon) icon.className = 'fa-solid fa-pause';
+    controls.classList.remove('paused');
+    controls.classList.add('playing');
+  } else {
+    if (icon) icon.className = 'fa-solid fa-play';
+    controls.classList.remove('playing');
+    controls.classList.add('paused');
   }
 }
 
 // Toggle video play/pause
 function toggleVideo(videoId) {
   const video = document.getElementById(videoId);
+  if (!video) return;
+  
+  // Ensure muted for mobile autoplay policy
+  video.muted = true;
+  
   const controls = video.parentElement.querySelector('.video-controls');
-  const icon = controls.querySelector('i');
+  const icon = controls ? controls.querySelector('i') : null;
 
   if (video.paused) {
-    video.play().catch(e => console.log('Video play failed:', e));
-    icon.className = 'fa-solid fa-pause';
-    controls.classList.remove('paused');
-    controls.classList.add('playing');
+    // Try to play
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        updateControlsState(video, true);
+      }).catch(e => {
+        console.log('Video play failed:', e);
+        // On mobile, reload and try again
+        video.load();
+        setTimeout(() => {
+          video.play().then(() => {
+            updateControlsState(video, true);
+          }).catch(e2 => {
+            console.log('Retry play failed:', e2);
+            updateControlsState(video, false);
+          });
+        }, 100);
+      });
+    }
   } else {
     video.pause();
-    icon.className = 'fa-solid fa-play';
-    controls.classList.remove('playing');
-    controls.classList.add('paused');
+    updateControlsState(video, false);
   }
 }
 
 // Initialize video controls and event listeners
 function initializeVideoControls() {
   document.querySelectorAll('.video-embed video, .video-cover video').forEach(video => {
-    // Remove existing listeners to prevent duplicates
-    video.replaceWith(video.cloneNode(true));
-    const newVideo = document.getElementById(video.id);
+    // Skip if already initialized
+    if (video.dataset.initialized) return;
+    video.dataset.initialized = 'true';
 
-    newVideo.addEventListener('ended', function () {
-      const controls = this.parentElement.querySelector('.video-controls');
+    // Sync controls with actual video state
+    function syncControls(vid) {
+      const controls = vid.parentElement.querySelector('.video-controls');
+      if (!controls) return;
       const icon = controls.querySelector('i');
+      
+      if (vid.paused) {
+        icon.className = 'fa-solid fa-play';
+        controls.classList.remove('playing');
+        controls.classList.add('paused');
+      } else {
+        icon.className = 'fa-solid fa-pause';
+        controls.classList.remove('paused');
+        controls.classList.add('playing');
+      }
+    }
 
-      icon.className = 'fa-solid fa-play';
-      controls.classList.remove('playing');
-      controls.classList.add('paused');
+    video.addEventListener('ended', function () {
+      // Loop is enabled, so it should restart automatically
+      // But sync controls just in case
+      syncControls(this);
     });
 
-    newVideo.addEventListener('click', function () {
+    video.addEventListener('click', function () {
       const videoId = this.id;
       toggleVideo(videoId);
     });
-
-    // Pause other videos when this one starts playing
-    newVideo.addEventListener('play', function () {
+    
+    // Handle play event - sync controls
+    video.addEventListener('play', function () {
+      syncControls(this);
+      // Pause other videos when this one starts playing
       document.querySelectorAll('.video-embed video, .video-cover video').forEach(otherVideo => {
         if (otherVideo !== this && !otherVideo.paused) {
-          toggleVideo(otherVideo.id);
+          otherVideo.pause();
+          syncControls(otherVideo);
         }
       });
     });
+    
+    // Handle pause event - sync controls
+    video.addEventListener('pause', function () {
+      syncControls(this);
+    });
+    
+    // Handle stalled/waiting events on mobile - try to recover
+    video.addEventListener('stalled', function () {
+      console.log('Video stalled, attempting recovery...');
+      const vid = this;
+      setTimeout(() => {
+        if (!vid.paused && vid.readyState < 3) {
+          vid.load();
+          vid.play().catch(e => console.log('Recovery play failed:', e));
+        }
+      }, 1000);
+    });
+    
+    video.addEventListener('waiting', function () {
+      console.log('Video waiting for data...');
+    });
+    
+    // Handle errors
+    video.addEventListener('error', function (e) {
+      console.error('Video error:', e);
+      syncControls(this);
+    });
+    
+    // Ensure video is ready to display and sync initial state
+    video.addEventListener('loadedmetadata', function() {
+      this.style.visibility = 'visible';
+    });
+    
+    video.addEventListener('canplay', function() {
+      // Sync controls when video is ready
+      syncControls(this);
+      // Try to play when ready (for mobile)
+      if (this.paused && this.dataset.shouldAutoplay !== 'false') {
+        this.play().catch(() => {});
+      }
+    });
+    
+    // Initial sync after setup
+    syncControls(video);
+    
+    // Use Intersection Observer for mobile - play when in view
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            // Video is in view, try to play
+            const vid = entry.target;
+            if (vid.paused) {
+              vid.muted = true; // Ensure muted for autoplay
+              vid.play().then(() => {
+                syncControls(vid);
+              }).catch(e => {
+                console.log('IntersectionObserver play failed:', e);
+              });
+            }
+          }
+        });
+      }, { threshold: 0.5 });
+      
+      observer.observe(video);
+    }
   });
 }
 
@@ -2220,14 +2502,21 @@ function initializeScrollToTop() {
   
   console.log('Scroll to top button created and added to body');
 
-  // Show/hide button based on scroll position
+  // Show/hide button based on scroll position - use passive listener for better performance
+  let scrollTicking = false;
   window.addEventListener('scroll', function() {
-    if (window.pageYOffset > 300) {
-      scrollBtn.classList.add('visible');
-    } else {
-      scrollBtn.classList.remove('visible');
+    if (!scrollTicking) {
+      requestAnimationFrame(function() {
+        if (window.pageYOffset > 300) {
+          scrollBtn.classList.add('visible');
+        } else {
+          scrollBtn.classList.remove('visible');
+        }
+        scrollTicking = false;
+      });
+      scrollTicking = true;
     }
-  });
+  }, { passive: true });
 
   scrollBtn.addEventListener('click', function() {
     window.scrollTo({ top: 0, behavior: 'smooth' });

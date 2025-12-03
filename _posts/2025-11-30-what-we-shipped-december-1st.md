@@ -72,3 +72,13 @@ The filter can be toggled from settings tab where the filter is listed under `Re
  - Health indicator falsely indicating 'degraded' health. 
  - The OpenReader has been optimised by removing unneccessary files and compiling individual icons to a single css file reducing overhead on load and offers faster loading.
  - Fixed Scroll-shake issue in insightroom. 
+
+## Encountered Glitch or weird bug's ?
+Examples:
+- Still showing old semester data / Site is stuck in old state.
+- Still facing scroll-shake issues ?
+
+You might need to clear the site data once and check if the issues still persists, Here's how you can clear data and old cache.
+[video:/assets/media/0d862b05-559b-44c6-b8fa-c9207d1ddfd1.webm]
+
+If you're still facing issues after clearing the data then you can raise an issue on the [Github Repo](https://github.com/Materioa/web-frontend).

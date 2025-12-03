@@ -62,6 +62,9 @@ body {
   background-repeat: no-repeat;
   background-size: 120px 32px;
   background-position: 20px center;
+  /* Promote to compositing layer for smoother scrolling */
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 

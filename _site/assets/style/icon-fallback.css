@@ -28,7 +28,7 @@
   .fa-book-open::after,
   .fa-book::after { content: " Open"; font-family: "Manrope", sans-serif; font-size: 0.75em; }
   
-  .fa-trash::after,
+
   .fa-trash-can::after { content: " Delete"; font-family: "Manrope", sans-serif; font-size: 0.75em; }
   
   .fa-xmark::after,
