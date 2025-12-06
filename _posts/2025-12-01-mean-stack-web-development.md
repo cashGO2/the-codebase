@@ -2,10 +2,11 @@
 title: MEAN Stack Web Development
 layout: post
 date: '2025-12-05 20:27:50'
-category: notes
+category: Originals
 excerpt: This resource provides basics about MEAN Stack and web development
 semester: 6
 subject: MEAN Stack Web Development
+hidden: true
 ---
 
 <!-- 

@@ -4,9 +4,10 @@ category: Legal
 title: About
 permalink: /whatisthis
 image: "/assets/img/covers/ec8782df-d1bd-4fbe-af79-12954b6dcae0.webp"
+no-ads: true 
 ---
 
-> Last Updated: 15-11-25
+> Last Updated: 05-12-25
 
 ### So, What is Materio? 
 Materio - A study SaaS that simplifies your CS preparation with verified, crowd-curated notes and fast access to semester-specific resources.
@@ -69,8 +70,8 @@ Materio - A study SaaS that simplifies your CS preparation with verified, crowd-
 - Since the public release, Materio has gained over 15K views with 3K Active Users in Just 3 Months.
 
 #### Some Interesting Numbers 
-- **Users till Date**: 8,500 and Counting
-- **Website Visits**: 50,000 (Since February, as of 15th November)
+- **Users till Date**: 11,000 and Counting
+- **Website Visits**: 65,000 (Since February, as of 5th December)
 
 ## Have a feedback that I can improve on?
 - Create a Issue in the Materio git repository.

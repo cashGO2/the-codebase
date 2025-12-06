@@ -239,13 +239,205 @@ body {
   margin: 1rem 0;
 }
 
-/* Blockquote styling */
+/* Blockquote styling */ 
 .post-body blockquote {
-  border-left: 4px solid var(--border);
   background: var(--card-bg);
   padding: 1rem 1.5rem;
   margin: 1.5rem 0;
-  border-radius: 8px;
+  border-radius: 12px;
+  position: relative;
+}
+
+/* Prevent ads inside blockquotes */
+.post-body blockquote .adsbygoogle,
+.post-body blockquote ins.adsbygoogle {
+  display: none !important;
+}
+
+/* GitHub-style Alerts/Callouts */
+.post-body blockquote p:first-child {
+  margin-top: 0;
+}
+
+.post-body blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* NOTE - Blue */
+.post-body .callout-note,
+.post-body blockquote.note {
+  background: transparent;
+  border-radius: 0;
+  border-left: 4px solid #0969da;
+  padding-left: 1rem;
+}
+
+body.dark-mode .post-body .callout-note,
+body.dark-mode .post-body blockquote.note {
+  background: transparent;
+  border-left-color: #2f81f7;
+}
+
+/* TIP - Green */
+.post-body .callout-tip,
+.post-body blockquote.tip {
+  background: transparent;
+  border-radius: 0;
+  border-left: 4px solid #1a7f37;
+  padding-left: 1rem;
+}
+
+body.dark-mode .post-body .callout-tip,
+body.dark-mode .post-body blockquote.tip {
+  background: transparent;
+  border-left-color: #3fb950;
+}
+
+/* IMPORTANT - Purple */
+.post-body .callout-important,
+.post-body blockquote.important {
+  background: transparent;
+  border-radius: 0;
+  border-left: 4px solid #8250df;
+  padding-left: 1rem;
+}
+
+body.dark-mode .post-body .callout-important,
+body.dark-mode .post-body blockquote.important {
+  background: transparent;
+  border-left-color: #a371f7;
+}
+
+/* WARNING - Amber/Orange */
+.post-body .callout-warning,
+.post-body blockquote.warning {
+  background: transparent;
+  border-radius: 0;
+  border-left: 4px solid #9a6700;
+  padding-left: 1rem;
+}
+
+body.dark-mode .post-body .callout-warning,
+body.dark-mode .post-body blockquote.warning {
+  background: transparent;
+  border-left-color: #d29922;
+}
+
+/* CAUTION - Red */
+.post-body .callout-caution,
+.post-body blockquote.caution {
+  background: transparent;
+  border-radius: 0;
+  border-left: 4px solid #d1242f;
+  padding-left: 1rem;
+}
+
+body.dark-mode .post-body .callout-caution,
+body.dark-mode .post-body blockquote.caution {
+  background: transparent;
+  border-left-color: #f85149;
+}
+
+/* Callout Title Styling */
+.callout-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.callout-title-note { color: #0969da; }
+.callout-title-tip { color: #1a7f37; }
+.callout-title-important { color: #8250df; }
+.callout-title-warning { color: #9a6700; }
+.callout-title-caution { color: #d1242f; }
+
+body.dark-mode .callout-title-note { color: #2f81f7; }
+body.dark-mode .callout-title-tip { color: #3fb950; }
+body.dark-mode .callout-title-important { color: #a371f7; }
+body.dark-mode .callout-title-warning { color: #d29922; }
+body.dark-mode .callout-title-caution { color: #f85149; }
+
+/* Callout Icon */
+.callout-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  font-size: 1rem;
+}
+
+.callout-icon-note { color: #0969da; }
+.callout-icon-tip { color: #1a7f37; }
+.callout-icon-important { color: #8250df; }
+.callout-icon-warning { color: #9a6700; }
+.callout-icon-caution { color: #d1242f; }
+
+body.dark-mode .callout-icon-note { color: #2f81f7; }
+body.dark-mode .callout-icon-tip { color: #3fb950; }
+body.dark-mode .callout-icon-important { color: #a371f7; }
+body.dark-mode .callout-icon-warning { color: #d29922; }
+body.dark-mode .callout-icon-caution { color: #f85149; }
+
+/* Callout Content */
+.callout-content {
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* Additional styled quote variants */
+.post-body blockquote.success {
+  background: transparent;
+  border-radius: 0;
+  border-left: 4px solid #1a7f37;
+  padding-left: 1rem;
+}
+
+body.dark-mode .post-body blockquote.success {
+  background: transparent;
+  border-left-color: #3fb950;
+}
+
+.post-body blockquote.info {
+  background: transparent;
+  border-radius: 0;
+  border-left: 4px solid #0969da;
+  padding-left: 1rem;
+}
+
+body.dark-mode .post-body blockquote.info {
+  background: transparent;
+  border-left-color: #2f81f7;
+}
+
+.post-body blockquote.quote {
+  background: #f5f5f5;
+  font-style: italic;
+  position: relative;
+}
+
+.post-body blockquote.quote::before {
+  content: '"';
+  font-size: 4rem;
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  color: rgba(0, 0, 0, 0.1);
+  font-family: Georgia, serif;
+  line-height: 1;
+}
+
+body.dark-mode .post-body blockquote.quote {
+  background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
+}
+
+body.dark-mode .post-body blockquote.quote::before {
+  color: rgba(255, 255, 255, 0.1);
 }
 
 /* Cover image sizing fix */
@@ -1128,13 +1320,71 @@ table td code {
 
   /* Blockquotes */
   .post-body blockquote {
-    border-left: 2pt solid #000 !important;
-    background: #f9f9f9 !important;
-    padding: 0.5rem !important;
+    border-left: 4px solid #ddd !important;
+    background: transparent !important;
+    padding: 0.5rem 0.5rem 0.5rem 1rem !important;
     margin: 0.5rem 0 !important;
-    border-radius: 8px !important;
+    border-radius: 0 !important;
     font-style: italic !important;
     page-break-inside: avoid !important;
+  }
+
+  /* Ensure callout titles are not italic in print */
+  .post-body blockquote .callout-title {
+    font-style: normal !important;
+  }
+
+  /* Callout styles for print */
+  .post-body .callout-note,
+  .post-body blockquote.note {
+    background: transparent !important;
+    border-left: 4px solid #0969da !important;
+    border-radius: 0 !important;
+  }
+  .post-body .callout-tip,
+  .post-body blockquote.tip {
+    background: transparent !important;
+    border-left: 4px solid #1a7f37 !important;
+    border-radius: 0 !important;
+  }
+  .post-body .callout-important,
+  .post-body blockquote.important {
+    background: transparent !important;
+    border-left: 4px solid #8250df !important;
+    border-radius: 0 !important;
+  }
+  .post-body .callout-warning,
+  .post-body blockquote.warning {
+    background: transparent !important;
+    border-left: 4px solid #9a6700 !important;
+    border-radius: 0 !important;
+  }
+  .post-body .callout-caution,
+  .post-body blockquote.caution {
+    background: transparent !important;
+    border-left: 4px solid #d1242f !important;
+    border-radius: 0 !important;
+  }
+
+  /* Additional styled quote variants */
+  .post-body blockquote.success {
+    background: transparent !important;
+    border-left: 4px solid #1a7f37 !important;
+    border-radius: 0 !important;
+  }
+
+  .post-body blockquote.info {
+    background: transparent !important;
+    border-left: 4px solid #0969da !important;
+    border-radius: 0 !important;
+  }
+
+  .callout-title {
+    font-weight: bold !important;
+    margin-bottom: 0.25rem !important;
+  }
+  .callout-icon {
+    margin-right: 0.25rem !important;
   }
 
   /* Tables - keep border radius */

@@ -40,6 +40,19 @@
 <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/sharp-light.css">
 <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/duotone.css">
 <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/brands.css">
+  
+  <!-- Load Hugeicons CSS if enabled -->
+  <script>
+    (function() {
+      if (localStorage.getItem('materio_ota_hugeicons') === 'true') {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://use.hugeicons.com/font/icons.css';
+        document.head.appendChild(link);
+      }
+    })();
+  </script>
+  
   <script>
     window.addEventListener('load', function () {
       if (typeof QRCode !== 'undefined') {
@@ -172,7 +185,7 @@
 </header>
   <link rel="stylesheet" href="/assets/style/post.css">
 
-<main class="post-container" style="font-family: 'Manrope', sans-serif;"  data-category="Notes" >
+<main class="post-container" style="font-family: 'Manrope', sans-serif;"  data-category="Originals" >
   <article class="post" style="max-width: 700px; margin: 0 auto;">
     
     
@@ -183,7 +196,7 @@
         <div class="post-date-pill" style="border-radius: 20px; padding: 0.4rem 0.8rem; font-size: 12px;">
           November 29, 2025
           
-            • Notes
+            • Originals
           
           
           
@@ -195,7 +208,7 @@
         <div class="print-meta" style="display: none;">
           November 29, 2025
           
-            • Notes
+            • Originals
           
           
           

@@ -40,6 +40,19 @@
 <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/sharp-light.css">
 <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/duotone.css">
 <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/brands.css">
+  
+  <!-- Load Hugeicons CSS if enabled -->
+  <script>
+    (function() {
+      if (localStorage.getItem('materio_ota_hugeicons') === 'true') {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://use.hugeicons.com/font/icons.css';
+        document.head.appendChild(link);
+      }
+    })();
+  </script>
+  
   <script>
     window.addEventListener('load', function () {
       if (typeof QRCode !== 'undefined') {

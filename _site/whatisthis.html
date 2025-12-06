@@ -40,6 +40,19 @@
 <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/sharp-light.css">
 <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/duotone.css">
 <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/brands.css">
+  
+  <!-- Load Hugeicons CSS if enabled -->
+  <script>
+    (function() {
+      if (localStorage.getItem('materio_ota_hugeicons') === 'true') {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://use.hugeicons.com/font/icons.css';
+        document.head.appendChild(link);
+      }
+    })();
+  </script>
+  
   <script>
     window.addEventListener('load', function () {
       if (typeof QRCode !== 'undefined') {
@@ -172,7 +185,7 @@
 </header>
   <link rel="stylesheet" href="/assets/style/post.css">
 
-<main class="post-container" style="font-family: 'Manrope', sans-serif;"  data-category="Legal" >
+<main class="post-container" style="font-family: 'Manrope', sans-serif;"  data-category="Legal" data-no-ads="true">
   <article class="post" style="max-width: 700px; margin: 0 auto;">
     
     
@@ -290,7 +303,7 @@
 
     <div class="post-layout">
       <div class="post-body"><blockquote>
-  <p>Last Updated: 15-11-25</p>
+  <p>Last Updated: 05-12-25</p>
 </blockquote>
 
 <h3 id="so-what-is-materio">So, What is Materio?</h3>
@@ -373,8 +386,8 @@
 
 <h4 id="some-interesting-numbers">Some Interesting Numbers</h4>
 <ul>
-  <li><strong>Users till Date</strong>: 8,500 and Counting</li>
-  <li><strong>Website Visits</strong>: 50,000 (Since February, as of 15th November)</li>
+  <li><strong>Users till Date</strong>: 11,000 and Counting</li>
+  <li><strong>Website Visits</strong>: 65,000 (Since February, as of 5th December)</li>
 </ul>
 
 <h2 id="have-a-feedback-that-i-can-improve-on">Have a feedback that I can improve on?</h2>

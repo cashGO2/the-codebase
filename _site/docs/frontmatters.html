@@ -40,6 +40,19 @@
 <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/sharp-light.css">
 <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/duotone.css">
 <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/brands.css">
+  
+  <!-- Load Hugeicons CSS if enabled -->
+  <script>
+    (function() {
+      if (localStorage.getItem('materio_ota_hugeicons') === 'true') {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://use.hugeicons.com/font/icons.css';
+        document.head.appendChild(link);
+      }
+    })();
+  </script>
+  
   <script>
     window.addEventListener('load', function () {
       if (typeof QRCode !== 'undefined') {
@@ -188,7 +201,7 @@
           
           
           
-          <span class="reading-time">• 11 min read</span>
+          <span class="reading-time">• 13 min read</span>
         </div>
         
         <!-- Print-only clean meta information -->
@@ -200,7 +213,7 @@
           
           
           
-          <span class="reading-time">• 11 minute read</span>
+          <span class="reading-time">• 13 minute read</span>
         </div>
         
         <!-- Previous Post Button -->
@@ -474,18 +487,21 @@
         </ul>
       </li>
       <li>
-        <p>In-content tags parsed by <code class="language-plaintext highlighter-rouge">assets/scripts/post.js</code> (literal examples below):</p>
+        <p>In-content tags parsed by <code class="language-plaintext highlighter-rouge">assets/scripts/post.js</code>:</p>
 
-        <div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- Attachment tag: pattern exactly `/\[attachment:(.+):([^\]]+)\]/g`
-  - Capture groups: 1=filePath (greedy up to the last colon), 2=displayName.
-  - Example: [attachment:/assets/files/guide.pdf:Download Guide]
-  - Replacement: The script replaces the tag with an `.attachment-card` element and sets `data-file-path` and `data-attachment-id` on the rendered card. `initializeAttachmentCards()` then generates previews and click handlers.
+        <ul>
+          <li>
+            <p><strong>Attachment tag</strong> — Embeds a downloadable file with preview:
+<code class="language-plaintext highlighter-rouge">[attachment:/path/to/file.pdf:Display Name]</code></p>
+          </li>
+          <li>
+            <p><strong>Video tag</strong> — Embeds a video player:
+<code class="language-plaintext highlighter-rouge">[video: /path/to/video.mp4]</code></p>
 
-- Video tag: pattern exactly `/\[video:([^\]]+)\]/g`
-  - Parsed by splitting on `:`; parts[0] is the videoPath, parts[1] (optional) may be the string `cover` to make the video a cover element.
-  - Example: [video:/assets/video/intro.mp4] or [video:/assets/video/intro.mp4:cover]
-  - Replacement: The script emits a `&lt;video&gt;` block with `video-embed` or `video-cover` wrapper and initializes play/pause controls (`toggleVideo`, `initializeVideoControls`).
-</code></pre></div>        </div>
+            <p>Or as a cover video:
+<code class="language-plaintext highlighter-rouge">[video: /path/to/video.mp4:cover]</code></p>
+          </li>
+        </ul>
       </li>
       <li>Code blocks and language hints:
         <ul>
@@ -610,6 +626,213 @@
   <li>Run a local build to get a line/column pointer to the error.</li>
   <li>If you still can’t find it, temporarily remove parts of the front-matter (binary search) until the build error disappears, then re-add carefully.</li>
 </ol>
+
+<hr />
+
+<h2 id="github-style-callouts--alerts">GitHub-style Callouts / Alerts</h2>
+
+<p>Materio supports GitHub-flavored markdown alerts using the <code class="language-plaintext highlighter-rouge">[!TYPE]</code> syntax inside blockquotes. These are automatically styled with icons (FontAwesome or Hugeicons based on user preference) and beautiful gradient backgrounds.</p>
+
+<h3 id="available-callout-types">Available Callout Types</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Usage</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">[!NOTE]</code></td>
+      <td>General information</td>
+      <td>Useful info users should know</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">[!TIP]</code></td>
+      <td>Helpful advice</td>
+      <td>Tips for doing things better</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">[!IMPORTANT]</code></td>
+      <td>Key information</td>
+      <td>Critical info to achieve goals</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">[!WARNING]</code></td>
+      <td>Urgent attention</td>
+      <td>Issues needing immediate attention</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">[!CAUTION]</code></td>
+      <td>Risk advisory</td>
+      <td>Warns about negative outcomes</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="syntax">Syntax</h3>
+
+<blockquote>
+  <p>[!NOTE]
+Useful information that users should know, even when skimming content.</p>
+</blockquote>
+
+<blockquote>
+  <p>[!TIP]
+Helpful advice for doing things better or more easily.</p>
+</blockquote>
+
+<blockquote>
+  <p>[!IMPORTANT]
+Key information users need to know to achieve their goal.</p>
+</blockquote>
+
+<blockquote>
+  <p>[!WARNING]
+Urgent info that needs immediate user attention to avoid problems.</p>
+</blockquote>
+
+<blockquote>
+  <p>[!CAUTION]
+Advises about risks or negative outcomes of certain actions.</p>
+</blockquote>
+
+<h3 id="color-reference">Color Reference</h3>
+
+<p><strong>Light Mode Gradients:</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Callout</th>
+      <th>Start Color</th>
+      <th>End Color</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>NOTE</td>
+      <td><code class="language-plaintext highlighter-rouge">#b3d9f7</code></td>
+      <td><code class="language-plaintext highlighter-rouge">#d6ebfc</code></td>
+    </tr>
+    <tr>
+      <td>TIP</td>
+      <td><code class="language-plaintext highlighter-rouge">#b8e6c1</code></td>
+      <td><code class="language-plaintext highlighter-rouge">#d4f0da</code></td>
+    </tr>
+    <tr>
+      <td>IMPORTANT</td>
+      <td><code class="language-plaintext highlighter-rouge">#dbb8eb</code></td>
+      <td><code class="language-plaintext highlighter-rouge">#ead4f2</code></td>
+    </tr>
+    <tr>
+      <td>WARNING</td>
+      <td><code class="language-plaintext highlighter-rouge">#f5d88a</code></td>
+      <td><code class="language-plaintext highlighter-rouge">#faebc2</code></td>
+    </tr>
+    <tr>
+      <td>CAUTION</td>
+      <td><code class="language-plaintext highlighter-rouge">#f5b3b3</code></td>
+      <td><code class="language-plaintext highlighter-rouge">#f9d4d4</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Dark Mode Gradients:</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Callout</th>
+      <th>Start Color</th>
+      <th>End Color</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>NOTE</td>
+      <td><code class="language-plaintext highlighter-rouge">#1a3a5c</code></td>
+      <td><code class="language-plaintext highlighter-rouge">#1e2a3a</code></td>
+    </tr>
+    <tr>
+      <td>TIP</td>
+      <td><code class="language-plaintext highlighter-rouge">#1b3d1f</code></td>
+      <td><code class="language-plaintext highlighter-rouge">#1e2e1f</code></td>
+    </tr>
+    <tr>
+      <td>IMPORTANT</td>
+      <td><code class="language-plaintext highlighter-rouge">#3d1a47</code></td>
+      <td><code class="language-plaintext highlighter-rouge">#2e1e2e</code></td>
+    </tr>
+    <tr>
+      <td>WARNING</td>
+      <td><code class="language-plaintext highlighter-rouge">#4a3000</code></td>
+      <td><code class="language-plaintext highlighter-rouge">#3e2e1e</code></td>
+    </tr>
+    <tr>
+      <td>CAUTION</td>
+      <td><code class="language-plaintext highlighter-rouge">#4a1a1a</code></td>
+      <td><code class="language-plaintext highlighter-rouge">#3e1e1e</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="icon-support">Icon Support</h3>
+
+<p>Icons are rendered using either <strong>FontAwesome</strong> or <strong>Hugeicons</strong> depending on the <code class="language-plaintext highlighter-rouge">materio_ota_hugeicons</code> localStorage flag:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Callout</th>
+      <th>FontAwesome</th>
+      <th>Hugeicons</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>NOTE</td>
+      <td><code class="language-plaintext highlighter-rouge">fa-solid fa-circle-info</code></td>
+      <td><code class="language-plaintext highlighter-rouge">hgi-stroke hgi-information-circle</code></td>
+    </tr>
+    <tr>
+      <td>TIP</td>
+      <td><code class="language-plaintext highlighter-rouge">fa-solid fa-lightbulb</code></td>
+      <td><code class="language-plaintext highlighter-rouge">hgi-stroke hgi-bulb</code></td>
+    </tr>
+    <tr>
+      <td>IMPORTANT</td>
+      <td><code class="language-plaintext highlighter-rouge">fa-solid fa-circle-exclamation</code></td>
+      <td><code class="language-plaintext highlighter-rouge">hgi-stroke hgi-alert-circle</code></td>
+    </tr>
+    <tr>
+      <td>WARNING</td>
+      <td><code class="language-plaintext highlighter-rouge">fa-solid fa-triangle-exclamation</code></td>
+      <td><code class="language-plaintext highlighter-rouge">hgi-stroke hgi-alert-02</code></td>
+    </tr>
+    <tr>
+      <td>CAUTION</td>
+      <td><code class="language-plaintext highlighter-rouge">fa-solid fa-hand</code></td>
+      <td><code class="language-plaintext highlighter-rouge">hgi-stroke hgi-stop-sign</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="additional-blockquote-classes">Additional Blockquote Classes</h3>
+
+<p>You can also use CSS classes directly on blockquotes for custom styling:</p>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gt">&gt; This is a success message.</span>
+{: .success}
+<span class="gt">
+&gt; This is an info message.</span>
+{: .info}
+<span class="gt">
+&gt; "This is a styled quote."</span>
+{: .quote}
+</code></pre></div></div>
 
 </div>
 

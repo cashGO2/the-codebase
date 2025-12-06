@@ -124,19 +124,17 @@ Other keys you might encounter depending on needs:
       - `data-category` — mapped from `page.category`; read by `injectInArticleAds()` and by the home/index filtering scripts.
       - `data-visibility` — mapped when `page.visibility == 'private'`; used by several client-side filters and by home page listing code.
 
-    - In-content tags parsed by `assets/scripts/post.js` (literal examples below):
+    - In-content tags parsed by `assets/scripts/post.js`:
 
-      ```text
-      - Attachment tag: pattern exactly `/\[attachment:(.+):([^\]]+)\]/g`
-        - Capture groups: 1=filePath (greedy up to the last colon), 2=displayName.
-        - Example: [attachment:/assets/files/guide.pdf:Download Guide]
-        - Replacement: The script replaces the tag with an `.attachment-card` element and sets `data-file-path` and `data-attachment-id` on the rendered card. `initializeAttachmentCards()` then generates previews and click handlers.
+      - **Attachment tag** — Embeds a downloadable file with preview:
+        `[attachment:/path/to/file.pdf:Display Name]`
 
-      - Video tag: pattern exactly `/\[video:([^\]]+)\]/g`
-        - Parsed by splitting on `:`; parts[0] is the videoPath, parts[1] (optional) may be the string `cover` to make the video a cover element.
-        - Example: [video:/assets/video/intro.mp4] or [video:/assets/video/intro.mp4:cover]
-        - Replacement: The script emits a `<video>` block with `video-embed` or `video-cover` wrapper and initializes play/pause controls (`toggleVideo`, `initializeVideoControls`).
-      ```
+      - **Video tag** — Embeds a video player:
+        `[video: /path/to/video.mp4]`
+        
+        
+        Or as a cover video:
+        `[video: /path/to/video.mp4:cover]`
 
     - Code blocks and language hints:
       - `assets/scripts/post-base.js` detects language labels using common patterns (Rouge `language-...` classes, highlight.js classes, `pre` classes) and will also read `data-language` on the `code` or `pre` elements. Authors can set the language explicitly by using fenced code blocks (```js) which generate `language-...` classes, or by adding `data-language="python"` to the `pre`/`code` when needed.
@@ -249,4 +247,87 @@ robots: noindex
 3. Ensure the file starts with `---` and ends the front-matter with `---` before the content.
 4. Run a local build to get a line/column pointer to the error.
 5. If you still can't find it, temporarily remove parts of the front-matter (binary search) until the build error disappears, then re-add carefully.
+
+---
+
+## GitHub-style Callouts / Alerts
+
+Materio supports GitHub-flavored markdown alerts using the `[!TYPE]` syntax inside blockquotes. These are automatically styled with icons (FontAwesome or Hugeicons based on user preference) and beautiful gradient backgrounds.
+
+### Available Callout Types
+
+| Type | Usage | Purpose |
+|------|-------|---------|
+| `[!NOTE]` | General information | Useful info users should know |
+| `[!TIP]` | Helpful advice | Tips for doing things better |
+| `[!IMPORTANT]` | Key information | Critical info to achieve goals |
+| `[!WARNING]` | Urgent attention | Issues needing immediate attention |
+| `[!CAUTION]` | Risk advisory | Warns about negative outcomes |
+
+### Syntax
+
+> [!NOTE]
+> Useful information that users should know, even when skimming content.
+
+> [!TIP]
+> Helpful advice for doing things better or more easily.
+
+> [!IMPORTANT]
+> Key information users need to know to achieve their goal.
+
+> [!WARNING]
+> Urgent info that needs immediate user attention to avoid problems.
+
+> [!CAUTION]
+> Advises about risks or negative outcomes of certain actions.
+
+
+### Color Reference
+
+**Light Mode Gradients:**
+
+| Callout | Start Color | End Color |
+|---------|-------------|-----------|
+| NOTE | `#b3d9f7` | `#d6ebfc` |
+| TIP | `#b8e6c1` | `#d4f0da` |
+| IMPORTANT | `#dbb8eb` | `#ead4f2` |
+| WARNING | `#f5d88a` | `#faebc2` |
+| CAUTION | `#f5b3b3` | `#f9d4d4` |
+
+**Dark Mode Gradients:**
+
+| Callout | Start Color | End Color |
+|---------|-------------|-----------|
+| NOTE | `#1a3a5c` | `#1e2a3a` |
+| TIP | `#1b3d1f` | `#1e2e1f` |
+| IMPORTANT | `#3d1a47` | `#2e1e2e` |
+| WARNING | `#4a3000` | `#3e2e1e` |
+| CAUTION | `#4a1a1a` | `#3e1e1e` |
+
+### Icon Support
+
+Icons are rendered using either **FontAwesome** or **Hugeicons** depending on the `materio_ota_hugeicons` localStorage flag:
+
+| Callout | FontAwesome | Hugeicons |
+|---------|-------------|-----------|
+| NOTE | `fa-solid fa-circle-info` | `hgi-stroke hgi-information-circle` |
+| TIP | `fa-solid fa-lightbulb` | `hgi-stroke hgi-bulb` |
+| IMPORTANT | `fa-solid fa-circle-exclamation` | `hgi-stroke hgi-alert-circle` |
+| WARNING | `fa-solid fa-triangle-exclamation` | `hgi-stroke hgi-alert-02` |
+| CAUTION | `fa-solid fa-hand` | `hgi-stroke hgi-stop-sign` |
+
+### Additional Blockquote Classes
+
+You can also use CSS classes directly on blockquotes for custom styling:
+
+```markdown
+> This is a success message.
+{: .success}
+
+> This is an info message.
+{: .info}
+
+> "This is a styled quote."
+{: .quote}
+```
 

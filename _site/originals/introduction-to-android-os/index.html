@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/assets/img/room-icon-x.svg" sizes="256x256">
+
+  <meta property="og:title" content="Materio - The InsightRoom">
+  <meta property="og:description" content="The InsightRoom is a place to find insightful reads">
+  <meta property="og:image" itemprop="image" content="https://materioa.vercel.app/assets/img/og-theinsroom.jpg">
+  <meta property="og:image:secure_url" itemprop="image"
+    content="https://materioa.vercel.app/assets/img/og-theinsroom.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://materioa.vercel.app/blog">
+  <meta property="og:type" content="website">
+  <title>Introduction to Android OS</title>
+  <link rel="stylesheet" href="/assets/style/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body);"></script>
+  <link id="highlight-theme"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <!-- <script src="https://cdn.jsdelivr.net/npm/@r3dz0n3/fontawesome-pro@6.3.0/js/fontawesome.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@r3dz0n3/fontawesome-pro@6.3.0/css/all.css"> -->
+  <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/all.css">
+<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/sharp-solid.css">
+<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/sharp-regular.css">
+<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/sharp-light.css">
+<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/duotone.css">
+<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/brands.css">
+  
+  <!-- Load Hugeicons CSS if enabled -->
+  <script>
+    (function() {
+      if (localStorage.getItem('materio_ota_hugeicons') === 'true') {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://use.hugeicons.com/font/icons.css';
+        document.head.appendChild(link);
+      }
+    })();
+  </script>
+  
+  <script>
+    window.addEventListener('load', function () {
+      if (typeof QRCode !== 'undefined') {
+      }
+    });
+  </script>
+  <style>
+    /* Default link color for light mode */
+    body { --link: #000000; }
+    body.dark {
+      --bg: #121212;
+      --text: #eeeeee;
+      --link: #3ea6ff;
+      --card-bg: #1e1e1e;
+      --border: #333;
+    }
+    .dark .site-header {
+      background-color: rgba(33, 33, 33, 0.5);
+      background-image: url('/assets/img/materio_new_wh.svg');
+    }
+    body.blog-layout .site-header {
+      background-image: url('/assets/img/banner.svg');
+      width: 575px;
+    }
+    body.blog-layout.dark .site-header {
+      background-image: url('/assets/img/banner.svg');
+    }
+    /* Mobile: ensure header is full width and properly sized */
+    @media (max-width: 768px) {
+      body.blog-layout .site-header,
+      body.blog-layout.dark .site-header {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+    }
+    /* Use Libre Baskerville for emphasized/italic text in posts */
+    article em, article i, .post-content em, .post-content i, .changelog-excerpt em, .changelog-excerpt i {
+      font-family: 'Libre Baskerville', serif;
+      font-style: italic;
+      font-weight: 400;
+    }
+    /* Link pill styling for in-post links */
+    .post-body a.link-pill,
+    .post-content a.link-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.04);
+      color: var(--link, #0b66c3);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      line-height: 1;
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    .post-body a.link-pill i.fa-regular,
+    .post-content a.link-pill i.fa-regular {
+      opacity: 0.9;
+      font-size: 0.9rem;
+      margin-left: 0.1rem;
+    }
+    /* Label inside the pill; truncates with ellipsis when long */
+    .post-body a.link-pill .pill-label,
+    .post-content a.link-pill .pill-label {
+      display: inline-block;
+      max-width: 18ch;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    body.dark .post-body a.link-pill,
+    body.dark .post-content a.link-pill {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.04);
+      color: var(--text);
+    }
+    /* (previously used ::after for domain) */
+    /* Skip pill styling for images inside anchors */
+    .post-body a.link-pill img,
+    .post-content a.link-pill img {
+      display: inline-block;
+      max-height: 1.2rem;
+    }
+    /* Ensure the icon sits at the very end of the pill */
+    .post-body a.link-pill i.fa-regular,
+    .post-content a.link-pill i.fa-regular { order: 2; }
+    .post-body a.link-pill .pill-label,
+    .post-content a.link-pill .pill-label { order: 1; }
+    @media (max-width: 640px) {
+      .post-body a.link-pill::after,
+      .post-content a.link-pill::after { display: none; }
+      .post-body a.link-pill, .post-content a.link-pill { font-size: 0.92rem; }
+    }
+  </style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MJ4P8TZNBR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-MJ4P8TZNBR');
+</script>
+<body>
+  <header class="site-header">
+  <a href="/#" class="header-logo" role="button" aria-label="Go to homepage"></a>
+  
+  <button class="toc-toggle" aria-label="Toggle table of contents" title="Toggle table of contents">
+    <i class="fa-light fa-sidebar"></i>
+  </button>
+  
+
+  <!-- Search box for home layout -->
+  
+
+  <!-- Exit icon for post pages -->
+  
+  <a href="javascript:void(0)"
+    style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--text); text-decoration: none; font-size: 1.2rem;"
+    onclick="if (document.referrer) history.back(); else window.location.href='/room';"
+    onmousedown="this.style.color='#ff8200'" onmouseup="this.style.color='var(--text)'"
+    onmouseleave="this.style.color='var(--text)'" aria-label="Back">
+    <i class="fa-regular fa-arrow-left-from-bracket"></i>
+  </a>
+
+  
+</header>
+  <link rel="stylesheet" href="/assets/style/post.css">
+
+<main class="post-container" style="font-family: 'Manrope', sans-serif;"  data-category="Originals" >
+  <article class="post" style="max-width: 700px; margin: 0 auto;">
+    
+    
+    <div style="text-align: center;">
+      <!-- Date, Category, and Navigation Pills -->
+      <div style="display: flex; justify-content: center; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;">
+        <!-- Date and Category Pill -->
+        <div class="post-date-pill" style="border-radius: 20px; padding: 0.4rem 0.8rem; font-size: 12px;">
+          December 06, 2025
+          
+            • Originals
+          
+          
+          
+          
+          <span class="reading-time">• 23 min read</span>
+        </div>
+        
+        <!-- Print-only clean meta information -->
+        <div class="print-meta" style="display: none;">
+          December 06, 2025
+          
+            • Originals
+          
+          
+          
+          
+          <span class="reading-time">• 23 minute read</span>
+        </div>
+        
+        <!-- Previous Post Button -->
+        
+        
+        <!-- Next Post Button -->
+        
+      </div>
+
+      <p class="post-title" style="font-size: 32px;font-weight: bold;">
+        Introduction to Android OS
+        
+      </p>
+
+      
+      <p class="post-description" style="font-size: 14px; margin-top: 0.5rem; color: var(--gray);">
+        This resource provides overview about Android, its Architecture, Versions, Features, Open Handset Alliance, Dalvik VM, SDK, Development Tools and Environment, AVD, Directory structure and Manifest files
+      </p>
+      
+
+      
+      <div style="display: block; position: relative; margin: 1.5rem auto; max-width: 700px;">
+        <div class="post-image-frame" style="padding: 5px; border-radius: 17px;">
+          
+            <!-- Image cover -->
+            <img src="/assets/img/covers/070444b6-4a51-4695-8049-6710ccefe078.webp" alt="Cover image" class="post-cover" style="border-radius: 12px; display: block; width: 100%; height: auto; object-fit: cover;" />
+          
+        </div>
+      </div>
+      
+      
+      <!-- Author and Share Row (can be disabled via front matter flags) -->
+      
+      <div class="author-share-row" style="display: flex; justify-content: space-between; align-items: center; margin: 0.5rem auto; max-width: 700px; padding: 0 1rem;">
+        <!-- Author Profile Section -->
+        <div style="display: flex; align-items: center; gap: 0.8rem;">
+          
+          
+          
+          <div class="author-avatar" style="width: 35px; height: 35px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(0,0,0,0.1);">
+            <img src="data:image/webp;base64,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" alt="Materio" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <div class="author-info">
+            <div class="author-name" style="font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.2;">Materio</div>
+          </div>
+          
+        </div>
+
+        <!-- Share, Print, and Listen icons -->
+        <div style="display: flex; justify-content: center; align-items: center; gap: 1rem;">
+          
+          <!-- Listen to Post Component -->
+          <div id="listen-component" class="listen-pill" style="display: flex; align-items: center; background: rgba(0,0,0,0.05); border-radius: 20px; padding: 0.3rem 0.6rem; cursor: pointer; transition: all 0.2s ease;" onclick="console.log('Listen clicked'); toggleListen();">
+            <i id="listen-icon" class="fa-solid fa-play" style="font-size: 12px; margin-right: 0.4rem; color: #333;"></i>
+            <div class="waveform-container" style="display: flex; align-items: center; gap: 1px; margin-right: 0.4rem;">
+              <div class="wave-bar" style="width: 2px; height: 8px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 12px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 6px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 10px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 8px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 14px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 9px; background: #666; border-radius: 1px;"></div>
+              <div class="wave-bar" style="width: 2px; height: 11px; background: #666; border-radius: 1px;"></div>
+            </div>
+            <span id="listen-duration" style="font-size: 11px; color: #666; font-weight: 500;">Listen</span>
+          </div>
+          
+          
+          <!-- Seek controls (only visible when playing/paused) -->
+          <div id="seek-controls" class="seek-controls" style="display: none; align-items: center; gap: 0.3rem; margin-left: 0.5rem;">
+            <button onclick="seekBackward()" class="seek-btn" title="Go back 5 seconds" style="background: none; border: none; color: #666; cursor: pointer; padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
+              <i class="fa-solid fa-backward" style="font-size: 10px;"></i>
+            </button>
+            <button onclick="seekForward()" class="seek-btn" title="Skip forward 5 seconds" style="background: none; border: none; color: #666; cursor: pointer; padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
+              <i class="fa-solid fa-forward" style="font-size: 10px;"></i>
+            </button>
+            <button onclick="stopAudio()" class="seek-btn stop-btn" title="Stop" style="background: none; border: none; color: #d32f2f; cursor: pointer; padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
+              <i class="fa-solid fa-stop" style="font-size: 10px;"></i>
+            </button>
+          </div>
+
+          
+          <i class="fa-regular fa-link-simple" onclick="sharePost()" style="transform: rotate(-45deg); font-size: 14px; cursor: pointer; color: var(--text);" title="Share"></i>
+          
+          
+          <i class="fa-regular fa-print" onclick="printPost()" style="font-size: 14px; cursor: pointer; color: var(--text);" title="Print"></i>
+          
+        </div>
+      </div>
+      
+    </div>
+
+    
+    <!-- AI Summary Section -->
+    <div id="ai-summary-section" class="ai-summary-section" style="border-radius: 12px; padding: 1.5rem; margin: 2rem auto; display: none;">
+      <div id="summary-header" style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none;" onclick="toggleSummary()">
+        <div style="display: flex; align-items: center;">
+          <i class="fa-solid fa-wand-magic-sparkles" style="margin-right: 0.5rem; font-size: 18px;"></i>
+          <h3 style="margin: 0; font-size: 18px; font-weight: 600;">Summary</h3>
+        </div>
+        <i id="summary-chevron" class="fa-solid fa-chevron-down" style="transition: transform 0.3s ease;"></i>
+      </div>
+      <div id="ai-summary-content" style="line-height: 1.6; margin-top: 1rem; display: none;">
+        <p id="summary-placeholder" style="margin: 0; font-style: italic; opacity: 0.7;">
+          Click to generate AI summary...
+        </p>
+        <div id="summary-text" style="display: none;"></div>
+        
+        <!-- Follow-up Question Box -->
+        <div id="followup-section" style="margin-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 1rem; display: none;">
+          <div style="display: flex; align-items: center; margin-bottom: 0.75rem;">
+            <i class="fa-solid fa-question-circle" style="margin-right: 0.5rem; font-size: 14px; opacity: 0.7;"></i>
+            <span style="font-size: 14px; font-weight: 600; opacity: 0.8;">Ask a Follow up:</span>
+          </div>
+          
+          <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
+            <div class="followup-pill" style="position: relative; flex: 1; display: flex; align-items: center; background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.2); border-radius: 25px; padding: 0.5rem 3rem 0.5rem 1rem;">
+              <input type="text" id="followup-input" placeholder="e.g., What are the main benefits discussed?" 
+                     style="flex: 1; border: none; background: transparent; font-size: 14px; outline: none;" 
+                     onkeypress="handleFollowupKeypress(event)">
+              <button onclick="askFollowupQuestion()" id="followup-btn" 
+                      style="position: absolute; right: 4px; width: 32px; height: 32px; background: #ff8200; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;">
+                <i class="fa-solid fa-arrow-up" style="font-size: 12px;"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div id="followup-response" style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(0,0,0,0.03); border-radius: 6px; display: none; font-size: 14px; line-height: 1.5;">
+          </div>
+        </div>
+      </div>
+    </div>
+    
+
+
+    <div class="post-layout">
+      <div class="post-body"><p>Android is a mobile operating system that powers most of today’s smartphones and many other smart devices, built mainly for touchscreens and developed by Google using open‑source technologies. It provides the basic “brain” that lets apps run, manages hardware like camera and sensors, and gives the familiar home screen, notifications, and settings you use every day.</p>
+
+<h2 id="what-android-actually-is">What Android Actually Is</h2>
+
+<ul>
+  <li><strong>Linux-based OS</strong>: Android sits between your device’s hardware (CPU, memory, sensors) and your apps, controlling how everything works together. It uses a modified Linux kernel plus additional Android‑specific components to handle tasks such as memory management, security, networking, and power efficiently on mobile devices.</li>
+  <li><strong>Open Source</strong>: Phone companies and developers are allowed to view, modify, and adapt the system to their own devices and needs. On top of this core system, Google adds its own services (like Play Store and Google apps), which many manufacturers bundle on their phones and tablets.</li>
+</ul>
+
+<h2 id="where-android-is-used">Where Android Is Used</h2>
+
+<ul>
+  <li><strong>Diverse Devices</strong>: Although Android started for smartphones, it now powers a wide range of devices such as tablets, smart TVs, car systems (Android Auto), and smartwatches (Wear OS). Variants and custom builds also appear in devices like game consoles, cameras, home automation systems, and other consumer electronics.</li>
+  <li><strong>User Interface</strong>: A typical Android device gives users a graphical interface with a home screen, app drawer, status bar, and built‑in apps like phone, messages, browser, and camera. Users can install extra apps from stores like Google Play, enabling everything from social media and banking to games and learning tools.</li>
+</ul>
+
+<h2 id="why-android-became-popular">Why Android Became Popular</h2>
+
+<ul>
+  <li><strong>Flexibility &amp; Cost</strong>: Android became the most widely used mobile OS because it is free for manufacturers, customizable, and runs on hardware from many brands and price ranges. This flexibility helped create a huge ecosystem of devices and a very large app market, attracting both users and developers worldwide.</li>
+  <li><strong>Educational Value</strong>: For students, learning Android matters because it combines core CS concepts (OS, Java/Kotlin, Linux) with practical app development that directly reaches millions of users. Understanding the basics now makes advanced topics like Android architecture and version features much easier to grasp later.</li>
+</ul>
+
+<h2 id="android-architecture">Android Architecture</h2>
+
+<p>Android architecture describes how the Android system is organized in layers, from low-level hardware control at the bottom to the apps you use at the top. Understanding this layered structure helps in designing apps that are efficient, secure, and easy to maintain.</p>
+
+<h3 id="big-picture-layered-stack">Big Picture: Layered Stack</h3>
+
+<p>Android is usually shown as a “stack” of layers: Linux kernel at the bottom, then native/Platform libraries and Android Runtime, then the Application Framework, and finally user Applications at the top. Each upper layer uses services provided by the layers below it instead of talking directly to the hardware, which keeps the system modular and easier to manage.</p>
+
+<p><img src="/assets/img/post-content/0cb9639c-7b81-4767-b3a4-81ec634d177d.webp" alt="architecture" /></p>
+
+<h3 id="android-architecture-layers">Android architecture layers</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Layer (Top → Bottom)</th>
+      <th>Simple idea</th>
+      <th>What it mainly does</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Applications</td>
+      <td>Apps you install and use</td>
+      <td>Provide features like chat, games, banking using system APIs.</td>
+    </tr>
+    <tr>
+      <td>Application Framework</td>
+      <td>“Toolbox” for app developers</td>
+      <td>Manages activities, notifications, resources, windows, etc., offering high‑level APIs to apps.</td>
+    </tr>
+    <tr>
+      <td>Android Runtime</td>
+      <td>Engine that runs app code</td>
+      <td>Includes core libraries and the virtual machine (Dalvik/ART) that executes app bytecode efficiently.</td>
+    </tr>
+    <tr>
+      <td>Native/Platform Libraries</td>
+      <td>Heavy‑duty helpers</td>
+      <td>C/C++ libraries for graphics (OpenGL), database (SQLite), web, media, and more.</td>
+    </tr>
+    <tr>
+      <td>Linux Kernel</td>
+      <td>Core OS and hardware layer</td>
+      <td>Handles drivers, memory, processes, power, and basic security; talks to actual hardware.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="linux-kernel-layer">Linux Kernel Layer</h4>
+
+<p>The Linux kernel is the foundation of Android, responsible for process management, memory management, power control, and hardware drivers like display, camera, audio, and Bluetooth. It also provides a security boundary and a hardware abstraction so upper layers do not need to know exact hardware details.</p>
+
+<h4 id="libraries-and-android-runtime">Libraries And Android Runtime</h4>
+
+<p>Above the kernel are native libraries (often in C/C++) that implement important services like graphics rendering, media playback, web browsing, and local databases. Alongside them is the Android Runtime, which includes core libraries plus the virtual machine (historically Dalvik, now ART) that executes app code written in Java/Kotlin in an optimized way.</p>
+
+<h4 id="application-framework">Application Framework</h4>
+
+<p>The Application Framework exposes ready‑made building blocks that developers use instead of dealing with low‑level details. Key parts include managers for activities (screens), windows, notifications, content providers, and the view system (buttons, text fields, layouts).</p>
+
+<h4 id="applications-layer">Applications Layer</h4>
+
+<p>At the top sit system apps (Phone, Messages, Settings) and third‑party apps that you install from app stores. These apps run inside the framework/runtime environment and interact with the device only through the framework APIs, which keeps the system more secure and consistent across different devices.</p>
+
+<h3 id="how-to-remember-the-architecture">How To Remember The Architecture</h3>
+
+<p>A handy memory trick is: “Kids Love Real Fun Apps” → Kernel, Libraries, Runtime, Framework, Applications, going bottom to top. You can also imagine a burger: bun (apps), sauces/veggies (framework), patty (runtime and libraries), and plate (kernel) holding everything from below</p>
+
+<h2 id="android-versions">Android Versions</h2>
+<p>From the very first release up to Android 16, including dessert codenames (public and internal) where applicable, and the API level for quick reference.</p>
+
+<h2 id="android-versions-10-to-16-evolution-story">Android Versions: 1.0 to 16 (Evolution Story)</h2>
+
+<p>Android started as a bare-bones OS in 2005 and evolved into a powerhouse platform by Android 16. Here’s the complete timeline with what each era offered.</p>
+
+<pre><code class="language-mermaid">%%{init: { "flowchart": { "ranksep": 200 } }}%%
+flowchart LR
+    %% Era styling
+    classDef era fill:#f8f9fa,stroke:#333,stroke-width:1px,font-weight:bold;
+    classDef version fill:#e6f2ff,stroke:#1f6feb,stroke-width:1px;
+
+    subgraph Early["Early Versions (2008–2010)"]
+      direction LR
+      v1["2008&lt;br/&gt;1.0 / 1.1&lt;br/&gt;(Basic)"] --&gt; v1_5["2009&lt;br/&gt;1.5&lt;br/&gt;Cupcake"]
+      v1_5 --&gt; v1_6["2009&lt;br/&gt;1.6&lt;br/&gt;Donut"]
+      v1_6 --&gt; v2_0["2009&lt;br/&gt;2.0&lt;br/&gt;Eclair"]
+      v2_0 --&gt; v2_2["2010&lt;br/&gt;2.2&lt;br/&gt;Froyo"]
+      v2_2 --&gt; v2_3["2010&lt;br/&gt;2.3&lt;br/&gt;Gingerbread"]
+    end
+
+    subgraph Tablet["Tablet Era and Modernization (2011–2019)"]
+      direction LR
+      v3_0["2011&lt;br/&gt;3.0&lt;br/&gt;Honeycomb"] --&gt; v4_0["2011&lt;br/&gt;4.0&lt;br/&gt;ICS"]
+      v4_0 --&gt; v4_4["2013&lt;br/&gt;4.4&lt;br/&gt;KitKat"]
+      v4_4 --&gt; v5_0["2014&lt;br/&gt;5.0&lt;br/&gt;Lollipop"]
+      v5_0 --&gt; v7_0["2016&lt;br/&gt;7.0&lt;br/&gt;Nougat"]
+    end
+
+    subgraph Numeric["Numeric Era (2019–2025)"]
+      direction LR
+      v10["2019&lt;br/&gt;10"] --&gt; v16["2025&lt;br/&gt;16&lt;br/&gt;Baklava"]
+    end
+
+    %% Connect eras
+    v2_3 --&gt; v3_0
+    v7_0 --&gt; v10
+
+    %% apply node class
+    class v1,v1_5,v1_6,v2_0,v2_2,v2_3,v3_0,v4_0,v4_4,v5_0,v7_0,v10,v16 version;
+
+</code></pre>
+
+<h3 id="early-versions-10-23-bare-essentials-2008-2010">Early Versions (1.0-2.3): Bare Essentials (2008-2010)</h3>
+
+<p><strong>Android 1.0/1.1 (2008)</strong>: First release on HTC Dream (T-Mobile G1). Offered basic phone calls, SMS, browser, contacts, and calendar. No app store yet—apps sideloaded via APK. Touchscreen support was primitive, no multi-touch.</p>
+
+<p><strong>Cupcake (1.5, 2009)</strong>: First major update. Added on-screen keyboard, widgets, video recording, auto-rotation. HTC Hero shipped with it—first “smart” Android feel.</p>
+
+<p><strong>Donut (1.6)</strong> &amp; <strong>Eclair (2.0-2.1)</strong>: Voice search, live wallpapers, multiple accounts, Bluetooth 2.1. Nexus One (Google’s first phone) ran Eclair.</p>
+
+<p><strong>Froyo (2.2)</strong> &amp; <strong>Gingerbread (2.3)</strong>: Flash support, hotspot tethering, better battery, NFC intro. Gingerbread polished UI—most successful early version.</p>
+
+<p><strong>What they offered</strong>: Basic telephony + internet. No Play Store (Market existed), clunky UI, single-tasking, poor battery life. ~10% market share vs Symbian.</p>
+
+<h3 id="tablet-era--modernization-30-9-growing-up-2011-2019">Tablet Era &amp; Modernization (3.0-9): Growing Up (2011-2019)</h3>
+
+<p><strong>Honeycomb (3.0)</strong>: First tablet-optimized (Motorola Xoom). Holographic UI, multi-tasking, hardware acceleration.</p>
+
+<p><strong>Ice Cream Sandwich (4.0)</strong>: Unified phone/tablet UI, Face Unlock, data usage tracking. Galaxy Nexus launched Android’s “robot” era.</p>
+
+<p><strong>Jelly Bean (4.1-4.3)</strong>: Google Now, Project Butter (smooth 60fps), expandable notifications.</p>
+
+<p><strong>KitKat (4.4)</strong>: “Hangouts” integration, immersive mode, OK Google voice commands. Ran on 512MB RAM devices.</p>
+
+<p><strong>Lollipop (5.0)</strong>: Material Design, ART runtime (faster apps), notifications shade, Doze battery saving.</p>
+
+<p><strong>Marshmallow-Nougat-Oreo-Pie (6-9)</strong>: Doze, split-screen, fingerprint API, Picture-in-Picture, adaptive brightness, gesture navigation.</p>
+
+<h3 id="numeric-era-10-16-enterprise-powerhouse-2019-2025">Numeric Era (10-16): Enterprise Powerhouse (2019-2025)</h3>
+
+<p><strong>Android 10+</strong>: Dropped desserts publicly (internal: Quince Tart→Baklava). Privacy dashboard, scoped storage, foldable support, 5G, desktop mode.</p>
+
+<p><strong>What Android 16 offers now</strong>: AI-first (on-device Gemini), 120Hz adaptive refresh, satellite connectivity, advanced privacy (Private Space), Material You 3.0, foldable/AR/VR optimization, 16GB+ RAM support.</p>
+
+<h3 id="then-vs-now-feature-explosion">Then vs Now: Feature Explosion</h3>
+
+<p><strong>2008 (1.0)</strong> → Basic phone + browser<br />
+<strong>2025 (16)</strong> → AI assistant + satellite + foldables + 8GB RAM gaming</p>
+
+<blockquote>
+  <p>[!NOTE] Dessert names stopped being used publicly from Android 10, but Google still uses internal dessert codenames; these are included.</p>
+</blockquote>
+
+<h3 id="android-versions-10-to-16">Android versions 1.0 to 16</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Major version</th>
+      <th>API level (main)</th>
+      <th>Codename / dessert</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Android 1.0</td>
+      <td>1</td>
+      <td>No codename (initial public release)</td>
+    </tr>
+    <tr>
+      <td>Android 1.1</td>
+      <td>2</td>
+      <td>No codename (sometimes called “Petit Four” internally)</td>
+    </tr>
+    <tr>
+      <td>Android 1.5</td>
+      <td>3</td>
+      <td>Cupcake</td>
+    </tr>
+    <tr>
+      <td>Android 1.6</td>
+      <td>4</td>
+      <td>Donut</td>
+    </tr>
+    <tr>
+      <td>Android 2.0 / 2.0.1</td>
+      <td>5 / 6</td>
+      <td>Eclair</td>
+    </tr>
+    <tr>
+      <td>Android 2.1</td>
+      <td>7</td>
+      <td>Eclair</td>
+    </tr>
+    <tr>
+      <td>Android 2.2.x</td>
+      <td>8</td>
+      <td>Froyo (Frozen Yogurt)</td>
+    </tr>
+    <tr>
+      <td>Android 2.3 – 2.3.7</td>
+      <td>9 / 10</td>
+      <td>Gingerbread</td>
+    </tr>
+    <tr>
+      <td>Android 3.0 – 3.2.x</td>
+      <td>11 / 12 / 13</td>
+      <td>Honeycomb</td>
+    </tr>
+    <tr>
+      <td>Android 4.0.1 – 4.0.4</td>
+      <td>14 / 15</td>
+      <td>Ice Cream Sandwich</td>
+    </tr>
+    <tr>
+      <td>Android 4.1 – 4.3.1</td>
+      <td>16 / 17 / 18</td>
+      <td>Jelly Bean</td>
+    </tr>
+    <tr>
+      <td>Android 4.4 – 4.4W.2</td>
+      <td>19 / 20</td>
+      <td>KitKat</td>
+    </tr>
+    <tr>
+      <td>Android 5.0 – 5.1.1</td>
+      <td>21 / 22</td>
+      <td>Lollipop</td>
+    </tr>
+    <tr>
+      <td>Android 6.0 – 6.0.1</td>
+      <td>23</td>
+      <td>Marshmallow</td>
+    </tr>
+    <tr>
+      <td>Android 7.0 – 7.1.2</td>
+      <td>24 / 25</td>
+      <td>Nougat</td>
+    </tr>
+    <tr>
+      <td>Android 8.0 – 8.1</td>
+      <td>26 / 27</td>
+      <td>Oreo</td>
+    </tr>
+    <tr>
+      <td>Android 9.0</td>
+      <td>28</td>
+      <td>Pie</td>
+    </tr>
+    <tr>
+      <td>Android 10</td>
+      <td>29</td>
+      <td>Android 10 (public), internal codename <strong>Quince Tart</strong> / <strong>Queen Cake</strong> used in AOSP and internally.</td>
+    </tr>
+    <tr>
+      <td>Android 11</td>
+      <td>30</td>
+      <td>Android 11 (public), internal dessert: Red Velvet Cake.</td>
+    </tr>
+    <tr>
+      <td>Android 12 / 12L</td>
+      <td>31 / 32</td>
+      <td>Android 12 (public), internal dessert: Snow Cone.</td>
+    </tr>
+    <tr>
+      <td>Android 13</td>
+      <td>33</td>
+      <td>Android 13 (public), internal dessert: Tiramisu.</td>
+    </tr>
+    <tr>
+      <td>Android 14</td>
+      <td>34</td>
+      <td>Android 14 (public), internal dessert: Upside Down Cake.</td>
+    </tr>
+    <tr>
+      <td>Android 15</td>
+      <td>35</td>
+      <td>Android 15 (public), internal dessert: Vanilla Ice Cream (reported).</td>
+    </tr>
+    <tr>
+      <td>Android 16</td>
+      <td>36</td>
+      <td>Android 16 (public), internal dessert: Baklava.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="features">Features</h2>
+
+<p>Android offers key features that make it powerful for users and developers, focusing on openness, customization, and efficiency.</p>
+
+<h3 id="core-platform-features">Core Platform Features</h3>
+
+<ul>
+  <li><strong>Open Source Nature</strong>: Based on Linux kernel and AOSP (Android Open Source Project), allowing manufacturers to customize and developers to access source code freely.</li>
+  <li><strong>Multi-tasking &amp; App Sandboxing</strong>: Runs multiple apps simultaneously with isolated processes for security; each app gets its own memory space to prevent crashes.</li>
+  <li><strong>Rich UI Components</strong>: Supports activities (screens), layouts (XML-based designs), fragments (modular UI), views (buttons, lists), and adaptive layouts for phones/tablets.</li>
+  <li><strong>Resource Management</strong>: Handles strings, images, dimensions via res folder; supports localization, themes, and densities for different screens.</li>
+</ul>
+
+<h3 id="developer-friendly-tools">Developer-Friendly Tools</h3>
+
+<ul>
+  <li><strong>Intents System</strong>: Messages for starting activities/services, sharing data between apps, and implicit/explicit communication.</li>
+  <li><strong>Activity Lifecycle</strong>: Methods like onCreate, onStart, onResume, onPause manage app states (visible, paused, destroyed) efficiently.</li>
+  <li><strong>Services &amp; Background Tasks</strong>: Started/bound services for downloads/music; notifications, alarms, and JobScheduler for scheduled work.</li>
+  <li><strong>Data Handling</strong>: SQLite databases, Content Providers, SharedPreferences; adapters for lists (ArrayAdapter, CursorAdapter).</li>
+</ul>
+
+<h3 id="user--security-features">User &amp; Security Features</h3>
+
+<ul>
+  <li><strong>Permissions Model</strong>: Runtime permissions for camera/location; app sandboxing prevents unauthorized access.</li>
+  <li><strong>Google Mobile Services (GMS)</strong>: Play Store, Maps, Gmail integration on certified devices.</li>
+  <li><strong>Hardware Abstraction</strong>: Supports diverse devices (phones, TVs, watches, cars) via HAL and drivers.</li>
+</ul>
+
+<blockquote>
+  <p>[!TIP]   Think “O-M-R-D-U-S”: <strong>O</strong>pen source, <strong>M</strong>ulti-tasking, <strong>R</strong>ich UI, <strong>D</strong>eveloper tools (Intents/Lifecycle), <strong>U</strong>ser security, <strong>S</strong>ervices/data – covers 90% of key features!</p>
+</blockquote>
+
+<h2 id="open-handset-alliance-oha">Open Handset Alliance (OHA)</h2>
+<p>Andy Rubin, often called the “Father of Android,” kickstarted the mobile revolution by founding Android Inc. in October 2003 in Palo Alto, California, alongside Rich Miner, Nick Sears, and Chris White. The goal was simple yet ambitious: build a smarter mobile OS aware of user location and preferences to challenge Symbian and Windows Mobile, but the startup quickly ran out of cash, forcing Rubin to bootstrap with friends’ loans.</p>
+
+<p>By 2005, with Android Inc. struggling, Google acquired it for around $50 million, bringing Rubin on board to lead mobile efforts under CEO Eric Schmidt. Rubin saw the iPhone’s 2007 launch as a wake-up call—Apple controlled the ecosystem tightly. To counter this, Rubin rallied Google to create an <strong>open alternative</strong>. On November 5, 2007, they unveiled the <strong>Open Handset Alliance (OHA)</strong>, a powerhouse consortium of 34 founding members including Google, HTC, Motorola, Samsung, Qualcomm, Texas Instruments, Intel, T-Mobile, Sprint, and NVIDIA.</p>
+
+<h3 id="the-oha-story-from-secret-startup-to-open-revolution">The OHA Story: From Secret Startup To Open Revolution</h3>
+
+<p>Imagine 2007: Rubin pitches to industry giants, “Let’s build the first truly open, comprehensive mobile platform—no single company owns it.” Schmidt backs him publicly: “This powers thousands of phone models, not just a ‘Google Phone’.” The OHA committed to Android as free, Linux-based open source via AOSP, accelerating innovation while keeping costs low for consumers.</p>
+
+<ul>
+  <li><strong>Founding members snapshot</strong>: 8 device makers (HTC, Samsung, Motorola, LG), 5 chip firms (Qualcomm, TI), 3 carriers (T-Mobile, Sprint, Vodafone), plus software players.</li>
+  <li><strong>First fruits</strong>: OHA released Android SDK preview days later; HTC Dream (T-Mobile G1) launched October 2008 as the first Android phone.</li>
+  <li><strong>Growth</strong>: OHA ballooned to 84 members, banning forks of Android to keep it unified, though it’s now dormant as Android dominates.</li>
+</ul>
+
+<blockquote>
+  <p>[!TIP]  Think of OHA as Android’s “Avengers team”—Rubin as Iron Man assembling rivals (HTC like Captain America, Google like Hulk) against the Symbian/iOS “Thanos” monopoly.<br />
+<strong>Some Dates</strong>:  “2003 Android born, 2005 Google adopts, 2007 OHA assembles (34 heroes)”</p>
+</blockquote>
+
+<blockquote>
+  <p>[!NOTE] OHA made Android unstoppable by uniting the ecosystem around openness, powering 3.9B+ devices today (as of 2025).</p>
+</blockquote>
+
+<h2 id="dalvik-vm">Dalvik VM</h2>
+
+<p>Dalvik VM was Android’s original virtual machine that executed app bytecode, designed specifically for mobile devices with low memory and battery constraints.</p>
+
+<h3 id="what-is-dalvik-vm">What Is Dalvik VM?</h3>
+
+<p>Dalvik is a <strong>register-based JVM</strong> (unlike stack-based standard Java VM) that runs Dalvik Executable (.dex) files—optimized bytecode from Java .class files compiled by the <code class="language-plaintext highlighter-rouge">dx</code> tool. Key traits:</p>
+<ul>
+  <li><strong>DEX format</strong>: Combines multiple .class files into one compact .dex file, reducing app size by ~50% via shared strings/methods.</li>
+  <li><strong>Just-In-Time (JIT) compilation</strong>: Converts DEX to native machine code at runtime for speed, but with warmup overhead.</li>
+  <li><strong>Low memory</strong>: Thread-shared, runs multiple processes efficiently on ARM chips; each app gets its own VM instance.</li>
+</ul>
+
+<blockquote>
+  <p>[!TIP] Dalvik is like a “mobile translator” that converts bulky Java books (.class) into pocket dictionaries (.dex), reading them on-the-fly (JIT) instead of pre-printing (AOT).</p>
+</blockquote>
+
+<h3 id="from-dalvik-to-art-android-runtime">From Dalvik To ART (Android Runtime)</h3>
+
+<p>Android 5.0 (Lollipop, 2014) replaced Dalvik with <strong>ART (Android Runtime)</strong> using <strong>Ahead-of-Time (AOT) compilation</strong>. During app install, ART compiles entire DEX to native ARM code (.oat files), skipping runtime JIT.</p>
+
+<h3 id="art-benefits-vs-dalvik">ART Benefits (vs Dalvik)</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>Dalvik (JIT)</th>
+      <th>ART (AOT)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>App Launch</strong></td>
+      <td>Slow (JIT warmup)</td>
+      <td><strong>2-3x faster</strong> (pre-compiled)</td>
+    </tr>
+    <tr>
+      <td><strong>Battery Life</strong></td>
+      <td>Higher CPU during JIT</td>
+      <td><strong>30% better</strong> (no runtime compilation)</td>
+    </tr>
+    <tr>
+      <td><strong>App Size</strong></td>
+      <td>Smaller DEX</td>
+      <td>Slightly larger .oat, but negligible</td>
+    </tr>
+    <tr>
+      <td><strong>Debugging</strong></td>
+      <td>Harder (JIT code)</td>
+      <td><strong>Better</strong> (native symbols preserved)</td>
+    </tr>
+    <tr>
+      <td><strong>Memory</strong></td>
+      <td>High during JIT</td>
+      <td>Lower overall</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>[!TIP] “Dalvik JITs at runtime (Just-In-Time = lazy chef cooking on order), ART Ahead-of-Time (pre-cooks meals = restaurant ready)”—ART wins for speed + battery!</p>
+</blockquote>
+
+<blockquote>
+  <p>[!NOTE] Dalvik enabled Android’s early success on weak hardware; ART made it blazing fast for modern devices.</p>
+</blockquote>
+
+<h2 id="android-sdk">Android SDK</h2>
+
+<p>The <strong>Android SDK (Software Development Kit)</strong> is the official set of tools, libraries, and documentation needed to build, test, and deploy Android apps.</p>
+
+<h3 id="what-the-sdk-contains">What The SDK Contains</h3>
+
+<p>Android Studio bundles the SDK, providing everything from APIs to emulators. Key components include:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Component</th>
+      <th>Purpose</th>
+      <th>ple Tools</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>SDK Platforms</strong></td>
+      <td>APIs for specific Android versions (e.g., API 34 for Android 14)</td>
+      <td>Framework libraries, system images</td>
+    </tr>
+    <tr>
+      <td><strong>SDK Tools</strong></td>
+      <td>Build, debug, test utilities</td>
+      <td>ADB (debug bridge), AVD Manager, APK Builder</td>
+    </tr>
+    <tr>
+      <td><strong>Build Tools</strong></td>
+      <td>Compilers &amp; packagers</td>
+      <td>dx/d8 (DEX converter), aapt (resource compiler), Gradle</td>
+    </tr>
+    <tr>
+      <td><strong>Documentation</strong></td>
+      <td>API references &amp; guides</td>
+      <td>Offline docs, samples</td>
+    </tr>
+    <tr>
+      <td><strong>Emulator</strong></td>
+      <td>Virtual devices (AVDs)</td>
+      <td>Test on Nexus/Pixel without physical hardware</td>
+    </tr>
+    <tr>
+      <td><strong>Support Libraries</strong></td>
+      <td>Backward compatibility</td>
+      <td>AppCompat, Material Design</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>[!TIP]  SDK is your “Android workshop”—tools (hammer=ADB), materials (wood=APIs), and blueprints (docs) to build apps that run on any device.</p>
+</blockquote>
+
+<h3 id="how-developers-use-it">How Developers Use It</h3>
+
+<ol>
+  <li><strong>Install via Android Studio</strong>: Downloads SDK to <code class="language-plaintext highlighter-rouge">~/Android/Sdk</code> (auto-managed).</li>
+  <li><strong>Write code</strong>: Java/Kotlin + XML layouts in Android Studio.</li>
+  <li><strong>Build APK</strong>: Gradle compiles → DEX → APK (installable package).</li>
+  <li><strong>Test</strong>: Run on emulator or device via ADB.</li>
+  <li><strong>Publish</strong>: Sign APK → Google Play or sideload.</li>
+</ol>
+
+<blockquote>
+  <p>[!TIP] “S<strong>DK</strong> = <strong>S</strong>tudio + <strong>D</strong>ebug + <strong>K</strong>its” (Studio IDE, Debug tools, Kit of APIs/platforms)—covers 90%!</p>
+</blockquote>
+
+<blockquote>
+  <p>[!NOTE] Without SDK, no Android apps possible; it’s the bridge from code to devices.</p>
+</blockquote>
+
+<h2 id="android-development-tools">Android Development Tools</h2>
+
+<p>Android development tools form the complete ecosystem for building, testing, and deploying apps, with <strong>Android Studio</strong> as the central IDE bundled with the SDK.</p>
+
+<h3 id="core-development-tools">Core Development Tools</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tool</th>
+      <th>Purpose</th>
+      <th>Key Features</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Android Studio</strong></td>
+      <td>Official IDE</td>
+      <td>Code editor, visual layout designer, Gradle integration, emulator, profiler</td>
+    </tr>
+    <tr>
+      <td><strong>Gradle</strong></td>
+      <td>Build automation</td>
+      <td>Manages dependencies, compiles APK/AAB, handles multi-module projects</td>
+    </tr>
+    <tr>
+      <td><strong>AVD Manager</strong></td>
+      <td>Android Virtual Device</td>
+      <td>Creates/runs emulators for different devices (Pixel, Nexus, tablets)</td>
+    </tr>
+    <tr>
+      <td><strong>ADB (Android Debug Bridge)</strong></td>
+      <td>Device communication</td>
+      <td>Install APKs, shell access, logcat, port forwarding</td>
+    </tr>
+    <tr>
+      <td><strong>APK Analyzer</strong></td>
+      <td>APK inspection</td>
+      <td>View app size, resources, DEX files, permissions</td>
+    </tr>
+    <tr>
+      <td><strong>Layout Inspector</strong></td>
+      <td>UI debugging</td>
+      <td>Live view hierarchy during runtime</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="testing--profiling-tools">Testing &amp; Profiling Tools</h3>
+
+<ul>
+  <li><strong>Emulator</strong>: Hardware-accelerated virtual devices with GPS, camera simulation</li>
+  <li><strong>Logcat</strong>: Real-time logs (verbose/debug/error) for crash analysis</li>
+  <li><strong>Profiler</strong>: CPU, memory, network, energy usage monitoring</li>
+  <li><strong>Lint</strong>: Static code analyzer for performance/security issues</li>
+  <li><strong>UI Automator</strong>: Automated black-box UI testing</li>
+</ul>
+
+<blockquote>
+  <p>[!TIP] Think of it as a “car factory”—Studio (assembly line), Gradle (robot arms), Emulator (test track), ADB (conveyor belt), Profiler (quality control).</p>
+</blockquote>
+
+<h3 id="workflow-summary">Workflow Summary</h3>
+
+<pre><code class="language-mermaid">flowchart LR
+    A["Code (Studio)"] --&gt; B["Build (Gradle)"]
+    B --&gt; C["Test (Emulator/ADB)"]
+    C --&gt; D["Debug (Logcat/Profiler)"]
+    D --&gt; E["Deploy (APK/AAB)"]
+</code></pre>
+
+<blockquote>
+  <p>[!TIP] “<strong>S</strong>tudio <strong>G</strong>radles <strong>A</strong>DBs <strong>E</strong>mulator <strong>P</strong>rofiler” (S-G-A-E-P)—main tools in order!</p>
+</blockquote>
+
+<blockquote>
+  <p>[!NOTE] These tools make Android development fast, visual, and device-independent.</p>
+</blockquote>
+
+<h2 id="android-development-environment">Android Development Environment</h2>
+
+<p>The <strong>Android Development Environment</strong> centers around <strong>Android Studio</strong> (official IDE) + <strong>Android SDK</strong> + supporting tools, providing everything needed to build apps from code to deployment.</p>
+
+<h3 id="detailed-setup--components">Detailed Setup &amp; Components</h3>
+
+<h4 id="1-android-studio-ide">1. <strong>Android Studio (IDE)</strong></h4>
+<ul>
+  <li><strong>Based on</strong>: IntelliJ IDEA with Android plugins</li>
+  <li><strong>Key panels</strong>: Project explorer, code editor, design editor (drag-drop layouts), logcat, profiler</li>
+  <li><strong>Installation</strong>: ~1GB download, auto-installs SDK; supports Windows/Mac/Linux</li>
+  <li><strong>Features</strong>: Templates (Empty Activity, Navigation Drawer), Gradle sync, instant run, APK signing</li>
+</ul>
+
+<h4 id="2-android-sdk-software-development-kit">2. <strong>Android SDK (Software Development Kit)</strong></h4>
+<ul>
+  <li><strong>Location</strong>: <code class="language-plaintext highlighter-rouge">~/Android/Sdk</code> (auto-managed by Studio)</li>
+  <li><strong>Components</strong>: SDK Platforms (per API level), Build Tools (compilers), Emulator, Documentation</li>
+  <li><strong>SDK Manager</strong>: GUI to download API levels, system images, extras (Google Play Services)</li>
+</ul>
+
+<h4 id="3-project-structure-generated-by-studio">3. <strong>Project Structure</strong> (Generated by Studio)</h4>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>MyApp/
+├── app/
+│   ├── src/main/
+│   │   ├── java/          # Kotlin/Java code (Activities, Fragments)
+│   │   ├── res/           # Resources (layouts, drawables, strings.xml)
+│   │   └── AndroidManifest.xml  # App config, permissions
+│   └── build.gradle       # Module dependencies
+├── build.gradle           # Project-level config
+└── gradle.properties      # Build settings
+</code></pre></div></div>
+
+<h4 id="4-emulator-setup-avd-manager">4. <strong>Emulator Setup (AVD Manager)</strong></h4>
+<ul>
+  <li>Create virtual devices (Pixel 6, Nexus 5X, tablets)</li>
+  <li>System images per API (e.g., API 34 for Android 14)</li>
+  <li>Hardware acceleration (HAXM/KVM) for 60fps</li>
+</ul>
+
+<h4 id="5-build--run-process">5. <strong>Build &amp; Run Process</strong></h4>
+
+<pre><code class="language-mermaid">flowchart LR
+    A[Write code] --&gt; B[Gradle sync]
+    B --&gt; C[Build APK]
+    C --&gt; D["Deploy (emulator/device)"]
+    D --&gt; E[Debug]
+</code></pre>
+
+<p>Commands: <code class="language-plaintext highlighter-rouge">./gradlew assembleDebug</code> or Studio’s “Run” button</p>
+
+<h3 id="development-environment-summary-table">Development Environment Summary Table</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Component</th>
+      <th>Role</th>
+      <th>Key Files/Tools</th>
+      <th>Student Tip</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Android Studio</strong></td>
+      <td>IDE/Code Editor</td>
+      <td>Design editor, Logcat, Profiler</td>
+      <td>“Your Android cockpit”</td>
+    </tr>
+    <tr>
+      <td><strong>Android SDK</strong></td>
+      <td>Libraries &amp; APIs</td>
+      <td>SDK Manager, Platforms (API 1-36)</td>
+      <td>Download only needed APIs</td>
+    </tr>
+    <tr>
+      <td><strong>Gradle</strong></td>
+      <td>Build System</td>
+      <td>build.gradle files</td>
+      <td>Handles dependencies automatically</td>
+    </tr>
+    <tr>
+      <td><strong>Emulator (AVD)</strong></td>
+      <td>Virtual Device</td>
+      <td>AVD Manager, system images</td>
+      <td>Test without physical phone</td>
+    </tr>
+    <tr>
+      <td><strong>ADB</strong></td>
+      <td>Device Bridge</td>
+      <td>adb install, logcat</td>
+      <td>Connects Studio ↔ Device</td>
+    </tr>
+    <tr>
+      <td><strong>Project Files</strong></td>
+      <td>App Structure</td>
+      <td>AndroidManifest.xml, res/, java/</td>
+      <td>Every app needs these 3 folders</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>[!TIP] Studio = kitchen (cooking area), SDK = ingredients (APIs), Gradle = oven (cooking), Emulator = tasting table (testing).<br />
+ “<strong>S</strong>tudio <strong>S</strong>DK <strong>G</strong>radle <strong>E</strong>mulator** = <strong>S</strong>SGE** (Super Simple Game Engine)”—core 4 components!</p>
+</blockquote>
+
+<blockquote>
+  <p>[!NOTE] Install Android Studio → Everything else auto-configures; ready to code in 10 minutes.</p>
+</blockquote>
+
+<h2 id="android-virtual-device">Android Virtual Device</h2>
+
+<p>An <strong>Android Virtual Device (AVD)</strong> is a software emulator that simulates a real Android device (phone/tablet/TV) on your computer, allowing testing without physical hardware.</p>
+
+<h3 id="what-is-avd--why-use-it">What Is AVD &amp; Why Use It?</h3>
+
+<p>AVD mimics complete device hardware + software:</p>
+<ul>
+  <li><strong>Hardware</strong>: CPU, RAM, screen size/resolution, camera, GPS, sensors</li>
+  <li><strong>Software</strong>: Specific Android version (API level), system image, Google Play Services</li>
+  <li><strong>Use cases</strong>: Test on multiple devices/configurations, debug crashes, demo apps</li>
+</ul>
+
+<blockquote>
+  <p>[!TIP] AVD = “flight simulator” for Android—practice on virtual Pixel 10 without buying 10 phones.</p>
+</blockquote>
+
+<h3 id="creating-an-avd-step-by-step">Creating An AVD (Step-By-Step)</h3>
+
+<ol>
+  <li><strong>Open AVD Manager</strong>: Tools → AVD Manager (or device icon in toolbar)</li>
+  <li><strong>Create Virtual Device</strong> → Choose hardware (Phone → Pixel 9)</li>
+  <li><strong>Select System Image</strong> → API 34 (Android 16), download if needed (~2GB)</li>
+  <li><strong>Configure AVD</strong> → Name it “Pixel9_API36”, enable hardware acceleration</li>
+  <li><strong>Finish</strong> → AVD appears in list, ready to launch</li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Example: Pixel 9 AVD
+├── Hardware: 6.4" 1080x2400, 8GB RAM
+├── Android 16 (API 36)
+├── Google APIs (Play Store optional)
+└── 60fps with HAXM/KVM acceleration
+</code></pre></div></div>
+
+<h3 id="running--managing-avds">Running &amp; Managing AVDs</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Action</th>
+      <th>How-To</th>
+      <th>Pro Tip</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Launch</strong></td>
+      <td>Click green “Play” button in AVD Manager</td>
+      <td>Cold boot = 30s, Quick boot = 3s</td>
+    </tr>
+    <tr>
+      <td><strong>Install APK</strong></td>
+      <td>Run app from Studio (auto-deploys) or <code class="language-plaintext highlighter-rouge">adb install app.apk</code></td>
+      <td>Wipe data for clean test</td>
+    </tr>
+    <tr>
+      <td><strong>Snapshots</strong></td>
+      <td>Save emulator state (like VM suspend)</td>
+      <td>Speed up repeated testing</td>
+    </tr>
+    <tr>
+      <td><strong>Hardware Acceleration</strong></td>
+      <td>Enable HAXM (Windows/Mac) or KVM (Linux)</td>
+      <td>10x faster than software emulation</td>
+    </tr>
+    <tr>
+      <td><strong>Multiple AVDs</strong></td>
+      <td>Create Nexus 5X, tablets, Wear OS</td>
+      <td>Test Material You on different screens</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="avd-vs-real-device">AVD vs Real Device</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Aspect</th>
+      <th>AVD</th>
+      <th>Real Device</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Speed</strong></td>
+      <td>Slower startup, accurate after</td>
+      <td>Instant</td>
+    </tr>
+    <tr>
+      <td><strong>Cost</strong></td>
+      <td>Free</td>
+      <td>$$$</td>
+    </tr>
+    <tr>
+      <td><strong>Debugging</strong></td>
+      <td>Full logcat/profiler access</td>
+      <td>USB debugging needed</td>
+    </tr>
+    <tr>
+      <td><strong>Hardware</strong></td>
+      <td>Simulated GPS/camera</td>
+      <td>Real sensors</td>
+    </tr>
+    <tr>
+      <td><strong>Best for</strong></td>
+      <td>Development, multi-device testing</td>
+      <td>Performance, battery tests</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>[!TIP] “<strong>A</strong>PI + <strong>V</strong>irtual <strong>D</strong>evice = <strong>A</strong>VD** (pick right API for your target Android version)!</p>
+</blockquote>
+
+<blockquote>
+  <p>[!NOTE] AVD Manager → Hardware profile → System image → Test your app on virtual Pixel without touching a phone.</p>
+</blockquote>
+
+<h2 id="directory-structure">Directory Structure</h2>
+
+<p>The <strong>structure of an Android application</strong> follows a standard directory layout generated by Android Studio, organizing code, resources, and configuration into logical folders for building APKs.</p>
+
+<h3 id="core-project-structure">Core Project Structure</h3>
+
+<ul>
+  <li><strong>Root</strong>: At the root sits <code class="language-plaintext highlighter-rouge">app/src/main/</code> containing everything.</li>
+  <li><strong>Java/Kotlin Code</strong>: Lives in <code class="language-plaintext highlighter-rouge">java/com/yourpackage/</code> with classes like <code class="language-plaintext highlighter-rouge">MainActivity.kt</code> extending <code class="language-plaintext highlighter-rouge">AppCompatActivity</code>. These handle logic, UI updates, and lifecycle methods like <code class="language-plaintext highlighter-rouge">onCreate()</code> where <code class="language-plaintext highlighter-rouge">setContentView(R.layout.activity_main)</code> loads the layout.</li>
+  <li><strong>Resources</strong>: Go in <code class="language-plaintext highlighter-rouge">res/</code> split by type:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">layout/</code> holds XML files like <code class="language-plaintext highlighter-rouge">activity_main.xml</code> defining UI with <code class="language-plaintext highlighter-rouge">&lt;LinearLayout&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;Button&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;TextView&gt;</code> using attributes like <code class="language-plaintext highlighter-rouge">android:layout_width="match_parent"</code>.</li>
+      <li><code class="language-plaintext highlighter-rouge">drawable/</code> stores images (<code class="language-plaintext highlighter-rouge">ic_launcher.png</code>), colors (<code class="language-plaintext highlighter-rouge">colors.xml</code>), and vectors.</li>
+      <li><code class="language-plaintext highlighter-rouge">values/</code> has <code class="language-plaintext highlighter-rouge">strings.xml</code> (<code class="language-plaintext highlighter-rouge">&lt;string name="app_name"&gt;MyApp&lt;/string&gt;</code>), <code class="language-plaintext highlighter-rouge">dimens.xml</code> for padding/spacing, and <code class="language-plaintext highlighter-rouge">styles.xml</code> for themes.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="essential-configuration-files">Essential Configuration Files</h3>
+
+<ul>
+  <li><strong>AndroidManifest.xml</strong>: The app’s blueprint, declaring activities (<code class="language-plaintext highlighter-rouge">&lt;activity android:name=".MainActivity"&gt;</code>), permissions (<code class="language-plaintext highlighter-rouge">&lt;uses-permission android:name="android.permission.INTERNET"/&gt;</code>), intent filters for launcher icon, and SDK versions (<code class="language-plaintext highlighter-rouge">minSdkVersion="21"</code>). It tells Android what the app contains and needs.</li>
+  <li><strong>Build Configuration</strong>: Splits across <code class="language-plaintext highlighter-rouge">build.gradle</code> files:
+    <ul>
+      <li><strong>Project-level</strong>: Handles plugins/dependencies like <code class="language-plaintext highlighter-rouge">implementation 'androidx.appcompat:appcompat:1.6.1'</code>.</li>
+      <li><strong>App-level</strong>: Defines <code class="language-plaintext highlighter-rouge">compileSdk 34</code>, signing configs, and ProGuard rules. Gradle syncs everything to generate R.java for resource IDs (<code class="language-plaintext highlighter-rouge">R.layout.activity_main</code>).</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="building-the-apk">Building The APK</h3>
+
+<p>When you hit “Build,” Gradle compiles Java/Kotlin to DEX bytecode, packages resources via AAPT into <code class="language-plaintext highlighter-rouge">classes.dex</code>, zips everything into APK with signing. The final <code class="language-plaintext highlighter-rouge">app-debug.apk</code> (or release-signed) contains Manifest, DEX, resources.arsc, and assets—ready for devices/emulators.</p>
+
+<blockquote>
+  <p>[!TIP] App structure = recipe book: Manifest (cover/table of contents), Java (cooking instructions), res/ (ingredients list with photos), build.gradle (oven settings).<br />
+ “<strong>M</strong>anifest <strong>C</strong>ode <strong>R</strong>esources <strong>B</strong>uild = <strong>MCRB</strong> (My Code Runs Beautifully)”—core 4 pillars!</p>
+</blockquote>
+
+<blockquote>
+  <p>[!NOTE] Every Android app = Manifest (what) + Code (how) + Resources (looks) + Gradle (builds).</p>
+</blockquote>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Android Application Structure 
+==================================================
+
+MyFirstApp/                           &lt;- Root Project
+├── build.gradle                     &lt;- Project-level build config
+├── gradle/
+│   └── wrapper/                     &lt;- Gradle wrapper
+└── app/                             &lt;- Main module
+    ├── build.gradle                 &lt;- Module-level dependencies
+    ├── src/
+    │   └── main/
+    │       ├── AndroidManifest.xml  &lt;- App blueprint (Activities, Permissions)
+    │       ├── java/
+    │       │   └── com/example/app/
+    │       │       ├── MainActivity.java     &lt;- UI Logic
+    │       │       ├── MyFragment.java       &lt;- Modular UI
+    │       │       └── utils/Helper.java     &lt;- Custom classes
+    │       └── res/                      &lt;- ALL UI &amp; Assets
+    │           ├── layout/
+    │           │   ├── activity_main.xml   &lt;- Screen 1 (LinearLayout + Button)
+    │           │   └── fragment_detail.xml &lt;- Screen 2
+    │           ├── values/
+    │           │   ├── strings.xml         &lt;- "Hello World!" (localizable)
+    │           │   ├── colors.xml          &lt;- #FF0000 (red)
+    │           │   └── dimens.xml          &lt;- 16dp padding
+    │           ├── drawable/
+    │           │   ├── ic_launcher.png     &lt;- App icon
+    │           │   └── bg_gradient.xml     &lt;- Background
+    │           └── mipmap-*/              &lt;- Density-specific icons
+    └── build/                           &lt;- AUTO-GENERATED
+        └── outputs/
+            └── apk/
+                └── app-debug.apk      &lt;- INSTALLABLE APP!
+
+Build Flow:
+Java/Kotlin + XML ──(Gradle)──&gt; DEX ──(ART)──&gt; APK ──(ADB)──&gt; Device/Emulator
+</code></pre></div></div>
+
+<p><strong>Key Folders Explained:</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CRITICAL 3: Every app MUST have these
+├── AndroidManifest.xml  (Permissions + Activities)
+├── java/               (Your code logic)
+└── res/layout/         (Your screens/UI)
+
+RES FAMILY: UI customization
+└── res/
+    ├── values/     (Text, colors, sizes)
+    ├── drawable/   (Images, shapes)
+    └── layout/     (Screens)
+</code></pre></div></div>
+
+<blockquote>
+  <p>[!TIP] Blueprint (Manifest) + Bricks (java/) + Paint/Furniture (res/) = House (APK)!<br />
+ “<strong>M</strong>anifest <strong>J</strong>ava <strong>R</strong>es = <strong>MJ</strong>R** (Major folders = 3 only)!</p>
+</blockquote>
+
+<h2 id="manifest-files">Manifest Files</h2>
+
+<p>The <strong>AndroidManifest.xml</strong> is the core configuration file of every Android app, acting as its “blueprint” that tells the Android system exactly what the app contains, its capabilities, and how it should behave.</p>
+
+<h3 id="what-it-declares">What It Declares</h3>
+
+<ul>
+  <li><strong>Activities</strong>: Every <code class="language-plaintext highlighter-rouge">&lt;activity&gt;</code> in your app must be registered here with <code class="language-plaintext highlighter-rouge">&lt;activity android:name=".MainActivity"&gt;</code>, including the launcher activity via <code class="language-plaintext highlighter-rouge">&lt;intent-filter&gt;</code> with <code class="language-plaintext highlighter-rouge">&lt;action android:name="android.intent.action.MAIN"/&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;category android:name="android.intent.LAUNCHER"/&gt;</code>—this creates the app icon on the home screen.</li>
+  <li><strong>Other Components</strong>: Services, broadcast receivers, and content providers get similar declarations like <code class="language-plaintext highlighter-rouge">&lt;service android:name=".MyService"/&gt;</code>.</li>
+  <li><strong>Permissions</strong>: Requested with <code class="language-plaintext highlighter-rouge">&lt;uses-permission android:name="android.permission.INTERNET"/&gt;</code> or <code class="language-plaintext highlighter-rouge">&lt;uses-permission android:name="android.permission.CAMERA"/&gt;</code>.</li>
+  <li><strong>Hardware Features</strong>: Like <code class="language-plaintext highlighter-rouge">&lt;uses-feature android:name="android.hardware.camera" android:required="true"/&gt;</code> ensure the app only installs on compatible devices.</li>
+</ul>
+
+<h3 id="sdk--app-config">SDK &amp; App Config</h3>
+
+<ul>
+  <li><strong>SDK Compatibility</strong>: Specifies <code class="language-plaintext highlighter-rouge">&lt;uses-sdk android:minSdkVersion="21" android:targetSdkVersion="34" android:compileSdkVersion="34"/&gt;</code>—minSdk is the oldest Android version supported, targetSdk ensures modern behavior.</li>
+  <li><strong>App Identity</strong>: Comes from <code class="language-plaintext highlighter-rouge">&lt;application android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:theme="@style/AppTheme"&gt;</code>, setting name, icon, and default theme.</li>
+</ul>
+
+<h3 id="security--launch-control">Security &amp; Launch Control</h3>
+
+<ul>
+  <li><strong>Security</strong>: The manifest enforces security by declaring exported components (<code class="language-plaintext highlighter-rouge">android:exported="true"</code>) and defining custom permissions (<code class="language-plaintext highlighter-rouge">&lt;permission android:name="com.example.MY_PERMISSION"/&gt;</code>).</li>
+  <li><strong>Launch Control</strong>: It also controls launch modes (<code class="language-plaintext highlighter-rouge">android:launchMode="singleTop"</code>) and screen orientation (<code class="language-plaintext highlighter-rouge">android:screenOrientation="portrait"</code>).</li>
+</ul>
+
+<blockquote>
+  <p>[!TIP] Manifest = “passport” for your app—name (label), photo (icon), permissions (visa stamps), activities (travel destinations), SDK requirements (validity dates).</p>
+</blockquote>
+
+<h3 id="example-skeleton">Example Skeleton</h3>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;manifest</span> <span class="na">xmlns:android=</span><span class="s">"http://schemas.android.com/apk/res/android"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;uses-permission</span> <span class="na">android:name=</span><span class="s">"android.permission.INTERNET"</span> <span class="nt">/&gt;</span>
+    
+    <span class="nt">&lt;application</span> <span class="na">android:label=</span><span class="s">"@string/app_name"</span> <span class="na">android:icon=</span><span class="s">"@mipmap/ic_launcher"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;activity</span> <span class="na">android:name=</span><span class="s">".MainActivity"</span>
+                  <span class="na">android:exported=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;intent-filter&gt;</span>
+                <span class="nt">&lt;action</span> <span class="na">android:name=</span><span class="s">"android.intent.action.MAIN"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;category</span> <span class="na">android:name=</span><span class="s">"android.intent.LAUNCHER"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/intent-filter&gt;</span>
+        <span class="nt">&lt;/activity&gt;</span>
+    <span class="nt">&lt;/application&gt;</span>
+<span class="nt">&lt;/manifest&gt;</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>[!TIP] “<strong>A</strong>ctivities <strong>P</strong>ermissions <strong>S</strong>DK <strong>A</strong>pplication = <strong>APSA</strong> (App’s Passport Security Authority)”—4 main sections!</p>
+</blockquote>
+
+<blockquote>
+  <p>[!NOTE] No manifest = Android ignores your app completely; it’s the first file system reads.</p>
+</blockquote>
+</div>
+
+      <aside class="post-toc" aria-label="Table of contents">
+        
+          
+        
+      </aside>
+    </div>
+  </article>
+</main>
+
+<!-- Site-level TOC sidebar (content will be moved here by JS) -->
+<div id="site-toc-sidebar" class="site-toc-sidebar" aria-hidden="true">
+  <!-- `.post-toc` content will be moved directly into this sidebar (no extra wrapper) -->
+</div>
+<div id="site-toc-overlay" class="site-toc-overlay" tabindex="-1" aria-hidden="true"></div>
+
+<!-- PDF.js Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+
+<!-- Google AdSense Script -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7539227284131407"
+     crossorigin="anonymous"></script>
+
+<script src="/assets/scripts/post.js"></script>
+  <footer class="site-footer">
+  <!-- Back to blog button for post pages -->
+  
+  
+  <div class="footer-img">
+    <img src="/assets/img/banner.svg">
+  </div>
+  <div class="footer-content">
+    <p>&copy; 2025 The InsightRoom. All rights reserved.</p>
+  </div>
+
+  <div class="theme-switcher" style="margin: 1rem auto 0; background: var(--bg); border: 1px solid lightgray; border-radius: 9999px; display: flex; gap: 0.5rem; padding: 0.5rem 1rem; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); align-items: center; width: fit-content;">
+    <button aria-label="Light Mode" onclick="setTheme('light')" id="light-btn" style="background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--text);">
+      <i class="fa-regular fa-sun-bright"></i>
+    </button>
+    <button aria-label="Dark Mode" onclick="setTheme('dark')" id="dark-btn" style="background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--text);">
+      <i class="fa-regular fa-moon"></i>
+    </button>
+    <button aria-label="System Theme" onclick="setTheme('system')" id="system-btn" style="background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--text);">
+      <i class="fa-regular fa-computer-classic"></i>
+    </button>
+  </div>
+
+
+    
+</footer>
+  <script>
+    (function () {
+      // Enhance links inside post content to look like pills.
+      function enhancePostLinks(rootSelector) {
+        var roots = document.querySelectorAll(rootSelector);
+        if (!roots.length) return;
+        roots.forEach(function (root) {
+          var anchors = root.querySelectorAll('a[href]:not(.no-pill)');
+          anchors.forEach(function (a) {
+            // Skip anchors that wrap block elements or images (image links)
+            if (a.querySelector('img')) return;
+            // Skip anchors inside code or pre
+            if (a.closest('code, pre')) return;
+            // Add pill class if not already present
+            if (!a.classList.contains('link-pill')) a.classList.add('link-pill');
+            // Ensure FontAwesome arrow exists
+            if (!a.querySelector('i.fa-arrow-up-right')) {
+              var i = document.createElement('i');
+              i.className = 'fa-regular fa-arrow-up-right';
+              a.appendChild(i);
+            }
+            // Add data-domain (short host or path) for ::after display
+            try {
+              var href = a.getAttribute('href');
+              var url = new URL(href, window.location.href);
+              var domain = url.host + (url.pathname && url.pathname !== '/' ? url.pathname.replace(/\/$/, '') : '');
+              // If relative link on same host, show path only
+              if (url.origin === window.location.origin) domain = url.pathname.replace(/\/$/, '') || url.pathname || url.href;
+              a.setAttribute('data-domain', domain);
+              // For external links, open in new tab and add rel
+              if (url.origin && url.origin !== window.location.origin) {
+                a.setAttribute('target', '_blank');
+                a.setAttribute('rel', 'noopener noreferrer');
+              }
+            } catch (e) {
+              // ignore parse errors
+            }
+          });
+        });
+      }
+      // Run on DOMContentLoaded
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+          enhancePostLinks('.post-body');
+          enhancePostLinks('.post-content');
+        });
+      } else {
+        enhancePostLinks('.post-body');
+        enhancePostLinks('.post-content');
+      }
+    })();
+  </script>
+  <script src="/assets/scripts/post-base.js"></script>
+  </body>
+  
+
+</html>

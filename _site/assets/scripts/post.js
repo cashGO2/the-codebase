@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
+  // Process GitHub-style callouts/alerts
+  processGitHubCallouts();
+
   // Inject in-article ads
   injectInArticleAds();
 
@@ -214,8 +217,16 @@ function buildTOCFallback() {
 
     const a = document.createElement('a');
     a.href = '#' + id;
+    
+    // Clone header to remove anchor link without affecting DOM
+    const clone = h.cloneNode(true);
+    const anchor = clone.querySelector('.heading-anchor');
+    if (anchor) {
+      anchor.remove();
+    }
+
     // Use innerHTML so any math delimiters or inline HTML remains intact for KaTeX auto-render
-    a.innerHTML = h.innerHTML || (h.textContent || h.innerText);
+    a.innerHTML = clone.innerHTML || (clone.textContent || clone.innerText);
     a.addEventListener('click', function (ev) {
       ev.preventDefault();
       const target = document.getElementById(id);
@@ -2521,4 +2532,137 @@ function initializeScrollToTop() {
   scrollBtn.addEventListener('click', function() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
+}
+
+/**
+ * Process GitHub-style callouts/alerts in blockquotes
+ * Transforms [!NOTE], [!TIP], [!IMPORTANT], [!WARNING], [!CAUTION] syntax
+ * Uses Hugeicons if materio_ota_hugeicons is true in localStorage, otherwise FontAwesome
+ */
+function processGitHubCallouts() {
+  const postBody = document.querySelector('.post-body');
+  if (!postBody) return;
+
+  const blockquotes = postBody.querySelectorAll('blockquote');
+  
+  // Check if Hugeicons is enabled
+  const useHugeicons = localStorage.getItem('materio_ota_hugeicons') === 'true';
+  
+  const calloutConfig = {
+    'NOTE': {
+      faIcon: 'fa-solid fa-circle-info',
+      hugeIcon: 'hgi-stroke hgi-information-circle',
+      class: 'callout-note',
+      titleClass: 'callout-title-note',
+      iconClass: 'callout-icon-note',
+      label: 'Note'
+    },
+    'TIP': {
+      faIcon: 'fa-solid fa-lightbulb',
+      hugeIcon: 'hgi-stroke hgi-bulb',
+      class: 'callout-tip',
+      titleClass: 'callout-title-tip',
+      iconClass: 'callout-icon-tip',
+      label: 'Tip'
+    },
+    'IMPORTANT': {
+      faIcon: 'fa-solid fa-circle-exclamation',
+      hugeIcon: 'hgi-stroke hgi-alert-circle',
+      class: 'callout-important',
+      titleClass: 'callout-title-important',
+      iconClass: 'callout-icon-important',
+      label: 'Important'
+    },
+    'WARNING': {
+      faIcon: 'fa-solid fa-triangle-exclamation',
+      hugeIcon: 'hgi-stroke hgi-alert-02',
+      class: 'callout-warning',
+      titleClass: 'callout-title-warning',
+      iconClass: 'callout-icon-warning',
+      label: 'Warning'
+    },
+    'CAUTION': {
+      faIcon: 'fa-solid fa-hand',
+      hugeIcon: 'hgi-stroke hgi-stop-sign',
+      class: 'callout-caution',
+      titleClass: 'callout-title-caution',
+      iconClass: 'callout-icon-caution',
+      label: 'Caution'
+    }
+  };
+
+  blockquotes.forEach(blockquote => {
+    // Skip blockquotes inside code blocks or pre elements
+    if (blockquote.closest('pre, code, .highlight')) return;
+    
+    // Skip if blockquote has a code child element
+    if (blockquote.querySelector('code')) return;
+    
+    const firstP = blockquote.querySelector('p:first-child');
+    if (!firstP) return;
+    
+    // Skip if first paragraph contains code elements
+    if (firstP.querySelector('code')) return;
+
+    const text = firstP.innerHTML;
+    
+    // Match [!TYPE] pattern at the beginning
+    const match = text.match(/^\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*/i);
+    
+    if (match) {
+      const type = match[1].toUpperCase();
+      const config = calloutConfig[type];
+      
+      if (config) {
+        // Add class to blockquote
+        blockquote.classList.add(config.class);
+        blockquote.setAttribute('data-callout', type.toLowerCase());
+        
+        // Remove the [!TYPE] text and create styled content
+        const remainingText = text.replace(match[0], '').trim();
+        
+        // Create the callout structure
+        const titleDiv = document.createElement('div');
+        titleDiv.className = `callout-title ${config.titleClass}`;
+        
+        // Create icon element directly (no span wrapper)
+        const iconEl = document.createElement('i');
+        const iconClasses = useHugeicons ? config.hugeIcon : config.faIcon;
+        iconEl.className = `${iconClasses} callout-icon ${config.iconClass}`;
+        
+        const labelSpan = document.createElement('span');
+        labelSpan.textContent = config.label;
+        
+        titleDiv.appendChild(iconEl);
+        titleDiv.appendChild(labelSpan);
+        
+        // Create content wrapper
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'callout-content';
+        
+        // Update the first paragraph with remaining text
+        if (remainingText) {
+          firstP.innerHTML = remainingText;
+          contentDiv.appendChild(firstP.cloneNode(true));
+        }
+        
+        // Move remaining content to contentDiv
+        const otherElements = Array.from(blockquote.children).slice(remainingText ? 1 : 0);
+        otherElements.forEach(el => {
+          if (el !== firstP || !remainingText) {
+            contentDiv.appendChild(el.cloneNode(true));
+          }
+        });
+        
+        // Clear blockquote and rebuild
+        blockquote.innerHTML = '';
+        blockquote.appendChild(titleDiv);
+        if (contentDiv.children.length > 0) {
+          blockquote.appendChild(contentDiv);
+        }
+      }
+    }
+  });
+  
+  console.log('GitHub-style callouts processed (using ' + (useHugeicons ? 'Hugeicons' : 'FontAwesome') + ')');
 }

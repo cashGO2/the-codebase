@@ -3,7 +3,7 @@ title: Number System
 layout: post
 date: '2025-11-29 09:03:06'
 image: "/assets/img/covers/b0ad7902-c47a-44d4-bbf0-d2694247aab7.webp"
-category: Notes
+category: Originals
 excerpt: This resource provides detailed notes about Number systems with Important
   points, examples and other things which are helpful for exams as well as contributes
   to better understanding of the topic.

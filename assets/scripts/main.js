@@ -24,6 +24,27 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('offline', () => {
         checkOfflineAndRedirect();
     });
+
+    // Prevent ads inside callout blocks
+    const calloutSelectors = [
+        'blockquote.note',
+        'blockquote.tip',
+        'blockquote.important',
+        'blockquote.warning',
+        'blockquote.caution',
+        'blockquote.success',
+        'blockquote.info',
+        '.callout-note',
+        '.callout-tip',
+        '.callout-important',
+        '.callout-warning',
+        '.callout-caution'
+    ];
+    
+    const callouts = document.querySelectorAll(calloutSelectors.join(', '));
+    callouts.forEach(callout => {
+        callout.classList.add('google-auto-ads-ignore');
+    });
 });
 
 // Offline detection and redirect to downloads
