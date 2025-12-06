@@ -1,7 +1,7 @@
 ---
 title: Introduction to Android OS
 layout: post
-date: '2025-12-06 15:27:45'
+date: '2025-12-06 15:17:45'
 image: "/assets/img/covers/070444b6-4a51-4695-8049-6710ccefe078.webp"
 excerpt: This resource provides overview about Android, its Architecture, Versions,
   Features, Open Handset Alliance, Dalvik VM, SDK, Development Tools and Environment,
