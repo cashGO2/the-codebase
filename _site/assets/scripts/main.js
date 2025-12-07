@@ -12,15 +12,15 @@ document.addEventListener('DOMContentLoaded', function () {
             p.innerHTML = '&copy; ' + year + ' - Materio';
         }
     }
-    
+
     // Check if offline and redirect to downloads tab
     checkOfflineAndRedirect();
-    
+
     // Listen for online/offline changes
     window.addEventListener('online', () => {
         showAllTabs();
     });
-    
+
     window.addEventListener('offline', () => {
         checkOfflineAndRedirect();
     });
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
         '.callout-warning',
         '.callout-caution'
     ];
-    
+
     const callouts = document.querySelectorAll(calloutSelectors.join(', '));
     callouts.forEach(callout => {
         callout.classList.add('google-auto-ads-ignore');
@@ -52,7 +52,7 @@ function checkOfflineAndRedirect() {
     if (!navigator.onLine) {
         // Hide all tabs except Downloads
         hideNonDownloadTabs();
-        
+
         // Wait a bit for the page to fully load
         setTimeout(() => {
             // Directly show Downloads tab without needing login/dropdown
@@ -69,15 +69,15 @@ function showDownloadsTabOffline() {
     const tabLinks = document.querySelectorAll('.tab-link');
     const tabContents = document.querySelectorAll('.tab-content');
     const downloadsContent = document.getElementById('downloads');
-    
+
     if (downloadsContent) {
         // Remove active class from all tabs and contents
         tabLinks.forEach(tab => tab.classList.remove('active'));
         tabContents.forEach(content => content.classList.remove('active'));
-        
+
         // Show downloads content
         downloadsContent.classList.add('active');
-        
+
         // Dispatch event to trigger downloads loading
         document.dispatchEvent(new Event('downloadsTabOpened'));
     } else {
@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const activeTab = getCookie("activeTab") || "home";
     const tabLinks = document.querySelectorAll(".tab-link");
     const tabContents = document.querySelectorAll(".tab-content");
-    
+
     // Remove active class from all tabs and set icons to regular
     tabLinks.forEach(link => {
         link.classList.remove("active");
@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
             icon.classList.add('far');
         }
     });
-    
+
     tabContents.forEach(content => content.classList.remove("active"));
 
     const selectedTabLink = document.querySelector(`.tab-link[data-tab="${activeTab}"]`);
@@ -166,9 +166,9 @@ document.addEventListener("DOMContentLoaded", function () {
             if (this.classList.contains('profile-icon') && this.classList.contains('has-dropdown')) {
                 return; // Don't execute tab switching for profile dropdown
             }
-            
+
             e.preventDefault();
-            
+
             // Remove active class and change icons back to regular for all tabs
             tabLinks.forEach(tab => {
                 tab.classList.remove("active");
@@ -178,9 +178,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     icon.classList.add('far');
                 }
             });
-            
+
             tabContents.forEach(content => content.classList.remove("active"));
-            
+
             // Add active class and change icon to solid
             this.classList.add("active");
             const icon = this.querySelector('i');
@@ -188,11 +188,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 icon.classList.remove('far');
                 icon.classList.add('fas');
             }
-            
+
             const tab = this.getAttribute("data-tab");
             document.getElementById(tab)?.classList.add("active");
             setCookie("activeTab", tab, 7);
-            
+
             // Hide search dropdown when switching away from home tab
             const searchResults = document.getElementById('quickSearchResults');
             if (searchResults && tab !== 'home') {
@@ -214,10 +214,34 @@ submitButton.addEventListener('click', async () => {
     const topic = document.getElementById('topicSelect').value;
 
     if (!semester || !subject || categorySelect.selectedIndex === 0 || !topic) {
-        materioAlert('Please select a semester, subject, category, and topic.', {
+        const roasts = [
+            { message: "Start Reading what? The entire syllabus in one night? Pick a topic before the speedrun glitch-abuses you.", button: "Fair..." },
+            { message: "Bro hit Start Reading like he’s about to unlock 16 weeks of content in 16 seconds. Select something before the game crashes.", button: "Valid" },
+            { message: "Calm down, scholar. You can’t speedrun the whole syllabus by mashing Start Reading. Choose a chapter before attempting the world record.", button: "Alright, alright" },
+            { message: "Trying to Start Reading without picking anything? That’s peak “exam is tomorrow so let me learn the entire degree tonight” energy. Select something.", button: "True" },
+            { message: "You pressed Start Reading like Netflix’s “Skip Intro” works on coursework. It doesn’t. Pick a topic.", button: "Touché" },
+            { message: "Start Reading with no selection? Bro’s on that “I’ll finish the syllabus tonight, trust me” delusion. Choose something real.", button: "My bad" },
+            { message: "You tried to read nothing. Classic exam-eve panic maneuver. Grab a topic before the syllabus grabs YOU.", button: "Okay fine" },
+            { message: "This isn’t a Marvel recap. You can’t skip 5 months and Start Reading. Make a selection first, prodigy.", button: "Fair point" },
+            { message: "Pressing Start Reading with zero choices… bold. That’s some last-minute all-nighter confidence right there. Select something.", button: "I’ll behave" },
+            { message: "Trying to absorb knowledge telepathically now? Pick what you want to read before going full Doctor Strange on the syllabus.", button: "Say less" },
+            { message: "Start Reading what exactly? The void? Bro really queued up for the entire syllabus any% speedrun with ZERO selections. Touch some topics first.", button: "My fault gang" },
+            { message: "Bro slammed Start Reading like he’s about to fast-travel through 16 weeks in 16 milliseconds. Select something before reality blue-screens.", button: "Real." },
+            { message: "Holdup prodigy. You cannot speedrun academia by mashing Start Reading like it's a broken controller. Pick a chapter before activating godmode.", button: "Aight bet" },
+            { message: "No selection and still hit Start Reading?? That’s peak ‘exam tomorrow so let me download knowledge via Bluetooth’ behavior. Choose something.", button: "Skill issue tbh" },
+            { message: "Bro pressed Start Reading like school has a Skip Intro button. This isn’t Netflix, scholar. Pick a topic before the credits roll.", button: "Trueee" },
+            { message: "Start Reading with no selection?? Bro is deep in exam-eve delusion arc thinking he’ll absorb the syllabus osmosis-style. Choose something real.", button: "Ok fine 😭" },
+            { message: "Reading nothing?? Peak panic speedrun strat. Pick a topic before the syllabus jumpscares YOU.", button: "Understandable" },
+            { message: "This isn’t Marvel bro. You can’t skip 5 months of classes and hit Start Reading like it's a recap episode. Select something before Phase 6 drops.", button: "Fair point ig" },
+            { message: "Start Reading with zero choices??? Nah that’s last-minute all-nighter menace behavior. Pick your fate before proceeding.", button: "I'll behave 💀" },
+            { message: "Bro tried to Start Reading telepathically. This ain't Doctor Strange multiverse knowledge absorption. Select a topic before casting spells.", button: "Say less wizard" }
+        ];
+        const randomRoast = roasts[Math.floor(Math.random() * roasts.length)];
+
+        materioAlert(randomRoast.message, {
             title: 'Selection Required',
             type: 'warning',
-            buttonText: 'OK'
+            buttonText: randomRoast.button
         });
         return;
     }
@@ -225,7 +249,7 @@ submitButton.addEventListener('click', async () => {
     // Check if the caching system is available and use it
     if (typeof window.loadPdfWithCache === 'function') {
         let pdfUrl;
-        
+
         // Special handling for Vault (semester 9999)
         if (semester === '9999') {
             // Format: pdfs/9999/UUID/vault/filename.pdf
@@ -234,10 +258,10 @@ submitButton.addEventListener('click', async () => {
             // Normal format: pdfs/semester/subject/topic.pdf
             pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/${topic}.pdf`;
         }
-        
+
         // Transform to local CDN if enabled
         pdfUrl = window.MaterioLocalCDN?.transformUrl(pdfUrl) || pdfUrl;
-        
+
         // Use the cached loading system
         window.loadPdfWithCache(pdfUrl);
         popup.classList.remove('closing');
@@ -245,7 +269,7 @@ submitButton.addEventListener('click', async () => {
     } else {
         // Fallback to original behavior if caching system not available
         let pdfUrl;
-        
+
         // Special handling for Vault (semester 9999)
         if (semester === '9999') {
             // Format: pdfs/9999/UUID/vault/filename.pdf
@@ -254,7 +278,7 @@ submitButton.addEventListener('click', async () => {
             // Normal format: pdfs/semester/subject/topic.pdf
             pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/${topic}.pdf`;
         }
-        
+
         // Transform to local CDN if enabled
         pdfUrl = window.MaterioLocalCDN?.transformUrl(pdfUrl) || pdfUrl;
         document.getElementById('popupContent').innerHTML =
@@ -280,11 +304,11 @@ popup.addEventListener('animationend', (event) => {
 document.addEventListener('DOMContentLoaded', function () {
     const tabLinks = document.querySelectorAll('.tab-link');
     const tabContents = document.querySelectorAll('.tab-content');
-    
+
     tabLinks.forEach(link => {
         link.addEventListener('click', function (e) {
             e.preventDefault();
-            
+
             // Remove active class and change icons back to regular for all tabs
             tabLinks.forEach(tab => {
                 tab.classList.remove('active');
@@ -294,10 +318,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     icon.classList.add('far');
                 }
             });
-            
+
             // Remove active class from all tab contents
             tabContents.forEach(content => content.classList.remove('active'));
-            
+
             // Add active class to clicked tab and change icon to solid
             this.classList.add('active');
             const icon = this.querySelector('i');
@@ -305,7 +329,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 icon.classList.remove('far');
                 icon.classList.add('fas');
             }
-            
+
             // Show the corresponding tab content
             const tab = this.getAttribute('data-tab');
             document.getElementById(tab).classList.add('active');
@@ -356,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!semKey) return;
                 const subjects = data[semKey];
                 const subjectSelect = document.getElementById('subjectSelect');
-                
+
                 // Special handling for Vault (semester 9999)
                 if (semKey === '9999') {
                     // Extract UUID and use it as the subject
@@ -388,9 +412,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 const semKey = document.getElementById('semesterSelect').value;
                 const subjectKey = this.value;
                 if (!subjectKey) return;
-                
+
                 let categoriesArr;
-                
+
                 // Special handling for Vault (semester 9999)
                 if (semKey === '9999') {
                     // Get Vault array directly
@@ -399,7 +423,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Normal semester handling
                     categoriesArr = data[semKey][subjectKey];
                 }
-                
+
                 const categorySelect = document.getElementById('categorySelect');
                 if (categoriesArr && categoriesArr.length) {
                     let defaultSet = false;
@@ -426,9 +450,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 const subjectKey = document.getElementById('subjectSelect').value;
                 const categoryIndex = this.value;
                 if (categoryIndex === '') return;
-                
+
                 let catObj;
-                
+
                 // Special handling for Vault (semester 9999)
                 if (semKey === '9999') {
                     // Get category from Vault array
@@ -437,7 +461,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Normal semester handling
                     catObj = data[semKey][subjectKey][categoryIndex];
                 }
-                
+
                 const topics = catObj.content;
                 const topicSelect = document.getElementById('topicSelect');
                 if (topics && topics.length > 0) {
@@ -465,7 +489,35 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error loading resource library:', err);
             // Only show alert when online (offline is expected to fail)
             if (navigator.onLine) {
-                alert('Failed to load resource library. Please check:\n1. Your internet connection (if using online CDN)\n2. Local CDN path is correct (if using local CDN)\n3. resource.lib.json file exists in the specified location');
+                const roasts = [
+                    { message: "The page is missing a few ingredients. Bro cooked without onions AND salt. Refresh before the dish reports YOU.", button: "Chef moment" },
+                    { message: "Resources didn’t load. The page said ‘nah I’m on break.’ Try again before it unionizes.", button: "I'll negotiate" },
+                    { message: "The page tried to fetch files but the internet said ‘skill issue.’ Refresh and pray.", button: "True…" },
+                    { message: "Some ingredients refused to spawn. RNG is trash today. Reload for better loot.", button: "Reroll" },
+                    { message: "The page lagged out mid-load like it’s running on hostel WiFi. Refresh to revive.", button: "Revive pls" },
+                    { message: "Something didn’t load. The resources are probably hiding in creative mode.", button: "Teleport them" },
+                    { message: "Page assets dipped without notice. They said ‘brb’ and never came back.", button: "Ghosted 💔" },
+                    { message: "Resources missing. Bro tried to cook Maggi without Maggi.", button: "Valid" },
+                    { message: "The page ingredients clipped through the map. Reload to respawn them.", button: "Respawn" },
+                    { message: "Resources refused to load because the syllabus stress aura is too strong.", button: "My bad aura" },
+                    { message: "The page couldn’t load stuff. Probably buffering its life choices.", button: "Same tbh" },
+                    { message: "Missing ingredients? This page is rawer than a cooking show disaster.", button: "Gordon who?" },
+                    { message: "The page tried to load but tripped over its own assets. Reload to help it up.", button: "I'll help" },
+                    { message: "Some resources froze like a Windows XP moment. Refresh before it plays the startup sound.", button: "Reboot" },
+                    { message: "The page is missing files because the network rage-quit mid-load.", button: "Unrage pls" },
+                    { message: "Resources didn’t load. They’re probably respawning in another timeline.", button: "Multiverse moment" },
+                    { message: "The page pulled a Thanos snap and half the assets vanished.", button: "Bring them back" },
+                    { message: "Something didn’t load. The internet looked at your request and said ‘nah.’", button: "Understandable" },
+                    { message: "Ingredients missing. The page is cooking vibes only, no content.", button: "Vibes accepted" },
+                    { message: "The page tried to load resources but forgot its own ingredients list. Reload to remind it.", button: "I'll remind it" }
+                ];
+                const randomRoast = roasts[Math.floor(Math.random() * roasts.length)];
+
+                materioAlert(randomRoast.message, {
+                    title: 'Resource Load Error',
+                    type: 'error',
+                    buttonText: randomRoast.button
+                });
             }
         });
 });
@@ -578,7 +630,7 @@ function loadResourcesData(restoreSemester = null) {
 
             const semesterSelect = document.getElementById('semesterSelect');
             const currentSemester = restoreSemester || semesterSelect.value;
-            
+
             semesterSelect.innerHTML = '';
             const placeholder = document.createElement('option');
             placeholder.value = '';
@@ -599,7 +651,7 @@ function loadResourcesData(restoreSemester = null) {
 
             // Now get the new element and set up everything
             const finalSemesterSelect = document.getElementById('semesterSelect');
-            
+
             // Restore the previous semester value or set default to semester 5
             if (currentSemester && data[currentSemester]) {
                 finalSemesterSelect.value = currentSemester;
@@ -715,7 +767,35 @@ fetch(libUrl)
         console.error('Error loading initial resource data:', err);
         // Only show alert when online (offline is expected to fail)
         if (navigator.onLine) {
-            alert('Failed to load resource library. Please check:\n1. Your internet connection (if using online CDN)\n2. Local CDN path is correct (if using local CDN)\n3. resource.lib.json file exists in the specified location');
+            const roasts = [
+                { message: "The page is missing a few ingredients. Bro cooked without onions AND salt. Refresh before the dish reports YOU.", button: "Chef moment" },
+                { message: "Resources didn’t load. The page said ‘nah I’m on break.’ Try again before it unionizes.", button: "I'll negotiate" },
+                { message: "The page tried to fetch files but the internet said ‘skill issue.’ Refresh and pray.", button: "True…" },
+                { message: "Some ingredients refused to spawn. RNG is trash today. Reload for better loot.", button: "Reroll" },
+                { message: "The page lagged out mid-load like it’s running on hostel WiFi. Refresh to revive.", button: "Revive pls" },
+                { message: "Something didn’t load. The resources are probably hiding in creative mode.", button: "Teleport them" },
+                { message: "Page assets dipped without notice. They said ‘brb’ and never came back.", button: "Ghosted 💔" },
+                { message: "Resources missing. Bro tried to cook Maggi without Maggi.", button: "Valid" },
+                { message: "The page ingredients clipped through the map. Reload to respawn them.", button: "Respawn" },
+                { message: "Resources refused to load because the syllabus stress aura is too strong.", button: "My bad aura" },
+                { message: "The page couldn’t load stuff. Probably buffering its life choices.", button: "Same tbh" },
+                { message: "Missing ingredients? This page is rawer than a cooking show disaster.", button: "Gordon who?" },
+                { message: "The page tried to load but tripped over its own assets. Reload to help it up.", button: "I'll help" },
+                { message: "Some resources froze like a Windows XP moment. Refresh before it plays the startup sound.", button: "Reboot" },
+                { message: "The page is missing files because the network rage-quit mid-load.", button: "Unrage pls" },
+                { message: "Resources didn’t load. They’re probably respawning in another timeline.", button: "Multiverse moment" },
+                { message: "The page pulled a Thanos snap and half the assets vanished.", button: "Bring them back" },
+                { message: "Something didn’t load. The internet looked at your request and said ‘nah.’", button: "Understandable" },
+                { message: "Ingredients missing. The page is cooking vibes only, no content.", button: "Vibes accepted" },
+                { message: "The page tried to load resources but forgot its own ingredients list. Reload to remind it.", button: "I'll remind it" }
+            ];
+            const randomRoast = roasts[Math.floor(Math.random() * roasts.length)];
+
+            materioAlert(randomRoast.message, {
+                title: 'Resource Load Error',
+                type: 'error',
+                buttonText: randomRoast.button
+            });
         }
     });
 
@@ -813,84 +893,84 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // Handle info icon click/tap to show tooltip
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const infoIcons = document.querySelectorAll('.info-icon');
-    
+
     function adjustTooltipPosition(icon) {
         const tooltip = icon.querySelector('.tooltip');
         if (!tooltip || window.innerWidth > 768) return;
-        
+
         // Reset classes
         tooltip.classList.remove('flip-left');
-        
+
         // Check if tooltip would go off-screen to the right
         const iconRect = icon.getBoundingClientRect();
         const tooltipRect = tooltip.getBoundingClientRect();
         const viewportWidth = window.innerWidth;
-        
+
         if (iconRect.left + 200 > viewportWidth - 20) {
             tooltip.classList.add('flip-left');
         }
     }
-    
+
     infoIcons.forEach(icon => {
         // Handle both click and touch events
-        icon.addEventListener('click', function(e) {
+        icon.addEventListener('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
-            
+
             // Toggle active class for this icon
             this.classList.toggle('active');
-            
+
             // Close other open tooltips
             infoIcons.forEach(otherIcon => {
                 if (otherIcon !== this) {
                     otherIcon.classList.remove('active');
                 }
             });
-            
+
             // Adjust positioning if needed (mobile)
             if (this.classList.contains('active')) {
                 setTimeout(() => adjustTooltipPosition(this), 10);
             }
         });
-        
+
         // Handle touch events for better mobile experience
-        icon.addEventListener('touchstart', function(e) {
+        icon.addEventListener('touchstart', function (e) {
             e.preventDefault();
             e.stopPropagation();
         });
     });
-    
+
     // Close tooltip when clicking/touching outside
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.info-icon')) {
             infoIcons.forEach(icon => {
                 icon.classList.remove('active');
             });
         }
     });
-    
+
     // Close tooltip on touch outside for mobile
-    document.addEventListener('touchstart', function(e) {
+    document.addEventListener('touchstart', function (e) {
         if (!e.target.closest('.info-icon')) {
             infoIcons.forEach(icon => {
                 icon.classList.remove('active');
             });
         }
     });
-    
+
     // Close tooltip when scrolling on mobile - use passive listener
-    document.addEventListener('scroll', function() {
+    document.addEventListener('scroll', function () {
         if (window.innerWidth <= 768) {
             infoIcons.forEach(icon => {
                 icon.classList.remove('active');
             });
         }
     }, { passive: true });
-    
+
     // Reposition tooltips on window resize
-    window.addEventListener('resize', function() {
+    window.addEventListener('resize', function () {
         infoIcons.forEach(icon => {
             if (icon.classList.contains('active')) {
                 adjustTooltipPosition(icon);
@@ -900,7 +980,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Smart Recommendation System
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const semesterSelect = document.getElementById('semesterSelect');
     const subjectSelect = document.getElementById('subjectSelect');
     const blogCardHeading = document.getElementById('blogCardHeading');
@@ -908,7 +988,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const recommendedPosts = document.getElementById('recommendedPosts');
     const noPostsMessage = document.getElementById('noPostsMessage');
     const allPostsDataElement = document.getElementById('allPostsData');
-    
+
     // Parse all posts data
     let allPosts = [];
     try {
@@ -917,16 +997,16 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Error parsing posts data:', e);
         return;
     }
-    
+
     // Check authentication and hide private posts if not authenticated
     checkAuthAndFilterPosts();
-    
+
     // Function to check authentication and hide private posts
     async function checkAuthAndFilterPosts() {
         const token = localStorage.getItem('materio_auth_token');
         let hasAdminPrivileges = false;
         let isPlusUser = false;
-        
+
         // Hide entire blogs card if user is not logged in
         const blogsCard = document.getElementById('blogs');
         if (!token) {
@@ -935,7 +1015,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             return;
         }
-        
+
         if (token) {
             try {
                 const response = await fetch('/api/v2/profile', {
@@ -946,7 +1026,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     credentials: 'same-origin'
                 });
-                
+
                 if (response.ok) {
                     const userData = await response.json();
                     hasAdminPrivileges = userData.user?.hasAdminPrivileges || false;
@@ -966,7 +1046,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
         }
-        
+
         // Show blogs card only if user is plus user OR admin
         if (blogsCard) {
             if (isPlusUser || hasAdminPrivileges) {
@@ -976,7 +1056,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
         }
-        
+
         // Hide private posts in default listing if no admin privileges or plus membership
         if (!hasAdminPrivileges && !isPlusUser) {
             const privatePosts = document.querySelectorAll('#defaultPosts [data-visibility="private"]');
@@ -984,17 +1064,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 post.style.display = 'none';
             });
         }
-        
+
         // Store private access status for filtering recommendations  
         window.materioUserHasPrivateAccess = hasAdminPrivileges || isPlusUser;
         window.materioUserHasAdminPrivileges = hasAdminPrivileges;
-        
+
         // Apply appropriate logo based on user privileges
         const versionInfo = document.getElementById('versionInfo');
         if (versionInfo) {
             // Remove any existing privilege classes
             versionInfo.classList.remove('premium-user', 'plus-user', 'admin-user');
-            
+
             // Apply the appropriate class based on privileges
             if (hasAdminPrivileges) {
                 versionInfo.classList.add('admin-user');
@@ -1003,7 +1083,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    
+
     // Function to create post HTML
     function createPostHTML(post, index) {
         const excerpt = post.excerpt_home || post.excerpt;
@@ -1022,12 +1102,12 @@ document.addEventListener('DOMContentLoaded', function() {
             </a>
         `;
     }
-    
+
     // Function to update blog recommendations
     function updateBlogRecommendations() {
         const selectedSemester = semesterSelect.value;
         const selectedSubject = subjectSelect.value;
-        
+
         // If no semester or subject selected, show default posts
         if (!selectedSemester || !selectedSubject) {
             blogCardHeading.textContent = 'Latest from the Insightroom';
@@ -1036,17 +1116,17 @@ document.addEventListener('DOMContentLoaded', function() {
             noPostsMessage.style.display = 'none';
             return;
         }
-        
+
         // Filter posts based on semester and subject
         const filteredPosts = allPosts.filter(post => {
             const selectedSem = selectedSemester.toLowerCase().trim();
             const selectedSub = selectedSubject.toLowerCase().trim();
-            
+
             // Filter out private posts if user doesn't have admin privileges or plus access
             if (post.visibility === 'private' && !window.materioUserHasPrivateAccess) {
                 return false;
             }
-            
+
             // Handle semester matching (can be string or array)
             let semesterMatch = false;
             if (Array.isArray(post.semester)) {
@@ -1054,7 +1134,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 semesterMatch = post.semester.toLowerCase().trim() === selectedSem;
             }
-            
+
             // Handle subject matching (can be string or array)
             let subjectMatch = false;
             if (Array.isArray(post.subject)) {
@@ -1062,23 +1142,23 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 subjectMatch = post.subject.toLowerCase().trim() === selectedSub;
             }
-            
+
             return semesterMatch && subjectMatch;
         });
-        
+
         // Update heading and content
         if (filteredPosts.length > 0) {
             blogCardHeading.innerHTML = '<i class="fa-solid fa-book-sparkles"></i> Smart Recommendations';
             defaultPosts.style.display = 'none';
             noPostsMessage.style.display = 'none';
             recommendedPosts.style.display = 'block';
-            
+
             // Limit to 5 posts and create HTML
             const postsToShow = filteredPosts.slice(0, 5);
             recommendedPosts.innerHTML = postsToShow
                 .map((post, index) => createPostHTML(post, index + 1))
                 .join('');
-            
+
             // Apply current theme to newly created recommended posts
             const isDarkMode = document.body.classList.contains('dark-mode');
             postsToShow.forEach((post, index) => {
@@ -1099,7 +1179,7 @@ document.addEventListener('DOMContentLoaded', function() {
             noPostsMessage.style.display = 'block';
         }
     }
-    
+
     // Add event listeners to dropdowns
     semesterSelect.addEventListener('change', updateBlogRecommendations);
     subjectSelect.addEventListener('change', updateBlogRecommendations);
@@ -1119,19 +1199,19 @@ function checkAndApplyAdFreeExperience() {
             document.body.classList.remove('ad-free-user');
             return false;
         }
-        
+
         const userData = JSON.parse(userDataStr);
-        
+
         // Check if user has plus or admin privileges
         const hasAdFreePrivileges = userData.isPlusUser === true || userData.hasAdminPrivileges === true;
-        
+
         if (hasAdFreePrivileges) {
             // Apply ad-free experience
             document.body.classList.add('ad-free-user');
-            
+
             // Hide any dynamically loaded ads
             hideExistingAds();
-            
+
             return true;
         } else {
             // Remove ad-free class if user doesn't have privileges
@@ -1154,7 +1234,7 @@ function hideExistingAds() {
         ad.style.display = 'none';
         ad.style.visibility = 'hidden';
     });
-    
+
     // Hide common ad containers
     const adContainers = document.querySelectorAll(
         '.ad-container, .advertisement, .ad-banner, .google-ads, [id*="google_ads"], [class*="google-ad"]'
@@ -1165,12 +1245,12 @@ function hideExistingAds() {
 }
 
 // Check for ad-free experience on page load
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     checkAndApplyAdFreeExperience();
 });
 
 // Re-check when user data changes (e.g., after login/logout)
-window.addEventListener('storage', function(e) {
+window.addEventListener('storage', function (e) {
     if (e.key === 'materio_user') {
         checkAndApplyAdFreeExperience();
     }
@@ -1186,20 +1266,20 @@ window.checkAndApplyAdFreeExperience = checkAndApplyAdFreeExperience;
 function handleInsightroomToggle() {
     const insightroomToggle = document.getElementById('insightroomToggle');
     const blogsSection = document.getElementById('blogs');
-    
+
     if (!insightroomToggle || !blogsSection) {
         return;
     }
-    
+
     // Load saved preference
     const isEnabled = getCookie('insightroomEnabled') !== 'false'; // Default to true
     insightroomToggle.checked = isEnabled;
-    
+
     // Apply initial state
     toggleInsightroomSection(isEnabled);
-    
+
     // Add event listener for toggle changes
-    insightroomToggle.addEventListener('change', function() {
+    insightroomToggle.addEventListener('change', function () {
         const enabled = this.checked;
         toggleInsightroomSection(enabled);
         setCookie('insightroomEnabled', enabled, 365); // Save for 1 year
@@ -1209,7 +1289,7 @@ function handleInsightroomToggle() {
 // Function to show/hide the Insightroom section
 function toggleInsightroomSection(enabled) {
     const blogsSection = document.getElementById('blogs');
-    
+
     if (blogsSection) {
         if (enabled) {
             blogsSection.style.display = 'block';
@@ -1220,7 +1300,7 @@ function toggleInsightroomSection(enabled) {
 }
 
 // Initialize Insightroom toggle when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Small delay to ensure all other elements are initialized first
     setTimeout(handleInsightroomToggle, 100);
 });
@@ -1242,9 +1322,9 @@ async function clearAllSiteData() {
             danger: true
         }
     );
-    
+
     if (!confirmed) return;
-    
+
     try {
         // Show loading state
         const card = document.getElementById('clearSiteDataCard');
@@ -1252,23 +1332,23 @@ async function clearAllSiteData() {
             card.style.opacity = '0.5';
             card.style.pointerEvents = 'none';
         }
-        
+
         // 1. Clear all cookies
-        document.cookie.split(';').forEach(function(c) {
+        document.cookie.split(';').forEach(function (c) {
             const name = c.split('=')[0].trim();
             document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
             document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=' + window.location.hostname;
         });
         console.log('Cookies cleared');
-        
+
         // 2. Clear localStorage
         localStorage.clear();
         console.log('localStorage cleared');
-        
+
         // 3. Clear sessionStorage
         sessionStorage.clear();
         console.log('sessionStorage cleared');
-        
+
         // 4. Clear IndexedDB databases
         if (window.indexedDB && indexedDB.databases) {
             const databases = await indexedDB.databases();
@@ -1279,7 +1359,7 @@ async function clearAllSiteData() {
                 }
             }
         }
-        
+
         // 5. Unregister all service workers
         if ('serviceWorker' in navigator) {
             const registrations = await navigator.serviceWorker.getRegistrations();
@@ -1288,7 +1368,7 @@ async function clearAllSiteData() {
                 console.log('Unregistered service worker:', registration.scope);
             }
         }
-        
+
         // 6. Clear Cache Storage
         if ('caches' in window) {
             const cacheNames = await caches.keys();
@@ -1297,17 +1377,17 @@ async function clearAllSiteData() {
                 console.log('Deleted cache:', cacheName);
             }
         }
-        
+
         // Show success message using custom modal
         await materioAlert('All site data has been cleared successfully.\n\nThe page will now reload.', {
             title: 'Data Cleared',
             type: 'success',
             buttonText: 'Reload'
         });
-        
+
         // Reload the page to apply changes
         window.location.reload(true);
-        
+
     } catch (error) {
         console.error('Error clearing site data:', error);
         await materioAlert('An error occurred while clearing site data. Some data may not have been cleared.', {
@@ -1315,7 +1395,7 @@ async function clearAllSiteData() {
             type: 'danger',
             buttonText: 'OK'
         });
-        
+
         // Restore card state
         const card = document.getElementById('clearSiteDataCard');
         if (card) {
@@ -1337,19 +1417,19 @@ let currentSearchController = null;
 let aiSearchEnabled = false; // Track AI search mode
 
 // Initialize quick search functionality
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('quickSearchInput');
     const searchResults = document.getElementById('quickSearchResults');
     const aiToggleBtn = document.getElementById('aiSearchToggle');
-    
+
     if (!searchInput || !searchResults) return;
-    
+
     // Handle AI search toggle
     if (aiToggleBtn) {
-        aiToggleBtn.addEventListener('click', function(e) {
+        aiToggleBtn.addEventListener('click', function (e) {
             e.stopPropagation();
             aiSearchEnabled = !aiSearchEnabled;
-            
+
             // Update UI
             if (aiSearchEnabled) {
                 this.classList.add('active');
@@ -1360,7 +1440,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 searchInput.classList.remove('ai-mode');
                 searchInput.placeholder = 'Quick search';
             }
-            
+
             // Re-run search if there's a query
             const query = searchInput.value.trim();
             if (query.length > 0) {
@@ -1368,59 +1448,59 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     // Handle search input with debounce
-    searchInput.addEventListener('input', function() {
+    searchInput.addEventListener('input', function () {
         const query = this.value.trim();
-        
+
         // Clear previous timeout
         if (searchTimeout) {
             clearTimeout(searchTimeout);
         }
-        
+
         // Hide results if query is empty
         if (query.length === 0) {
             searchResults.style.display = 'none';
             return;
         }
-        
+
         // Only show search results on home tab
         const homeTab = document.getElementById('home');
         if (!homeTab || !homeTab.classList.contains('active')) {
             return;
         }
-        
+
         // Debounce search - wait 300ms after user stops typing
         searchTimeout = setTimeout(() => {
             performQuickSearch(query);
         }, 300);
     });
-    
+
     // Close search results when clicking outside
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         const aiToggle = document.getElementById('aiSearchToggle');
-        if (!searchInput.contains(e.target) && 
-            !searchResults.contains(e.target) && 
+        if (!searchInput.contains(e.target) &&
+            !searchResults.contains(e.target) &&
             !aiToggle?.contains(e.target)) {
             searchResults.style.display = 'none';
         }
     });
-    
+
     // Reopen results when clicking on input if there are results
-    searchInput.addEventListener('click', function() {
+    searchInput.addEventListener('click', function () {
         // Only show on home tab
         const homeTab = document.getElementById('home');
         if (!homeTab || !homeTab.classList.contains('active')) {
             return;
         }
-        
+
         if (this.value.trim().length > 0 && searchResults.children.length > 0) {
             searchResults.style.display = 'block';
             // Reposition on click
             repositionSearchDropdown();
         }
     });
-    
+
     // Reposition dropdown on scroll and resize (for position: fixed) - use passive listener
     window.addEventListener('scroll', repositionSearchDropdown, { passive: true });
     window.addEventListener('resize', repositionSearchDropdown, { passive: true });
@@ -1430,12 +1510,12 @@ document.addEventListener('DOMContentLoaded', function() {
 function repositionSearchDropdown() {
     const searchResults = document.getElementById('quickSearchResults');
     const searchInput = document.getElementById('quickSearchInput');
-    
+
     if (searchResults && searchInput && searchResults.style.display === 'block') {
         const rect = searchInput.getBoundingClientRect();
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-        
+
         searchResults.style.top = `${rect.bottom + scrollTop + 8}px`;
         searchResults.style.left = `${rect.left + scrollLeft}px`;
         searchResults.style.width = `${rect.width}px`;
@@ -1448,61 +1528,61 @@ function repositionSearchDropdown() {
 async function performQuickSearch(query) {
     const searchResults = document.getElementById('quickSearchResults');
     const searchInput = document.getElementById('quickSearchInput');
-    
+
     // If query is not provided, get it from the input field
     if (!query && searchInput) {
         query = searchInput.value.trim();
     }
-    
+
     // Don't search if query is empty
     if (!query) {
         searchResults.style.display = 'none';
         return;
     }
-    
+
     // Cancel previous request if any
     if (currentSearchController) {
         currentSearchController.abort();
     }
-    
+
     // Show loading state
     const loadingIcon = aiSearchEnabled ? 'fa-sparkles' : 'fa-spinner fa-spin';
     const loadingText = aiSearchEnabled ? 'AI searching...' : 'Searching...';
     searchResults.innerHTML = `<div class="search-loading"><i class="far ${loadingIcon}"></i> ${loadingText}</div>`;
     searchResults.style.display = 'block';
-    
+
     try {
         // Create new abort controller
         currentSearchController = new AbortController();
-        
+
         // Build API URL with useAI parameter and aiMode=pure
         const apiUrl = `/api/v2/search?q=${encodeURIComponent(query)}${aiSearchEnabled ? '&useAI=true&aiMode=pure' : ''}`;
-        
+
         // Call search API
         const response = await fetch(apiUrl, {
             signal: currentSearchController.signal
         });
-        
+
         if (!response.ok) {
             throw new Error(`Search failed: ${response.status}`);
         }
-        
+
         const data = await response.json();
-        
+
         if (!data.success) {
             throw new Error(data.error || 'Search failed');
         }
-        
+
         // Store AI data globally for displaying suggestions
         window.currentAIData = data.ai || null;
-        
+
         displaySearchResults(data.results, query);
-        
+
     } catch (error) {
         if (error.name === 'AbortError') {
             return;
         }
-        
+
         console.error('Search error:', error);
         searchResults.innerHTML = `
             <div class="search-error">
@@ -1518,27 +1598,27 @@ async function performQuickSearch(query) {
 function displaySearchResults(results, query) {
     const searchResults = document.getElementById('quickSearchResults');
     const searchInput = document.getElementById('quickSearchInput');
-    
+
     // Store all results globally for expansion
     window.allSearchResults = results;
     window.currentDisplayCount = 8;
     window.currentSearchQuery = query;
-    
+
     // Position dropdown below the search input (using absolute positioning)
     if (searchInput) {
         const rect = searchInput.getBoundingClientRect();
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-        
+
         searchResults.style.top = `${rect.bottom + scrollTop + 8}px`;
         searchResults.style.left = `${rect.left + scrollLeft}px`;
         searchResults.style.width = `${rect.width}px`;
     }
-    
+
     if (!results || results.length === 0) {
         const aiIcon = aiSearchEnabled ? '<i class="far fa-sparkles" style="color: #ff2d95;"></i> ' : '';
         const aiData = window.currentAIData;
-        
+
         // Show AI suggestions if available
         let suggestionsHtml = '';
         if (aiSearchEnabled && aiData && aiData.suggestions && aiData.suggestions.length > 0) {
@@ -1560,7 +1640,7 @@ function displaySearchResults(results, query) {
         } else {
             suggestionsHtml = '<p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.7;">Try: "os intro", "dadv qb", "epj servlets"</p>';
         }
-        
+
         searchResults.innerHTML = `
             <div class="search-no-results">
                 <i class="far fa-search"></i>
@@ -1571,7 +1651,7 @@ function displaySearchResults(results, query) {
         searchResults.style.display = 'block';
         return;
     }
-    
+
     renderSearchResults(query);
 }
 
@@ -1580,15 +1660,15 @@ function renderSearchResults(query) {
     const searchResults = document.getElementById('quickSearchResults');
     const results = window.allSearchResults || [];
     const displayCount = window.currentDisplayCount || 8;
-    
+
     // Build HTML for results
     let html = '';
-    
+
     // Add AI mode indicator if enabled
     if (aiSearchEnabled) {
         const aiData = window.currentAIData;
         const intentText = aiData && aiData.intent ? aiData.intent : 'AI-Powered Results';
-        
+
         html += `
             <div style="padding: 8px 16px; background: linear-gradient(135deg, rgba(255, 130, 0, 0.1), rgba(255, 45, 149, 0.1)); border-bottom: 1px solid rgba(255, 130, 0, 0.2);">
                 <div style="display: flex; align-items: center; gap: 8px;">
@@ -1603,14 +1683,14 @@ function renderSearchResults(query) {
             </div>
         `;
     }
-    
+
     // Show results based on display count
     const topResults = results.slice(0, displayCount);
-    
+
     topResults.forEach((result, index) => {
-        const scoreColor = result.score >= 75 ? '#28a745' : 
-                          result.score >= 60 ? '#ff8200' : '#6c757d';
-        
+        const scoreColor = result.score >= 75 ? '#28a745' :
+            result.score >= 60 ? '#ff8200' : '#6c757d';
+
         // Show AI explanation if available (pure AI mode)
         const aiExplanation = result.aiExplanation ? `
             <div class="search-result-ai-explanation" style="margin-top: 6px; font-size: 11px; color: #6c757d; font-style: italic; line-height: 1.4;">
@@ -1618,7 +1698,7 @@ function renderSearchResults(query) {
                 ${result.aiExplanation}
             </div>
         ` : '';
-        
+
         html += `
             <div class="search-result-item" style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px;"
                  data-semester="${result.semester}"
@@ -1652,7 +1732,7 @@ function renderSearchResults(query) {
             </div>
         `;
     });
-    
+
     // Add "Show more" button if there are more results
     if (results.length > displayCount) {
         html += `
@@ -1672,7 +1752,7 @@ function renderSearchResults(query) {
             </div>
         `;
     }
-    
+
     searchResults.innerHTML = html;
     searchResults.style.display = 'block';
 }
@@ -1689,7 +1769,7 @@ function collapseSearchResults(event) {
     if (event) event.stopPropagation();
     window.currentDisplayCount = 8;
     renderSearchResults(window.currentSearchQuery);
-    
+
     // Scroll back to top of results
     const searchResults = document.getElementById('quickSearchResults');
     if (searchResults) {
@@ -1701,19 +1781,19 @@ function collapseSearchResults(event) {
 function openSearchResultPdf(event, semester, subject, topic) {
     // Stop event propagation to prevent selecting the result
     if (event) event.stopPropagation();
-    
+
     // Hide search results
     const searchResults = document.getElementById('quickSearchResults');
     const searchInput = document.getElementById('quickSearchInput');
     if (searchResults) searchResults.style.display = 'none';
     if (searchInput) searchInput.value = '';
-    
+
     // Get popup element
     const popup = document.getElementById('popup');
     if (!popup) {
         return;
     }
-    
+
     // Build PDF URL
     let pdfUrl;
     if (semester === '9999') {
@@ -1723,10 +1803,10 @@ function openSearchResultPdf(event, semester, subject, topic) {
         // Normal format: pdfs/semester/subject/topic.pdf
         pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/${topic}.pdf`;
     }
-    
+
     // Transform to local CDN if enabled
     pdfUrl = window.MaterioLocalCDN?.transformUrl(pdfUrl) || pdfUrl;
-    
+
     // Open PDF using cache system if available
     if (typeof window.loadPdfWithCache === 'function') {
         window.loadPdfWithCache(pdfUrl);
@@ -1737,7 +1817,7 @@ function openSearchResultPdf(event, semester, subject, topic) {
         document.getElementById('popupContent').innerHTML =
             `<iframe id="pdf-iframe" scrolling='no' allowfullscreen webkitallowfullscreen style="border:none; width:100%; height:calc(100% - 17px); border-radius:25px; margin-top:22px; corner-shape: squircle;" 
         src="/oread/web/viewer.html?disableStream=false&disableRange=false&rangeChunkSize=1048576&file=${encodeURIComponent(pdfUrl)}"></iframe>`;
-        
+
         popup.classList.remove('closing');
         popup.style.display = 'block';
     }
@@ -1750,28 +1830,28 @@ function selectSearchResult(semester, subject, category, topic) {
     const searchInput = document.getElementById('quickSearchInput');
     if (searchResults) searchResults.style.display = 'none';
     if (searchInput) searchInput.value = '';
-    
+
     // Populate the selection form
     const semesterSelect = document.getElementById('semesterSelect');
     const subjectSelect = document.getElementById('subjectSelect');
     const categorySelect = document.getElementById('categorySelect');
     const topicSelect = document.getElementById('topicSelect');
-    
+
     if (!semesterSelect || !subjectSelect || !categorySelect || !topicSelect) {
         return;
     }
-    
+
     // Helper function to wait for dropdown to be enabled and populated
     function waitForDropdownReady(selectElement, targetValue, maxAttempts = 30, matchByText = false) {
         return new Promise((resolve, reject) => {
             let attempts = 0;
             const checkInterval = setInterval(() => {
                 attempts++;
-                
+
                 // Check if dropdown is enabled and has the target option
                 const isEnabled = !selectElement.disabled;
                 const hasOptions = selectElement.options.length > 1; // More than just placeholder
-                
+
                 let option;
                 if (matchByText) {
                     // For category dropdown - match by text content
@@ -1780,7 +1860,7 @@ function selectSearchResult(semester, subject, category, topic) {
                     // For other dropdowns - match by value
                     option = Array.from(selectElement.options).find(opt => opt.value === targetValue);
                 }
-                
+
                 if (isEnabled && hasOptions && option) {
                     clearInterval(checkInterval);
                     resolve(option.value); // Return the actual value (index for category)
@@ -1791,46 +1871,46 @@ function selectSearchResult(semester, subject, category, topic) {
             }, 150); // Check every 150ms
         });
     }
-    
+
     // Helper function to set dropdown value and trigger change
     function setDropdownValue(selectElement, value) {
         // Remove disabled attribute
         selectElement.disabled = false;
-        
+
         // Set the value
         selectElement.value = value;
-        
+
         // Trigger multiple events to ensure compatibility
         selectElement.dispatchEvent(new Event('change', { bubbles: true }));
         selectElement.dispatchEvent(new Event('input', { bubbles: true }));
-        
+
         // Also trigger jQuery change if available (some forms use jQuery)
         if (window.jQuery) {
             window.jQuery(selectElement).trigger('change');
         }
     }
-    
+
     // Chain the selections with proper waiting
     async function populateAllFields() {
         try {
             // Step 1: Set semester
             setDropdownValue(semesterSelect, semester);
             await new Promise(resolve => setTimeout(resolve, 300)); // Give it time to process
-            
+
             // Step 2: Wait for subject dropdown to populate, then set it
             await waitForDropdownReady(subjectSelect, subject);
             setDropdownValue(subjectSelect, subject);
             await new Promise(resolve => setTimeout(resolve, 300)); // Give it time to process
-            
+
             // Step 3: Wait for category dropdown to populate, then find by TEXT and set by INDEX
             const categoryIndex = await waitForDropdownReady(categorySelect, category, 30, true); // matchByText = true
             setDropdownValue(categorySelect, categoryIndex);
             await new Promise(resolve => setTimeout(resolve, 300)); // Give it time to process
-            
+
             // Step 4: Wait for topic dropdown to populate, then set it
             await waitForDropdownReady(topicSelect, topic);
             setDropdownValue(topicSelect, topic);
-            
+
             // Scroll to the form
             setTimeout(() => {
                 const readingCard = document.getElementById('reading');
@@ -1838,12 +1918,12 @@ function selectSearchResult(semester, subject, category, topic) {
                     readingCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             }, 300);
-            
+
         } catch (error) {
             console.error('=== Error populating fields ===', error);
         }
     }
-    
+
     // Execute the population
     populateAllFields();
 }
@@ -1875,7 +1955,7 @@ function materioAlert(message, options = {}) {
             type = 'info',
             buttonText = 'OK'
         } = options;
-        
+
         // Create overlay
         const overlay = document.createElement('div');
         overlay.className = 'materio-modal-overlay';
@@ -1891,18 +1971,18 @@ function materioAlert(message, options = {}) {
                 </div>
             </div>
         `;
-        
+
         document.body.appendChild(overlay);
-        
+
         // Trigger animation
         requestAnimationFrame(() => {
             overlay.classList.add('visible');
         });
-        
+
         // Focus the button
         const okBtn = overlay.querySelector('#materio-modal-ok');
         setTimeout(() => okBtn.focus(), 100);
-        
+
         // Close function
         function closeModal() {
             overlay.classList.remove('visible');
@@ -1911,7 +1991,7 @@ function materioAlert(message, options = {}) {
                 resolve();
             }, 250);
         }
-        
+
         // Event listeners
         okBtn.addEventListener('click', closeModal);
         overlay.addEventListener('click', (e) => {
@@ -1946,7 +2026,7 @@ function materioConfirm(message, options = {}) {
             cancelText = 'Cancel',
             danger = false
         } = options;
-        
+
         // Create overlay
         const overlay = document.createElement('div');
         overlay.className = 'materio-modal-overlay';
@@ -1963,19 +2043,19 @@ function materioConfirm(message, options = {}) {
                 </div>
             </div>
         `;
-        
+
         document.body.appendChild(overlay);
-        
+
         // Trigger animation
         requestAnimationFrame(() => {
             overlay.classList.add('visible');
         });
-        
+
         // Focus the cancel button (safer default)
         const cancelBtn = overlay.querySelector('#materio-modal-cancel');
         const confirmBtn = overlay.querySelector('#materio-modal-confirm');
         setTimeout(() => cancelBtn.focus(), 100);
-        
+
         // Close function
         function closeModal(result) {
             overlay.classList.remove('visible');
@@ -1984,7 +2064,7 @@ function materioConfirm(message, options = {}) {
                 resolve(result);
             }, 250);
         }
-        
+
         // Event listeners
         confirmBtn.addEventListener('click', () => closeModal(true));
         cancelBtn.addEventListener('click', () => closeModal(false));
@@ -2025,12 +2105,12 @@ function escapeHtml(text) {
 window.materioAlert = materioAlert;
 window.materioConfirm = materioConfirm;
 
-(function(){
+(function () {
     var breakAfter = 4; // change to 5 if you prefer 5 words
     var mobileWidth = 600;
 
     function applyWordWrap() {
-        document.querySelectorAll('.paper-mode-description').forEach(function(el){
+        document.querySelectorAll('.paper-mode-description').forEach(function (el) {
             // store original text once
             var original = el.getAttribute('data-original-text');
             if (!original) {
@@ -2055,7 +2135,7 @@ window.materioConfirm = materioConfirm;
 
     document.addEventListener('DOMContentLoaded', applyWordWrap);
     var _t;
-    window.addEventListener('resize', function(){
+    window.addEventListener('resize', function () {
         clearTimeout(_t);
         _t = setTimeout(applyWordWrap, 120);
     });

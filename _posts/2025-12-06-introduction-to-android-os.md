@@ -13,6 +13,8 @@ category: Originals
 summarize: true
 ---
 
+[attachment:https://static-materio.vercel.app/common/files/attach/4f3001a2-d238-44ff-8108-afb6651fb90c.pdf:Introduction to Android OS]
+
 Android is a mobile operating system that powers most of today’s smartphones and many other smart devices, built mainly for touchscreens and developed by Google using open‑source technologies. It provides the basic “brain” that lets apps run, manages hardware like camera and sensors, and gives the familiar home screen, notifications, and settings you use every day.
 
 ## What Android Actually Is
