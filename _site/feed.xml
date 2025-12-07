@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:64981/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:64981/" rel="alternate" type="text/html" /><updated>2025-12-07T10:53:16+05:30</updated><id>http://localhost:64981/feed.xml</id><title type="html">The InsightRoom.</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">Introduction to Android OS</title><link href="http://localhost:64981/originals/introduction-to-android-os/" rel="alternate" type="text/html" title="Introduction to Android OS" /><published>2025-12-06T15:17:45+05:30</published><updated>2025-12-06T15:17:45+05:30</updated><id>http://localhost:64981/originals/introduction-to-android-os</id><content type="html" xml:base="http://localhost:64981/originals/introduction-to-android-os/"><![CDATA[<p>[attachment:https://static-materio.vercel.app/common/files/attach/4f3001a2-d238-44ff-8108-afb6651fb90c.pdf:Introduction to Android OS]</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:64981/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:64981/" rel="alternate" type="text/html" /><updated>2025-12-07T11:05:28+05:30</updated><id>http://localhost:64981/feed.xml</id><title type="html">The InsightRoom.</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">Introduction to Android OS</title><link href="http://localhost:64981/originals/introduction-to-android-os/" rel="alternate" type="text/html" title="Introduction to Android OS" /><published>2025-12-06T15:17:45+05:30</published><updated>2025-12-06T15:17:45+05:30</updated><id>http://localhost:64981/originals/introduction-to-android-os</id><content type="html" xml:base="http://localhost:64981/originals/introduction-to-android-os/"><![CDATA[<p>[attachment:https://static-materio.vercel.app/common/files/attach/4f3001a2-d238-44ff-8108-afb6651fb90c.pdf:Introduction to Android OS]</p>
 
 <p>Android is a mobile operating system that powers most of today’s smartphones and many other smart devices, built mainly for touchscreens and developed by Google using open‑source technologies. It provides the basic “brain” that lets apps run, manages hardware like camera and sensors, and gives the familiar home screen, notifications, and settings you use every day.</p>
 
@@ -276,37 +276,37 @@ flowchart LR
     <tr>
       <td>Android 10</td>
       <td>29</td>
-      <td>Android 10 (public), internal codename <strong>Quince Tart</strong> / <strong>Queen Cake</strong> used in AOSP and internally.</td>
+      <td><strong>Quince Tart</strong> (AOSP) / <strong>Queen Cake</strong> (Internally)</td>
     </tr>
     <tr>
       <td>Android 11</td>
       <td>30</td>
-      <td>Android 11 (public), internal dessert: Red Velvet Cake.</td>
+      <td>Red Velvet Cake</td>
     </tr>
     <tr>
       <td>Android 12 / 12L</td>
       <td>31 / 32</td>
-      <td>Android 12 (public), internal dessert: Snow Cone.</td>
+      <td>Snow Cone</td>
     </tr>
     <tr>
       <td>Android 13</td>
       <td>33</td>
-      <td>Android 13 (public), internal dessert: Tiramisu.</td>
+      <td>Tiramisu</td>
     </tr>
     <tr>
       <td>Android 14</td>
       <td>34</td>
-      <td>Android 14 (public), internal dessert: Upside Down Cake.</td>
+      <td>Upside Down Cake</td>
     </tr>
     <tr>
       <td>Android 15</td>
       <td>35</td>
-      <td>Android 15 (public), internal dessert: Vanilla Ice Cream (reported).</td>
+      <td>Vanilla Ice Cream</td>
     </tr>
     <tr>
       <td>Android 16</td>
       <td>36</td>
-      <td>Android 16 (public), internal dessert: Baklava.</td>
+      <td>Baklava</td>
     </tr>
   </tbody>
 </table>

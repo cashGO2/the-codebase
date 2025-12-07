@@ -179,13 +179,13 @@ flowchart LR
 | Android 7.0 – 7.1.2 | 24 / 25 | Nougat |
 | Android 8.0 – 8.1 | 26 / 27 | Oreo |
 | Android 9.0 | 28 | Pie |
-| Android 10 | 29 | Android 10 (public), internal codename **Quince Tart** / **Queen Cake** used in AOSP and internally. |
-| Android 11 | 30 | Android 11 (public), internal dessert: Red Velvet Cake. |
-| Android 12 / 12L | 31 / 32 | Android 12 (public), internal dessert: Snow Cone. |
-| Android 13 | 33 | Android 13 (public), internal dessert: Tiramisu. |
-| Android 14 | 34 | Android 14 (public), internal dessert: Upside Down Cake. |
-| Android 15 | 35 | Android 15 (public), internal dessert: Vanilla Ice Cream (reported). |
-| Android 16 | 36 | Android 16 (public), internal dessert: Baklava. |
+| Android 10 | 29 | **Quince Tart** (AOSP) / **Queen Cake** (Internally) |
+| Android 11 | 30 | Red Velvet Cake |
+| Android 12 / 12L | 31 / 32 | Snow Cone |
+| Android 13 | 33 | Tiramisu |
+| Android 14 | 34 | Upside Down Cake |
+| Android 15 | 35 | Vanilla Ice Cream |
+| Android 16 | 36 | Baklava |
 
 
 
