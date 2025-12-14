@@ -1,15 +1,19 @@
-const { 
-  supabase, 
+const {
+  supabase,
   hashPassword,
   comparePassword,
-  verifyToken, 
+  verifyToken,
   getTokenFromHeaders,
-  generateRecoveryKey
+  generateRecoveryKey,
+  addCorsHeaders
 } = require('./_utils');
 const cors = require('./cors');
 
 module.exports = async (req, res) => {
-  // Enable CORS
+  // Add CORS headers to all responses
+  addCorsHeaders(res, req.headers.origin);
+
+  // Enable CORS Preflight
   if (req.method === 'OPTIONS') {
     return cors(req, res);
   }
@@ -56,7 +60,7 @@ async function handleGetProfile(req, res) {
     }
 
     // Return user profile
-    return res.status(200).json({ 
+    return res.status(200).json({
       user: {
         id: user.id,
         username: user.username,
@@ -91,10 +95,10 @@ async function handleUpdateProfile(req, res) {
     }
 
     // Parse request body
-    const { 
-      username, 
-      displayName, 
-      currentPassword, 
+    const {
+      username,
+      displayName,
+      currentPassword,
       newPassword,
       generateNewRecoveryKey,
       profilePicture
@@ -173,10 +177,10 @@ async function handleUpdateProfile(req, res) {
         // Extract base64 data
         const base64Data = profilePicture.split(',')[1];
         const buffer = Buffer.from(base64Data, 'base64');
-        
+
         // Upload to Supabase storage
         const fileName = `profile-${Date.now()}.jpg`;
-        
+
         // Upload to storage bucket
         const { data: upload, error: uploadError } = await supabase
           .storage
@@ -185,7 +189,7 @@ async function handleUpdateProfile(req, res) {
             contentType: 'image/jpeg',
             upsert: false
           });
-          
+
         if (uploadError) {
           console.error('Profile picture upload error:', uploadError);
         } else {
@@ -194,7 +198,7 @@ async function handleUpdateProfile(req, res) {
             .storage
             .from('profile-pictures')
             .getPublicUrl(`${decoded.id}/${fileName}`);
-            
+
           updateData.profile_picture = publicUrl;
         }
       } catch (error) {
@@ -223,8 +227,8 @@ async function handleUpdateProfile(req, res) {
       .single();
 
     if (fetchError) {
-        return res.status(500).json({ error: 'Failed to fetch updated profile', details: fetchError });
-    }    return res.status(200).json({ 
+      return res.status(500).json({ error: 'Failed to fetch updated profile', details: fetchError });
+    } return res.status(200).json({
       message: 'Profile updated successfully',
       user: {
         id: updatedUser.id,
@@ -249,7 +253,7 @@ async function handleUpdateProfile(req, res) {
 async function handleDeleteAccount(req, res) {
   try {
     console.log("Starting account deletion process");
-    
+
     // Get token from headers
     const token = getTokenFromHeaders(req.headers);
     if (!token) {
@@ -289,31 +293,31 @@ async function handleDeleteAccount(req, res) {
       console.error("User not found for deletion:", userError);
       return res.status(404).json({ error: 'User not found', details: userError?.message });
     }
-    
+
     console.log("Account deletion: User found, verifying password");
-    
+
     // Verify password
     const isPasswordValid = await comparePassword(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Invalid password' });
     }
-    
+
     console.log("Account deletion: Password verified, proceeding with deletion");
-    
+
     // Delete user profile picture from storage
     try {
       const { data: files } = await supabase
         .storage
         .from('profile-pictures')
         .list(decoded.id);
-  
+
       if (files && files.length > 0) {
         console.log(`Account deletion: Found ${files.length} profile picture files to delete`);
         const { error: storageError } = await supabase
           .storage
           .from('profile-pictures')
           .remove(files.map(file => `${decoded.id}/${file.name}`));
-          
+
         if (storageError) {
           console.error("Error deleting profile pictures:", storageError);
         }
@@ -336,15 +340,15 @@ async function handleDeleteAccount(req, res) {
     }
 
     console.log("Account deletion: Successfully completed");
-    
+
     // Return success response
     return res.status(200).json({ message: 'Account deleted successfully' });
   } catch (error) {
     console.error('Delete account error:', error);
     console.error('Error stack:', error.stack);
-    
-    return res.status(500).json({ 
-      error: 'Internal server error', 
+
+    return res.status(500).json({
+      error: 'Internal server error',
       message: error.message,
       name: error.name,
       details: JSON.stringify(error)

@@ -1038,9 +1038,11 @@ function sharePost() {
     navigator.share({
       title: postTitle,
       url: postUrl,
-      text: 'Check out this blog post:'
+      text: 'Sharing this with you:'
     }).catch((error) => {
       console.log('Web Share API error:', error);
+      // Ignore user cancellation
+      if (error.name === 'AbortError') return;
       fallbackShare(postUrl, postTitle);
     });
   } else {
@@ -1060,11 +1062,9 @@ function fallbackShare(url, title) {
       showShareSuccess();
     }).catch((error) => {
       console.log('Clipboard API failed:', error);
-      showSharePrompt(url);
     });
   } else {
     console.log('Clipboard API not supported');
-    showSharePrompt(url);
   }
 }
 
@@ -1083,14 +1083,6 @@ function showShareSuccess() {
   }
 }
 
-// Show prompt as final fallback
-function showSharePrompt(url) {
-  try {
-    prompt('Copy this link to share:', url);
-  } catch (error) {
-    console.log('Prompt failed:', error);
-  }
-}
 
 // Print post function
 function printPost() {

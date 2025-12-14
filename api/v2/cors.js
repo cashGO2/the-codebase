@@ -10,7 +10,9 @@ module.exports = async (req, res) => {
       'http://localhost:8888',
       'https://materioa.netlify.app',
       'https://materioa.vercel.app',
-      'https://materioapp.in'
+      'https://materioapp.in',
+      'http://localhost:5173',
+      'http://localhost:1000/'
     ];
     // Set Origin to the requesting origin if it's allowed, otherwise use wildcard
     // CORS spec requires a single origin value, not a comma-separated list

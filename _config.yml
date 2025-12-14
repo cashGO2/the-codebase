@@ -39,6 +39,10 @@ sass:
 # Handle redirects
 include:
   - _redirects
+  
+exclude:
+  - insightroom
+  - insightroom/**
 
 # Custom permalink structure
 permalink: /:categories/:title/ #default permalink: pretty

@@ -1,10 +1,20 @@
-const { 
-  supabase, 
-  comparePassword, 
-  generateToken 
+const {
+  supabase,
+  comparePassword,
+  generateToken,
+  addCorsHeaders
 } = require('./_utils');
+const cors = require('./cors');
 
 module.exports = async (req, res) => {
+  // Add CORS headers to all responses
+  addCorsHeaders(res, req.headers.origin);
+
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return cors(req, res);
+  }
+
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });

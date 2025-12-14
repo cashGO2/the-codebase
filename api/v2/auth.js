@@ -1,16 +1,18 @@
-const { 
-  supabase, 
-  hashPassword, 
+const {
+  supabase,
+  hashPassword,
   generateToken,
   verifyToken,
   getTokenFromHeaders,
-  corsHeaders
+  corsHeaders,
+  addCorsHeaders
 } = require('./_utils');
 const cors = require('./cors');
 
 module.exports = async (req, res) => {
   const origin = req.headers.origin || req.headers.Origin;
-  
+  addCorsHeaders(res, origin);
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return cors(req, res);
@@ -91,7 +93,7 @@ async function handleAdminRecovery(req, res) {
   try {
     // Get token from headers
     const token = getTokenFromHeaders(req.headers);
-    
+
     if (!token) {
       return res.status(401).json({ error: 'Authentication token required' });
     }
@@ -123,13 +125,13 @@ async function handleAdminRecovery(req, res) {
 
     // Find target user
     let query = supabase.from('users').select('id, email, username, recovery_key');
-    
+
     if (email) {
       query = query.eq('email', email);
     } else {
       query = query.eq('username', username);
     }
-    
+
     const { data: targetUser, error: targetError } = await query.single();
 
     if (targetError || !targetUser) {
