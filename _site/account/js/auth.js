@@ -9,19 +9,19 @@ const LOCAL_STORAGE_TOKEN_KEY = 'materio_auth_token';
 function showNotification(message, type = 'info') {
   const notification = document.getElementById('notification');
   const messageElement = notification.querySelector('.notification-message');
-  
+
   // Set message and type
   messageElement.textContent = message;
   notification.className = `notification ${type}`;
-  
+
   // Show notification
   notification.classList.add('show');
-  
+
   // Auto hide after 5 seconds
   setTimeout(() => {
     notification.classList.remove('show');
   }, 10000);
-  
+
   // Close button event
   const closeButton = notification.querySelector('.notification-close');
   if (closeButton) {
@@ -37,7 +37,7 @@ async function makeApiRequest(endpoint, method = 'GET', data = null, requiresAut
     const headers = {
       'Content-Type': 'application/json'
     };
-    
+
     // Add auth token if required
     if (requiresAuth) {
       const token = localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
@@ -46,24 +46,24 @@ async function makeApiRequest(endpoint, method = 'GET', data = null, requiresAut
       }
       headers['Authorization'] = `Bearer ${token}`;
     }
-    
+
     const options = {
       method,
       headers,
       credentials: 'same-origin'
     };
-      // Add request body if needed
+    // Add request body if needed
     if (data && (method === 'POST' || method === 'PUT' || method === 'DELETE')) {
       options.body = JSON.stringify(data);
     }
-      // Make fetch request
+    // Make fetch request
     console.log(`Making ${method} request to ${API_URL}/${endpoint}`, options);
     const response = await fetch(`${API_URL}/${endpoint}`, options);    // Parse response
     let result;
     try {
       // Clone the response so we can read it multiple times if needed
       const responseClone = response.clone();
-      
+
       try {
         // Try to parse as JSON first
         result = await response.json();
@@ -80,13 +80,13 @@ async function makeApiRequest(endpoint, method = 'GET', data = null, requiresAut
       console.error('Error parsing response:', parseError);
       throw new Error(`Failed to parse server response: ${parseError.message}`);
     }
-    
+
     // Handle API errors
     if (!response.ok) {
       console.error('API Error Response:', result);
       throw new Error(result.error || result.message || 'Something went wrong');
     }
-    
+
     return result;
   } catch (error) {
     console.error('API Request Error:', error);
@@ -113,13 +113,14 @@ function clearAuthToken() {
 
 function redirectToProfile() {
   // In development mode (localhost), always use profile.html
-  const isLocalhost = window.location.hostname === 'localhost' || 
-                      window.location.hostname === '127.0.0.1';
-                      
-  if (isLocalhost) {    window.location.href = '/account/profile.html';
+  const isLocalhost = window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1';
+
+  if (isLocalhost) {
+    window.location.href = '/account/profile.html';
     return;
   }
-  
+
   // Always redirect to profile.html
   window.location.href = '/account/profile.html';
 }
@@ -133,14 +134,14 @@ function redirectToMainSite() {
 }
 
 // Handle password visibility toggle
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   const toggleButtons = document.querySelectorAll('.toggle-password');
-  
+
   toggleButtons.forEach(button => {
-    button.addEventListener('click', function() {
+    button.addEventListener('click', function () {
       const targetId = this.getAttribute('data-target');
       const inputField = document.getElementById(targetId);
-      
+
       if (inputField.type === 'password') {
         inputField.type = 'text';
         this.classList.remove('fa-eye');
@@ -154,10 +155,10 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   // Protect authenticated pages
   const currentPage = window.location.pathname.split('/').pop();
-  
+
   // Pages that require authentication
   const authRequiredPages = ['profile'];
-  
+
   // Pages that are for non-authenticated users
   const nonAuthPages = ['index', 'signup', 'forgot-password', ''];
 
@@ -165,7 +166,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Redirect to login if trying to access protected page without auth
     redirectToLogin();
   } else if (nonAuthPages.includes(currentPage) && isAuthenticated()) {
-    // Redirect to profile if already logged in but trying to access login pages
-    redirectToProfile();
+    // Check if there is a redirect param before sending to profile
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectUrl = urlParams.get('redirect');
+
+    if (redirectUrl) {
+      const token = getAuthToken();
+      const targetUrl = new URL(redirectUrl);
+      targetUrl.searchParams.set('token', token);
+      window.location.href = targetUrl.toString();
+    } else {
+      // Redirect to profile if already logged in but trying to access login pages
+      redirectToProfile();
+    }
   }
 });

@@ -12,21 +12,27 @@ module.exports = async (req, res) => {
       'https://materioa.vercel.app',
       'https://materioapp.in',
       'http://localhost:5173',
-      'http://localhost:1000/'
+      'http://localhost:1000/',
+      'https://insightroom.vercel.app'
     ];
     // Set Origin to the requesting origin if it's allowed, otherwise use wildcard
     // CORS spec requires a single origin value, not a comma-separated list
-    const corsOrigin = origin && allowedOrigins.includes(origin) ? origin : '*';
+    let corsOrigin = '*';
+    if (origin) {
+      if (allowedOrigins.includes(origin) || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
+        corsOrigin = origin;
+      }
+    }
 
     console.log(`CORS preflight request from origin: ${origin}, responding with: ${corsOrigin}`);
 
-    res.status(204).set({
-      'Access-Control-Allow-Origin': corsOrigin, // Single origin, not a list
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
-      'Access-Control-Allow-Credentials': 'true',
-      'Access-Control-Max-Age': '86400'
-    }).send('');
+    res.setHeader('Access-Control-Allow-Origin', corsOrigin);
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Max-Age', '86400');
+
+    res.status(204).send('');
     return;
   }
 

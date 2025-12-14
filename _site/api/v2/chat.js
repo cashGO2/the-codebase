@@ -39,7 +39,7 @@ const MODELS = {
         'google/gemini-2.0-flash-exp:free',
         'google/gemma-3-27b-it:free',
         'mistralai/mistral-small-3.1-24b-instruct:free',
-        'openai/gpt-oss-20b:free',
+        'openai/gpt-oss-120b:free',
         'moonshotai/kimi-k2:free',
         'deepseek/deepseek-chat-v3-0324:free',
         'qwen/qwen3-235b-a22b:free',
@@ -71,7 +71,7 @@ const MODEL_DISPLAY_NAMES = {
     'qwen/qwen3-235b-a22b:free': 'Qwen3 235B',
     'qwen/qwen3-coder:free': 'Qwen3 Coder',
     'qwen/qwen-2.5-coder-32b-instruct:free': 'Qwen 2.5 Coder',
-    'openai/gpt-oss-20b:free': 'GPT-OSS 20B',
+    'openai/gpt-oss-20b:free': 'GPT-OSS 120B',
     'minimax/minimax-m2:free': 'Minimax M2',
     'z-ai/glm-4.5-air:free': 'GLM-4.5 Air',
     'moonshotai/kimi-k2:free': 'Kimi K2',
@@ -82,9 +82,9 @@ const MODEL_DISPLAY_NAMES = {
 // System prompts
 const SYSTEM_PROMPTS = {
     general: 'You are Materio, a helpful and knowledgeable AI made by Materio. Always be accurate, helpful, and respectful. Format your responses clearly using markdown when appropriate. When generating LaTeX expressions, always wrap inline math with single dollar signs $...$ and display math with double dollar signs $$...$$, so that they render properly using KaTeX. Provide clear, accurate, and helpful responses. Be conversational and friendly while maintaining professionalism.',
-    
+
     reasoning: 'You are Materio, a helpful and knowledgeable AI made by Materio. Always be accurate, helpful, and respectful. Format your responses clearly using markdown when appropriate. When generating LaTeX expressions, always wrap inline math with single dollar signs $...$ and display math with double dollar signs $$...$$, so that they render properly using KaTeX. You specialize in reasoning and problem-solving. Think step by step and provide detailed analysis. Break down complex problems into smaller parts and explain your reasoning process clearly.',
-    
+
     code: 'You are Materio, a helpful and knowledgeable AI made by Materio. Always be accurate, helpful, and respectful. Format your responses clearly using markdown when appropriate. When generating LaTeX expressions, always wrap inline math with single dollar signs $...$ and display math with double dollar signs $$...$$, so that they render properly using KaTeX. You specialize in coding and programming. Provide clear, well-commented code solutions and explain technical concepts. Always include explanations for your code and suggest best practices.'
 };
 
@@ -110,7 +110,10 @@ module.exports = async (req, res) => {
 
     // Handle preflight OPTIONS request
     if (req.method === 'OPTIONS') {
-        res.status(200).set(headers).send('');
+        Object.entries(headers).forEach(([key, value]) => {
+            res.setHeader(key, value);
+        });
+        res.status(200).send('');
         return;
     }
 
@@ -120,17 +123,17 @@ module.exports = async (req, res) => {
     // If this file is at api/v2/chat.js, then req.url will be /api/v2/chat (or with query params).
     // The original code used event.path.replace('/api/v1/chat', '') to get sub-paths.
     // We should check req.query or req.url.
-    
+
     // Assuming Vercel rewrites or direct access:
     // If accessed as /api/v2/chat, path is empty or /
     // If accessed as /api/v2/chat/models, path is /models
-    
+
     // Let's try to extract the path suffix.
     // We can use a simple heuristic: check if the URL ends with /models or /health
-    
+
     const url = req.url || '';
     let path = '';
-    
+
     if (url.includes('/models')) {
         path = '/models';
     } else if (url.includes('/health')) {
@@ -160,7 +163,7 @@ module.exports = async (req, res) => {
 
             // Determine which model to use
             const selectedModel = model || getPreferredModel(mode);
-            
+
             // Get system prompt for the mode
             const systemPrompt = SYSTEM_PROMPTS[mode] || SYSTEM_PROMPTS.general;
 
@@ -203,7 +206,7 @@ module.exports = async (req, res) => {
             }
 
             const data = await response.json();
-            
+
             return res.status(200).json({
                 success: true,
                 response: data.choices[0].message.content,
@@ -219,7 +222,7 @@ module.exports = async (req, res) => {
                 id: model,
                 name: MODEL_DISPLAY_NAMES[model] || model
             }));
-            
+
             return res.status(200).json({
                 success: true,
                 models: modelsWithNames,

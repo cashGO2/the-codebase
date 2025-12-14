@@ -73,9 +73,13 @@ const corsHeaders = (origin) => {
     'https://insightroom.vercel.app'
   ];
 
-  // Set origin to the requesting origin if it's in allowedOrigins, otherwise use wildcard
-  // CORS spec requires a single origin value, not a comma-separated list
-  const corsOrigin = origin && allowedOrigins.includes(origin) ? origin : '*';
+  // Check if origin is allowed
+  let corsOrigin = '*';
+  if (origin) {
+    if (allowedOrigins.includes(origin) || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
+      corsOrigin = origin;
+    }
+  }
 
   return {
     'Access-Control-Allow-Origin': corsOrigin,
