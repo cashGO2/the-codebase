@@ -34,7 +34,7 @@ const generateToken = (user) => {
     email: user.email,
     username: user.username
   };
-  
+
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 };
 
@@ -69,13 +69,14 @@ const corsHeaders = (origin) => {
     'https://materioa.netlify.app',
     'https://materioa.vercel.app',
     'https://materioapp.in',
-    'https://auth-materioa.netlify.app'
+    'https://auth-materioa.netlify.app',
+    'https://insightroom.vercel.app'
   ];
-  
+
   // Set origin to the requesting origin if it's in allowedOrigins, otherwise use wildcard
   // CORS spec requires a single origin value, not a comma-separated list
   const corsOrigin = origin && allowedOrigins.includes(origin) ? origin : '*';
-  
+
   return {
     'Access-Control-Allow-Origin': corsOrigin,
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',

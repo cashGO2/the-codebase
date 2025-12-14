@@ -12,7 +12,8 @@ module.exports = async (req, res) => {
       'https://materioa.vercel.app',
       'https://materioapp.in',
       'http://localhost:5173',
-      'http://localhost:1000/'
+      'http://localhost:1000/',
+      'https://insightroom.vercel.app'
     ];
     // Set Origin to the requesting origin if it's allowed, otherwise use wildcard
     // CORS spec requires a single origin value, not a comma-separated list
