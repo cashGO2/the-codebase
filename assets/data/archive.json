@@ -2,6 +2,49 @@
   "archive": [
     {
       "enabled": true,
+      "category": "whats-new",
+      "frequency": "every-12hr",
+      "customFrequencyHours": "null",
+      "title": "What's New",
+      "description": " 1. Introducing Materio Originals !- A brand-new category of resources created, curated, and refined entirely by Materio — to help students understand concepts faster and more clearly.\n 2. Dark Mode in PDF natively - toggle from Settings - Reading modes\n 3. Optimizations made to OpenReader component.",
+      "link": "/changelog",
+      "images": [
+        "assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp",
+        "assets/img/covers/8abb551b-2bb4-4879-800e-e936a1c44632.webp"
+      ],
+      "showImageOnMaintenance": false,
+      "imageRotationInterval": 5000,
+      "imageAnimation": {
+        "type": "slide-left",
+        "duration": 600,
+        "direction": "left"
+      },
+      "isLimitedOffer": true,
+      "startDate": "2025-12-01T00:00",
+      "endDate": "2025-12-04T00:00",
+      "showDateInfo": false,
+      "lastUpdated": "2025-11-30T22:15:00",
+      "buttons": {
+        "primary": {
+          "show": true,
+          "text": "Show Changes",
+          "icon": "&#8206;"
+        },
+        "secondary": {
+          "show": true,
+          "text": "Got it",
+          "icon": "&#8206;"
+        }
+      },
+      "disclaimer": {
+        "show": false,
+        "text": "Terms and conditions.",
+        "linkText": "Read more",
+        "linkUrl": ""
+      }
+    },
+    {
+      "enabled": true,
       "category": "notice",
       "frequency": "once",
       "customFrequencyHours": "null",

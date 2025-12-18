@@ -548,6 +548,10 @@ themeToggle.addEventListener('change', function () {
     const notifyCards = document.querySelectorAll('#notify');
     notifyCards.forEach(card => elements.push(card));
 
+    // Append all dynamically created insight cards
+    const insightCards = document.querySelectorAll('.insight-card');
+    insightCards.forEach(item => elements.push(item));
+
     elements.forEach(el => {
         if (el) {
             this.checked ? el.classList.add('dark-mode') : el.classList.remove('dark-mode');
@@ -582,6 +586,17 @@ document.addEventListener("DOMContentLoaded", function () {
     const giscusScript = document.querySelector('script[src="https://giscus.app/client.js"]');
     if (giscusScript) {
         giscusScript.setAttribute('data-theme', isDark ? 'noborder_dark' : 'noborder_light');
+    }
+});
+
+// Apply dark mode to dynamically loaded insight cards when they're loaded
+window.addEventListener('insightroomPostsLoaded', function () {
+    const isDark = document.body.classList.contains("dark-mode") ||
+        (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+    if (isDark) {
+        const insightCards = document.querySelectorAll('.insight-card');
+        insightCards.forEach(item => item.classList.add('dark-mode'));
     }
 });
 
@@ -979,6 +994,116 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+// ================================================
+// INSIGHTROOM API - LOAD POSTS FROM API
+// ================================================
+
+const INSIGHTROOM_API = 'https://insightroom.vercel.app/api/posts';
+
+// Function to load posts from InsightRoom API
+async function loadInsightroomPosts() {
+    const defaultPostsContainer = document.getElementById('defaultPosts');
+    const loadingEl = document.getElementById('postsLoading');
+    const errorEl = document.getElementById('postsError');
+    const allPostsDataEl = document.getElementById('allPostsData');
+
+    if (!defaultPostsContainer || !allPostsDataEl) return;
+
+    try {
+        const response = await fetch(INSIGHTROOM_API);
+        if (!response.ok) throw new Error('Failed to fetch posts');
+
+        const allPosts = await response.json();
+
+        // Filter out private posts and get latest 5
+        const publicPosts = allPosts.filter(post => post.visibility !== 'private');
+        const latestPosts = publicPosts.slice(0, 5);
+
+        // Hide loading
+        if (loadingEl) loadingEl.style.display = 'none';
+
+        // Render posts as horizontal scrolling squircle cards
+        latestPosts.forEach((post, index) => {
+            const postDate = new Date(post.date);
+            const formattedDate = postDate.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            }).replace(/\//g, '-');
+
+            const excerpt = post.excerpt || '';
+            const truncatedExcerpt = excerpt.split(' ').slice(0, 12).join(' ') + (excerpt.split(' ').length > 12 ? '...' : '');
+
+            // Use imgUrl from API or fallback to noidea.png
+            let imageUrl = post.imgUrl || '';
+            if (!imageUrl || imageUrl === 'null' || imageUrl === 'undefined' || imageUrl.trim() === '') {
+                imageUrl = '/assets/img/noidea.png';
+            }
+
+            const postHTML = `
+                <a href="${post.link}" class="insight-card-link" ${post.visibility === 'private' ? 'data-visibility="private"' : ''}>
+                    <article class="insight-card" id="blogPost${index + 1}" style="--card-bg: url('${imageUrl}')">
+                        <div class="insight-card-bg"></div>
+                        <div class="insight-card-gradient"></div>
+                        <div class="insight-card-content">
+                            <h3 class="insight-card-title">${post.title}</h3>
+                            <p class="insight-card-excerpt">${truncatedExcerpt} <span class="insight-card-read-more">Read</span></p>
+                            <span class="insight-card-date">${formattedDate}</span>
+                        </div>
+                    </article>
+                </a>
+            `;
+            defaultPostsContainer.insertAdjacentHTML('beforeend', postHTML);
+        });
+
+        // Populate allPostsData for filtering/recommendations
+        const postsData = publicPosts.map(post => ({
+            title: post.title,
+            url: post.link,
+            date: new Date(post.date).toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            }).replace(/\//g, '-'),
+            imgUrl: post.imgUrl || '',
+            excerpt_home: post.excerpt || '',
+            excerpt: post.excerpt || '',
+            semester: post.semester || '',
+            subject: post.subject || '',
+            visibility: post.visibility || 'public'
+        }));
+        allPostsDataEl.textContent = JSON.stringify(postsData);
+
+        // Apply dark mode to dynamically created posts if dark mode is active
+        const isDarkMode = document.body.classList.contains('dark-mode') ||
+            (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+        if (isDarkMode) {
+            latestPosts.forEach((post, index) => {
+                const postElement = document.getElementById(`blogPost${index + 1}`);
+                if (postElement) {
+                    postElement.classList.add('dark-mode');
+                }
+            });
+        }
+
+        // Dispatch event to notify that posts are loaded
+        window.dispatchEvent(new CustomEvent('insightroomPostsLoaded', { detail: postsData }));
+
+    } catch (error) {
+        console.error('Error loading InsightRoom posts:', error);
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (errorEl) errorEl.style.display = 'block';
+    }
+}
+
+// Load InsightRoom posts on DOM ready
+document.addEventListener('DOMContentLoaded', loadInsightroomPosts);
+
+// ================================================
+// SMART RECOMMENDATION SYSTEM
+// ================================================
+
 // Smart Recommendation System
 document.addEventListener('DOMContentLoaded', function () {
     const semesterSelect = document.getElementById('semesterSelect');
@@ -989,14 +1114,25 @@ document.addEventListener('DOMContentLoaded', function () {
     const noPostsMessage = document.getElementById('noPostsMessage');
     const allPostsDataElement = document.getElementById('allPostsData');
 
-    // Parse all posts data
+    // Parse all posts data - will be populated by loadInsightroomPosts
     let allPosts = [];
-    try {
-        allPosts = JSON.parse(allPostsDataElement.textContent);
-    } catch (e) {
-        console.error('Error parsing posts data:', e);
-        return;
+
+    // Function to parse posts data
+    function parsePostsData() {
+        try {
+            allPosts = JSON.parse(allPostsDataElement.textContent);
+        } catch (e) {
+            console.error('Error parsing posts data:', e);
+        }
     }
+
+    // Initial parse (may be empty if API hasn't loaded yet)
+    parsePostsData();
+
+    // Re-parse when InsightRoom posts are loaded
+    window.addEventListener('insightroomPostsLoaded', function (e) {
+        parsePostsData();
+    });
 
     // Check authentication and hide private posts if not authenticated
     checkAuthAndFilterPosts();
@@ -1086,19 +1222,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to create post HTML
     function createPostHTML(post, index) {
-        const excerpt = post.excerpt_home || post.excerpt;
+        const fullExcerpt = post.excerpt_home || post.excerpt || '';
+        const truncatedExcerpt = fullExcerpt.split(' ').slice(0, 12).join(' ') + (fullExcerpt.split(' ').length > 12 ? '...' : '');
         const visibilityAttr = post.visibility === 'private' ? 'data-visibility="private"' : '';
+
+        // Use imgUrl from API or fallback to noidea.png
+        let imageUrl = post.imgUrl || '';
+        if (!imageUrl || imageUrl === 'null' || imageUrl === 'undefined' || imageUrl.trim() === '') {
+            imageUrl = '/assets/img/noidea.png';
+        }
+
         return `
-            <a href="${post.url}" style="text-decoration: none; color: inherit; display: block;" ${visibilityAttr}>
-                <div class="card-layout blog-post-item" id="recommendedPost${index}" style="backdrop-filter: blur(2px); cursor: pointer; transition: transform 0.2s ease;">
-                    <h3 class="blog-post-title">
-                        <span class="blog-post-link" style="color: #ff8200;">${post.title}</span>
-                    </h3>
-                    <p class="blog-post-excerpt">${excerpt}</p>
-                    <div class="blog-post-meta">
-                        <span class="blog-post-date">${post.date}</span>
+            <a href="${post.url}" class="insight-card-link" ${visibilityAttr}>
+                <article class="insight-card" id="recommendedPost${index}" style="--card-bg: url('${imageUrl}')">
+                    <div class="insight-card-bg"></div>
+                    <div class="insight-card-gradient"></div>
+                    <div class="insight-card-content">
+                        <h3 class="insight-card-title">${post.title}</h3>
+                        <p class="insight-card-excerpt">${truncatedExcerpt} <span class="insight-card-read-more">Read</span></p>
+                        <span class="insight-card-date">${post.date}</span>
                     </div>
-                </div>
+                </article>
             </a>
         `;
     }
@@ -1111,16 +1255,16 @@ document.addEventListener('DOMContentLoaded', function () {
         // If no semester or subject selected, show default posts
         if (!selectedSemester || !selectedSubject) {
             blogCardHeading.textContent = 'Latest from the Insightroom';
-            defaultPosts.style.display = 'block';
-            recommendedPosts.style.display = 'none';
+            defaultPosts.style.removeProperty('display');
+            recommendedPosts.style.setProperty('display', 'none', 'important');
             noPostsMessage.style.display = 'none';
             return;
         }
 
         // Filter posts based on semester and subject
         const filteredPosts = allPosts.filter(post => {
-            const selectedSem = selectedSemester.toLowerCase().trim();
-            const selectedSub = selectedSubject.toLowerCase().trim();
+            const selectedSem = String(selectedSemester).toLowerCase().trim();
+            const selectedSub = String(selectedSubject).toLowerCase().trim();
 
             // Filter out private posts if user doesn't have admin privileges or plus access
             if (post.visibility === 'private' && !window.materioUserHasPrivateAccess) {
@@ -1130,17 +1274,17 @@ document.addEventListener('DOMContentLoaded', function () {
             // Handle semester matching (can be string or array)
             let semesterMatch = false;
             if (Array.isArray(post.semester)) {
-                semesterMatch = post.semester.some(sem => sem.toLowerCase().trim() === selectedSem);
-            } else {
-                semesterMatch = post.semester.toLowerCase().trim() === selectedSem;
+                semesterMatch = post.semester.some(sem => String(sem).toLowerCase().trim() === selectedSem);
+            } else if (post.semester) {
+                semesterMatch = String(post.semester).toLowerCase().trim() === selectedSem;
             }
 
             // Handle subject matching (can be string or array)
             let subjectMatch = false;
             if (Array.isArray(post.subject)) {
-                subjectMatch = post.subject.some(sub => sub.toLowerCase().trim() === selectedSub);
-            } else {
-                subjectMatch = post.subject.toLowerCase().trim() === selectedSub;
+                subjectMatch = post.subject.some(sub => String(sub).toLowerCase().trim() === selectedSub);
+            } else if (post.subject) {
+                subjectMatch = String(post.subject).toLowerCase().trim() === selectedSub;
             }
 
             return semesterMatch && subjectMatch;
@@ -1149,9 +1293,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // Update heading and content
         if (filteredPosts.length > 0) {
             blogCardHeading.innerHTML = '<i class="fa-solid fa-book-sparkles"></i> Smart Recommendations';
-            defaultPosts.style.display = 'none';
+            defaultPosts.style.setProperty('display', 'none', 'important');
             noPostsMessage.style.display = 'none';
-            recommendedPosts.style.display = 'block';
+            recommendedPosts.style.removeProperty('display');
 
             // Limit to 5 posts and create HTML
             const postsToShow = filteredPosts.slice(0, 5);
@@ -1174,8 +1318,8 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             // No posts found for selected criteria
             blogCardHeading.innerHTML = '<i class="fa-solid fa-book-sparkles"></i> Smart Recommendations';
-            defaultPosts.style.display = 'none';
-            recommendedPosts.style.display = 'none';
+            defaultPosts.style.setProperty('display', 'none', 'important');
+            recommendedPosts.style.setProperty('display', 'none', 'important');
             noPostsMessage.style.display = 'block';
         }
     }

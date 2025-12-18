@@ -4376,3 +4376,308 @@ body.dark-mode .materio-modal-btn.secondary:hover {
         corner-shape: squircle;
     }
 }
+
+/* ================================================
+   INSIGHTROOM HORIZONTAL SCROLLING CARDS
+   Premium squircle cards with images
+   ================================================ */
+
+/* Horizontal scroll container - MUST scroll horizontally, never wrap */
+.insight-cards-scroll {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch;
+    gap: 36px;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.insight-cards-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+/* Blog card parent must allow horizontal overflow */
+#blogs.card-one {
+    overflow: visible;
+}
+
+/* Parent container for the scrolling area */
+.blog-posts-container {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+}
+
+/* Loading state centering */
+.insight-cards-scroll .posts-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 100%;
+    padding: 40px 20px;
+}
+
+/* Card link wrapper - NEVER shrink or wrap */
+.insight-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    flex: 0 0 auto;
+    width: 260px;
+    scroll-snap-align: start;
+}
+
+/* Individual card - image as full background with gradient overlay */
+.insight-card {
+    --card-bg: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff9a9e 100%);
+    width: 100%;
+    height: 300px;
+    background: #ffffff;
+    border-radius: 28px;
+    corner-shape: squircle;
+    overflow: hidden;
+    transition:
+        transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+    position: relative;
+}
+
+.insight-card:hover {
+    /* transform: scale(1.02); */
+}
+
+.insight-card:active {
+    transform: scale(0.99);
+    transition-duration: 0.1s;
+}
+
+/* Full background image layer */
+.insight-card-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: var(--card-bg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.insight-card:hover .insight-card-bg {
+    transform: scale(1.1);
+}
+
+/* Gradient overlay - fades from transparent to white */
+.insight-card-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.6) 50%,
+            rgba(255, 255, 255, 1) 75%,
+            rgba(255, 255, 255, 1) 100%);
+    z-index: 2;
+}
+
+/* Card content section - positioned at bottom over gradient */
+.insight-card-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    z-index: 3;
+}
+
+/* Card title - single line only */
+.insight-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 6px 0;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Card excerpt - exactly 2 lines */
+.insight-card-excerpt {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Read more link */
+.insight-card-read-more {
+    display: inline-block;
+    background-color: rgba(255, 130, 0, 0.1);
+    color: #ff8200;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    margin-left: 4px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+/* Card date - pushed to bottom */
+.insight-card-date {
+    font-size: 11px;
+    color: #999;
+    font-weight: 500;
+    margin-top: auto;
+    padding-top: 8px;
+}
+
+/* Dark mode styles */
+.insight-card.dark-mode,
+body.dark-mode .insight-card {
+    background: #1a1a1a;
+}
+
+
+/* Dark mode gradient overlay - fades to dark */
+body.dark-mode .insight-card-gradient {
+    background: linear-gradient(to bottom,
+            rgba(26, 26, 26, 0) 0%,
+            rgba(26, 26, 26, 0.6) 50%,
+            rgba(26, 26, 26, 1) 75%,
+            rgba(26, 26, 26, 1) 100%);
+}
+
+body.dark-mode .insight-card-title {
+    color: #f0f0f0;
+}
+
+body.dark-mode .insight-card-excerpt {
+    color: #bbb;
+}
+
+body.dark-mode .insight-card-date {
+    color: #888;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .insight-cards-scroll {
+        gap: 24px;
+        
+    }
+
+    .insight-card-link {
+        width: 240px;
+    }
+
+    .insight-card {
+        height: 280px;
+        border-radius: 24px;
+    }
+
+    .insight-card-content {
+        padding: 14px 16px 16px;
+    }
+
+    .insight-card-title {
+        font-size: 13px;
+    }
+
+    .insight-card-excerpt {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .insight-cards-scroll {
+        gap: 16px;
+    }
+
+    .insight-card-link {
+        width: 240px;
+    }
+
+    .insight-card {
+        height: 260px;
+        border-radius: 20px;
+    }
+
+    .insight-card-content {
+        padding: 12px 14px 14px;
+    }
+
+    .insight-card-title {
+        font-size: 12px;
+    }
+
+    .insight-card-excerpt {
+        font-size: 10px;
+    }
+
+    .insight-card-date {
+        font-size: 10px;
+    }
+}
+
+/* Blog Header Styles */
+.blog-header-container {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.blog-header-title {
+    display: block;
+    margin-right: 0;
+}
+
+.view-more-btn {
+    text-decoration: none;
+    color: #ff8200;
+    font-weight: 600;
+    background: rgba(255, 130, 0, 0.1);
+    padding: 6px 14px;
+    border-radius: 25px;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 130, 0, 0.3);
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    vertical-align: middle;
+}
+
+.view-more-btn:hover {
+    background: rgba(255, 130, 0, 0.2);
+}
+
+body.dark-mode .view-more-btn {
+    color: #ff8200;
+}
+
+@media (max-width: 768px) {
+    .blog-header-container {
+        display: block;
+    }
+    
+    .blog-header-title {
+        display: inline;
+        margin-right: 10px;
+    }
+}

@@ -17,7 +17,7 @@
                 <i class="far fa-robot"></i>
             </a> -->
 
-            <a href="/room" target="_blank">
+            <a href="https://insightroom.vercel.app" target="_blank">
                 <i class="far fa-lightbulb-on"></i>
             </a>
         </div>
@@ -113,44 +113,27 @@
 
             <!-- Blog Posts Card -->
             <div class="card-one" id="blogs">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2 id="blogCardHeading">Latest from the Insightroom</h2>
-                    <a href="/room"
-                        style="text-decoration: none; color: #ff8200; font-weight: 600; background: rgba(255, 130, 0, 0.1); padding: 8px 16px; border-radius: 25px; backdrop-filter: blur(4px); border: 1px solid rgba(255, 130, 0, 0.3); transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 6px;">
+                <div class="blog-header-container">
+                    <h2 id="blogCardHeading" class="blog-header-title">Latest from the Insightroom</h2>
+                    <a href="https://insightroom.vercel.app" class="view-more-btn">
                         View More
                         <i class="fas fa-arrow-up" style="transform: rotate(45deg); font-size: 12px;"></i>
                     </a>
                 </div>
 
                 <div class="blog-posts-container" id="blogPostsContent">
-                    <!-- Default: Latest 5 posts -->
-                    <div id="defaultPosts">
-                        {% assign recent_posts = site.posts | where_exp: 'post', 'post.hidden != true' | slice: 0, 5 %}
-                        {% for post in recent_posts %}
-                        <a href="{{ post.url }}" style="text-decoration: none; color: inherit; display: block;" {% if
-                            post.visibility=='private' %}data-visibility="private" {% endif %}>
-                            <div class="card-layout blog-post-item" id="blogPost{{ forloop.index }}"
-                                style="backdrop-filter: blur(2px); cursor: pointer; transition: transform 0.2s ease;">
-                                <h3 class="blog-post-title">
-                                    <span class="blog-post-link" style="color: #ff8200;">{{ post.title }}</span>
-                                </h3>
-                                <p class="blog-post-excerpt">
-                                    {% if post.excerpt_home %}
-                                    {{ post.excerpt_home }}
-                                    {% else %}
-                                    {{ post.excerpt | strip_html | truncatewords: 20 }}
-                                    {% endif %}
-                                </p>
-                                <div class="blog-post-meta">
-                                    <span class="blog-post-date">{{ post.date | date: "%B %d, %Y" }}</span>
-                                </div>
-                            </div>
-                        </a>
-                        {% endfor %}
+                    <!-- Default: Latest 5 posts (loaded from API) - Horizontal Scroll -->
+                    <div id="defaultPosts" class="insight-cards-scroll">
+                        <!-- Loading state -->
+                        <div id="postsLoading" class="posts-loading">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #ff8200;"></i>
+                            <p style="margin-top: 12px; color: #666;">Loading posts...</p>
+                        </div>
+                        <!-- Posts will be populated by JavaScript as post cards -->
                     </div>
 
                     <!-- Smart Recommendations (hidden by default) -->
-                    <div id="recommendedPosts" style="display: none;">
+                    <div id="recommendedPosts" class="insight-cards-scroll" style="display: none;">
                         <!-- Recommended posts will be populated by JavaScript -->
                     </div>
 
@@ -160,26 +143,16 @@
                         <p style="font-size: 14px;">Try selecting different options or check back later for new content.
                         </p>
                     </div>
+
+                    <!-- Error message -->
+                    <div id="postsError" style="display: none; text-align: center; padding: 20px; color: #dc3545;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 24px; margin-bottom: 10px;"></i>
+                        <p>Failed to load posts. Please try again later.</p>
+                    </div>
                 </div>
 
-                <!-- Hidden data for all posts (for JavaScript filtering) -->
-                <script type="application/json" id="allPostsData">
-                [
-                    {% assign all_posts = site.posts | where_exp: 'post', 'post.hidden != true' %}
-                    {% for post in all_posts %}
-                    {
-                        "title": {{ post.title | jsonify }},
-                        "url": "{{ post.url }}",
-                        "date": "{{ post.date | date: '%B %d, %Y' }}",
-                        "excerpt_home": {{ post.excerpt_home | default: '' | jsonify }},
-                        "excerpt": {{ post.excerpt | strip_html | truncatewords: 20 | jsonify }},
-                        "semester": {{ post.semester | default: '' | jsonify }},
-                        "subject": {{ post.subject | default: '' | jsonify }},
-                        "visibility": {{ post.visibility | default: 'public' | jsonify }}
-                    }{% unless forloop.last %},{% endunless %}
-                    {% endfor %}
-                ]
-                </script>
+                <!-- Hidden data for all posts (populated by API via main.js) -->
+                <script type="application/json" id="allPostsData">[]</script>
             </div>
 
             <div id="popup">

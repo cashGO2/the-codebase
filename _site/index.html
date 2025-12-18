@@ -159,7 +159,7 @@
                 <i class="far fa-robot"></i>
             </a> -->
 
-            <a href="/room" target="_blank">
+            <a href="https://insightroom.vercel.app" target="_blank">
                 <i class="far fa-lightbulb-on"></i>
             </a>
         </div>
@@ -255,109 +255,27 @@
 
             <!-- Blog Posts Card -->
             <div class="card-one" id="blogs">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2 id="blogCardHeading">Latest from the Insightroom</h2>
-                    <a href="/room"
-                        style="text-decoration: none; color: #ff8200; font-weight: 600; background: rgba(255, 130, 0, 0.1); padding: 8px 16px; border-radius: 25px; backdrop-filter: blur(4px); border: 1px solid rgba(255, 130, 0, 0.3); transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 6px;">
+                <div class="blog-header-container">
+                    <h2 id="blogCardHeading" class="blog-header-title">Latest from the Insightroom</h2>
+                    <a href="https://insightroom.vercel.app" class="view-more-btn">
                         View More
                         <i class="fas fa-arrow-up" style="transform: rotate(45deg); font-size: 12px;"></i>
                     </a>
                 </div>
 
                 <div class="blog-posts-container" id="blogPostsContent">
-                    <!-- Default: Latest 5 posts -->
-                    <div id="defaultPosts">
-                        
-                        
-                        <a href="/originals/introduction-to-android-os/" style="text-decoration: none; color: inherit; display: block;" >
-                            <div class="card-layout blog-post-item" id="blogPost1"
-                                style="backdrop-filter: blur(2px); cursor: pointer; transition: transform 0.2s ease;">
-                                <h3 class="blog-post-title">
-                                    <span class="blog-post-link" style="color: #ff8200;">Introduction to Android OS</span>
-                                </h3>
-                                <p class="blog-post-excerpt">
-                                    
-                                    This resource provides overview about Android, its Architecture, Versions, Features, Open Handset Alliance, Dalvik VM, SDK, Development Tools and Environment,...
-                                    
-                                </p>
-                                <div class="blog-post-meta">
-                                    <span class="blog-post-date">December 06, 2025</span>
-                                </div>
-                            </div>
-                        </a>
-                        
-                        <a href="/originals/number-system/" style="text-decoration: none; color: inherit; display: block;" >
-                            <div class="card-layout blog-post-item" id="blogPost2"
-                                style="backdrop-filter: blur(2px); cursor: pointer; transition: transform 0.2s ease;">
-                                <h3 class="blog-post-title">
-                                    <span class="blog-post-link" style="color: #ff8200;">Number System</span>
-                                </h3>
-                                <p class="blog-post-excerpt">
-                                    
-                                    This resource provides detailed notes about Number systems with Important points, examples and other things which are helpful for exams...
-                                    
-                                </p>
-                                <div class="blog-post-meta">
-                                    <span class="blog-post-date">November 29, 2025</span>
-                                </div>
-                            </div>
-                        </a>
-                        
-                        <a href="/resource/software-engineering-important-questions/" style="text-decoration: none; color: inherit; display: block;" >
-                            <div class="card-layout blog-post-item" id="blogPost3"
-                                style="backdrop-filter: blur(2px); cursor: pointer; transition: transform 0.2s ease;">
-                                <h3 class="blog-post-title">
-                                    <span class="blog-post-link" style="color: #ff8200;">Software Engineering Important Questions</span>
-                                </h3>
-                                <p class="blog-post-excerpt">
-                                    
-                                    This Resource lists important questions for end semester exams
-                                    
-                                </p>
-                                <div class="blog-post-meta">
-                                    <span class="blog-post-date">November 21, 2025</span>
-                                </div>
-                            </div>
-                        </a>
-                        
-                        <a href="/paper-solution/daa-mid/" style="text-decoration: none; color: inherit; display: block;" >
-                            <div class="card-layout blog-post-item" id="blogPost4"
-                                style="backdrop-filter: blur(2px); cursor: pointer; transition: transform 0.2s ease;">
-                                <h3 class="blog-post-title">
-                                    <span class="blog-post-link" style="color: #ff8200;">DAA Mid Sem</span>
-                                </h3>
-                                <p class="blog-post-excerpt">
-                                    
-                                    This resource covers all the questions with solutions from design and analysis of alogorithms mid semester exam.
-                                    
-                                </p>
-                                <div class="blog-post-meta">
-                                    <span class="blog-post-date">September 25, 2025</span>
-                                </div>
-                            </div>
-                        </a>
-                        
-                        <a href="/resource/software-engineering-assignment/" style="text-decoration: none; color: inherit; display: block;" >
-                            <div class="card-layout blog-post-item" id="blogPost5"
-                                style="backdrop-filter: blur(2px); cursor: pointer; transition: transform 0.2s ease;">
-                                <h3 class="blog-post-title">
-                                    <span class="blog-post-link" style="color: #ff8200;">Software Engineering Assignment</span>
-                                </h3>
-                                <p class="blog-post-excerpt">
-                                    
-                                    This resource provides with the solution of questions given in assignments 1 to 8 of Software Engineering.
-                                    
-                                </p>
-                                <div class="blog-post-meta">
-                                    <span class="blog-post-date">September 20, 2025</span>
-                                </div>
-                            </div>
-                        </a>
-                        
+                    <!-- Default: Latest 5 posts (loaded from API) - Horizontal Scroll -->
+                    <div id="defaultPosts" class="insight-cards-scroll">
+                        <!-- Loading state -->
+                        <div id="postsLoading" class="posts-loading">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #ff8200;"></i>
+                            <p style="margin-top: 12px; color: #666;">Loading posts...</p>
+                        </div>
+                        <!-- Posts will be populated by JavaScript as post cards -->
                     </div>
 
                     <!-- Smart Recommendations (hidden by default) -->
-                    <div id="recommendedPosts" style="display: none;">
+                    <div id="recommendedPosts" class="insight-cards-scroll" style="display: none;">
                         <!-- Recommended posts will be populated by JavaScript -->
                     </div>
 
@@ -367,257 +285,16 @@
                         <p style="font-size: 14px;">Try selecting different options or check back later for new content.
                         </p>
                     </div>
+
+                    <!-- Error message -->
+                    <div id="postsError" style="display: none; text-align: center; padding: 20px; color: #dc3545;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 24px; margin-bottom: 10px;"></i>
+                        <p>Failed to load posts. Please try again later.</p>
+                    </div>
                 </div>
 
-                <!-- Hidden data for all posts (for JavaScript filtering) -->
-                <script type="application/json" id="allPostsData">
-                [
-                    
-                    
-                    {
-                        "title": "Introduction to Android OS",
-                        "url": "/originals/introduction-to-android-os/",
-                        "date": "December 06, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "This resource provides overview about Android, its Architecture, Versions, Features, Open Handset Alliance, Dalvik VM, SDK, Development Tools and Environment,...",
-                        "semester": 6,
-                        "subject": "Mobile Application Development",
-                        "visibility": "public"
-                    },
-                    
-                    {
-                        "title": "Number System",
-                        "url": "/originals/number-system/",
-                        "date": "November 29, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "This resource provides detailed notes about Number systems with Important points, examples and other things which are helpful for exams...",
-                        "semester": "6",
-                        "subject": "Quant and Reasoning",
-                        "visibility": "public"
-                    },
-                    
-                    {
-                        "title": "Software Engineering Important Questions",
-                        "url": "/resource/software-engineering-important-questions/",
-                        "date": "November 21, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "This Resource lists important questions for end semester exams",
-                        "semester": "5",
-                        "subject": "Software Engineering",
-                        "visibility": "public"
-                    },
-                    
-                    {
-                        "title": "DAA Mid Sem",
-                        "url": "/paper-solution/daa-mid/",
-                        "date": "September 25, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "This resource covers all the questions with solutions from design and analysis of alogorithms mid semester exam.",
-                        "semester": "5",
-                        "subject": "Design and Analysis of Algorithms",
-                        "visibility": "public"
-                    },
-                    
-                    {
-                        "title": "Software Engineering Assignment",
-                        "url": "/resource/software-engineering-assignment/",
-                        "date": "September 20, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "This resource provides with the solution of questions given in assignments 1 to 8 of Software Engineering.",
-                        "semester": "5",
-                        "subject": "Software Engineering",
-                        "visibility": "public"
-                    },
-                    
-                    {
-                        "title": "Enterprise Java Assignment 2 & 3 Solutions",
-                        "url": "/resource/epj-assignment-2/",
-                        "date": "August 20, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "This resourse provides with the solutions of all the questions given in assignment 2 and 3 of enterprise programming in...",
-                        "semester": "5",
-                        "subject": "Enterprise Programming",
-                        "visibility": "public"
-                    },
-                    
-                    {
-                        "title": "Design and Analysis of Algorithms Psuedo Codes",
-                        "url": "/programming/psuedo-codes/",
-                        "date": "August 02, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "This resource covers all the psuedo codes of sorting, searching and greedy algorithms like krushkals, prims,knapsack problem etc.",
-                        "semester": "5",
-                        "subject": "Design and Analysis of Algorithms",
-                        "visibility": "public"
-                    },
-                    
-                    {
-                        "title": "Data Analytics and Data Visualization Question Bank with Solutions",
-                        "url": "/resource/data-analytics-and-data-analysis-question-bank-with-solutions/",
-                        "date": "July 30, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "&#8206;",
-                        "semester": "5",
-                        "subject": "Data Analytics and Data Visualization",
-                        "visibility": "public"
-                    },
-                    
-                    {
-                        "title": "Theory of Computation",
-                        "url": "/theory-of-computation/",
-                        "date": "July 29, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "&#8206;",
-                        "semester": "Semester 5",
-                        "subject": "Theory of Computation",
-                        "visibility": "public"
-                    },
-                    
-                    {
-                        "title": "Greedy Algorithm Codes",
-                        "url": "/programming/greedy-algorithm-codes/",
-                        "date": "July 28, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "This resource covers all the codes of greedy algorithms like krushkals, prims, knapsack problem etc.",
-                        "semester": "5",
-                        "subject": "Design and Analysis of Algorithms",
-                        "visibility": "private"
-                    },
-                    
-                    {
-                        "title": "DADV Assigmnent - 2 Solutions",
-                        "url": "/resource/dadv-assigmnent-2-solutions/",
-                        "date": "July 25, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "This resource provides with the solutions of the questions given in the assignment - 2 of Data Analytics and Data...",
-                        "semester": "5",
-                        "subject": "Data Analytics and Data Visualization",
-                        "visibility": "public"
-                    },
-                    
-                    {
-                        "title": "Enterprise Java Assignment Solution",
-                        "url": "/resource/enterprise-java-assignment-solution/",
-                        "date": "July 14, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "This post provides with the solution for the questions given in the enterprise programming in java (EPJ) Assignment - 1...",
-                        "semester": "5",
-                        "subject": "Enterprise Programming",
-                        "visibility": "public"
-                    },
-                    
-                    {
-                        "title": "DADV Assignment - 1 with Solutions",
-                        "url": "/resource/dadv-assignment-1-with-solutions/",
-                        "date": "July 11, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "This respurce provides with the solution of the questions given in assignment - 1 of data analysis and data visualization...",
-                        "semester": "5",
-                        "subject": "Data Analytics and Data Visualization",
-                        "visibility": "public"
-                    },
-                    
-                    {
-                        "title": "Introducing Account in Materio and more...",
-                        "url": "/whats-new/Introducing-Accounts-in-Materio/",
-                        "date": "June 24, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "Materio v4.5.6.0 brings many changes to underlying system including UI changes and feature additions opening ways from being just a...",
-                        "semester": "",
-                        "subject": "",
-                        "visibility": "public"
-                    },
-                    
-                    {
-                        "title": "Blog and weblinks for Software Engineering",
-                        "url": "/links/Useful-links-for-Software-Engineering/",
-                        "date": "June 21, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "This blog post list various useful links for software engineering (SE).",
-                        "semester": "5",
-                        "subject": "Software Engineering",
-                        "visibility": "public"
-                    },
-                    
-                    {
-                        "title": "Variables That Speak Volumes",
-                        "url": "/code-craftsmanship/func/",
-                        "date": "June 01, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "Good names in code are more than labels—they're conversations with your future self. Lorem ipsum meets naming clarity.",
-                        "semester": "",
-                        "subject": "",
-                        "visibility": "private"
-                    },
-                    
-                    {
-                        "title": "How to Download Materials from PULMS",
-                        "url": "/howto/how-to-download-from-pulms/",
-                        "date": "May 10, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "Know how to download PDFs and other materials from PULMS (E-learning) website",
-                        "semester": "",
-                        "subject": "",
-                        "visibility": "public"
-                    },
-                    
-                    {
-                        "title": "Exploring the Depths of Clean Code",
-                        "url": "/programming/hello/",
-                        "date": "April 30, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "An overview of Clean Code principles and how they apply to modern software development.",
-                        "semester": "",
-                        "subject": "",
-                        "visibility": "private"
-                    },
-                    
-                    {
-                        "title": "Computer Networks and Internet Protocols Week - 1",
-                        "url": "/notes/cnip/",
-                        "date": "April 30, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "NPTEL CNIP Week 1 – Comprehensive Exam-Focused Notes",
-                        "semester": "Semester 4",
-                        "subject": "Computer Network",
-                        "visibility": "public"
-                    },
-                    
-                    {
-                        "title": "When Functions Go Wild",
-                        "url": "/programming-humor/lorem/",
-                        "date": "February 25, 2025",
-                        "excerpt_home": "",
-                        "excerpt": "Ever wondered what happens when your functions decide to do too much? Let's dive into the importance of single responsibility....",
-                        "semester": "",
-                        "subject": "",
-                        "visibility": "private"
-                    },
-                    
-                    {
-                        "title": "Python Cheatsheet",
-                        "url": "/cheatsheet/python/",
-                        "date": "November 24, 2024",
-                        "excerpt_home": "",
-                        "excerpt": "&#8206;",
-                        "semester": "4",
-                        "subject": "Programming in Python with Full Stack",
-                        "visibility": "public"
-                    },
-                    
-                    {
-                        "title": "Java Cheetsheet",
-                        "url": "/cheatsheet/java/",
-                        "date": "August 28, 2024",
-                        "excerpt_home": "",
-                        "excerpt": "&#8206;",
-                        "semester": ["3","5"],
-                        "subject": ["Object Oriented Programming with Java","Enterprise Programming"],
-                        "visibility": "public"
-                    }
-                    
-                ]
-                </script>
+                <!-- Hidden data for all posts (populated by API via main.js) -->
+                <script type="application/json" id="allPostsData">[]</script>
             </div>
 
             <div id="popup">
