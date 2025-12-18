@@ -1041,7 +1041,7 @@ async function loadInsightroomPosts() {
             }
 
             const postHTML = `
-                <a href="${post.link}" class="insight-card-link" ${post.visibility === 'private' ? 'data-visibility="private"' : ''}>
+                <a href="${post.link}" class="insight-card-link" target="_blank" ${post.visibility === 'private' ? 'data-visibility="private"' : ''}>
                     <article class="insight-card" id="blogPost${index + 1}" style="--card-bg: url('${imageUrl}')">
                         <div class="insight-card-bg"></div>
                         <div class="insight-card-gradient"></div>
@@ -1233,7 +1233,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         return `
-            <a href="${post.url}" class="insight-card-link" ${visibilityAttr}>
+            <a href="${post.url}" class="insight-card-link" target="_blank" ${visibilityAttr}>
                 <article class="insight-card" id="recommendedPost${index}" style="--card-bg: url('${imageUrl}')">
                     <div class="insight-card-bg"></div>
                     <div class="insight-card-gradient"></div>

@@ -257,6 +257,11 @@
                         if (activeTab && activeTab.id === 'downloads') {
                             return;
                         }
+
+                        // Disable swipe on insight cards scroll area
+                        if (e.target.closest('.insight-cards-scroll')) {
+                            return;
+                        }
                         
                         startX = e.touches[0].clientX;
                         startY = e.touches[0].clientY;
@@ -271,6 +276,11 @@
                         // Disable swipe on downloads tab
                         const activeTab = document.querySelector('.tab-content.active');
                         if (activeTab && activeTab.id === 'downloads') {
+                            return;
+                        }
+
+                        // Disable swipe on insight cards scroll area
+                        if (e.target.closest('.insight-cards-scroll')) {
                             return;
                         }
                         
