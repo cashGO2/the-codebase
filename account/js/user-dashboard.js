@@ -5,6 +5,12 @@
 
 document.addEventListener('DOMContentLoaded', function () {
     loadUserAnalytics();
+
+    // Listen for sync updates
+    window.addEventListener('materio-stats-updated', function () {
+        console.log('Refreshing dashboard with synced stats...');
+        loadUserAnalytics();
+    });
 });
 
 function loadUserAnalytics() {

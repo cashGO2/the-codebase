@@ -108,10 +108,45 @@
           if (response.ok) {
             this.hasIdentified = true;
             // console.log('[Metrics] Identified user:', userId);
+
+            // Sync stats from server
+            this.syncStats(userId);
           }
         } catch (e) {
           console.error('[Metrics] Identify failed', e);
         }
+      }
+    }
+
+    async syncStats(userId) {
+      try {
+        const response = await fetch(`${API_BASE}/stats/${userId}?period=all_time`);
+
+        if (response.ok) {
+          const data = await response.json();
+
+          const stats = {
+            pdfsRead: data.metrics.pdfs_read_count || 0,
+            timeSpent: (data.metrics.reading_time_seconds || 0) + (data.metrics.engagement_time_seconds || 0),
+            streak: data.streak || 0,
+            history: data.history || [],
+            lastReadDate: null
+          };
+
+          if (stats.history.length > 0) {
+            stats.lastReadDate = stats.history[0].date.split('T')[0];
+          }
+
+          localStorage.setItem('materio_user_stats', JSON.stringify(stats));
+          console.log(`[Metrics] Stats synced. User: ${userId}. History: ${stats.history.length}. PDFs: ${stats.pdfsRead}`);
+
+          // Notify other scripts
+          window.dispatchEvent(new CustomEvent('materio-stats-updated', { detail: stats }));
+        } else {
+          console.error('[Metrics] Sync failed. Status:', response.status);
+        }
+      } catch (e) {
+        console.error('[Metrics] Sync stats failed', e);
       }
     }
 
