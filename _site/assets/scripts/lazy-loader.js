@@ -3,7 +3,7 @@
  * Loads non-critical scripts only when needed
  */
 
-(function() {
+(function () {
     'use strict';
 
     const LazyLoader = {
@@ -117,7 +117,11 @@
 
         // Load analytics after page is interactive
         loadAnalytics() {
-            return LazyLoader.loadScript('/assets/scripts/ga.js');
+            return LazyLoader.loadScript('/assets/scripts/metrics.js')
+                .then(() => {
+                    // Also load GA if needed, or keep separate
+                    // return LazyLoader.loadScript('/assets/scripts/ga.js');
+                });
         },
 
         // Load UX enhancers after core functionality
@@ -143,6 +147,7 @@
 
         _loadNonCriticalScripts() {
             const nonCritical = [
+                '/assets/scripts/metrics.js',
                 '/assets/scripts/ga.js',
                 '/assets/scripts/ota-hugeicons.js',
                 '/account/js/ux-enhancers.js',

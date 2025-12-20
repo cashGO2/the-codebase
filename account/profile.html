@@ -306,7 +306,8 @@
 
       .modal-body {
         padding: 16px 20px;
-        max-height: calc(98vh - 140px); /* Account for header and footer */
+        max-height: calc(98vh - 140px);
+        /* Account for header and footer */
       }
 
       .modal-footer {
@@ -512,7 +513,8 @@
       font-size: 0.9rem;
       table-layout: fixed;
       /* Improve table rendering performance */
-      min-width: 800px; /* Ensure table doesn't compress too much */
+      min-width: 800px;
+      /* Ensure table doesn't compress too much */
     }
 
     @media (max-width: 768px) {
@@ -553,6 +555,7 @@
     }
 
     @media (max-width: 768px) {
+
       .invite-table th,
       .invite-table td {
         padding: 10px 6px;
@@ -560,6 +563,7 @@
     }
 
     @media (max-width: 480px) {
+
       .invite-table th,
       .invite-table td {
         padding: 8px 4px;
@@ -1205,8 +1209,10 @@
 
     /* Custom scrollbar for invite table (horizontal only) */
     .invite-table-container::-webkit-scrollbar {
-      width: 0px; /* Remove vertical scrollbar */
-      height: 8px; /* Keep horizontal scrollbar */
+      width: 0px;
+      /* Remove vertical scrollbar */
+      height: 8px;
+      /* Keep horizontal scrollbar */
     }
 
     .invite-table-container::-webkit-scrollbar-track {
@@ -1599,7 +1605,7 @@
       .share-buttons {
         grid-template-columns: 1fr;
       }
-      
+
       .share-btn {
         padding: 14px;
         font-size: 0.95rem;
@@ -1674,6 +1680,176 @@
       #shareInviteModal .share-buttons {
         grid-template-columns: 1fr;
         gap: 8px;
+      }
+    }
+
+    /* Analytics Dashboard Styles */
+    .dashboard-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .streak-badge {
+      background: rgba(255, 130, 0, 0.1);
+      color: #ff8200;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-box {
+      background: var(--background-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 130, 0, 0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ff8200;
+      font-size: 1.2rem;
+    }
+
+    .stat-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .dashboard-sections-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .dashboard-section h4 {
+      margin: 0 0 16px 0;
+      font-size: 1rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .simple-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .list-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: var(--background-secondary);
+      border-radius: 8px;
+      transition: transform 0.2s ease;
+    }
+
+    .list-item:hover {
+      transform: translateX(4px);
+      background: rgba(255, 130, 0, 0.05);
+    }
+
+    .list-item i {
+      color: #ff8200;
+      font-size: 1.2rem;
+    }
+
+    .item-details {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .item-title {
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 0.95rem;
+    }
+
+    .item-meta {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .empty-state-text {
+      color: var(--text-secondary);
+      font-style: italic;
+      padding: 10px;
+      text-align: center;
+      background: var(--background-secondary);
+      border-radius: 8px;
+    }
+
+    .referral-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      background: linear-gradient(45deg, var(--card-color), var(--background-secondary));
+      border: 1px solid #ffd700;
+    }
+
+    .referral-content h3 {
+      margin: 0 0 6px 0;
+      font-size: 1.2rem;
+    }
+
+    .referral-content p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .dashboard-sections-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .referral-card {
+        flex-direction: column;
+        text-align: center;
+        align-items: stretch;
       }
     }
   </style>
@@ -1755,7 +1931,74 @@
               <p id="dashboard-username">@username</p>
             </div>
           </div>
-        </div> <!-- Google Drive Integration - Temporarily Disabled -->
+        </div>
+
+        <!-- User Analytics Dashboard -->
+        <div class="card-one analytics-dashboard">
+          <div class="dashboard-header-row">
+            <h3>Your Activity</h3>
+            <div class="streak-badge" title="Current Reading Streak">
+              <i class="fas fa-fire"></i> <span id="dash-streak">0</span> Day Streak
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-box">
+              <div class="stat-icon"><i class="fas fa-book-reader"></i></div>
+              <div class="stat-content">
+                <span class="stat-value" id="dash-pdfs-read">0</span>
+                <span class="stat-label">PDFs Read (All Time)</span>
+              </div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-icon"><i class="fas fa-clock"></i></div>
+              <div class="stat-content">
+                <span class="stat-value" id="dash-time-spent">0m</span>
+                <span class="stat-label">Total Reading Time</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-sections-grid">
+            <div class="dashboard-section">
+              <h4><i class="fas fa-history"></i> Recent Reads</h4>
+              <div id="dash-history-list" class="simple-list empty-state-text">
+                No recent reading history.
+              </div>
+            </div>
+            <div class="dashboard-section">
+              <h4><i class="fas fa-magic"></i> Suggested for You</h4>
+              <div id="dash-suggested-list" class="simple-list">
+                <!-- Placeholder suggestions -->
+                <div class="list-item">
+                  <i class="fas fa-file-pdf"></i>
+                  <div class="item-details">
+                    <span class="item-title">Engineering Mathematics I</span>
+                    <span class="item-meta">Popular among your peers</span>
+                  </div>
+                </div>
+                <div class="list-item">
+                  <i class="fas fa-file-pdf"></i>
+                  <div class="item-details">
+                    <span class="item-title">Physics Lab Manual</span>
+                    <span class="item-meta">Trending this week</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Referral Card -->
+        <div class="card-one referral-card">
+          <div class="referral-content">
+            <h3><i class="fas fa-gift" style="color: #FFD700;"></i> Refer & Earn Plus</h3>
+            <p>Get 1 month of Materio Plus for every friend you refer. Start your streak together!</p>
+          </div>
+          <button class="btn btn-primary" onclick="generateNewInviteFromModal(false)">Refer a Friend</button>
+        </div>
+
+        <!-- Google Drive Integration - Temporarily Disabled -->
         <div class="card-one google-drive-card" id="googleDriveCard"
           style="opacity: 0.6; cursor: not-allowed; transition: none; pointer-events: none;">
           <div class="drive-header">
@@ -2082,7 +2325,8 @@
                       <h4>Drop files here or click to upload</h4>
                       <p>Supports only PDF Format files</p>
                       <small style="color: #666; display: block; margin-top: 8px;">
-                        <i class="fas fa-info-circle"></i>Total Upload Batch Size must Not exceed 6MB due to vercel Functions Limitations.
+                        <i class="fas fa-info-circle"></i>Total Upload Batch Size must Not exceed 6MB due to vercel
+                        Functions Limitations.
                       </small>
                     </div>
                     <input type="file" id="courseFileInput" multiple accept=".pdf">
@@ -2631,6 +2875,7 @@
   <script src="/account/js/auth.js"></script>
   <script src="/account/js/profile.js"></script>
   <script src="/account/js/ux-enhancers.js"></script>
+  <script src="/account/js/user-dashboard.js"></script>
   <!-- <script src="/account/js/google-drive.js"></script> -->
   <!-- <script>    // Initialize Google Drive Manager when page loads
     document.addEventListener('DOMContentLoaded', function() {
@@ -2748,7 +2993,8 @@
           <label for="shareUrl">Invite URL</label>
           <div class="url-input-group">
             <input type="text" id="shareUrl" readonly>
-            <button type="button" id="copyUrlBtn" class="btn-icon" onclick="copyToClipboard(document.getElementById('shareUrl').value)" title="Copy URL">
+            <button type="button" id="copyUrlBtn" class="btn-icon"
+              onclick="copyToClipboard(document.getElementById('shareUrl').value)" title="Copy URL">
               <i class="fas fa-copy"></i>
             </button>
           </div>
