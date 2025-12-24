@@ -1565,8 +1565,25 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('quickSearchInput');
     const searchResults = document.getElementById('quickSearchResults');
     const aiToggleBtn = document.getElementById('aiSearchToggle');
+    const clearBtn = document.getElementById('clearSearchBtn');
 
     if (!searchInput || !searchResults) return;
+
+    // Handle clear button click
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            searchInput.value = '';
+            this.style.display = 'none';
+            searchResults.style.display = 'none';
+            searchInput.focus();
+        });
+
+        // Check initial state
+        if (searchInput.value.trim().length > 0) {
+            clearBtn.style.display = 'flex';
+        }
+    }
 
     // Handle AI search toggle
     if (aiToggleBtn) {
@@ -1596,6 +1613,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // Handle search input with debounce
     searchInput.addEventListener('input', function () {
         const query = this.value.trim();
+
+        // Show/hide clear button
+        if (clearBtn) {
+            clearBtn.style.display = query.length > 0 ? 'flex' : 'none';
+        }
 
         // Clear previous timeout
         if (searchTimeout) {
@@ -1659,8 +1681,13 @@ function repositionSearchDropdown() {
         const rect = searchInput.getBoundingClientRect();
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+        const isMobile = window.innerWidth <= 768;
 
-        searchResults.style.top = `${rect.bottom + scrollTop + 8}px`;
+        if (isMobile) {
+            searchResults.style.top = '425px';
+        } else {
+            searchResults.style.top = `${rect.bottom + scrollTop + 8}px`;
+        }
         searchResults.style.left = `${rect.left + scrollLeft}px`;
         searchResults.style.width = `${rect.width}px`;
     }
@@ -1753,8 +1780,13 @@ function displaySearchResults(results, query) {
         const rect = searchInput.getBoundingClientRect();
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+        const isMobile = window.innerWidth <= 768;
 
-        searchResults.style.top = `${rect.bottom + scrollTop + 8}px`;
+        if (isMobile) {
+            searchResults.style.top = '425px';
+        } else {
+            searchResults.style.top = `${rect.bottom + scrollTop + 8}px`;
+        }
         searchResults.style.left = `${rect.left + scrollLeft}px`;
         searchResults.style.width = `${rect.width}px`;
     }

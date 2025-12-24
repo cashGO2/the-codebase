@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const disableBgToggle = document.getElementById("disableBgToggle");
+    const enableBgToggle = document.getElementById("enableBgToggle");
+    const enableNoiseToggle = document.getElementById("enableNoiseToggle");
     const homeElem = document.getElementById("home");
     let lastIsMobile = window.matchMedia("(max-width: 768px)").matches;
     let cachedEventToApply = null;
@@ -39,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     updateBgFromEvent(cachedEventToApply);
                 } else {
                     // Load and apply event background
-                    loadAndApplyEventBackground();
+                    initEventData();
                 }
             }
         } else {
@@ -96,26 +97,66 @@ document.addEventListener('DOMContentLoaded', function () {
         return 0;
     }
 
-    function getDynamicImageUrl() {
+    function getDynamicImageUrl(customEventConfig) {
+        if (customEventConfig && customEventConfig.dynamic_config) {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const totalMinutes = hours * 60 + minutes;
+
+            for (const config of customEventConfig.dynamic_config) {
+                const [startHour, startMinute] = config.start.split(':').map(Number);
+                const [endHour, endMinute] = config.end.split(':').map(Number);
+                
+                const startTotal = startHour * 60 + startMinute;
+                const endTotal = endHour * 60 + endMinute;
+
+                // Handle ranges that cross midnight (e.g. 23:00 to 01:00)
+                if (startTotal > endTotal) {
+                    if (totalMinutes >= startTotal || totalMinutes < endTotal) {
+                        return `url('${config.image}')`;
+                    }
+                } else {
+                    if (totalMinutes >= startTotal && totalMinutes < endTotal) {
+                        return `url('${config.image}')`;
+                    }
+                }
+            }
+        }
+
         const index = getDynamicImageIndex();
         return `url('/assets/img/events/dynamic/part_${index}.webp')`;
     }
 
-    function applyDynamicWallpaper() {
-        const imageUrl = getDynamicImageUrl();
+    function applyDynamicWallpaper(customEventConfig = null) {
+        // If no config passed, try to use cached event if it's dynamic
+        if (!customEventConfig && cachedEventToApply && (cachedEventToApply.url_pc === 'dynamic' || cachedEventToApply.url_mobile === 'dynamic')) {
+            customEventConfig = cachedEventToApply;
+        }
+
+        const imageUrl = getDynamicImageUrl(customEventConfig);
         homeElem.style.setProperty("--bg-img", imageUrl);
         
         // Update preview card to show current image
-        updateDynamicPreview();
+        updateDynamicPreview(customEventConfig);
     }
 
-    function updateDynamicPreview() {
+    function updateDynamicPreview(customEventConfig = null) {
         const dynamicPreview = document.getElementById('dynamicPreview');
         const dynamicTime = document.getElementById('dynamicTime');
         
         if (dynamicPreview) {
-            const index = getDynamicImageIndex();
-            const imageUrl = `/assets/img/events/dynamic/part_${index}.webp`;
+            let imageUrl;
+            if (customEventConfig && customEventConfig.dynamic_config) {
+                // Extract URL from the result of getDynamicImageUrl which returns "url('...')"
+                const bgStyle = getDynamicImageUrl(customEventConfig);
+                // Remove url('') wrapper
+                imageUrl = bgStyle.slice(5, -2);
+            } else {
+                const index = getDynamicImageIndex();
+                imageUrl = `/assets/img/events/dynamic/part_${index}.webp`;
+            }
+            
             dynamicPreview.style.backgroundImage = `url('${imageUrl}')`;
             dynamicPreview.style.backgroundSize = 'cover';
             dynamicPreview.style.backgroundPosition = 'center';
@@ -156,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function loadAndApplyEventBackground() {
+    function initEventData() {
         fetch('/assets/data/events.json')
             .then(response => response.json())
             .then(events => {
@@ -171,7 +212,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Only consider events from the last 30 days to avoid old events taking precedence
                 let activeEvents = events.filter(ev => {
                     const eventDate = new Date(ev.setDate);
-                    return eventDate <= now && eventDate >= thirtyDaysAgo && ev.default == 0;
+                    
+                    // Check if event is active based on start date
+                    if (eventDate > now) return false;
+                    
+                    // Check end date if provided, otherwise use 30-day window
+                    if (ev.endDate) {
+                        const endDate = new Date(ev.endDate);
+                        return endDate >= now && ev.default == 0;
+                    } else {
+                        return eventDate >= thirtyDaysAgo && ev.default == 0;
+                    }
                 });
                 
                 if (activeEvents.length > 0) {
@@ -181,14 +232,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 
                 if (eventToApply) {
                     cachedEventToApply = eventToApply;
-                    updateBgFromEvent(eventToApply);
+                    updateHeaderLogo(eventToApply);
                 }
+                applyEventBackgroundForHome();
             })
-            .catch(err => console.error("Error loading event backgrounds:", err));
+            .catch(err => {
+                console.error("Error loading event backgrounds:", err);
+                applyEventBackgroundForHome();
+            });
+    }
+
+    function updateHeaderLogo(eventToApply) {
+        if (eventToApply.header_logo_light) {
+            document.documentElement.style.setProperty('--header-logo-light', `url('${eventToApply.header_logo_light}')`);
+        }
+        if (eventToApply.header_logo_dark) {
+            document.documentElement.style.setProperty('--header-logo-dark', `url('${eventToApply.header_logo_dark}')`);
+        }
     }
 
     function applyEventBackgroundForHome() {
-        if (disableBgToggle && disableBgToggle.checked) {
+        if (enableBgToggle && !enableBgToggle.checked) {
             homeElem.style.setProperty("--bg-img", "none");
             return;
         }
@@ -202,10 +266,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (cachedEventToApply) {
             updateBgFromEvent(cachedEventToApply);
-            return;
+        } else {
+            // Fallback if no event data is available yet (shouldn't happen if initEventData called first)
+            // or if fetch failed.
+            // If we are here, we want default behavior.
+            // If initEventData hasn't run, we can't do much.
+            // But we are calling initEventData on load.
         }
-        
-        loadAndApplyEventBackground();
     }
 
     function updateBgFromEvent(eventToApply) {
@@ -214,27 +281,51 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // Check if the URL is set to "dynamic"
         if (bgUrl === "dynamic") {
-            applyDynamicWallpaper();
+            applyDynamicWallpaper(eventToApply);
         } else {
             homeElem.style.setProperty("--bg-img", `url('${bgUrl}')`);
         }
     }
 
-    const savedSetting = getCookie("disableBg");
-    if (savedSetting === "true") {
-        disableBgToggle.checked = true;
+    const savedBgSetting = getCookie("enableBg");
+    if (savedBgSetting === "false") {
+        if (enableBgToggle) enableBgToggle.checked = false;
         homeElem.style.setProperty("--bg-img", "none");
+    } else {
+        if (enableBgToggle) enableBgToggle.checked = true;
     }
-    applyEventBackgroundForHome();
 
-    if (disableBgToggle) {
-        disableBgToggle.addEventListener("change", function () {
-            if (this.checked) {
+    const savedNoiseSetting = getCookie("enableNoise");
+    if (savedNoiseSetting === "false") {
+        if (enableNoiseToggle) enableNoiseToggle.checked = false;
+        homeElem.classList.add("no-noise");
+    } else {
+        if (enableNoiseToggle) enableNoiseToggle.checked = true;
+        homeElem.classList.remove("no-noise");
+    }
+    
+    // Start by initializing event data, which will then apply background
+    initEventData();
+
+    if (enableBgToggle) {
+        enableBgToggle.addEventListener("change", function () {
+            if (!this.checked) {
                 homeElem.style.setProperty("--bg-img", "none");
             } else {
                 applyEventBackgroundForHome();
             }
-            setCookie("disableBg", this.checked ? "true" : "false", 30);
+            setCookie("enableBg", this.checked ? "true" : "false", 30);
+        });
+    }
+
+    if (enableNoiseToggle) {
+        enableNoiseToggle.addEventListener("change", function () {
+            if (!this.checked) {
+                homeElem.classList.add("no-noise");
+            } else {
+                homeElem.classList.remove("no-noise");
+            }
+            setCookie("enableNoise", this.checked ? "true" : "false", 30);
         });
     }
     function debounce(func, wait) {
@@ -246,7 +337,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     window.addEventListener('resize', debounce(function () {
-        if (disableBgToggle && disableBgToggle.checked) return;
+        if (enableBgToggle && !enableBgToggle.checked) return;
         const currentIsMobile = window.matchMedia("(max-width: 768px)").matches;
         if (currentIsMobile !== lastIsMobile) {
             applyEventBackgroundForHome();

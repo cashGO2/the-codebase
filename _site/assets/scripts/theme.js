@@ -65,7 +65,8 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById('localCdnCard'),
             document.getElementById('serverTerminal'),
             document.getElementById('invertMode'),
-            document.getElementById('clearSiteDataCard')
+            document.getElementById('clearSiteDataCard'),
+            document.getElementById('noiseToggleCard')
 
         ];
         const notifyCards = document.querySelectorAll('#notify');

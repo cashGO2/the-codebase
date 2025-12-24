@@ -4,7 +4,11 @@
  */
 
 document.addEventListener('DOMContentLoaded', function () {
+    // Initial load from local storage
     loadUserAnalytics();
+
+    // Fetch fresh "Super Data" from server
+    fetchServerStats();
 
     // Listen for sync updates
     window.addEventListener('materio-stats-updated', function () {
@@ -12,6 +16,48 @@ document.addEventListener('DOMContentLoaded', function () {
         loadUserAnalytics();
     });
 });
+
+async function fetchServerStats() {
+    // Wait for Metrics to be ready if needed
+    if (!window.MaterioMetrics) {
+        setTimeout(fetchServerStats, 500);
+        return;
+    }
+
+    const userId = window.MaterioMetrics.getUserId();
+    if (!userId) return;
+
+    try {
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_BASE = isLocal ? 'http://localhost:3000' : 'https://materio-analytics.vercel.app';
+
+        const response = await fetch(`${API_BASE}/stats/${userId}?period=all_time`);
+        if (response.ok) {
+            const data = await response.json();
+
+            // Construct the "Super Data" object
+            const stats = {
+                pdfsRead: data.metrics.pdfs_read_count || 0,
+                timeSpent: (data.metrics.reading_time_seconds || 0) + (data.metrics.engagement_time_seconds || 0),
+                streak: data.streak || 0,
+                history: data.history || [],
+                lastReadDate: null
+            };
+
+            if (stats.history.length > 0) {
+                stats.lastReadDate = stats.history[0].date.split('T')[0];
+            }
+
+            // Save to local storage so other tabs/scripts see it
+            localStorage.setItem('materio_user_stats', JSON.stringify(stats));
+
+            // Update UI
+            updateDashboardUI(stats);
+        }
+    } catch (e) {
+        console.error('Failed to fetch server stats', e);
+    }
+}
 
 function loadUserAnalytics() {
     const statsKey = 'materio_user_stats';
@@ -26,6 +72,10 @@ function loadUserAnalytics() {
         console.error('Failed to load user stats', e);
     }
 
+    updateDashboardUI(stats);
+}
+
+function updateDashboardUI(stats) {
     // Update Stats
     updateElement('dash-streak', stats.streak);
     updateElement('dash-pdfs-read', stats.pdfsRead);

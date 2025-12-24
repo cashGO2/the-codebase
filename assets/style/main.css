@@ -23,7 +23,7 @@ header {
     color: #333;
     padding: 10px;
     text-align: left;
-    background-image: url('/assets/img/materio_new_bk.svg');
+    background-image: var(--header-logo-light, url('/assets/img/materio_new_bk.svg'));
     background-repeat: no-repeat;
     background-size: 120px 32px;
     background-position: 20px center;
@@ -78,6 +78,10 @@ header {
     z-index: 1;
     animation: noise 1s steps(2) infinite;
     filter: brightness(120%) sepia(40%);
+}
+
+#home.active.no-noise::after {
+    display: none;
 }
 
 .grain[data-tab-home] {
@@ -212,11 +216,11 @@ header.dark-mode {
 }
 
 .light-mode .header-logo {
-    background-image: url('/assets/img/materio_new_bk.svg');
+    background-image: var(--header-logo-light, url('/assets/img/materio_new_bk.svg'));
 }
 
 .dark-mode .header-logo {
-    background-image: url('/assets/img/materio_new_wh.svg');
+    background-image: var(--header-logo-dark, url('/assets/img/materio_new_wh.svg'));
 }
 
 /* Health Status Indicator */
@@ -3698,8 +3702,8 @@ body.dark-mode #downloadsTableWrapper::-webkit-scrollbar {
 #quickSearchInput {
     width: 100%;
     height: 45px;
-    padding: 0 100px 0 45px;
-    /* Space for left icon and right button */
+    padding: 0 135px 0 45px;
+    /* Space for left icon, clear button and right button */
     border-radius: 25px;
     border: 2px solid rgba(255, 130, 0, 0.4);
     /* Light orange border for quick search mode */
@@ -3818,6 +3822,39 @@ body.dark-mode #downloadsTableWrapper::-webkit-scrollbar {
     animation: gradientLoop 4s linear infinite;
 }
 
+/* Clear Search Button */
+.clear-search-btn {
+    position: absolute;
+    right: 115px; /* Positioned to the left of AI button */
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 900;
+    padding: 0;
+    z-index: 2;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+}
+
+/* Prevent icon fallback text from showing */
+.clear-search-btn i::after {
+    content: none !important;
+    display: none !important;
+}
+
+.clear-search-btn:hover {
+    color: #ff8200;
+}
+
 
 .quick-search-icon {
     position: absolute;
@@ -3838,7 +3875,7 @@ body.dark-mode #downloadsTableWrapper::-webkit-scrollbar {
     border-radius: 25px;
     corner-shape: squircle;
     /* Squircle shape for modern aesthetic */
-    max-height: calc(100vh - 120px);
+    max-height: 460px;
     /* Account for header and prevent going off-screen */
     overflow-y: auto;
     z-index: 998;
@@ -3852,7 +3889,7 @@ body.dark-mode #downloadsTableWrapper::-webkit-scrollbar {
 /* Mobile: Stick dropdown to TOP of search box, limited height */
 @media (max-width: 768px) {
     #quickSearchResults {
-        max-height: 280px !important;
+        max-height: 330px !important;
         /* Limited height to fit between reading card start and submit button */
         border-radius: 25px !important;
         /* Squircle radius */

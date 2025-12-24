@@ -343,9 +343,8 @@
       let pdfUrl = 'unknown';
 
       if (iframe) {
-        // Try to get the file parameter from the viewer URL
+        // 1. Try to get the file parameter from the viewer URL
         try {
-          // Check if it is the viewer
           if (iframe.src.includes('viewer.html') || iframe.src.includes('oread/web/viewer.html')) {
             const src = new URL(iframe.src, window.location.origin);
             const fileParam = src.searchParams.get('file');
@@ -361,6 +360,18 @@
         } catch (e) {
           pdfUrl = iframe.src;
         }
+
+        // 2. Fallback: Check for attributes on the iframe if URL is generic/blob
+        if (pdfUrl === 'unknown' || pdfUrl.startsWith('blob:') || pdfUrl === 'about:blank') {
+          const attrUrl = iframe.getAttribute('data-src') || iframe.getAttribute('data-file-url') || iframe.getAttribute('src');
+          if (attrUrl && attrUrl.length > 5) pdfUrl = attrUrl;
+        }
+      }
+
+      // 3. Last resort: Check container attributes
+      if (pdfUrl === 'unknown' || pdfUrl.includes('viewer.html')) {
+        const containerUrl = container.getAttribute('data-pdf-url') || container.getAttribute('data-filename');
+        if (containerUrl) pdfUrl = containerUrl;
       }
 
       this.currentPdf = pdfUrl;

@@ -228,6 +228,9 @@
                         <div style="position: relative;">
                             <i class="far fa-search quick-search-icon-left"></i>
                             <input type="text" id="quickSearchInput" placeholder="Finder" />
+                            <button id="clearSearchBtn" class="clear-search-btn" title="Clear Search" aria-label="Clear Search" style="display: none;">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
                             <button id="aiSearchToggle" class="ai-search-toggle" title="Toggle AI Search"
                                 aria-label="Toggle AI Search">
                                 <i class="far fa-sparkles"></i> AI Mode
@@ -1474,11 +1477,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="card-layout" id="bgToggleCard">
                     <div class="toggle-container">
                         <div class="paper-mode-info">
-                            <div class="paper-mode-title">Background Image</div>
-                            <div class="paper-mode-description">Disable home background image</div>
+                            <div class="paper-mode-title">Wallpaper Engine</div>
+                            <div class="paper-mode-description">Enable home background image</div>
                         </div>
                         <label class="switch">
-                            <input type="checkbox" id="disableBgToggle">
+                            <input type="checkbox" id="enableBgToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="card-layout" id="noiseToggleCard">
+                    <div class="toggle-container">
+                        <div class="paper-mode-info">
+                            <div class="paper-mode-title">Noise Texture</div>
+                            <div class="paper-mode-description">Enable Gaussian noise texture</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="enableNoiseToggle" checked>
                             <span class="slider"></span>
                         </label>
                     </div>
