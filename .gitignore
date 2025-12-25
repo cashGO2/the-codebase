@@ -3,8 +3,8 @@
 server/.env
 
 # Node modules
-# node_modules/
-# server/node_modules/
+node_modules/
+server/node_modules/
 
 # History and saved changes
 .history 
@@ -16,10 +16,13 @@ saved_changes
 # build/
 
 # Netlify
-# .netlify
+.netlify
+
+# Vercel
+.vercel
 
 # Logs
-# *.log
+*.log
 
 # IDE
 .vscode/
@@ -31,12 +34,8 @@ saved_changes
 .DS_Store
 Thumbs.db
 devdocs.md
-# Local Netlify folder
-.netlify
 
-.vercel
 
-.vercel
 
 # New !
 insightroom/*

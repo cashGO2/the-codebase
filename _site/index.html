@@ -4,7 +4,8 @@
 <head> <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Materio - Home | Materio</title>
-<meta name="description" content="Official materials you trust, in a way you love — Because e-learning shouldn't feel like suffering. Find organized, official study materials, notes, and peer help — all in one clean place." />
+<meta name="description"
+    content="Official materials you trust, in a way you love — Because e-learning shouldn't feel like suffering. Find organized, official study materials, notes, and peer help — all in one clean place." />
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://materioa.vercel.app">
 <meta name="keywords"
@@ -12,7 +13,8 @@
 
 <!-- Open Graph Meta Tags -->
 <meta property="og:title" content="Materio">
-<meta property="og:description" content="Official materials you trust, in a way you love — Because e-learning shouldn't feel like suffering. Find organized, official study materials, notes, and peer help — all in one clean place." />
+<meta property="og:description"
+    content="Official materials you trust, in a way you love — Because e-learning shouldn't feel like suffering. Find organized, official study materials, notes, and peer help — all in one clean place." />
 <meta property="og:image" itemprop="image" content="https://materioa.vercel.app/assets/img/og.jpeg">
 <meta property="og:image:secure_url" itemprop="image" content="https://materioa.vercel.app/assets/img/og.jpeg">
 <meta property="og:image:width" content="1200">
@@ -34,7 +36,9 @@
 <link rel="stylesheet" href="/assets/style/icon-fallback.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+<link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@200..800&display=swap"
+    rel="stylesheet">
 
 <!-- Service Worker Registration -->
 
@@ -78,23 +82,23 @@
 <!-- Google AdSense - Load conditionally based on user subscription -->
 <!-- Vercel Analytics & Speed Insights -->
 <script>
-  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-  // Only load Vercel scripts on Vercel deployments (not localhost)
-  if (window.location.hostname.includes('vercel.app') || window.location.hostname === 'materioa.vercel.app') {
-    var s1 = document.createElement('script');
-    s1.defer = true;
-    s1.src = '/_vercel/insights/script.js';
-    document.head.appendChild(s1);
-    
-    var s2 = document.createElement('script');
-    s2.defer = true;
-    s2.src = '/_vercel/speed-insights/script.js';
-    document.head.appendChild(s2);
-  }
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    // Only load Vercel scripts on Vercel deployments (not localhost)
+    if (window.location.hostname.includes('vercel.app') || window.location.hostname === 'materioa.vercel.app') {
+        var s1 = document.createElement('script');
+        s1.defer = true;
+        s1.src = '/_vercel/insights/script.js';
+        document.head.appendChild(s1);
+
+        var s2 = document.createElement('script');
+        s2.defer = true;
+        s2.src = '/_vercel/speed-insights/script.js';
+        document.head.appendChild(s2);
+    }
 </script>
 <script>
     function hasAdFreePrivileges() {
-        try {  
+        try {
             const userDataStr = localStorage.getItem('materio_user');
             if (!userDataStr) {
                 return false;
@@ -134,7 +138,8 @@
     <!-- End Google Tag Manager (noscript) -->
     <header>
         <a href="/" class="header-logo" role="button" aria-label="Go to homepage"></a>
-        <a href="https://statuspage.incident.io/materio" target="_blank" class="health-status-container" aria-label="System Status">
+        <a href="https://statuspage.incident.io/materio" target="_blank" class="health-status-container"
+            aria-label="System Status">
             <div class="health-status-indicator" id="healthIndicator"></div>
             <span class="health-status-text">View Status</span>
         </a>
@@ -164,6 +169,11 @@
             </a>
         </div>
         <div class="navbar-bottom-group">
+            <!-- Keyboard Shortcuts Help (Desktop only) -->
+            <a href="#" class="keyboard-shortcuts-btn desktop-only" id="keyboardShortcutsBtn" role="button"
+                aria-label="Keyboard Shortcuts" title="Keyboard Shortcuts">
+                <i class="far fa-circle-question"></i>
+            </a>
             <div class="profile-icon-container">
                 <a href="#" class="tab-link profile-icon" data-tab="settings" role="button"
                     aria-label="Profile and Settings">
@@ -189,6 +199,246 @@
             </div>
         </div>
     </nav>
+
+    <!-- Keyboard Shortcuts Popup Modal (outside nav for proper viewport centering) -->
+    <div class="keyboard-shortcuts-modal" id="keyboardShortcutsModal" role="dialog" aria-hidden="true"
+        aria-labelledby="shortcutsTitle">
+        <div class="keyboard-shortcuts-backdrop" id="keyboardShortcutsBackdrop"></div>
+        <div class="keyboard-shortcuts-dialog">
+            <button class="shortcuts-close-btn" id="shortcutsCloseBtn" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+            <!-- Keyboard Shortcuts Reference -->
+<div class="keyboard-shortcuts-content">
+    <div class="shortcuts-header">
+        <h2><i class="far fa-keyboard"></i> Keyboard Shortcuts</h2>
+    </div>
+
+    <div class="shortcuts-list-container">
+        <!-- Navigation -->
+        <div class="shortcuts-category">
+            Navigation
+        </div>
+        <div class="shortcut-item" data-shortcut-id="nav_home">
+            <span class="shortcut-action">Go to Home</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Alt+H"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+        <div class="shortcut-item" data-shortcut-id="nav_chat">
+            <span class="shortcut-action">Go to Chat</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Alt+C"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+        <div class="shortcut-item" data-shortcut-id="nav_notifications">
+            <span class="shortcut-action">Go to Notifications</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Alt+N"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+        <div class="shortcut-item" data-shortcut-id="nav_settings">
+            <span class="shortcut-action">Go to Settings</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Alt+S"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+        <div class="shortcut-item" data-shortcut-id="nav_profile">
+            <span class="shortcut-action">Go to Profile</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Alt+P"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+        <div class="shortcut-item" data-shortcut-id="nav_downloads">
+            <span class="shortcut-action">Go to Downloads</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Alt+D"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+
+        <div class="shortcuts-divider"></div>
+
+        <!-- Reading -->
+        <div class="shortcuts-category">
+            Reading
+        </div>
+        <div class="shortcut-item" data-shortcut-id="reading_start">
+            <span class="shortcut-action">Start Reading (Open PDF)</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Shift+Enter"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+        <div class="shortcut-item" data-shortcut-id="reading_fullscreen">
+            <span class="shortcut-action">Toggle Viewer Fullscreen</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Shift+F"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+        <div class="shortcut-item" data-shortcut-id="reading_bookmark">
+            <span class="shortcut-action">Download / Bookmark</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Shift+B"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+        <div class="shortcut-item" data-shortcut-id="reading_mode_inversion">
+            <span class="shortcut-action">Toggle Inversion Mode</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Alt+I"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+        <div class="shortcut-item" data-shortcut-id="reading_mode_paper">
+            <span class="shortcut-action">Toggle Paper Mode</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Alt+Shift+P"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+        <div class="shortcut-item" data-shortcut-id="reading_mode_eink">
+            <span class="shortcut-action">Toggle E-ink Mode</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Alt+E"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+
+        <div class="shortcuts-divider"></div>
+
+        <!-- Search & Finder -->
+        <div class="shortcuts-category">
+            Search
+        </div>
+        <div class="shortcut-item" data-shortcut-id="search_finder">
+            <span class="shortcut-action">Open Finder/Search</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Ctrl+K"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+        <div class="shortcut-item" data-shortcut-id="search_ai_mode">
+            <span class="shortcut-action">Toggle AI Search Mode</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Ctrl+Shift+K"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+        <div class="shortcut-item" data-shortcut-id="clear_search">
+            <span class="shortcut-action">Clear Search Query</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Shift+Backspace"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+
+        <div class="shortcuts-divider"></div>
+
+        <!-- Actions -->
+        <div class="shortcuts-category">
+            Actions
+        </div>
+        <div class="shortcut-item" data-shortcut-id="show_shortcuts">
+            <span class="shortcut-action">Show Keyboard Shortcuts</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Shift+?"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+        <div class="shortcut-item" data-shortcut-id="close_popup">
+            <span class="shortcut-action">Close Popup/Dialog</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Escape"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+        <div class="shortcut-item" data-shortcut-id="toggle_dark_mode">
+            <span class="shortcut-action">Toggle Dark/Light Mode</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Ctrl+Shift+D"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+
+        <div class="shortcuts-divider"></div>
+
+        <!-- Settings Toggles -->
+        <div class="shortcuts-category">
+            Settings
+        </div>
+        <div class="shortcut-item" data-shortcut-id="toggle_wallpaper">
+            <span class="shortcut-action">Toggle Wallpaper Engine</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Ctrl+Alt+W"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+        <div class="shortcut-item" data-shortcut-id="toggle_noise">
+            <span class="shortcut-action">Toggle Noise Texture</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Alt+G"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+        <div class="shortcut-item" data-shortcut-id="toggle_insightroom">
+            <span class="shortcut-action">Toggle Insightroom Feed</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Alt+Shift+N"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+        <div class="shortcut-item" data-shortcut-id="toggle_insightroom_view">
+            <span class="shortcut-action">Change Insightroom View</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Ctrl+Shift+I"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+        <div class="shortcut-item" data-shortcut-id="clear_data">
+            <span class="shortcut-action">Clear Data</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Ctrl+Backspace"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+        <div class="shortcut-item" data-shortcut-id="clear_all_data">
+            <span class="shortcut-action">Hard Reset (Clear All)</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Ctrl+Shift+Backspace"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="shortcuts-footer">
+        <button class="reset-shortcuts-btn" id="resetShortcutsBtn">
+            <i class="far fa-rotate-left"></i> Reset to Defaults
+        </button>
+    </div>
+</div>
+
+<!-- Shortcut Edit Modal -->
+<div class="shortcut-edit-modal" id="shortcutEditModal">
+    <div class="shortcut-edit-dialog">
+        <h3>Edit Shortcut</h3>
+        <p class="edit-action-name" id="editActionName"></p>
+        <div class="edit-keys-display" id="editKeysDisplay">Press new key combination...</div>
+        <p class="edit-hint">Press the key combination you want to use, then click Save</p>
+        <div class="edit-buttons">
+            <button class="edit-cancel-btn" id="editCancelBtn">Cancel</button>
+            <button class="edit-save-btn" id="editSaveBtn">Save</button>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
 
     <div class="content">
         <div id="home" class="tab-content active">
@@ -228,7 +478,8 @@
                         <div style="position: relative;">
                             <i class="far fa-search quick-search-icon-left"></i>
                             <input type="text" id="quickSearchInput" placeholder="Finder" />
-                            <button id="clearSearchBtn" class="clear-search-btn" title="Clear Search" aria-label="Clear Search" style="display: none;">
+                            <button id="clearSearchBtn" class="clear-search-btn" title="Clear Search"
+                                aria-label="Clear Search" style="display: none;">
                                 <i class="fa-solid fa-xmark"></i>
                             </button>
                             <button id="aiSearchToggle" class="ai-search-toggle" title="Toggle AI Search"
@@ -258,14 +509,21 @@
 
             <!-- Blog Posts Card -->
             <div class="card-one" id="blogs">
-                <div class="blog-header-container">
+                <!-- Header row - always visible, clickable in folded mode -->
+                <div class="blog-header-container" id="blogHeaderContainer">
                     <h2 id="blogCardHeading" class="blog-header-title">Latest from the Insightroom</h2>
-                    <a href="https://insightroom.vercel.app" class="view-more-btn">
-                        View More
-                        <i class="fas fa-arrow-up" style="transform: rotate(45deg); font-size: 12px;"></i>
-                    </a>
+                    <div class="blog-header-right">
+                        <a href="https://insightroom.vercel.app" class="view-more-btn">
+                            View More
+                            <i class="fas fa-arrow-up" style="transform: rotate(45deg); font-size: 12px;"></i>
+                        </a>
+                        <!-- Chevron for folded mode (hidden by default) -->
+                        <i class="fas fa-chevron-down blog-fold-chevron" id="blogFoldChevron"
+                            style="display: none; color: #ff8200; font-size: 14px; margin-left: 12px; cursor: pointer; transition: transform 0.3s ease;"></i>
+                    </div>
                 </div>
 
+                <!-- Posts container - collapsible in folded mode -->
                 <div class="blog-posts-container" id="blogPostsContent">
                     <!-- Default: Latest 5 posts (loaded from API) - Horizontal Scroll -->
                     <div id="defaultPosts" class="insight-cards-scroll">
@@ -285,7 +543,8 @@
                     <!-- No posts found message -->
                     <div id="noPostsMessage" style="display: none; text-align: center; padding: 20px; color: #666;">
                         <p>No posts found for the selected semester and subject.</p>
-                        <p style="font-size: 14px;">Try selecting different options or check back later for new content.
+                        <p style="font-size: 14px;">Try selecting different options or check back later for new
+                            content.
                         </p>
                     </div>
 
@@ -1487,18 +1746,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
 
-                <div class="card-layout" id="noiseToggleCard">
-                    <div class="toggle-container">
-                        <div class="paper-mode-info">
-                            <div class="paper-mode-title">Noise Texture</div>
-                            <div class="paper-mode-description">Enable Gaussian noise texture</div>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="enableNoiseToggle" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
+
 
                 <!-- Background Wallpaper Selection -->
                 <div class="card-layout" id="wallpaperSelectionCard">
@@ -1566,6 +1814,34 @@ document.addEventListener('DOMContentLoaded', () => {
                             <input type="checkbox" id="insightroomToggle" checked>
                             <span class="slider"></span>
                         </label>
+                    </div>
+                    <!-- View Options (shown when toggle is enabled) -->
+                    <div class="insightroom-view-options" id="insightroomViewOptions"
+                        style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.08);">
+                        <div class="toggle-container">
+                            <div class="paper-mode-info">
+                                <div class="paper-mode-title" style="font-size: 13px;">View Style</div>
+                                <div class="paper-mode-description" style="font-size: 11px;">Choose how the feed appears
+                                    on homepage</div>
+                            </div>
+                            <!-- Dropdown using profile-dropdown styles -->
+                            <div class="view-style-dropdown-wrapper" id="viewStyleDropdownWrapper">
+                                <button class="view-style-trigger" id="viewStyleDropdownTrigger">
+                                    <span id="viewStyleSelectedText">Normal</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div class="profile-dropdown view-style-dropdown" id="viewStyleDropdown">
+                                    <a href="#" class="dropdown-item view-style-item" data-value="normal">
+                                        <i class="far fa-rectangle-wide"></i>
+                                        <span>Normal</span>
+                                    </a>
+                                    <a href="#" class="dropdown-item view-style-item" data-value="folded">
+                                        <i class="far fa-rectangle-list"></i>
+                                        <span>Folded</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1692,28 +1968,29 @@ document.addEventListener('DOMContentLoaded', () => {
         <div id="quickSearchResults">
             <!-- Results will be populated here -->
         </div>
-    </main> 
-    
+    </main>
+
     <!-- PERFORMANCE OPTIMIZED SCRIPT LOADING -->
     <!-- Critical scripts loaded immediately -->
     <script src="/assets/scripts/main.js" defer></script>
+    <script src="/assets/scripts/keyboard-shortcuts.js" defer></script>
     <script src="/assets/scripts/theme.js" defer></script>
     <script src="/assets/scripts/notify.js" defer></script>
     <script src="/assets/scripts/advanced.js" defer></script>
-    
+
     <!-- PDF-related scripts - load after main -->
     <script src="/assets/scripts/pdf-downloads.js" defer></script>
     <script src="/assets/scripts/caching.js" defer></script>
     <script src="/assets/scripts/downloads-ui.js" defer></script>
-    
+
     <!-- Profile & user-specific -->
     <script src="/assets/scripts/profile-image.js" defer></script>
     <script src="/assets/scripts/releases.js" defer></script>
     <script src="/assets/scripts/health-check.js" defer></script>
-    
+
     <!-- Lazy loader for non-critical scripts -->
     <script src="/assets/scripts/lazy-loader.js" defer></script>
-    
+
     <!-- Non-critical scripts now loaded lazily via lazy-loader.js:
          - ga.js (analytics)
          - gestures.js (mobile only)

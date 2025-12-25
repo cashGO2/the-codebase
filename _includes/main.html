@@ -22,6 +22,11 @@
             </a>
         </div>
         <div class="navbar-bottom-group">
+            <!-- Keyboard Shortcuts Help (Desktop only) -->
+            <a href="#" class="keyboard-shortcuts-btn desktop-only" id="keyboardShortcutsBtn" role="button"
+                aria-label="Keyboard Shortcuts" title="Keyboard Shortcuts">
+                <i class="far fa-circle-question"></i>
+            </a>
             <div class="profile-icon-container">
                 <a href="#" class="tab-link profile-icon" data-tab="settings" role="button"
                     aria-label="Profile and Settings">
@@ -47,6 +52,18 @@
             </div>
         </div>
     </nav>
+
+    <!-- Keyboard Shortcuts Popup Modal (outside nav for proper viewport centering) -->
+    <div class="keyboard-shortcuts-modal" id="keyboardShortcutsModal" role="dialog" aria-hidden="true"
+        aria-labelledby="shortcutsTitle">
+        <div class="keyboard-shortcuts-backdrop" id="keyboardShortcutsBackdrop"></div>
+        <div class="keyboard-shortcuts-dialog">
+            <button class="shortcuts-close-btn" id="shortcutsCloseBtn" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+            {% include keyboard-shortcuts.html %}
+        </div>
+    </div>
 
     <div class="content">
         <div id="home" class="tab-content active">
@@ -86,7 +103,8 @@
                         <div style="position: relative;">
                             <i class="far fa-search quick-search-icon-left"></i>
                             <input type="text" id="quickSearchInput" placeholder="Finder" />
-                            <button id="clearSearchBtn" class="clear-search-btn" title="Clear Search" aria-label="Clear Search" style="display: none;">
+                            <button id="clearSearchBtn" class="clear-search-btn" title="Clear Search"
+                                aria-label="Clear Search" style="display: none;">
                                 <i class="fa-solid fa-xmark"></i>
                             </button>
                             <button id="aiSearchToggle" class="ai-search-toggle" title="Toggle AI Search"
@@ -116,14 +134,21 @@
 
             <!-- Blog Posts Card -->
             <div class="card-one" id="blogs">
-                <div class="blog-header-container">
+                <!-- Header row - always visible, clickable in folded mode -->
+                <div class="blog-header-container" id="blogHeaderContainer">
                     <h2 id="blogCardHeading" class="blog-header-title">Latest from the Insightroom</h2>
-                    <a href="https://insightroom.vercel.app" class="view-more-btn">
-                        View More
-                        <i class="fas fa-arrow-up" style="transform: rotate(45deg); font-size: 12px;"></i>
-                    </a>
+                    <div class="blog-header-right">
+                        <a href="https://insightroom.vercel.app" class="view-more-btn">
+                            View More
+                            <i class="fas fa-arrow-up" style="transform: rotate(45deg); font-size: 12px;"></i>
+                        </a>
+                        <!-- Chevron for folded mode (hidden by default) -->
+                        <i class="fas fa-chevron-down blog-fold-chevron" id="blogFoldChevron"
+                            style="display: none; color: #ff8200; font-size: 14px; margin-left: 12px; cursor: pointer; transition: transform 0.3s ease;"></i>
+                    </div>
                 </div>
 
+                <!-- Posts container - collapsible in folded mode -->
                 <div class="blog-posts-container" id="blogPostsContent">
                     <!-- Default: Latest 5 posts (loaded from API) - Horizontal Scroll -->
                     <div id="defaultPosts" class="insight-cards-scroll">
@@ -143,7 +168,8 @@
                     <!-- No posts found message -->
                     <div id="noPostsMessage" style="display: none; text-align: center; padding: 20px; color: #666;">
                         <p>No posts found for the selected semester and subject.</p>
-                        <p style="font-size: 14px;">Try selecting different options or check back later for new content.
+                        <p style="font-size: 14px;">Try selecting different options or check back later for new
+                            content.
                         </p>
                     </div>
 
@@ -584,18 +610,7 @@
                     </div>
                 </div>
 
-                <div class="card-layout" id="noiseToggleCard">
-                    <div class="toggle-container">
-                        <div class="paper-mode-info">
-                            <div class="paper-mode-title">Noise Texture</div>
-                            <div class="paper-mode-description">Enable Gaussian noise texture</div>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="enableNoiseToggle" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
+
 
                 <!-- Background Wallpaper Selection -->
                 <div class="card-layout" id="wallpaperSelectionCard">
@@ -663,6 +678,34 @@
                             <input type="checkbox" id="insightroomToggle" checked>
                             <span class="slider"></span>
                         </label>
+                    </div>
+                    <!-- View Options (shown when toggle is enabled) -->
+                    <div class="insightroom-view-options" id="insightroomViewOptions"
+                        style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.08);">
+                        <div class="toggle-container">
+                            <div class="paper-mode-info">
+                                <div class="paper-mode-title" style="font-size: 13px;">View Style</div>
+                                <div class="paper-mode-description" style="font-size: 11px;">Choose how the feed appears
+                                    on homepage</div>
+                            </div>
+                            <!-- Dropdown using profile-dropdown styles -->
+                            <div class="view-style-dropdown-wrapper" id="viewStyleDropdownWrapper">
+                                <button class="view-style-trigger" id="viewStyleDropdownTrigger">
+                                    <span id="viewStyleSelectedText">Normal</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div class="profile-dropdown view-style-dropdown" id="viewStyleDropdown">
+                                    <a href="#" class="dropdown-item view-style-item" data-value="normal">
+                                        <i class="far fa-rectangle-wide"></i>
+                                        <span>Normal</span>
+                                    </a>
+                                    <a href="#" class="dropdown-item view-style-item" data-value="folded">
+                                        <i class="far fa-rectangle-list"></i>
+                                        <span>Folded</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

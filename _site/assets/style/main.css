@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 body {
@@ -324,7 +325,7 @@ p {
 }
 
 .navbar a i {
-    margin-right: 10px;
+    margin-right: 0;
 }
 
 .navbar a.active i,
@@ -3776,14 +3777,15 @@ body.dark-mode #downloadsTableWrapper::-webkit-scrollbar {
     transition: color 0.3s ease;
 }
 
+/* 
 #quickSearchInput.ai-mode~.quick-search-icon-left {
     color: #667eea;
-}
+} */
 
 /* AI Search Toggle Button */
 .ai-search-toggle {
     position: absolute;
-    right: 7px;
+    right: 5px;
     top: 50%;
     transform: translateY(-50%);
     width: auto;
@@ -3810,7 +3812,7 @@ body.dark-mode #downloadsTableWrapper::-webkit-scrollbar {
 }
 
 .ai-search-toggle:hover {
-    transform: translateY(-50%) scale(1.05);
+    transform: translateY(-50%) scale(1.00);
     box-shadow: 0 6px 20px rgba(135, 148, 255, 0.5);
 }
 
@@ -3825,7 +3827,8 @@ body.dark-mode #downloadsTableWrapper::-webkit-scrollbar {
 /* Clear Search Button */
 .clear-search-btn {
     position: absolute;
-    right: 115px; /* Positioned to the left of AI button */
+    right: 115px;
+    /* Positioned to the left of AI button */
     top: 50%;
     transform: translateY(-50%);
     background: transparent;
@@ -4615,7 +4618,7 @@ body.dark-mode .insight-card-date {
 @media (max-width: 768px) {
     .insight-cards-scroll {
         gap: 24px;
-        
+
     }
 
     .insight-card-link {
@@ -4712,9 +4715,761 @@ body.dark-mode .view-more-btn {
     .blog-header-container {
         display: block;
     }
-    
+
     .blog-header-title {
         display: inline;
         margin-right: 10px;
     }
+}
+
+/* ================================================
+   INSIGHTROOM FOLDED VIEW STYLES
+   ================================================ */
+
+/* Header right section - holds View More btn and chevron */
+.blog-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Chevron icon for folded mode */
+.blog-fold-chevron {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 8px;
+    border-radius: 50%;
+}
+
+.blog-fold-chevron:hover {
+    background-color: rgba(255, 130, 0, 0.1);
+}
+
+/* When the blog section is expanded */
+#blogs.blog-expanded .blog-fold-chevron {
+    transform: rotate(180deg);
+}
+
+/* Posts container - smooth expand/collapse */
+.blog-posts-container {
+    transition: opacity 0.2s ease;
+}
+
+/* Remove min-height when folded (posts hidden) so card is compact */
+#blogs:not(.blog-expanded) .blog-posts-container[style*="display: none"]~.blog-posts-container,
+#blogs:has(.blog-posts-container[style*="display: none"]) {
+    min-height: auto;
+}
+
+/* Folded state - compact card with just header */
+#blogs.blog-folded {
+    min-height: auto;
+}
+
+/* Dark mode styles */
+body.dark-mode .blog-fold-chevron:hover {
+    background-color: rgba(255, 130, 0, 0.15);
+}
+
+/* ================================================
+   INSIGHTROOM VIEW OPTIONS STYLES (Settings)
+   ================================================ */
+
+/* View options container */
+.insightroom-view-options {
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* View Style Dropdown - uses profile-dropdown styles */
+.view-style-dropdown-wrapper {
+    position: relative;
+}
+
+.view-style-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    transition: all 0.2s ease;
+}
+
+.view-style-trigger:hover {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.view-style-trigger i {
+    font-size: 10px;
+    transition: transform 0.25s ease;
+    color: #666;
+}
+
+.view-style-dropdown-wrapper.open .view-style-trigger i {
+    transform: rotate(180deg);
+}
+
+/* Position the dropdown below the trigger (override profile-dropdown positioning) */
+.view-style-dropdown.profile-dropdown {
+    position: absolute;
+    bottom: auto;
+    top: calc(100% + 8px);
+    left: auto;
+    right: 0;
+    margin-left: 0;
+}
+
+/* Selected state for dropdown items */
+.view-style-item.selected {
+    background: rgba(255, 130, 0, 0.15);
+    color: #ff8200;
+}
+
+/* Dark mode for trigger */
+body.dark-mode .view-style-trigger {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #e0e0e0;
+}
+
+body.dark-mode .view-style-trigger:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode .view-style-trigger i {
+    color: #999;
+}
+
+body.dark-mode .view-style-item.selected {
+    background: rgba(255, 130, 0, 0.25);
+    color: #ff8200;
+}
+
+/* ================================================
+   KEYBOARD SHORTCUTS FEATURE
+   ================================================ */
+
+/* Desktop-only helper class */
+.desktop-only {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .desktop-only {
+        display: none !important;
+    }
+}
+
+/* Keyboard shortcuts button in navbar - standalone styling matching .navbar a */
+.keyboard-shortcuts-btn {
+    color: #4d4d4d;
+    text-decoration: none;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: larger;
+    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    position: relative;
+}
+
+.keyboard-shortcuts-btn i {
+    color: #4d4d4d;
+    transition: color 0.2s ease;
+}
+
+.keyboard-shortcuts-btn:hover i {
+    color: #ff8200;
+}
+
+/* New indicator dot */
+.keyboard-shortcuts-btn::after {
+    content: '';
+    position: absolute;
+    top: 25%;
+    left: 55%;
+    transform: translate(4px, -12px);
+    width: 8px;
+    height: 8px;
+    background: #ff8200;
+    border-radius: 50%;
+    animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Hide dot after user has seen it */
+.keyboard-shortcuts-btn.seen::after {
+    display: none;
+}
+
+@keyframes pulse-dot {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+    }
+}
+
+body.dark-mode .keyboard-shortcuts-btn i {
+    color: #aaa;
+}
+
+body.dark-mode .keyboard-shortcuts-btn:hover i {
+    color: #ff8200;
+}
+
+/* Modal overlay */
+.keyboard-shortcuts-modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.keyboard-shortcuts-modal.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Backdrop */
+.keyboard-shortcuts-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+/* Dialog box */
+.keyboard-shortcuts-dialog {
+    position: relative;
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 32px;
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.keyboard-shortcuts-modal.visible .keyboard-shortcuts-dialog {
+    transform: scale(1) translateY(0);
+}
+
+/* Close button */
+.shortcuts-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.shortcuts-close-btn:hover {
+    background: rgba(255, 130, 0, 0.15);
+    color: #ff8200;
+}
+
+/* Content styling */
+.keyboard-shortcuts-content {
+    font-family: 'Manrope', sans-serif;
+}
+
+.shortcuts-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.shortcuts-header h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 8px;
+}
+
+.shortcuts-header h2 i {
+    margin-right: 10px;
+    color: #ff8200;
+}
+
+.shortcuts-description {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+/* Shortcuts flat list */
+.shortcuts-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 55vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
+}
+
+.shortcuts-list-container::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari/Opera */
+}
+
+.shortcuts-divider {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.08);
+    margin: 8px 0;
+}
+
+.shortcuts-category {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #888;
+    padding: 12px 12px 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.shortcut-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: 10px;
+    transition: background 0.15s ease;
+}
+
+.shortcut-item:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.shortcut-action {
+    font-size: 14px;
+    color: #444;
+    flex: 1;
+}
+
+.shortcut-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.shortcut-keys {
+    font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+    background: rgba(0, 0, 0, 0.06);
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+/* Footer */
+.shortcuts-footer {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.shortcuts-note {
+    font-size: 12px;
+    color: #888;
+    margin: 0;
+}
+
+.shortcuts-note i {
+    margin-right: 6px;
+}
+
+.shortcuts-note kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 22px;
+    padding: 0 6px;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: #555;
+    margin: 0 2px;
+}
+
+/* Dark mode */
+body.dark-mode .keyboard-shortcuts-dialog {
+    background: #2a2a2a;
+}
+
+body.dark-mode .shortcuts-close-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #aaa;
+}
+
+body.dark-mode .shortcuts-close-btn:hover {
+    background: rgba(255, 130, 0, 0.2);
+    color: #ff8200;
+}
+
+body.dark-mode .shortcuts-header h2 {
+    color: #f0f0f0;
+}
+
+body.dark-mode .shortcuts-divider {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .shortcut-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .shortcut-action {
+    color: #bbb;
+}
+
+body.dark-mode .shortcut-keys {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+}
+
+body.dark-mode .shortcut-action {
+    color: #aaa;
+}
+
+body.dark-mode .shortcuts-footer {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .shortcuts-note {
+    color: #777;
+}
+
+body.dark-mode .shortcuts-note kbd {
+    background: #3a3a3a;
+    border-color: #4a4a4a;
+    color: #ccc;
+}
+
+/* OS Note */
+.shortcuts-os-note {
+    font-size: 12px;
+    color: #888;
+    margin-top: 8px;
+}
+
+.shortcuts-os-note i {
+    margin-right: 6px;
+}
+
+/* Edit button on shortcut items */
+.shortcut-edit-btn {
+    width: 24px;
+    height: 24px;
+    margin-left: 12px;
+    border: none;
+    background: transparent;
+    color: #bbb;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.shortcut-item:hover .shortcut-edit-btn {
+    opacity: 1;
+}
+
+.shortcut-edit-btn:hover {
+    color: #ff8200;
+}
+
+/* Customized shortcut indicator */
+.shortcut-item.customized .shortcut-keys {
+    background: rgba(255, 130, 0, 0.12);
+    color: #ff8200;
+}
+
+/* Reset button */
+.reset-shortcuts-btn {
+    margin-top: 12px;
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.reset-shortcuts-btn:hover {
+    background: rgba(255, 100, 100, 0.1);
+    border-color: rgba(255, 100, 100, 0.3);
+    color: #ff6666;
+}
+
+/* Edit Modal */
+.shortcut-edit-modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+}
+
+.shortcut-edit-modal.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.shortcut-edit-dialog {
+    background: #fff;
+    border-radius: 20px;
+    padding: 28px;
+    max-width: 380px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.shortcut-edit-modal.visible .shortcut-edit-dialog {
+    transform: scale(1);
+}
+
+.shortcut-edit-dialog h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.edit-action-name {
+    font-size: 14px;
+    color: #666;
+    margin: 0 0 20px;
+}
+
+.edit-keys-display {
+    background: rgba(0, 0, 0, 0.04);
+    border: 2px dashed rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    padding: 20px;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.edit-keys-display kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 10px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 2px 0 #ccc;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.edit-hint {
+    font-size: 12px;
+    color: #999;
+    margin: 0 0 20px;
+}
+
+.edit-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.edit-cancel-btn,
+.edit-save-btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.edit-cancel-btn {
+    background: rgba(0, 0, 0, 0.05);
+    color: #666;
+}
+
+.edit-cancel-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.edit-save-btn {
+    background: #ff8200;
+    color: #fff;
+}
+
+.edit-save-btn:hover {
+    background: #e67400;
+}
+
+/* Dark mode for edit features */
+body.dark-mode .shortcut-edit-btn {
+    color: #666;
+}
+
+body.dark-mode .shortcut-edit-btn:hover {
+    background: rgba(255, 130, 0, 0.2);
+    color: #ff8200;
+}
+
+body.dark-mode .reset-shortcuts-btn {
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #aaa;
+}
+
+body.dark-mode .reset-shortcuts-btn:hover {
+    background: rgba(255, 100, 100, 0.15);
+    border-color: rgba(255, 100, 100, 0.3);
+    color: #ff6666;
+}
+
+body.dark-mode .shortcut-edit-dialog {
+    background: #2a2a2a;
+}
+
+body.dark-mode .shortcut-edit-dialog h3 {
+    color: #f0f0f0;
+}
+
+body.dark-mode .edit-action-name {
+    color: #999;
+}
+
+body.dark-mode .edit-keys-display {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #aaa;
+}
+
+body.dark-mode .edit-keys-display kbd {
+    background: #3a3a3a;
+    border-color: #4a4a4a;
+    box-shadow: 0 2px 0 #333;
+    color: #e0e0e0;
+}
+
+body.dark-mode .edit-cancel-btn {
+    background: rgba(255, 255, 255, 0.08);
+    color: #aaa;
+}
+
+body.dark-mode .edit-cancel-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* Custom Keyboard Modal Styles */
+.keyboard-shortcuts-dialog,
+.shortcut-edit-dialog {
+    border-radius: 40px !important;
+    corner-shape: squircle;
+}
+
+/* Squircle Buttons & Font */
+.keyboard-shortcuts-dialog button,
+.shortcut-edit-dialog button,
+.reset-shortcuts-btn,
+.shortcut-edit-btn,
+.edit-cancel-btn,
+.edit-save-btn {
+    border-radius: 25px !important;
+    corner-shape: squircle;
+    font-family: 'Manrope', sans-serif !important;
+}
+
+/* Dark mode category headings */
+body.dark-mode .shortcuts-category {
+    color: #777;
+}
+
+body.dark-mode .shortcuts-divider {
+    background: rgba(255, 255, 255, 0.08);
 }

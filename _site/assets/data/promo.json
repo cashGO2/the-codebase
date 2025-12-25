@@ -4,11 +4,9 @@
   "frequency": "every-12hr",
   "customFrequencyHours": "null",
   "title": "What's New",
-  "description": "The all new insightroom experience.\n The insightroom is re-written in svelte providing faster loading of content.\n Materio homepage provides a new layout for insightroom feed and smart recommendations.",
+  "description": "The all new Materio experience.\n Materio now has keyboard shortcuts enabling easy navigation and actions, Click on the `?` icon or press `Shift + ?` or `⇧ + ?` to open the keyboard shortcuts reference.\n The search UI has also been updated with better experience.",
   "link": "/changelog",
-  "images": [
-    "assets/img/covers/e6ddc339-0012-4c4b-83cd-6c37d1c7af9a.webp"
-  ],
+  "images": null,
   "showImageOnMaintenance": false,
   "imageRotationInterval": 5000,
   "imageAnimation": {
@@ -17,10 +15,10 @@
     "direction": "left"
   },
   "isLimitedOffer": true,
-  "startDate": "2025-12-18T00:00",
-  "endDate": "2025-12-20T00:00",
+  "startDate": "2025-12-25T00:00",
+  "endDate": "2025-12-31T00:00",
   "showDateInfo": false,
-  "lastUpdated": "2025-12-18T13:15:00",
+  "lastUpdated": "2025-12-25T13:14:22",
   "buttons": {
     "primary": {
       "show": false,
@@ -30,7 +28,7 @@
     "secondary": {
       "show": true,
       "text": "Got it",
-      "icon": "&#8206;" 
+      "icon": "&#8206;"
     }
   },
   "disclaimer": {

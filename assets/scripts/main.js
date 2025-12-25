@@ -1406,39 +1406,206 @@ window.checkAndApplyAdFreeExperience = checkAndApplyAdFreeExperience;
 // INSIGHTROOM SECTION TOGGLE FUNCTIONALITY
 // ================================================
 
-// Function to handle Insightroom section visibility
+// Function to get Insightroom settings from cookie (returns [enabled, view])
+function getInsightroomSettings() {
+    const settingsCookie = getCookie('insightroomSettings');
+    if (settingsCookie) {
+        try {
+            const settings = JSON.parse(settingsCookie);
+            if (Array.isArray(settings) && settings.length === 2) {
+                return settings;
+            }
+        } catch (e) {
+            console.warn('Error parsing insightroomSettings cookie:', e);
+        }
+    }
+    // Default: [enabled=true, view='normal']
+    return [true, 'normal'];
+}
+
+// Function to save Insightroom settings to cookie
+function saveInsightroomSettings(enabled, view) {
+    const settings = [enabled, view];
+    setCookie('insightroomSettings', JSON.stringify(settings), 365);
+}
+
+// Function to handle Insightroom section visibility and view mode
 function handleInsightroomToggle() {
     const insightroomToggle = document.getElementById('insightroomToggle');
     const blogsSection = document.getElementById('blogs');
+    const viewOptions = document.getElementById('insightroomViewOptions');
+    const dropdownWrapper = document.getElementById('viewStyleDropdownWrapper');
+    const dropdownTrigger = document.getElementById('viewStyleDropdownTrigger');
+    const dropdown = document.getElementById('viewStyleDropdown');
+    const selectedText = document.getElementById('viewStyleSelectedText');
+    const dropdownItems = document.querySelectorAll('.view-style-item');
 
     if (!insightroomToggle || !blogsSection) {
         return;
     }
 
-    // Load saved preference
-    const isEnabled = getCookie('insightroomEnabled') !== 'false'; // Default to true
+    // Load saved preferences
+    const [isEnabled, viewMode] = getInsightroomSettings();
+
+    // Set toggle state
     insightroomToggle.checked = isEnabled;
 
+    // Set dropdown selected state
+    if (selectedText) {
+        selectedText.textContent = viewMode === 'folded' ? 'Folded' : 'Normal';
+    }
+
+    // Mark the selected item
+    dropdownItems.forEach(item => {
+        if (item.dataset.value === viewMode) {
+            item.classList.add('selected');
+        } else {
+            item.classList.remove('selected');
+        }
+    });
+
+    // Show/hide view options based on toggle state
+    if (viewOptions) {
+        viewOptions.style.display = isEnabled ? 'block' : 'none';
+    }
+
     // Apply initial state
-    toggleInsightroomSection(isEnabled);
+    applyInsightroomViewMode(isEnabled, viewMode);
 
     // Add event listener for toggle changes
     insightroomToggle.addEventListener('change', function () {
         const enabled = this.checked;
-        toggleInsightroomSection(enabled);
-        setCookie('insightroomEnabled', enabled, 365); // Save for 1 year
+        const currentView = selectedText && selectedText.textContent.toLowerCase() === 'folded' ? 'folded' : 'normal';
+
+        // Show/hide view options
+        if (viewOptions) {
+            viewOptions.style.display = enabled ? 'block' : 'none';
+        }
+
+        applyInsightroomViewMode(enabled, currentView);
+        saveInsightroomSettings(enabled, currentView);
+    });
+
+    // Dropdown toggle
+    if (dropdownTrigger && dropdownWrapper) {
+        dropdownTrigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            dropdownWrapper.classList.toggle('open');
+            dropdown.classList.toggle('show');
+        });
+    }
+
+    // Dropdown item selection
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', function (e) {
+            e.preventDefault();
+            const value = this.dataset.value;
+            const label = value === 'folded' ? 'Folded' : 'Normal';
+
+            // Update selected text
+            if (selectedText) {
+                selectedText.textContent = label;
+            }
+
+            // Update selected state
+            dropdownItems.forEach(i => i.classList.remove('selected'));
+            this.classList.add('selected');
+
+            // Close dropdown
+            dropdownWrapper.classList.remove('open');
+            dropdown.classList.remove('show');
+
+            // Apply and save
+            const enabled = insightroomToggle.checked;
+            applyInsightroomViewMode(enabled, value);
+            saveInsightroomSettings(enabled, value);
+        });
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function (e) {
+        if (dropdownWrapper && !dropdownWrapper.contains(e.target)) {
+            dropdownWrapper.classList.remove('open');
+            if (dropdown) dropdown.classList.remove('show');
+        }
     });
 }
 
-// Function to show/hide the Insightroom section
-function toggleInsightroomSection(enabled) {
+// Function to apply the Insightroom view mode
+function applyInsightroomViewMode(enabled, viewMode) {
     const blogsSection = document.getElementById('blogs');
+    const headerContainer = document.getElementById('blogHeaderContainer');
+    const postsContainer = document.getElementById('blogPostsContent');
+    const chevron = document.getElementById('blogFoldChevron');
 
-    if (blogsSection) {
-        if (enabled) {
-            blogsSection.style.display = 'block';
-        } else {
-            blogsSection.style.display = 'none';
+    if (!blogsSection) return;
+
+    if (!enabled) {
+        // Section is disabled - hide everything
+        blogsSection.style.display = 'none';
+        return;
+    }
+
+    // Section is enabled
+    blogsSection.style.display = 'block';
+
+    if (viewMode === 'folded') {
+        // Folded mode: show chevron, make header clickable, hide posts by default
+        blogsSection.classList.add('blog-folded');
+        if (chevron) {
+            chevron.style.display = 'inline-block';
+            chevron.style.transform = 'rotate(0deg)';
+        }
+        if (headerContainer) {
+            headerContainer.style.cursor = 'pointer';
+        }
+        if (postsContainer) {
+            postsContainer.style.display = 'none';
+        }
+        // Reset expanded state
+        blogsSection.classList.remove('blog-expanded');
+    } else {
+        // Normal mode: hide chevron, show posts, header not clickable
+        blogsSection.classList.remove('blog-folded');
+        blogsSection.classList.remove('blog-expanded');
+        if (chevron) {
+            chevron.style.display = 'none';
+        }
+        if (headerContainer) {
+            headerContainer.style.cursor = 'default';
+        }
+        if (postsContainer) {
+            postsContainer.style.display = 'block';
+        }
+    }
+}
+
+// Function to toggle folded blog section expand/collapse
+function toggleBlogFoldedState() {
+    const blogsSection = document.getElementById('blogs');
+    const postsContainer = document.getElementById('blogPostsContent');
+    const chevron = document.getElementById('blogFoldChevron');
+
+    if (!blogsSection || !postsContainer) return;
+
+    const isExpanded = blogsSection.classList.contains('blog-expanded');
+
+    if (isExpanded) {
+        // Collapse - add blog-folded back for compact height
+        blogsSection.classList.remove('blog-expanded');
+        blogsSection.classList.add('blog-folded');
+        postsContainer.style.display = 'none';
+        if (chevron) {
+            chevron.style.transform = 'rotate(0deg)';
+        }
+    } else {
+        // Expand - remove blog-folded to allow full height
+        blogsSection.classList.add('blog-expanded');
+        blogsSection.classList.remove('blog-folded');
+        postsContainer.style.display = 'block';
+        if (chevron) {
+            chevron.style.transform = 'rotate(180deg)';
         }
     }
 }
@@ -1447,6 +1614,21 @@ function toggleInsightroomSection(enabled) {
 document.addEventListener('DOMContentLoaded', function () {
     // Small delay to ensure all other elements are initialized first
     setTimeout(handleInsightroomToggle, 100);
+
+    // Add click handler for header in folded mode
+    const headerContainer = document.getElementById('blogHeaderContainer');
+    if (headerContainer) {
+        headerContainer.addEventListener('click', function (e) {
+            // Only toggle if in folded mode (chevron is visible)
+            const chevron = document.getElementById('blogFoldChevron');
+            if (chevron && chevron.style.display !== 'none') {
+                // Don't toggle if clicking on the View More link
+                if (!e.target.closest('.view-more-btn')) {
+                    toggleBlogFoldedState();
+                }
+            }
+        });
+    }
 });
 
 // ================================================
@@ -1571,7 +1753,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Handle clear button click
     if (clearBtn) {
-        clearBtn.addEventListener('click', function(e) {
+        clearBtn.addEventListener('click', function (e) {
             e.stopPropagation();
             searchInput.value = '';
             this.style.display = 'none';
@@ -2315,4 +2497,64 @@ window.materioConfirm = materioConfirm;
         clearTimeout(_t);
         _t = setTimeout(applyWordWrap, 120);
     });
+})();
+
+// ================================================
+// KEYBOARD SHORTCUTS MODAL
+// ================================================
+
+(function () {
+    function openKeyboardShortcutsModal() {
+        const modal = document.getElementById('keyboardShortcutsModal');
+        if (modal) {
+            modal.classList.add('visible');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeKeyboardShortcutsModal() {
+        const modal = document.getElementById('keyboardShortcutsModal');
+        if (modal) {
+            modal.classList.remove('visible');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const openBtn = document.getElementById('keyboardShortcutsBtn');
+        const closeBtn = document.getElementById('shortcutsCloseBtn');
+        const backdrop = document.getElementById('keyboardShortcutsBackdrop');
+
+        // Open modal on button click
+        if (openBtn) {
+            // Check if user has seen shortcuts before
+            if (localStorage.getItem('keyboardShortcutsSeen')) {
+                openBtn.classList.add('seen');
+            }
+
+            openBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                // Mark as seen
+                localStorage.setItem('keyboardShortcutsSeen', 'true');
+                openBtn.classList.add('seen');
+                openKeyboardShortcutsModal();
+            });
+        }
+
+        // Close modal on close button click
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeKeyboardShortcutsModal);
+        }
+
+        // Close modal on backdrop click
+        if (backdrop) {
+            backdrop.addEventListener('click', closeKeyboardShortcutsModal);
+        }
+    });
+
+    // Expose functions globally for keyboard-shortcuts.js
+    window.openKeyboardShortcutsModal = openKeyboardShortcutsModal;
+    window.closeKeyboardShortcutsModal = closeKeyboardShortcutsModal;
 })();
