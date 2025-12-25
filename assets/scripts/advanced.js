@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const hours = now.getHours();
         const minutes = now.getMinutes();
         const totalMinutes = hours * 60 + minutes;
-        
+
         // Custom time mappings for part_0 to part_8
         // part_0: 5:45 AM - 6:00 AM
         if ((totalMinutes >= 345 && totalMinutes < 360)) { // 5:45-6:00 AM
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
         else if (totalMinutes >= 30 && totalMinutes < 345) { // 12:30-5:45 AM
             return 8;
         }
-        
+
         // Fallback to part_0
         return 0;
     }
@@ -104,10 +104,22 @@ document.addEventListener('DOMContentLoaded', function () {
             const minutes = now.getMinutes();
             const totalMinutes = hours * 60 + minutes;
 
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const dateString = `${year}-${month}-${day}`;
+
             for (const config of customEventConfig.dynamic_config) {
+                // Check for exclusive dates
+                if (config.exclusive_dates) {
+                    if (!config.exclusive_dates.includes(dateString)) {
+                        continue;
+                    }
+                }
+
                 const [startHour, startMinute] = config.start.split(':').map(Number);
                 const [endHour, endMinute] = config.end.split(':').map(Number);
-                
+
                 const startTotal = startHour * 60 + startMinute;
                 const endTotal = endHour * 60 + endMinute;
 
@@ -136,15 +148,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const imageUrl = getDynamicImageUrl(customEventConfig);
         homeElem.style.setProperty("--bg-img", imageUrl);
-        
+
         // Update preview card to show current image
         updateDynamicPreview(customEventConfig);
     }
+    // Expose for debugging/testing
+    window.applyDynamicWallpaper = applyDynamicWallpaper;
 
     function updateDynamicPreview(customEventConfig = null) {
         const dynamicPreview = document.getElementById('dynamicPreview');
         const dynamicTime = document.getElementById('dynamicTime');
-        
+
         if (dynamicPreview) {
             let imageUrl;
             if (customEventConfig && customEventConfig.dynamic_config) {
@@ -156,18 +170,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 const index = getDynamicImageIndex();
                 imageUrl = `/assets/img/events/dynamic/part_${index}.webp`;
             }
-            
+
             dynamicPreview.style.backgroundImage = `url('${imageUrl}')`;
             dynamicPreview.style.backgroundSize = 'cover';
             dynamicPreview.style.backgroundPosition = 'center';
-            
+
             // Remove the animated gradient
             dynamicPreview.style.animation = 'none';
         }
-        
+
         if (dynamicTime) {
             const now = new Date();
-            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             dynamicTime.textContent = timeString;
         }
     }
@@ -180,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (dynamicWallpaperInterval) {
             clearInterval(dynamicWallpaperInterval);
         }
-        
+
         // Update every minute to check for time changes
         dynamicWallpaperInterval = setInterval(() => {
             const selectedWallpaper = getCookie("selectedWallpaper");
@@ -203,19 +217,19 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(events => {
                 const now = new Date();
                 const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
-                
+
                 // First, try to find default event
                 let defaultEvents = events.filter(ev => ev.default == 1);
                 let eventToApply = defaultEvents.length > 0 ? defaultEvents[0] : null;
-                
+
                 // Then check for recent non-default active events (these override the default)
                 // Only consider events from the last 30 days to avoid old events taking precedence
                 let activeEvents = events.filter(ev => {
                     const eventDate = new Date(ev.setDate);
-                    
+
                     // Check if event is active based on start date
                     if (eventDate > now) return false;
-                    
+
                     // Check end date if provided, otherwise use 30-day window
                     if (ev.endDate) {
                         const endDate = new Date(ev.endDate);
@@ -224,12 +238,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         return eventDate >= thirtyDaysAgo && ev.default == 0;
                     }
                 });
-                
+
                 if (activeEvents.length > 0) {
                     // Use the most recent non-default event
                     eventToApply = activeEvents.sort((a, b) => new Date(b.setDate) - new Date(a.setDate))[0];
                 }
-                
+
                 if (eventToApply) {
                     cachedEventToApply = eventToApply;
                     updateHeaderLogo(eventToApply);
@@ -278,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateBgFromEvent(eventToApply) {
         const isMobile = window.matchMedia("(max-width: 768px)").matches;
         const bgUrl = isMobile ? eventToApply.url_mobile : eventToApply.url_pc;
-        
+
         // Check if the URL is set to "dynamic"
         if (bgUrl === "dynamic") {
             applyDynamicWallpaper(eventToApply);
@@ -303,7 +317,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (enableNoiseToggle) enableNoiseToggle.checked = true;
         homeElem.classList.remove("no-noise");
     }
-    
+
     // Start by initializing event data, which will then apply background
     initEventData();
 
@@ -352,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!userData) {
                 return { isPlusUser: false, hasAdminPrivileges: false, isLoggedIn: false };
             }
-            
+
             const user = JSON.parse(userData);
             return {
                 isPlusUser: user.isPlusUser || false,
@@ -379,7 +393,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Wallpaper Selection functionality (Plus/Super users only)
     const wallpaperCards = document.querySelectorAll('.wallpaper-preview-card');
-    
+
     function initializeWallpaperSelection() {
         // Check if user can access wallpaper selection
         if (!canAccessWallpaperSelection()) {
@@ -387,12 +401,12 @@ document.addEventListener('DOMContentLoaded', function () {
             hideWallpaperSelectionCard();
             return;
         }
-        
+
         // Initialize dynamic preview
         updateDynamicPreview();
-        
+
         const savedWallpaper = getCookie("selectedWallpaper") || 'dynamic'; // Default to dynamic wallpaper
-        
+
         setWallpaperAsBackground(savedWallpaper);
         // Update UI to show selected wallpaper
         wallpaperCards.forEach(card => {
@@ -401,43 +415,43 @@ document.addEventListener('DOMContentLoaded', function () {
                 card.classList.add('selected');
             }
         });
-        
+
         // Start timer if dynamic wallpaper is selected
         if (savedWallpaper === 'dynamic') {
             startDynamicWallpaperTimer();
         }
     }
-    
+
     // Add click handlers to wallpaper cards
     wallpaperCards.forEach(card => {
-        card.addEventListener('click', function() {
+        card.addEventListener('click', function () {
             // Check user access before allowing wallpaper selection
             if (!canAccessWallpaperSelection()) {
                 return;
             }
-            
+
             // Remove selected class from all cards
             wallpaperCards.forEach(c => c.classList.remove('selected'));
-            
+
             // Add selected class to clicked card
             this.classList.add('selected');
-            
+
             // Get wallpaper type and apply it
             const wallpaperType = this.dataset.wallpaper;
             setWallpaperAsBackground(wallpaperType);
-            
+
             // Handle dynamic wallpaper timer
             if (wallpaperType === 'dynamic') {
                 startDynamicWallpaperTimer();
             } else {
                 stopDynamicWallpaperTimer();
             }
-            
+
             // Save the selection
             setCookie("selectedWallpaper", wallpaperType, 30);
         });
     });
-    
+
     // Initialize wallpaper selection on page load
     initializeWallpaperSelection();
 
@@ -452,13 +466,13 @@ document.addEventListener('DOMContentLoaded', function () {
     function initializePaperMode() {
         const savedPaperMode = getCookie("paperMode");
         const savedGrainSize = getCookie("grainSize") || "100";
-        
+
         if (savedPaperMode === "true") {
             paperModeToggle.checked = true;
             enablePaperMode();
             showGrainSizeControl();
         }
-        
+
         if (grainSizeSlider) {
             grainSizeSlider.value = savedGrainSize;
             updateGrainSize(savedGrainSize);
@@ -496,7 +510,7 @@ document.addEventListener('DOMContentLoaded', function () {
             } catch (e) {
                 // Cross-origin, use postMessage
             }
-            
+
             // Use postMessage for cross-origin communication
             try {
                 pdfIframe.contentWindow.postMessage({
@@ -509,7 +523,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }    // Listen for messages from iframe to handle overlay mode requests
-    window.addEventListener('message', function(event) {
+    window.addEventListener('message', function (event) {
         if (event.data && event.data.type === 'applyOverlayModes') {
             const pdfIframe = document.getElementById('pdf-iframe');
             if (pdfIframe && event.source === pdfIframe.contentWindow) {
@@ -518,15 +532,31 @@ document.addEventListener('DOMContentLoaded', function () {
                     const paperMode = mainPopup.classList.contains('paper-mode');
                     const nightReading = mainPopup.classList.contains('night-reading');
                     const einkMode = mainPopup.classList.contains('eink-mode');
-                    
+
                     if (paperMode) {
                         pdfIframe.contentWindow.postMessage({
                             type: 'overlayMode',
                             mode: 'paper-mode',
                             enable: true
                         }, '*');
+
+                        // Also send the current paper texture
+                        const savedTexture = getCookie("paperTexture") || "black-paper";
+                        const textureUrl = `/assets/textures/${savedTexture}.png`;
+                        pdfIframe.contentWindow.postMessage({
+                            type: 'paperTexture',
+                            textureUrl: textureUrl
+                        }, '*');
+
+                        // Also send the current grain size
+                        const savedGrainSize = getCookie("grainSize") || "100";
+                        const grainSizePx = Math.round((parseInt(savedGrainSize) / 100) * 200);
+                        pdfIframe.contentWindow.postMessage({
+                            type: 'grainSize',
+                            sizePx: grainSizePx
+                        }, '*');
                     }
-                    
+
                     if (nightReading) {
                         pdfIframe.contentWindow.postMessage({
                             type: 'overlayMode',
@@ -534,7 +564,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             enable: true
                         }, '*');
                     }
-                    
+
                     if (einkMode) {
                         pdfIframe.contentWindow.postMessage({
                             type: 'overlayMode',
@@ -542,7 +572,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             enable: true
                         }, '*');
                     }
-                    
+
                     // Send current theme state to iframe
                     const isDarkMode = document.body.classList.contains('dark-mode');
                     pdfIframe.contentWindow.postMessage({
@@ -569,18 +599,28 @@ document.addEventListener('DOMContentLoaded', function () {
         applyOverlayToPDFIframe('paper-mode', false);
         hideGrainSizeControl();
     }
-      function showGrainSizeControl() {
+    function showGrainSizeControl() {
         if (grainDetails) {
             grainDetails.style.display = 'block';
         }
+        // Also show paper texture options
+        const paperTextureOptions = document.getElementById('paperTextureOptions');
+        if (paperTextureOptions) {
+            paperTextureOptions.style.display = 'block';
+        }
     }
-    
+
     function hideGrainSizeControl() {
         if (grainDetails) {
             grainDetails.style.display = 'none';
         }
+        // Also hide paper texture options
+        const paperTextureOptions = document.getElementById('paperTextureOptions');
+        if (paperTextureOptions) {
+            paperTextureOptions.style.display = 'none';
+        }
     }
-    
+
     function updateGrainSize(size) {
         const grainSizePx = Math.round((size / 100) * 200); // Base size is 200px
         if (popup) {
@@ -589,10 +629,42 @@ document.addEventListener('DOMContentLoaded', function () {
         if (grainSizeValue) {
             grainSizeValue.textContent = `${size}%`;
         }
+
+        // Send grain size to PDF iframe
+        applyGrainSizeToPDFIframe(grainSizePx);
+    }
+
+    function applyGrainSizeToPDFIframe(sizePx) {
+        const pdfIframe = document.getElementById('pdf-iframe');
+        if (pdfIframe) {
+            // Try direct access first (same-origin)
+            try {
+                const iframeDoc = pdfIframe.contentDocument;
+                if (iframeDoc) {
+                    const iframeBody = iframeDoc.body;
+                    if (iframeBody) {
+                        iframeBody.style.setProperty('--grain-size', `${sizePx}px`);
+                        return;
+                    }
+                }
+            } catch (e) {
+                // Cross-origin, use postMessage
+            }
+
+            // Use postMessage for cross-origin communication
+            try {
+                pdfIframe.contentWindow.postMessage({
+                    type: 'grainSize',
+                    sizePx: sizePx
+                }, '*');
+            } catch (e) {
+                // console.log('Could not communicate with PDF iframe');
+            }
+        }
     }
 
     // Initialize paper mode on page load
-    initializePaperMode();    if (paperModeToggle) {
+    initializePaperMode(); if (paperModeToggle) {
         paperModeToggle.addEventListener("change", function () {
             if (this.checked) {
                 enablePaperMode();
@@ -603,7 +675,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    
+
     // Grain size slider event listener
     if (grainSizeSlider) {
         grainSizeSlider.addEventListener("input", function () {
@@ -612,6 +684,124 @@ document.addEventListener('DOMContentLoaded', function () {
             setCookie("grainSize", size, 30);
         });
     }
+
+    // Paper Texture Dropdown functionality
+    const paperTextureDropdownWrapper = document.getElementById("paperTextureDropdownWrapper");
+    const paperTextureDropdownTrigger = document.getElementById("paperTextureDropdownTrigger");
+    const paperTextureDropdown = document.getElementById("paperTextureDropdown");
+    const paperTextureSelectedText = document.getElementById("paperTextureSelectedText");
+    const paperTextureItems = document.querySelectorAll(".paper-texture-item");
+
+    // Texture display names mapping
+    const textureDisplayNames = {
+        'black-paper': 'Black Paper',
+        'cardboard-flat': 'Cardboard',
+        'light-paper-fibers': 'Light Paper',
+        'sandpaper': 'Sandpaper',
+        'textured-paper': 'Textured Paper',
+        'gaussian': 'Gaussian'
+    };
+
+    function initializePaperTexture() {
+        const savedTexture = getCookie("paperTexture") || "black-paper";
+        updatePaperTexture(savedTexture);
+        updatePaperTextureUI(savedTexture);
+    }
+
+    function updatePaperTexture(textureId) {
+        const textureUrl = `/assets/textures/${textureId}.png`;
+
+        // Update the popup's CSS variable
+        if (popup) {
+            popup.style.setProperty('--paper-texture-url', `url('${textureUrl}')`);
+        }
+
+        // Send texture change to PDF iframe
+        applyTextureToPDFIframe(textureUrl);
+    }
+
+    function applyTextureToPDFIframe(textureUrl) {
+        const pdfIframe = document.getElementById('pdf-iframe');
+        if (pdfIframe) {
+            // Try direct access first (same-origin)
+            try {
+                const iframeDoc = pdfIframe.contentDocument;
+                if (iframeDoc) {
+                    const iframeBody = iframeDoc.body;
+                    if (iframeBody) {
+                        iframeBody.style.setProperty('--paper-texture-url', `url('${textureUrl}')`);
+                        return;
+                    }
+                }
+            } catch (e) {
+                // Cross-origin, use postMessage
+            }
+
+            // Use postMessage for cross-origin communication
+            try {
+                pdfIframe.contentWindow.postMessage({
+                    type: 'paperTexture',
+                    textureUrl: textureUrl
+                }, '*');
+            } catch (e) {
+                // console.log('Could not communicate with PDF iframe');
+            }
+        }
+    }
+
+    function updatePaperTextureUI(textureId) {
+        // Update selected text
+        if (paperTextureSelectedText) {
+            paperTextureSelectedText.textContent = textureDisplayNames[textureId] || 'Black Paper';
+        }
+
+        // Update selected state on dropdown items
+        paperTextureItems.forEach(item => {
+            if (item.dataset.value === textureId) {
+                item.classList.add('selected');
+            } else {
+                item.classList.remove('selected');
+            }
+        });
+    }
+
+    // Toggle dropdown
+    if (paperTextureDropdownTrigger) {
+        paperTextureDropdownTrigger.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            paperTextureDropdownWrapper.classList.toggle("open");
+            paperTextureDropdown.classList.toggle("show");
+        });
+    }
+
+    // Handle texture selection
+    paperTextureItems.forEach(item => {
+        item.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const textureId = this.dataset.value;
+            updatePaperTexture(textureId);
+            updatePaperTextureUI(textureId);
+            setCookie("paperTexture", textureId, 30);
+
+            // Close dropdown
+            paperTextureDropdownWrapper.classList.remove("open");
+            paperTextureDropdown.classList.remove("show");
+        });
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener("click", function (e) {
+        if (paperTextureDropdownWrapper && !paperTextureDropdownWrapper.contains(e.target)) {
+            paperTextureDropdownWrapper.classList.remove("open");
+            paperTextureDropdown.classList.remove("show");
+        }
+    });
+
+    // Initialize paper texture on page load
+    initializePaperTexture();
 
     // Listen for popup show/hide events to apply paper mode
     if (popup) {
@@ -625,9 +815,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         });
-          observer.observe(popup, { 
-            attributes: true, 
-            attributeFilter: ['style', 'class'] 
+        observer.observe(popup, {
+            attributes: true,
+            attributeFilter: ['style', 'class']
         });
     }
 
@@ -647,25 +837,25 @@ document.addEventListener('DOMContentLoaded', function () {
         const savedEndTime = getCookie("nightEndTime") || "06:00";
         const savedSchedule = getCookie("nightSchedule");
         const savedWarmth = getCookie("nightWarmth") || "50";
-        
+
         if (savedNightReading === "true") {
             nightReadingToggle.checked = true;
             enableNightReading();
             showNightReadingControl();
         }
-        
+
         if (nightStartTime) nightStartTime.value = savedStartTime;
         if (nightEndTime) nightEndTime.value = savedEndTime;
-        
+
         if (savedSchedule === "true") {
             nightScheduleToggle.checked = true;
             startNightSchedule();
         }
-          if (warmthSlider) {
+        if (warmthSlider) {
             warmthSlider.value = savedWarmth;
             updateWarmth(savedWarmth);
         }
-    }    
+    }
 
     function enableNightReading() {
         if (popup) {
@@ -674,9 +864,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if (warmthSlider) {
                 updateWarmth(warmthSlider.value);
             }
-        }        applyOverlayToPDFIframe('night-reading', true);
+        } applyOverlayToPDFIframe('night-reading', true);
         showNightReadingControl();
-        
+
         // Apply warmth setting to PDF iframe after a short delay to ensure overlay is applied
         setTimeout(() => {
             if (warmthSlider) {
@@ -692,13 +882,13 @@ document.addEventListener('DOMContentLoaded', function () {
         applyOverlayToPDFIframe('night-reading', false);
         hideNightReadingControl();
     }
-    
+
     function showNightReadingControl() {
         if (nightReadingDetails) {
             nightReadingDetails.style.display = 'block';
         }
     }
-    
+
     function hideNightReadingControl() {
         if (nightReadingDetails) {
             nightReadingDetails.style.display = 'none';
@@ -709,7 +899,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const start = timeToMinutes(startTime);
         const end = timeToMinutes(endTime);
         const current = timeToMinutes(currentTime);
-        
+
         // Handle overnight range (e.g., 20:00 to 06:00)
         if (start > end) {
             return current >= start || current <= end;
@@ -730,13 +920,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function checkNightSchedule() {
         if (!nightScheduleToggle || !nightScheduleToggle.checked) return;
-        
+
         const currentTime = getCurrentTime();
         const startTime = nightStartTime ? nightStartTime.value : "20:00";
         const endTime = nightEndTime ? nightEndTime.value : "06:00";
-        
+
         const shouldBeActive = isTimeInRange(startTime, endTime, currentTime);
-        
+
         if (shouldBeActive && !nightReadingToggle.checked) {
             nightReadingToggle.checked = true;
             enableNightReading();
@@ -752,7 +942,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (nightModeInterval) {
             clearInterval(nightModeInterval);
         }
-        
+
         // Check every minute
         nightModeInterval = setInterval(checkNightSchedule, 60000);
         // Check immediately
@@ -824,10 +1014,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         });
-        
-        nightObserver.observe(popup, { 
-            attributes: true, 
-            attributeFilter: ['style', 'class'] 
+
+        nightObserver.observe(popup, {
+            attributes: true,
+            attributeFilter: ['style', 'class']
         });
     }
 
@@ -837,7 +1027,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function initializeEinkMode() {
         const savedEinkMode = getCookie("einkMode");
-        
+
         if (savedEinkMode === "true") {
             einkModeToggle.checked = true;
             enableEinkMode();
@@ -925,11 +1115,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         });
-        
-        einkObserver.observe(popup, { 
-            attributes: true, 
-            attributeFilter: ['style', 'class'] 
-        });    }
+
+        einkObserver.observe(popup, {
+            attributes: true,
+            attributeFilter: ['style', 'class']
+        });
+    }
 
     // Save time settings when changed
     function updateWarmth(value) {
@@ -940,14 +1131,14 @@ document.addEventListener('DOMContentLoaded', function () {
         if (warmthValue) {
             warmthValue.textContent = `${value}%`;
         }
-        
+
         // Send warmth level to PDF iframe
         applyWarmthToPDFIframe(warmthOpacity);
-        
+
         // Log the warmth update for debugging
         // console.log(`Warmth updated: ${value}% (opacity: ${warmthOpacity.toFixed(3)})`);
     }
-      // Helper function to apply warmth to PDF iframe
+    // Helper function to apply warmth to PDF iframe
     function applyWarmthToPDFIframe(opacity) {
         const pdfIframe = document.getElementById('pdf-iframe');
         if (pdfIframe && popup.classList.contains('night-reading')) {
@@ -956,7 +1147,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const iframeDoc = pdfIframe.contentDocument;
                 if (iframeDoc) {
                     iframeDoc.documentElement.style.setProperty('--warmth-opacity', opacity);
-                    
+
                     // Force repaint to ensure changes are applied
                     if (iframeDoc.body.classList.contains('night-reading')) {
                         const viewer = iframeDoc.getElementById('viewer');
@@ -967,14 +1158,14 @@ document.addEventListener('DOMContentLoaded', function () {
                             }, 10);
                         }
                     }
-                    
+
                     return; // Success with direct access
                 }
             } catch (e) {
                 // Cross-origin, use postMessage
                 // console.log('Direct access failed, using postMessage:', e.message);
             }
-            
+
             // Use postMessage for cross-origin communication
             try {
                 pdfIframe.contentWindow.postMessage({
@@ -986,7 +1177,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
-    
+
     // Warmth slider event listener
     if (warmthSlider) {
         warmthSlider.addEventListener("input", function () {

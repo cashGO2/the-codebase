@@ -40,6 +40,7 @@
         reading_bookmark: { keys: { shift: true, key: 'b' }, display: 'Shift+B', action: 'downloadBookmark', params: null },
         reading_mode_inversion: { keys: { alt: true, key: 'i' }, display: 'Alt+I', action: 'toggleInversion', params: null },
         reading_mode_paper: { keys: { alt: true, shift: true, key: 'p' }, display: 'Alt+Shift+P', action: 'togglePaperMode', params: null },
+        reading_cycle_texture: { keys: { ctrl: true, shift: true, key: '1' }, display: 'Ctrl+Shift+!', action: 'cyclePaperTexture', params: null },
         reading_mode_eink: { keys: { alt: true, key: 'e' }, display: 'Alt+E', action: 'toggleEinkMode', params: null },
 
         // Search
@@ -69,6 +70,11 @@
     let capturedKeys = null;
     let capturedDisplay = '';
     const activeKeys = new Set();
+
+    // Double-tap Shift toggle for number/symbol display
+    let showSymbolsMode = false;
+    let lastShiftPressTime = 0;
+    const DOUBLE_TAP_THRESHOLD = 300; // milliseconds
 
     // ================================================
     // INITIALIZATION
@@ -185,11 +191,53 @@
         window.addEventListener('blur', () => activeKeys.clear());
     }
 
+    // Helper function to normalize key from event.code to a readable key name
+    function normalizeKeyFromCode(code) {
+        if (!code) return null;
+        const codeLower = code.toLowerCase();
+
+        // Map key codes to readable key names
+        if (codeLower.startsWith('key')) {
+            return codeLower.slice(3); // KeyA -> a
+        }
+        if (codeLower.startsWith('digit')) {
+            return codeLower.slice(5); // Digit1 -> 1
+        }
+
+        // Special key mappings
+        const codeMap = {
+            'backquote': '`',
+            'minus': '-',
+            'equal': '=',
+            'bracketleft': '[',
+            'bracketright': ']',
+            'backslash': '\\',
+            'semicolon': ';',
+            'quote': "'",
+            'comma': ',',
+            'period': '.',
+            'slash': '/',
+            'space': 'space',
+            'enter': 'enter',
+            'backspace': 'backspace',
+            'tab': 'tab',
+            'escape': 'escape',
+            'arrowup': 'arrowup',
+            'arrowdown': 'arrowdown',
+            'arrowleft': 'arrowleft',
+            'arrowright': 'arrowright'
+        };
+
+        return codeMap[codeLower] || null;
+    }
+
     function handleKeyDown(e) {
         // Track held keys (exclude modifiers which are handled via e.ctrlKey etc)
         const ignoreKeys = ['control', 'alt', 'shift', 'meta'];
         if (!ignoreKeys.includes(e.key.toLowerCase())) {
-            activeKeys.add(e.key.toLowerCase());
+            // Use normalized key from code for consistency (avoids shifted characters like ?)
+            const normalizedKey = normalizeKeyFromCode(e.code) || e.key.toLowerCase();
+            activeKeys.add(normalizedKey);
         }
 
         if (editingShortcutId) {
@@ -210,6 +258,12 @@
     }
 
     function handleKeyUp(e) {
+        // Use normalized key from code for consistency
+        const normalizedKey = normalizeKeyFromCode(e.code) || e.key.toLowerCase();
+        if (activeKeys.has(normalizedKey)) {
+            activeKeys.delete(normalizedKey);
+        }
+        // Also try to delete the raw key in case it was added differently
         if (activeKeys.has(e.key.toLowerCase())) {
             activeKeys.delete(e.key.toLowerCase());
         }
@@ -238,6 +292,22 @@
 
             if (targetKeys.length === 0) continue;
 
+            // Special key code mapping for non-alphanumeric keys
+            const specialKeyCodes = {
+                '`': 'backquote',
+                '~': 'backquote',
+                '-': 'minus',
+                '=': 'equal',
+                '[': 'bracketleft',
+                ']': 'bracketright',
+                '\\': 'backslash',
+                ';': 'semicolon',
+                "'": 'quote',
+                ',': 'comma',
+                '.': 'period',
+                '/': 'slash'
+            };
+
             // 1. Trigger condition: The current key event must correspond to one of the target keys
             // (either character match or code match fallbacks)
             let triggers = false;
@@ -247,6 +317,10 @@
                 const tkLower = tk.toLowerCase();
                 if (tkLower === key) { triggers = true; break; }
                 if (codeLower === `key${tkLower}`) { triggers = true; break; }
+                // Check digit codes (digit1 matches '1', etc.)
+                if (/^[0-9]$/.test(tk) && codeLower === `digit${tk}`) { triggers = true; break; }
+                // Check special key codes
+                if (specialKeyCodes[tk] && codeLower === specialKeyCodes[tk]) { triggers = true; break; }
             }
             if (!triggers) continue;
 
@@ -255,7 +329,12 @@
             for (const tk of targetKeys) {
                 const tkLower = tk.toLowerCase();
                 // We check if it's in activeKeys OR it's the current key event (which implies its pressed)
-                const isHeld = activeKeys.has(tkLower) || (tkLower === key) || (codeLower === `key${tkLower}`);
+                // Also check special key codes for non-alphanumeric keys and digit codes
+                const isHeld = activeKeys.has(tkLower) ||
+                    (tkLower === key) ||
+                    (codeLower === `key${tkLower}`) ||
+                    (/^[0-9]$/.test(tk) && codeLower === `digit${tk}`) ||
+                    (specialKeyCodes[tk] && codeLower === specialKeyCodes[tk]);
                 if (!isHeld) {
                     allHeld = false;
                     break;
@@ -322,6 +401,78 @@
             togglePaperMode: () => {
                 const toggle = document.getElementById('paperModeToggle');
                 if (toggle) toggle.click();
+            },
+
+            cyclePaperTexture: () => {
+                // Available textures in order
+                const textures = ['black-paper', 'cardboard-flat', 'light-paper-fibers', 'sandpaper', 'textured-paper', 'gaussian'];
+                const textureNames = {
+                    'black-paper': 'Black Paper',
+                    'cardboard-flat': 'Cardboard',
+                    'light-paper-fibers': 'Light Paper',
+                    'sandpaper': 'Sandpaper',
+                    'textured-paper': 'Textured Paper',
+                    'gaussian': 'Gaussian'
+                };
+
+                // Get current texture from cookie or default
+                const getCookieValue = (name) => {
+                    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+                    return match ? match[2] : null;
+                };
+
+                const currentTexture = getCookieValue('paperTexture') || 'black-paper';
+                const currentIndex = textures.indexOf(currentTexture);
+                const nextIndex = (currentIndex + 1) % textures.length;
+                const nextTexture = textures[nextIndex];
+
+                // Update the dropdown UI
+                const selectedText = document.getElementById('paperTextureSelectedText');
+                if (selectedText) {
+                    selectedText.textContent = textureNames[nextTexture];
+                }
+
+                // Update selected state in dropdown items
+                document.querySelectorAll('.paper-texture-item').forEach(item => {
+                    if (item.dataset.value === nextTexture) {
+                        item.classList.add('selected');
+                    } else {
+                        item.classList.remove('selected');
+                    }
+                });
+
+                // Apply the texture change (trigger the same logic as advanced.js)
+                const popup = document.getElementById('popup');
+                const textureUrl = `/assets/textures/${nextTexture}.png`;
+                if (popup) {
+                    popup.style.setProperty('--paper-texture-url', `url('${textureUrl}')`);
+                }
+
+                // Send to PDF iframe
+                const pdfIframe = document.getElementById('pdf-iframe');
+                if (pdfIframe) {
+                    try {
+                        const iframeDoc = pdfIframe.contentDocument;
+                        if (iframeDoc && iframeDoc.body) {
+                            iframeDoc.body.style.setProperty('--paper-texture-url', `url('${textureUrl}')`);
+                        }
+                    } catch (e) {
+                        // Cross-origin, use postMessage
+                        try {
+                            pdfIframe.contentWindow.postMessage({
+                                type: 'paperTexture',
+                                textureUrl: textureUrl
+                            }, '*');
+                        } catch (err) {
+                            // ignore
+                        }
+                    }
+                }
+
+                // Save to cookie
+                const date = new Date();
+                date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000));
+                document.cookie = `paperTexture=${nextTexture}; expires=${date.toUTCString()}; path=/`;
             },
 
             toggleEinkMode: () => {
@@ -537,6 +688,8 @@
         editingShortcutId = shortcutId;
         capturedKeys = null;
         capturedDisplay = '';
+        showSymbolsMode = false;
+        lastShiftPressTime = 0;
 
         const modal = document.getElementById('shortcutEditModal');
         const actionName = document.getElementById('editActionName');
@@ -570,6 +723,23 @@
         e.preventDefault();
         e.stopPropagation();
 
+        // Detect double-tap Shift to toggle symbol mode
+        if (e.key === 'Shift') {
+            const now = Date.now();
+            if (now - lastShiftPressTime < DOUBLE_TAP_THRESHOLD) {
+                showSymbolsMode = !showSymbolsMode;
+                // Show feedback in the display
+                const keysDisplayEl = document.getElementById('editKeysDisplay');
+                if (keysDisplayEl && capturedDisplay) {
+                    // Re-render with new mode
+                    const modeLabel = showSymbolsMode ? ' (symbols)' : ' (numbers)';
+                    keysDisplayEl.innerHTML = formatKeyDisplayKbd(capturedDisplay) +
+                        `<span style="opacity: 0.5; font-size: 11px;">${modeLabel}</span>`;
+                }
+            }
+            lastShiftPressTime = now;
+        }
+
         const keys = {
             ctrl: e.ctrlKey || e.metaKey,
             alt: e.altKey,
@@ -584,9 +754,26 @@
         // Capture non-modifier keys from activeKeys set
         const currentKeys = Array.from(activeKeys);
 
+        // Shift+number symbol mappings for symbol mode
+        const shiftSymbols = {
+            '1': '!', '2': '@', '3': '#', '4': '$', '5': '%',
+            '6': '^', '7': '&', '8': '*', '9': '(', '0': ')',
+            '-': '_', '=': '+', '[': '{', ']': '}', '\\': '|',
+            ';': ':', "'": '"', ',': '<', '.': '>', '/': '?',
+            '`': '~'
+        };
+
         currentKeys.forEach(k => {
             let keyName = k;
-            if (keyName === ' ') keyName = 'Space';
+            // Format the key name for display
+            if (keyName === 'space' || keyName === ' ') keyName = 'Space';
+            else if (keyName === 'enter') keyName = 'Enter';
+            else if (keyName === 'backspace') keyName = 'Backspace';
+            else if (keyName === 'escape') keyName = 'Escape';
+            else if (keyName === 'tab') keyName = 'Tab';
+            else if (keyName.startsWith('arrow')) keyName = keyName.charAt(0).toUpperCase() + keyName.slice(1);
+            // Show shifted symbols if symbol mode is enabled and Shift is pressed
+            else if (showSymbolsMode && keys.shift && shiftSymbols[keyName]) keyName = shiftSymbols[keyName];
             else if (keyName.length === 1) keyName = keyName.toUpperCase();
             displayParts.push(keyName);
         });
@@ -596,7 +783,9 @@
             const currentDisplay = displayParts.join('+');
             const keysDisplayEl = document.getElementById('editKeysDisplay');
             if (keysDisplayEl) {
-                keysDisplayEl.innerHTML = formatKeyDisplayKbd(currentDisplay);
+                const modeLabel = (showSymbolsMode && keys.shift) ? ' (symbols)' : '';
+                keysDisplayEl.innerHTML = formatKeyDisplayKbd(currentDisplay) +
+                    (modeLabel ? `<span style="opacity: 0.5; font-size: 11px;">${modeLabel}</span>` : '');
             }
 
             // Capture logic

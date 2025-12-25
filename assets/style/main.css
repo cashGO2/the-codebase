@@ -73,7 +73,7 @@ header {
     left: -10rem;
     width: calc(100% + 20rem);
     height: calc(100% + 20rem);
-    background-image: url(https://upload.wikimedia.org/wikipedia/commons/5/5c/Image_gaussian_noise_example.png);
+    background-image: url(/assets/textures/gaussian.png);
     opacity: 0.08;
     pointer-events: none;
     z-index: 1;
@@ -4878,6 +4878,97 @@ body.dark-mode .view-style-trigger i {
 }
 
 body.dark-mode .view-style-item.selected {
+    background: rgba(255, 130, 0, 0.25);
+    color: #ff8200;
+}
+
+/* ================================================
+   PAPER TEXTURE DROPDOWN STYLES
+   ================================================ */
+
+/* Paper Texture Options Container - shown when paper mode is enabled */
+.paper-texture-options {
+    animation: fadeIn 0.2s ease;
+}
+
+/* Paper Texture Dropdown - similar to view-style-dropdown */
+.paper-texture-dropdown-wrapper {
+    position: relative;
+}
+
+.paper-texture-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    transition: all 0.2s ease;
+}
+
+.paper-texture-trigger:hover {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.paper-texture-trigger i {
+    font-size: 10px;
+    transition: transform 0.25s ease;
+    color: #666;
+}
+
+.paper-texture-dropdown-wrapper.open .paper-texture-trigger i {
+    transform: rotate(180deg);
+}
+
+/* Position the dropdown below the trigger */
+.paper-texture-dropdown.profile-dropdown {
+    position: absolute;
+    bottom: auto;
+    top: calc(100% + 8px);
+    left: auto;
+    right: 0;
+    margin-left: 0;
+    min-width: 160px;
+}
+
+/* Selected state for dropdown items */
+.paper-texture-item.selected {
+    background: rgba(255, 130, 0, 0.15);
+    color: #ff8200;
+}
+
+.paper-texture-item.selected i {
+    color: #ff8200;
+}
+
+/* Dark mode styles for paper texture dropdown */
+body.dark-mode .paper-texture-options {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .paper-texture-trigger {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #e0e0e0;
+}
+
+body.dark-mode .paper-texture-trigger:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode .paper-texture-trigger i {
+    color: #999;
+}
+
+body.dark-mode .paper-texture-item.selected {
     background: rgba(255, 130, 0, 0.25);
     color: #ff8200;
 }

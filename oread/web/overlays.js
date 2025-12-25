@@ -1,13 +1,13 @@
 // Overlay Handler for PDF.js Viewer
 // Handles Paper Mode and Night Reading overlays for PDF content
 
-(function() {
+(function () {
     'use strict';
-      // Listen for overlay mode messages from parent window
-    window.addEventListener('message', function(event) {
+    // Listen for overlay mode messages from parent window
+    window.addEventListener('message', function (event) {
         if (event.data && event.data.type === 'overlayMode') {
             const { mode, enable } = event.data;
-            
+
             if (mode && typeof enable === 'boolean') {
                 // For most modes we apply to body (paper/night/eink)
                 if (mode === 'invert') {
@@ -41,7 +41,7 @@
         }        // Handle theme synchronization
         if (event.data && event.data.type === 'themeMode') {
             const { isDark } = event.data;
-            
+
             if (typeof isDark === 'boolean') {
                 if (isDark) {
                     document.body.classList.add('dark-mode');
@@ -56,10 +56,10 @@
                     document.documentElement.classList.remove('is-dark');
                     document.documentElement.classList.add('is-light');
                 }
-                
+
                 // For debugging
                 // console.log('PDF viewer theme changed to: ' + (isDark ? 'dark' : 'light'));
-                
+
                 // Force repaint of viewer elements to ensure theme is applied
                 setTimeout(() => {
                     if (window.PDFViewerApplication && window.PDFViewerApplication.pdfViewer) {
@@ -68,14 +68,14 @@
                 }, 100);
             }
         }
-          // Handle night mode warmth adjustment
+        // Handle night mode warmth adjustment
         if (event.data && event.data.type === 'nightWarmth') {
             const { opacity } = event.data;
-            
+
             if (typeof opacity === 'number') {
                 document.documentElement.style.setProperty('--warmth-opacity', opacity);
                 // console.log('PDF viewer night warmth updated:', opacity);
-                
+
                 // Apply warmth immediately if night reading mode is active
                 if (document.body.classList.contains('night-reading')) {
                     // Force repaint of viewer elements to ensure warmth changes are applied
@@ -87,8 +87,48 @@
                 }
             }
         }
+
+        // Handle paper texture changes
+        if (event.data && event.data.type === 'paperTexture') {
+            const { textureUrl } = event.data;
+
+            if (textureUrl) {
+                // Set the paper texture CSS variable on the body
+                document.body.style.setProperty('--paper-texture-url', `url('${textureUrl}')`);
+                // console.log('PDF viewer paper texture updated:', textureUrl);
+
+                // Force repaint of viewer elements to ensure texture changes are applied
+                if (document.body.classList.contains('paper-mode')) {
+                    setTimeout(() => {
+                        if (window.PDFViewerApplication && window.PDFViewerApplication.pdfViewer) {
+                            window.PDFViewerApplication.pdfViewer.update();
+                        }
+                    }, 50);
+                }
+            }
+        }
+
+        // Handle grain size changes
+        if (event.data && event.data.type === 'grainSize') {
+            const { sizePx } = event.data;
+
+            if (sizePx) {
+                // Set the grain size CSS variable on the body
+                document.body.style.setProperty('--grain-size', `${sizePx}px`);
+                // console.log('PDF viewer grain size updated:', sizePx);
+
+                // Force repaint of viewer elements to ensure size changes are applied
+                if (document.body.classList.contains('paper-mode')) {
+                    setTimeout(() => {
+                        if (window.PDFViewerApplication && window.PDFViewerApplication.pdfViewer) {
+                            window.PDFViewerApplication.pdfViewer.update();
+                        }
+                    }, 50);
+                }
+            }
+        }
     });
-    
+
     // Function to request current overlay modes from parent
     function requestOverlayModes() {
         try {
@@ -99,7 +139,7 @@
             // console.log('Could not request overlay modes from parent');
         }
     }
-      // Wait for PDF.js to fully load before requesting overlay modes
+    // Wait for PDF.js to fully load before requesting overlay modes
     function initializeOverlays() {
         // Check if PDF.js viewer is ready
         if (window.PDFViewerApplication && window.PDFViewerApplication.initialized) {
@@ -107,19 +147,19 @@
             initializeTheme();
         } else {
             // Wait for PDF.js to initialize
-            document.addEventListener('webviewerloaded', function() {
+            document.addEventListener('webviewerloaded', function () {
                 requestOverlayModes();
                 initializeTheme();
             });
-            
+
             // Fallback: try after a short delay
-            setTimeout(function() {
+            setTimeout(function () {
                 requestOverlayModes();
                 initializeTheme();
             }, 1000);
         }
     }
-    
+
     // Initialize theme based on system preference if not set by parent
     function initializeTheme() {
         // If no theme class is present, check system preference
@@ -138,7 +178,7 @@
             //             (prefersDarkMode ? 'dark' : 'light'));
         }
     }
-    
+
     // Initialize when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initializeOverlays);

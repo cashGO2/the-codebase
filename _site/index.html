@@ -303,6 +303,13 @@
                 <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
             </div>
         </div>
+        <div class="shortcut-item" data-shortcut-id="reading_cycle_texture">
+            <span class="shortcut-action">Cycle Paper Texture</span>
+            <div class="shortcut-right">
+                <code class="shortcut-keys" data-keys="Ctrl+Shift+!"></code>
+                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
+            </div>
+        </div>
         <div class="shortcut-item" data-shortcut-id="reading_mode_eink">
             <span class="shortcut-action">Toggle E-ink Mode</span>
             <div class="shortcut-right">
@@ -1667,6 +1674,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <details class="grain-details" id="grainDetails" style="display: none;">
                         <summary class="grain-summary">Grain Settings</summary>
                         <div class="grain-size-control" id="grainSizeControl">
+                            <!-- Paper Texture Selection -->
+
+                            <!-- Grain Size Control -->
                             <div class="grain-size-label">
                                 <span>Grain Size</span>
                                 <span class="grain-size-value" id="grainSizeValue">100%</span>
@@ -1675,6 +1685,45 @@ document.addEventListener('DOMContentLoaded', () => {
                                 class="grain-slider">
                         </div>
                     </details>
+                    <!-- Paper Texture Options (shown when paper mode is enabled) -->
+                    <div class="paper-texture-options" id="paperTextureOptions"
+                        style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.08);">
+                        <div class="toggle-container">
+                            <div class="paper-mode-info">
+                                <div class="paper-mode-title" style="font-size: 13px;">Paper Texture</div>
+                                <div class="paper-mode-description" style="font-size: 11px;">Choose the texture overlay
+                                </div>
+                            </div>
+                            <div class="paper-texture-dropdown-wrapper" id="paperTextureDropdownWrapper">
+                                <button class="paper-texture-trigger" id="paperTextureDropdownTrigger">
+                                    <span id="paperTextureSelectedText">Black Paper</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div class="profile-dropdown paper-texture-dropdown" id="paperTextureDropdown">
+                                    <a href="#" class="dropdown-item paper-texture-item selected"
+                                        data-value="black-paper">
+                                        <span>Black Paper</span>
+                                    </a>
+                                    <a href="#" class="dropdown-item paper-texture-item" data-value="cardboard-flat">
+                                        <span>Cardboard</span>
+                                    </a>
+                                    <a href="#" class="dropdown-item paper-texture-item"
+                                        data-value="light-paper-fibers">
+                                        <span>Light Paper</span>
+                                    </a>
+                                    <a href="#" class="dropdown-item paper-texture-item" data-value="sandpaper">
+                                        <span>Sandpaper</span>
+                                    </a>
+                                    <a href="#" class="dropdown-item paper-texture-item" data-value="textured-paper">
+                                        <span>Textured Paper</span>
+                                    </a>
+                                    <a href="#" class="dropdown-item paper-texture-item" data-value="gaussian">
+                                        <span>Gaussian</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-layout" id="nightReadingCard">
                     <div class="toggle-container">
