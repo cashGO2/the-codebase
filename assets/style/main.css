@@ -4713,12 +4713,26 @@ body.dark-mode .view-more-btn {
 
 @media (max-width: 768px) {
     .blog-header-container {
-        display: block;
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 8px;
     }
 
     .blog-header-title {
         display: inline;
-        margin-right: 10px;
+        margin-right: 0;
+        flex-shrink: 1;
+    }
+
+    .blog-header-right {
+        display: inline-flex;
+        flex-shrink: 0;
+    }
+
+    /* Hide chevron on mobile */
+    .blog-fold-chevron {
+        display: none !important;
     }
 }
 
@@ -4763,6 +4777,10 @@ body.dark-mode .view-more-btn {
 /* Folded state - compact card with just header */
 #blogs.blog-folded {
     min-height: auto;
+}
+
+#blogs.blog-folded .blog-header-container {
+    margin-bottom: 0;
 }
 
 /* Dark mode styles */
@@ -4876,6 +4894,17 @@ body.dark-mode .view-style-item.selected {
 @media (max-width: 768px) {
     .desktop-only {
         display: none !important;
+    }
+}
+
+/* Mobile-only helper class */
+.mobile-only {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-only {
+        display: inline-block;
     }
 }
 

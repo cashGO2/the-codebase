@@ -7,6 +7,7 @@
   "description": "The all new Materio experience.\n Materio now has keyboard shortcuts enabling easy navigation and actions, Click on the `?` icon or press `Shift + ?` or `⇧ + ?` to open the keyboard shortcuts reference.\n The search UI has also been updated with better experience.",
   "link": "/changelog",
   "images": null,
+  "showOn": "desktop",
   "showImageOnMaintenance": false,
   "imageRotationInterval": 5000,
   "imageAnimation": {
