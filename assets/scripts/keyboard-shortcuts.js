@@ -544,11 +544,7 @@
                     }
                 }
 
-                // Exit fullscreen if active
-                if (document.fullscreenElement) {
-                    document.exitFullscreen().catch(() => { });
-                    return;
-                }
+                // Note: Fullscreen is NOT exited by ESC - use Shift+F to toggle fullscreen
 
                 // Try to close any other visible modals
                 const modals = document.querySelectorAll('.modal.visible, [role="dialog"].visible');

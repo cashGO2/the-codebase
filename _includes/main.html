@@ -471,11 +471,29 @@
             <!-- Dark mode toggle -->
             <div class="card-layout" id="themeCard">
                 <div class="toggle-container">
-                    <div class="paper-mode-title">Enable Dark Mode</div>
+                    <div class="paper-mode-info">
+                        <div class="paper-mode-title">Enable Dark Mode</div>
+                        <div class="paper-mode-description" id="smartDarkModeStatus"></div>
+                    </div>
                     <label class="switch">
                         <input type="checkbox" id="themeToggle">
                         <span class="slider"></span>
                     </label>
+                </div>
+                <!-- Pure Light Mode option (shown when dark mode is off) -->
+                <div id="pureLightModeOptions"
+                    style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.08);">
+                    <div class="toggle-container">
+                        <div class="paper-mode-info">
+                            <div class="paper-mode-title" style="font-size: 13px;">Pure Light Mode</div>
+                            <div class="paper-mode-description" style="font-size: 11px;">Disables smart dark mode which
+                                switches theme based on time of day</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="pureLightModeToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
                 </div>
             </div>
             <!-- Contributions -->
