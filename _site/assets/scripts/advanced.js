@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function initEventData() {
-        fetch('/assets/data/events.json?v=6256560fe6')
+        fetch('/assets/data/events.json')
             .then(response => response.json())
             .then(events => {
                 const now = new Date();

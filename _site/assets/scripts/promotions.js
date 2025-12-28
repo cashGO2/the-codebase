@@ -21,7 +21,7 @@ async function loadAndDisplayPromotion() {
 
     // Add cache busting to ensure we get the latest data
     const timestamp = new Date().getTime();
-    const response = await fetch(`/assets/data/promo.json?v=4c935ab4ca`);
+    const response = await fetch(`/assets/data/promo.json?t=${timestamp}`);
 
     // console.log('Fetch response status:', response.status);
 

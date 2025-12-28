@@ -171,7 +171,7 @@
      * Update version info to reflect beta branch
      */
     function updateVersionInfo() {
-        fetch('/assets/data/releases.json?v=20253c725f')
+        fetch('/assets/data/releases.json')
             .then(response => response.json())
             .then(releases => {
                 // Find beta branch

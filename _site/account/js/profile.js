@@ -2152,7 +2152,7 @@ function initializePromotionManagement() {
 
 async function loadPromotionData() {
   try {
-    const response = await fetch('/assets/data/promo.json?v=4c935ab4ca');
+    const response = await fetch('/assets/data/promo.json');
     if (response.ok) {
       const loadedData = await response.json();
       // Support both 'media' (new) and 'images' (legacy) properties

@@ -2930,7 +2930,8 @@ body.dark-mode .shimmer-button {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    /* Align content to left */
+    gap: 12px;
+    /* Proper spacing between icon and text */
     text-align: left;
     padding: 10px 14px;
     cursor: pointer;
@@ -2973,7 +2974,6 @@ body.dark-mode .shimmer-button {
 /* Removed :first-child and :last-child radius overrides - items use their own 24px radius */
 
 .dropdown-item i {
-    margin-right: 10px;
     font-size: 14px !important;
     width: 16px;
     text-align: center;
@@ -2987,7 +2987,6 @@ body.dark-mode .shimmer-button {
     .dropdown-item i {
         font-size: 14px !important;
         width: 16px;
-        margin-right: 10px;
     }
 }
 
@@ -5062,6 +5061,52 @@ body.dark-mode .keyboard-shortcuts-btn i {
 
 body.dark-mode .keyboard-shortcuts-btn:hover i {
     color: #ff8200;
+}
+
+/* Changelog button in navbar - matches keyboard-shortcuts-btn */
+.changelog-btn {
+    color: #4d4d4d;
+    text-decoration: none;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: larger;
+    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    position: relative;
+}
+
+.changelog-btn i {
+    color: #4d4d4d;
+    transition: color 0.2s ease;
+}
+
+.changelog-btn:hover i {
+    color: #ff8200;
+}
+
+body.dark-mode .changelog-btn i {
+    color: #aaa;
+}
+
+body.dark-mode .changelog-btn:hover i {
+    color: #ff8200;
+}
+
+/* Update indicator for changelog button */
+.changelog-btn.has-update::after {
+    content: '';
+    position: absolute;
+    top: 25%;
+    left: 55%;
+    transform: translate(4px, -12px);
+    width: 8px;
+    height: 8px;
+    background: #ff8200;
+    border-radius: 50%;
+    animation: pulse-dot 2s ease-in-out infinite;
 }
 
 /* Modal overlay */

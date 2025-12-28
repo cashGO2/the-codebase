@@ -738,7 +738,7 @@ class MateriosPWA {
     if (!navigator.onLine) return;
     
     try {
-      const response = await fetch('/version.json?&v=49a464fdfc' + Date.now()); // Cache bust
+      const response = await fetch('/version.json?' + Date.now()); // Cache bust
       if (!response.ok) return;
       
       const versionData = await response.json();

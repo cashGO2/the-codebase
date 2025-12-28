@@ -2639,3 +2639,25 @@ window.materioConfirm = materioConfirm;
     window.openKeyboardShortcutsModal = openKeyboardShortcutsModal;
     window.closeKeyboardShortcutsModal = closeKeyboardShortcutsModal;
 })();
+
+// Changelog update indicator logic
+document.addEventListener('DOMContentLoaded', function () {
+    const changelogBtn = document.querySelector('.changelog-btn');
+    if (!changelogBtn) return;
+
+    const latestUpdate = changelogBtn.getAttribute('data-latest-update');
+    if (!latestUpdate) return;
+
+    const lastSeenUpdate = localStorage.getItem('lastSeenChangelogDate');
+
+    // Show indicator if we have a new update we haven't seen yet
+    if (!lastSeenUpdate || parseInt(latestUpdate) > parseInt(lastSeenUpdate)) {
+        changelogBtn.classList.add('has-update');
+    }
+
+    // Mark as seen when clicked
+    changelogBtn.addEventListener('click', function () {
+        localStorage.setItem('lastSeenChangelogDate', latestUpdate);
+        changelogBtn.classList.remove('has-update');
+    });
+});

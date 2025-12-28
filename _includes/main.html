@@ -22,6 +22,13 @@
             </a>
         </div>
         <div class="navbar-bottom-group">
+            <!-- Changelog Link (Desktop only) -->
+            {% assign latest_changelog = site.categories['whats-new'] | first %}
+            <a href="/changelog" class="changelog-btn desktop-only" role="button" aria-label="Changelog"
+                title="Changelog" {% if latest_changelog %}data-latest-update="{{ latest_changelog.date | date: '%s' }}"
+                {% endif %}>
+                <i class="fa-regular fa-ship"></i>
+            </a>
             <!-- Keyboard Shortcuts Help (Desktop only) -->
             <a href="#" class="keyboard-shortcuts-btn desktop-only" id="keyboardShortcutsBtn" role="button"
                 aria-label="Keyboard Shortcuts" title="Keyboard Shortcuts">
