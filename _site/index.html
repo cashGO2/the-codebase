@@ -514,8 +514,8 @@
                 </div>
             </div>
 
-            <!-- Blog Posts Card -->
-            <div class="card-one" id="blogs">
+            <!-- Blog Posts Card (hidden by default, shown by JS if enabled and user has access) -->
+            <div class="card-one" id="blogs" style="display: none;">
                 <!-- Header row - always visible, clickable in folded mode -->
                 <div class="blog-header-container" id="blogHeaderContainer">
                     <h2 id="blogCardHeading" class="blog-header-title">Latest from the Insightroom</h2>
@@ -1878,13 +1878,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="paper-mode-description">Display smart posts from insighroom</div>
                         </div>
                         <label class="switch">
-                            <input type="checkbox" id="insightroomToggle" checked>
+                            <input type="checkbox" id="insightroomToggle">
                             <span class="slider"></span>
                         </label>
                     </div>
                     <!-- View Options (shown when toggle is enabled) -->
                     <div class="insightroom-view-options" id="insightroomViewOptions"
-                        style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.08);">
+                        style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.08);">
                         <div class="toggle-container">
                             <div class="paper-mode-info">
                                 <div class="paper-mode-title" style="font-size: 13px;">View Style</div>

@@ -43,6 +43,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // Process video tags
   processVideoTags();
 
+  // Process link cards (Materio Originals, etc.)
+  processLinkCards();
+
   // Add anchor links to headings
   addHeadingAnchorLinks();
 
@@ -85,7 +88,7 @@ function addHeadingAnchorLinks() {
   if (!postBody) return;
 
   const headings = postBody.querySelectorAll('h1, h2, h3');
-  
+
   headings.forEach(heading => {
     // Ensure heading has an ID
     if (!heading.id) {
@@ -108,10 +111,10 @@ function addHeadingAnchorLinks() {
     anchor.setAttribute('aria-label', 'Copy link to section: ' + heading.textContent);
 
     // Handle click - copy link to clipboard
-    anchor.addEventListener('click', function(e) {
+    anchor.addEventListener('click', function (e) {
       e.preventDefault();
       const url = window.location.origin + window.location.pathname + '#' + heading.id;
-      
+
       // Copy to clipboard
       navigator.clipboard.writeText(url).then(() => {
         showAnchorToast('Link copied to clipboard!');
@@ -217,7 +220,7 @@ function buildTOCFallback() {
 
     const a = document.createElement('a');
     a.href = '#' + id;
-    
+
     // Clone header to remove anchor link without affecting DOM
     const clone = h.cloneNode(true);
     const anchor = clone.querySelector('.heading-anchor');
@@ -431,15 +434,15 @@ function wireTOCActiveTracking() {
     // Skip if same index to avoid unnecessary DOM updates
     if (index === lastActiveIndex) return;
     lastActiveIndex = index;
-    
+
     links.forEach((a, i) => {
       if (i === index) a.classList.add('active'); else a.classList.remove('active');
     });
-    
+
     // Only scroll sidebar if explicitly requested (e.g., on TOC open, not during page scroll)
     // This prevents scroll fighting between page scroll and sidebar scroll
     if (!shouldScrollSidebar) return;
-    
+
     const sidebarEl = document.getElementById('site-toc-sidebar');
     if (!sidebarEl || sidebarEl.offsetParent === null || getComputedStyle(sidebarEl).display === 'none') {
       return;
@@ -490,16 +493,16 @@ function wireTOCActiveTracking() {
 
   // Use requestAnimationFrame-based throttle for smoother performance
   let ticking = false;
-  document.addEventListener('scroll', function() {
+  document.addEventListener('scroll', function () {
     if (!ticking && !suspendScrollHandler) {
-      requestAnimationFrame(function() {
+      requestAnimationFrame(function () {
         onScroll();
         ticking = false;
       });
       ticking = true;
     }
   }, { passive: true });
-  
+
   // initial highlight
   setTimeout(() => { onScroll(); }, 600);
 }
@@ -522,10 +525,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   try {
     renderMathInTOC();
-  } catch (e) {}
+  } catch (e) { }
   try {
     wireTOCActiveTracking();
-  } catch (e) {}
+  } catch (e) { }
 });
 
 function checkSummaryAccess() {
@@ -1227,10 +1230,10 @@ function processVideoTags() {
 
   // Find all text nodes and elements containing video tags
   const videoTagRegex = /\[video:([^\]]+)\]/g;
-  
+
   // First pass: find and replace in HTML (but create elements properly after)
   const matches = [...postBody.innerHTML.matchAll(videoTagRegex)];
-  
+
   if (matches.length === 0) {
     console.log('No video tags found');
     return;
@@ -1294,7 +1297,7 @@ function processVideoTags() {
 
     // Replace placeholder with actual video container
     placeholder.replaceWith(container);
-    
+
     videoReplacements++;
   });
 
@@ -1308,10 +1311,10 @@ function processVideoTags() {
         // Ensure muted (required for autoplay on mobile)
         video.muted = true;
         video.defaultMuted = true;
-        
+
         // Force load
         video.load();
-        
+
         // Try to play with user gesture simulation
         function attemptPlay() {
           const playPromise = video.play();
@@ -1325,7 +1328,7 @@ function processVideoTags() {
             });
           }
         }
-        
+
         // Try playing when video is ready
         if (video.readyState >= 3) {
           attemptPlay();
@@ -1333,10 +1336,114 @@ function processVideoTags() {
           video.addEventListener('canplay', attemptPlay, { once: true });
         }
       });
-      
+
       initializeVideoControls();
     }, 200);
   }
+}
+
+// Process link cards - attach info cards to links marked in frontmatter
+function processLinkCards() {
+  const postBody = document.querySelector('.post-body');
+  if (!postBody) {
+    console.log('[Link Cards] No post body found');
+    return;
+  }
+
+  // Get link cards data from page (injected by Jekyll template)
+  const linkCardsData = window.__linkCardsData || [];
+  console.log('[Link Cards] Data from frontmatter:', linkCardsData);
+
+  if (!linkCardsData.length) {
+    console.log('[Link Cards] No link cards data found');
+    return;
+  }
+
+  // Find all links in post body
+  const links = postBody.querySelectorAll('a');
+  console.log('[Link Cards] Found', links.length, 'links in post body');
+
+  links.forEach(link => {
+    const linkText = link.textContent.trim();
+    console.log('[Link Cards] Checking link:', linkText);
+
+    // Find matching link card data
+    const cardData = linkCardsData.find(card => {
+      // Match by link text (the text inside the anchor tag)
+      const matches = card.id && linkText.toLowerCase().includes(card.id.toLowerCase());
+      console.log('[Link Cards] Comparing "' + linkText + '" with id "' + card.id + '" = ' + matches);
+      return matches;
+    });
+
+    if (!cardData) {
+      return;
+    }
+
+    console.log('[Link Cards] ✓ Match found! Creating card for:', linkText);
+
+    // Add class to link for styling
+    link.classList.add('has-link-card');
+
+    // Create wrapper to contain link and card
+    const wrapper = document.createElement('span');
+    wrapper.className = 'link-card-wrapper';
+
+    // Insert wrapper before link, then move link inside
+    link.parentNode.insertBefore(wrapper, link);
+    wrapper.appendChild(link);
+
+    // Create the card element
+    const card = document.createElement('div');
+    card.className = 'link-card';
+    card.innerHTML = `
+      <button class="link-card-close" title="Dismiss"><i class="fa-solid fa-xmark"></i></button>
+      ${cardData.image ? `<img class="link-card-image" src="${cardData.image}" alt="${cardData.title || linkText}" loading="lazy">` : ''}
+      <div class="link-card-content">
+        <p class="link-card-title">${cardData.title || linkText}</p>
+        ${cardData.excerpt ? `<p class="link-card-excerpt">${cardData.excerpt}</p>` : ''}
+        ${cardData.badge ? `<span class="link-card-badge"><i class="fa-solid fa-star"></i> ${cardData.badge}</span>` : ''}
+      </div>
+    `;
+
+    // Close button handler - only remove the card, not the link
+    const closeBtn = card.querySelector('.link-card-close');
+    closeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      card.remove();
+    });
+
+    // Make card clickable (same as link) - but not the close button area
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.link-card-close')) return;
+      e.preventDefault();
+      window.open(link.href, '_blank');
+    });
+
+    wrapper.appendChild(card);
+
+    // Position the arrow to point at the link
+    function positionArrow() {
+      const linkRect = link.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
+      // Calculate link center relative to card left edge
+      const linkCenterX = linkRect.left + (linkRect.width / 2);
+      const arrowLeft = linkCenterX - cardRect.left;
+      // Clamp to stay within card bounds (with padding)
+      const clampedLeft = Math.max(20, Math.min(cardRect.width - 20, arrowLeft));
+      card.style.setProperty('--arrow-left', clampedLeft + 'px');
+    }
+
+    // Position arrow after card is rendered
+    requestAnimationFrame(() => {
+      positionArrow();
+    });
+
+    // Reposition on resize
+    window.addEventListener('resize', positionArrow);
+
+    console.log('[Link Cards] Card created and appended');
+  });
 }
 
 // Helper to update controls state
@@ -1344,7 +1451,7 @@ function updateControlsState(video, isPlaying) {
   const controls = video.parentElement?.querySelector('.video-controls');
   if (!controls) return;
   const icon = controls.querySelector('i');
-  
+
   if (isPlaying) {
     if (icon) icon.className = 'fa-solid fa-pause';
     controls.classList.remove('paused');
@@ -1360,10 +1467,10 @@ function updateControlsState(video, isPlaying) {
 function toggleVideo(videoId) {
   const video = document.getElementById(videoId);
   if (!video) return;
-  
+
   // Ensure muted for mobile autoplay policy
   video.muted = true;
-  
+
   const controls = video.parentElement.querySelector('.video-controls');
   const icon = controls ? controls.querySelector('i') : null;
 
@@ -1405,7 +1512,7 @@ function initializeVideoControls() {
       const controls = vid.parentElement.querySelector('.video-controls');
       if (!controls) return;
       const icon = controls.querySelector('i');
-      
+
       if (vid.paused) {
         icon.className = 'fa-solid fa-play';
         controls.classList.remove('playing');
@@ -1427,7 +1534,7 @@ function initializeVideoControls() {
       const videoId = this.id;
       toggleVideo(videoId);
     });
-    
+
     // Handle play event - sync controls
     video.addEventListener('play', function () {
       syncControls(this);
@@ -1439,12 +1546,12 @@ function initializeVideoControls() {
         }
       });
     });
-    
+
     // Handle pause event - sync controls
     video.addEventListener('pause', function () {
       syncControls(this);
     });
-    
+
     // Handle stalled/waiting events on mobile - try to recover
     video.addEventListener('stalled', function () {
       console.log('Video stalled, attempting recovery...');
@@ -1456,34 +1563,34 @@ function initializeVideoControls() {
         }
       }, 1000);
     });
-    
+
     video.addEventListener('waiting', function () {
       console.log('Video waiting for data...');
     });
-    
+
     // Handle errors
     video.addEventListener('error', function (e) {
       console.error('Video error:', e);
       syncControls(this);
     });
-    
+
     // Ensure video is ready to display and sync initial state
-    video.addEventListener('loadedmetadata', function() {
+    video.addEventListener('loadedmetadata', function () {
       this.style.visibility = 'visible';
     });
-    
-    video.addEventListener('canplay', function() {
+
+    video.addEventListener('canplay', function () {
       // Sync controls when video is ready
       syncControls(this);
       // Try to play when ready (for mobile)
       if (this.paused && this.dataset.shouldAutoplay !== 'false') {
-        this.play().catch(() => {});
+        this.play().catch(() => { });
       }
     });
-    
+
     // Initial sync after setup
     syncControls(video);
-    
+
     // Use Intersection Observer for mobile - play when in view
     if ('IntersectionObserver' in window) {
       const observer = new IntersectionObserver((entries) => {
@@ -1502,7 +1609,7 @@ function initializeVideoControls() {
           }
         });
       }, { threshold: 0.5 });
-      
+
       observer.observe(video);
     }
   });
@@ -2502,14 +2609,14 @@ function initializeScrollToTop() {
   scrollBtn.setAttribute('aria-label', 'Scroll to top');
   scrollBtn.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
   document.body.appendChild(scrollBtn);
-  
+
   console.log('Scroll to top button created and added to body');
 
   // Show/hide button based on scroll position - use passive listener for better performance
   let scrollTicking = false;
-  window.addEventListener('scroll', function() {
+  window.addEventListener('scroll', function () {
     if (!scrollTicking) {
-      requestAnimationFrame(function() {
+      requestAnimationFrame(function () {
         if (window.pageYOffset > 300) {
           scrollBtn.classList.add('visible');
         } else {
@@ -2521,7 +2628,7 @@ function initializeScrollToTop() {
     }
   }, { passive: true });
 
-  scrollBtn.addEventListener('click', function() {
+  scrollBtn.addEventListener('click', function () {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
@@ -2536,10 +2643,10 @@ function processGitHubCallouts() {
   if (!postBody) return;
 
   const blockquotes = postBody.querySelectorAll('blockquote');
-  
+
   // Check if Hugeicons is enabled
   const useHugeicons = localStorage.getItem('materio_ota_hugeicons') === 'true';
-  
+
   const calloutConfig = {
     'NOTE': {
       faIcon: 'fa-solid fa-circle-info',
@@ -2586,66 +2693,64 @@ function processGitHubCallouts() {
   blockquotes.forEach(blockquote => {
     // Skip blockquotes inside code blocks or pre elements
     if (blockquote.closest('pre, code, .highlight')) return;
-    
-    // Skip if blockquote has a code child element
-    if (blockquote.querySelector('code')) return;
-    
+
     const firstP = blockquote.querySelector('p:first-child');
     if (!firstP) return;
-    
-    // Skip if first paragraph contains code elements
-    if (firstP.querySelector('code')) return;
 
-    const text = firstP.innerHTML;
-    
-    // Match [!TYPE] pattern at the beginning
-    const match = text.match(/^\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*/i);
-    
+    // Get the text content (not innerHTML) to check for the callout pattern
+    // This allows inline code in the content after the [!TYPE] marker
+    const textContent = firstP.textContent || firstP.innerText || '';
+
+    // Match [!TYPE] pattern at the beginning of text content
+    const match = textContent.match(/^\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*/i);
+
     if (match) {
       const type = match[1].toUpperCase();
       const config = calloutConfig[type];
-      
+
       if (config) {
         // Add class to blockquote
         blockquote.classList.add(config.class);
         blockquote.setAttribute('data-callout', type.toLowerCase());
-        
-        // Remove the [!TYPE] text and create styled content
-        const remainingText = text.replace(match[0], '').trim();
-        
+
+        // Remove the [!TYPE] text from innerHTML and create styled content
+        // The match was found on textContent, so we need to find and remove it from innerHTML
+        const htmlContent = firstP.innerHTML;
+        const remainingHTML = htmlContent.replace(/^\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*/i, '').trim();
+
         // Create the callout structure
         const titleDiv = document.createElement('div');
         titleDiv.className = `callout-title ${config.titleClass}`;
-        
+
         // Create icon element directly (no span wrapper)
         const iconEl = document.createElement('i');
         const iconClasses = useHugeicons ? config.hugeIcon : config.faIcon;
         iconEl.className = `${iconClasses} callout-icon ${config.iconClass}`;
-        
+
         const labelSpan = document.createElement('span');
         labelSpan.textContent = config.label;
-        
+
         titleDiv.appendChild(iconEl);
         titleDiv.appendChild(labelSpan);
-        
+
         // Create content wrapper
         const contentDiv = document.createElement('div');
         contentDiv.className = 'callout-content';
-        
-        // Update the first paragraph with remaining text
-        if (remainingText) {
-          firstP.innerHTML = remainingText;
+
+        // Update the first paragraph with remaining HTML (preserves inline code, links, etc.)
+        if (remainingHTML) {
+          firstP.innerHTML = remainingHTML;
           contentDiv.appendChild(firstP.cloneNode(true));
         }
-        
+
         // Move remaining content to contentDiv
-        const otherElements = Array.from(blockquote.children).slice(remainingText ? 1 : 0);
+        const otherElements = Array.from(blockquote.children).slice(remainingHTML ? 1 : 0);
         otherElements.forEach(el => {
-          if (el !== firstP || !remainingText) {
+          if (el !== firstP || !remainingHTML) {
             contentDiv.appendChild(el.cloneNode(true));
           }
         });
-        
+
         // Clear blockquote and rebuild
         blockquote.innerHTML = '';
         blockquote.appendChild(titleDiv);
@@ -2655,6 +2760,6 @@ function processGitHubCallouts() {
       }
     }
   });
-  
+
   console.log('GitHub-style callouts processed (using ' + (useHugeicons ? 'Hugeicons' : 'FontAwesome') + ')');
 }

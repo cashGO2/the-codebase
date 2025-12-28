@@ -195,40 +195,41 @@
 </header>
   <link rel="stylesheet" href="/assets/style/post.css">
 
-<main class="post-container" style="font-family: 'Manrope', sans-serif;"  data-category="whats-new" data-no-ads="true">
+<main class="post-container" style="font-family: 'Manrope', sans-serif;"  data-category="whats-new"  data-no-ads="true" >
   <article class="post" style="max-width: 700px; margin: 0 auto;">
     
-    
+
     <div style="text-align: center;">
       <!-- Date, Category, and Navigation Pills -->
-      <div style="display: flex; justify-content: center; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;">
+      <div
+        style="display: flex; justify-content: center; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;">
         <!-- Date and Category Pill -->
         <div class="post-date-pill" style="border-radius: 20px; padding: 0.4rem 0.8rem; font-size: 12px;">
           December 01, 2025
           
-            • whats-new
+          • whats-new
           
           
           
           
           <span class="reading-time">• 4 min read</span>
         </div>
-        
+
         <!-- Print-only clean meta information -->
         <div class="print-meta" style="display: none;">
           December 01, 2025
           
-            • whats-new
+          • whats-new
           
           
           
           
           <span class="reading-time">• 4 minute read</span>
         </div>
-        
+
         <!-- Previous Post Button -->
         
-        
+
         <!-- Next Post Button -->
         
       </div>
@@ -248,16 +249,18 @@
       <div style="display: block; position: relative; margin: 1.5rem auto; max-width: 700px;">
         <div class="post-image-frame" style="padding: 5px; border-radius: 17px;">
           
-            <!-- Image cover -->
-            <img src="/assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp" alt="Cover image" class="post-cover" style="border-radius: 12px; display: block; width: 100%; height: auto; object-fit: cover;" />
+          <!-- Image cover -->
+          <img src="/assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp" alt="Cover image" class="post-cover"
+            style="border-radius: 12px; display: block; width: 100%; height: auto; object-fit: cover;" />
           
         </div>
       </div>
       
-      
+
       <!-- Author and Share Row (can be disabled via front matter flags) -->
       
-      <div class="author-share-row" style="display: flex; justify-content: space-between; align-items: center; margin: 0.5rem auto; max-width: 700px; padding: 0 1rem;">
+      <div class="author-share-row"
+        style="display: flex; justify-content: space-between; align-items: center; margin: 0.5rem auto; max-width: 700px; padding: 0 1rem;">
         <!-- Author Profile Section -->
         <div style="display: flex; align-items: center; gap: 0.8rem;">
           
@@ -267,8 +270,11 @@
         <div style="display: flex; justify-content: center; align-items: center; gap: 1rem;">
           
           <!-- Listen to Post Component -->
-          <div id="listen-component" class="listen-pill" style="display: flex; align-items: center; background: rgba(0,0,0,0.05); border-radius: 20px; padding: 0.3rem 0.6rem; cursor: pointer; transition: all 0.2s ease;" onclick="console.log('Listen clicked'); toggleListen();">
-            <i id="listen-icon" class="fa-solid fa-play" style="font-size: 12px; margin-right: 0.4rem; color: #333;"></i>
+          <div id="listen-component" class="listen-pill"
+            style="display: flex; align-items: center; background: rgba(0,0,0,0.05); border-radius: 20px; padding: 0.3rem 0.6rem; cursor: pointer; transition: all 0.2s ease;"
+            onclick="console.log('Listen clicked'); toggleListen();">
+            <i id="listen-icon" class="fa-solid fa-play"
+              style="font-size: 12px; margin-right: 0.4rem; color: #333;"></i>
             <div class="waveform-container" style="display: flex; align-items: center; gap: 1px; margin-right: 0.4rem;">
               <div class="wave-bar" style="width: 2px; height: 8px; background: #666; border-radius: 1px;"></div>
               <div class="wave-bar" style="width: 2px; height: 12px; background: #666; border-radius: 1px;"></div>
@@ -282,22 +288,27 @@
             <span id="listen-duration" style="font-size: 11px; color: #666; font-weight: 500;">Listen</span>
           </div>
           
-          
+
           <!-- Seek controls (only visible when playing/paused) -->
-          <div id="seek-controls" class="seek-controls" style="display: none; align-items: center; gap: 0.3rem; margin-left: 0.5rem;">
-            <button onclick="seekBackward()" class="seek-btn" title="Go back 5 seconds" style="background: none; border: none; color: #666; cursor: pointer; padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
+          <div id="seek-controls" class="seek-controls"
+            style="display: none; align-items: center; gap: 0.3rem; margin-left: 0.5rem;">
+            <button onclick="seekBackward()" class="seek-btn" title="Go back 5 seconds"
+              style="background: none; border: none; color: #666; cursor: pointer; padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
               <i class="fa-solid fa-backward" style="font-size: 10px;"></i>
             </button>
-            <button onclick="seekForward()" class="seek-btn" title="Skip forward 5 seconds" style="background: none; border: none; color: #666; cursor: pointer; padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
+            <button onclick="seekForward()" class="seek-btn" title="Skip forward 5 seconds"
+              style="background: none; border: none; color: #666; cursor: pointer; padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
               <i class="fa-solid fa-forward" style="font-size: 10px;"></i>
             </button>
-            <button onclick="stopAudio()" class="seek-btn stop-btn" title="Stop" style="background: none; border: none; color: #d32f2f; cursor: pointer; padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
+            <button onclick="stopAudio()" class="seek-btn stop-btn" title="Stop"
+              style="background: none; border: none; color: #d32f2f; cursor: pointer; padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
               <i class="fa-solid fa-stop" style="font-size: 10px;"></i>
             </button>
           </div>
 
           
-          <i class="fa-regular fa-link-simple" onclick="sharePost()" style="transform: rotate(-45deg); font-size: 14px; cursor: pointer; color: var(--text);" title="Share"></i>
+          <i class="fa-regular fa-link-simple" onclick="sharePost()"
+            style="transform: rotate(-45deg); font-size: 14px; cursor: pointer; color: var(--text);" title="Share"></i>
           
           
         </div>
@@ -388,7 +399,7 @@ A brand-new category of resources created, curated, and refined entirely by Mate
 
       <aside class="post-toc" aria-label="Table of contents">
         
-          
+        
         
       </aside>
     </div>
@@ -406,7 +417,10 @@ A brand-new category of resources created, curated, and refined entirely by Mate
 
 <!-- Google AdSense Script -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7539227284131407"
-     crossorigin="anonymous"></script>
+  crossorigin="anonymous"></script>
+
+<!-- Link Cards Data from Frontmatter -->
+
 
 <script src="/assets/scripts/post.js"></script>
   <footer class="site-footer">

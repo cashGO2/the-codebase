@@ -1,4 +1,69 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-12-26T15:43:29+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">The InsightRoom.</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">Introduction to Android OS</title><link href="http://localhost:4000/originals/introduction-to-android-os/" rel="alternate" type="text/html" title="Introduction to Android OS" /><published>2025-12-06T15:17:45+05:30</published><updated>2025-12-06T15:17:45+05:30</updated><id>http://localhost:4000/originals/introduction-to-android-os</id><content type="html" xml:base="http://localhost:4000/originals/introduction-to-android-os/"><![CDATA[<p>[attachment:https://static-materio.vercel.app/common/files/attach/4f3001a2-d238-44ff-8108-afb6651fb90c.pdf:Introduction to Android OS]</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:49328/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:49328/" rel="alternate" type="text/html" /><updated>2025-12-28T12:05:29+05:30</updated><id>http://localhost:49328/feed.xml</id><title type="html">The InsightRoom.</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">What We Shipped - December 28th</title><link href="http://localhost:49328/whats-new/what-we-shipped-december-28th/" rel="alternate" type="text/html" title="What We Shipped - December 28th" /><published>2025-12-28T08:43:10+05:30</published><updated>2025-12-28T08:43:10+05:30</updated><id>http://localhost:49328/whats-new/what-we-shipped-december-28th</id><content type="html" xml:base="http://localhost:49328/whats-new/what-we-shipped-december-28th/"><![CDATA[<h2 id="keyboard-shortcuts">Keyboard Shortcuts</h2>
+<p>[video: /assets/media/d800e899-1803-4f3a-8652-c7c6ec9ee4a6.webm: shortcuts-preview]</p>
+
+<p>Materio now supports keyboard shortcuts on desktop to make navigation, reading, and everyday actions faster and more fluid.</p>
+
+<p>Shortcuts follow simple, predictable patterns so you can move between sections, open PDFs, toggle reading modes, search instantly, and switch views without breaking focus.</p>
+
+<p>All shortcuts are fully customizable. You can remap keys to match your workflow or reset everything back to the default layout at any time.</p>
+
+<p>Press <code class="language-plaintext highlighter-rouge">Shift + ?</code> to open the complete shortcuts guide whenever you need it.</p>
+
+<p>This update makes Materio feel faster, smoother, and more efficient during long study sessions.</p>
+
+<p>You can also set custom keybinds by clicking on <strong><i class="fa-regular fa-pencil"></i></strong>, registering your new shortcut, and saving your changes.</p>
+
+<h2 id="improved-search-ui">Improved Search UI</h2>
+
+<p>The search interface has been refined for better usability and clarity.</p>
+
+<p>A new <i class="fa-solid fa-xmark"></i> button lets you quickly clear or cancel your search query.</p>
+
+<p>On mobile, search results no longer cover the search bar, giving you a cleaner layout and better visibility while browsing results.</p>
+
+<h2 id="smart-dark-mode">Smart Dark Mode</h2>
+<p><img src="/assets/img/post-content/53f89df6-058e-4bfc-8317-2752633b1ff7.webp" alt="smart-dark-mode-preview" /></p>
+
+<p>Smart Dark Mode automatically switches between light and dark themes based on the time of day.</p>
+
+<p>This helps the interface blend better with dynamic wallpapers and reduces eye strain caused by harsh color contrasts.</p>
+
+<p>Smart Dark Mode works when the system theme is set to light or when the website is manually set to light mode. When dark mode is toggled off, Materio automatically switches to dark mode around 7:00 PM and returns to light mode around 6:45 AM.</p>
+
+<h3 id="pure-light-mode">Pure Light Mode</h3>
+
+<p>If you prefer a consistent experience, you can enable Pure Light Mode. This disables Smart Dark Mode entirely and keeps the interface in light mode throughout the day.</p>
+
+<h2 id="insightroom-feed-view-options">Insightroom Feed View Options</h2>
+<p><img src="/assets/img/post-content/37c00c95-cf37-4c5a-9c1d-5a20786f5dbf.webp" alt="feed-view-options-preview" /></p>
+
+<p>The homepage includes the Insightroom feed by default, showing the latest reads such as assignments, cheat sheets, question banks, PYQ solutions, <a href="https://materioa.vercel.app/whats-new/what-we-shipped-december-1st/#introducing-materio-originals">Materio Originals</a>, and smart suggestions based on the selected subject.</p>
+
+<p>This update introduces controls to disable the feed or change how it appears.</p>
+
+<p>Available views:</p>
+
+<p><strong>1. Normal</strong>
+The default view showing the latest five Insightroom posts with preview images, titles, and excerpts.</p>
+
+<p><strong>2. Folded</strong>
+A minimal, non intrusive view that displays only the heading “Latest from the Insightroom”. Clicking the heading expands the feed and clicking again collapses it.</p>
+
+<h2 id="expanded-paper-mode-textures">Expanded Paper Mode Textures</h2>
+<p><img src="/assets/img/post-content/07f192b5-e5db-490a-a406-7b7f2f82fc47.webp" alt="expanded-texture-selection-preview" /></p>
+
+<p>Paper Mode delivers a more natural, strain free reading experience, especially when combined with E Ink reading mode.</p>
+
+<p>You can now choose from a wider range of paper textures:</p>
+
+<ol>
+  <li>Black Paper</li>
+  <li>Cardboard</li>
+  <li>Light Paper</li>
+  <li>Sandpaper</li>
+  <li>Textured Paper</li>
+  <li>Gaussian</li>
+</ol>]]></content><author><name></name></author><category term="whats-new" /><summary type="html"><![CDATA[Materio rolled out keyboard shortcuts - a new way to interact and navigate, Option to set disable and set different views for insightroom feed, Smart dark mode and pure light mode, Improved search UI and bunch of stability and performance fixes.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:49328/assets/img/covers/caa86fee-605f-4636-a01f-36a9e967990c.webp" /><media:content medium="image" url="http://localhost:49328/assets/img/covers/caa86fee-605f-4636-a01f-36a9e967990c.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Introduction to Android OS</title><link href="http://localhost:49328/originals/introduction-to-android-os/" rel="alternate" type="text/html" title="Introduction to Android OS" /><published>2025-12-06T15:17:45+05:30</published><updated>2025-12-06T15:17:45+05:30</updated><id>http://localhost:49328/originals/introduction-to-android-os</id><content type="html" xml:base="http://localhost:49328/originals/introduction-to-android-os/"><![CDATA[<p>[attachment:https://static-materio.vercel.app/common/files/attach/4f3001a2-d238-44ff-8108-afb6651fb90c.pdf:Introduction to Android OS]</p>
 
 <p>Android is a mobile operating system that powers most of today’s smartphones and many other smart devices, built mainly for touchscreens and developed by Google using open‑source technologies. It provides the basic “brain” that lets apps run, manages hardware like camera and sensors, and gives the familiar home screen, notifications, and settings you use every day.</p>
 
@@ -971,7 +1036,7 @@ RES FAMILY: UI customization
 
 <blockquote>
   <p>[!NOTE] No manifest = Android ignores your app completely; it’s the first file system reads.</p>
-</blockquote>]]></content><author><name></name></author><category term="Originals" /><summary type="html"><![CDATA[This resource provides overview about Android, its Architecture, Versions, Features, Open Handset Alliance, Dalvik VM, SDK, Development Tools and Environment, AVD, Directory structure and Manifest files]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/img/covers/070444b6-4a51-4695-8049-6710ccefe078.webp" /><media:content medium="image" url="http://localhost:4000/assets/img/covers/070444b6-4a51-4695-8049-6710ccefe078.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">MEAN Stack Web Development</title><link href="http://localhost:4000/originals/mean-stack-web-development/" rel="alternate" type="text/html" title="MEAN Stack Web Development" /><published>2025-12-05T20:27:50+05:30</published><updated>2025-12-05T20:27:50+05:30</updated><id>http://localhost:4000/originals/mean-stack-web-development</id><content type="html" xml:base="http://localhost:4000/originals/mean-stack-web-development/"><![CDATA[<!-- 
+</blockquote>]]></content><author><name></name></author><category term="Originals" /><summary type="html"><![CDATA[This resource provides overview about Android, its Architecture, Versions, Features, Open Handset Alliance, Dalvik VM, SDK, Development Tools and Environment, AVD, Directory structure and Manifest files]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:49328/assets/img/covers/070444b6-4a51-4695-8049-6710ccefe078.webp" /><media:content medium="image" url="http://localhost:49328/assets/img/covers/070444b6-4a51-4695-8049-6710ccefe078.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">MEAN Stack Web Development</title><link href="http://localhost:49328/originals/mean-stack-web-development/" rel="alternate" type="text/html" title="MEAN Stack Web Development" /><published>2025-12-05T20:27:50+05:30</published><updated>2025-12-05T20:27:50+05:30</updated><id>http://localhost:49328/originals/mean-stack-web-development</id><content type="html" xml:base="http://localhost:49328/originals/mean-stack-web-development/"><![CDATA[<!-- 
 - What is MEAN
 - Why JS ?
 - why Node.js when there's Java, C#, Python?
@@ -1183,7 +1248,7 @@ NoSQL - scalable, flexible, high performance
 why NoSQL is popular 
 types of NoSQL -documentbase -  mongo, key/value, column/family - casandra , graph
 
-mongodb  -json->BSON (binary json)->int32, int64 -->]]></content><author><name></name></author><category term="Originals" /><summary type="html"><![CDATA[This resource provides basics about MEAN Stack and web development]]></summary></entry><entry><title type="html">What We Shipped - December 1st</title><link href="http://localhost:4000/whats-new/what-we-shipped-december-1st/" rel="alternate" type="text/html" title="What We Shipped - December 1st" /><published>2025-12-01T00:00:00+05:30</published><updated>2025-12-01T00:00:00+05:30</updated><id>http://localhost:4000/whats-new/what-we-shipped-december-1st</id><content type="html" xml:base="http://localhost:4000/whats-new/what-we-shipped-december-1st/"><![CDATA[<h2 id="a-new-home-for-materios-reliability">A New Home for Materio’s Reliability</h2>
+mongodb  -json->BSON (binary json)->int32, int64 -->]]></content><author><name></name></author><category term="Originals" /><summary type="html"><![CDATA[This resource provides basics about MEAN Stack and web development]]></summary></entry><entry><title type="html">What We Shipped - December 1st</title><link href="http://localhost:49328/whats-new/what-we-shipped-december-1st/" rel="alternate" type="text/html" title="What We Shipped - December 1st" /><published>2025-12-01T00:00:00+05:30</published><updated>2025-12-01T00:00:00+05:30</updated><id>http://localhost:49328/whats-new/what-we-shipped-december-1st</id><content type="html" xml:base="http://localhost:49328/whats-new/what-we-shipped-december-1st/"><![CDATA[<h2 id="a-new-home-for-materios-reliability">A New Home for Materio’s Reliability</h2>
 <p>This week marks an important milestone for Materio.
 After months of growth, higher traffic, and increasing demand from students across multiple semesters, Materio has officially shifted its deployment to Vercel.</p>
 
@@ -1257,7 +1322,7 @@ A brand-new category of resources created, curated, and refined entirely by Mate
 <p>You might need to clear the site data once and check if the issues still persists, Here’s how you can clear data and old cache.
 [video:/assets/media/0d862b05-559b-44c6-b8fa-c9207d1ddfd1.webm]</p>
 
-<p>If you’re still facing issues after clearing the data then you can raise an issue on the <a href="https://github.com/Materioa/web-frontend">Github Repo</a>.</p>]]></content><author><name></name></author><category term="whats-new" /><summary type="html"><![CDATA[This week Materio moved to vercel, launched Materio Originals, and feature drops to like Native dark-mode to PDFs with inversion filter, addition of the table of contents sidebar to the insightroom]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp" /><media:content medium="image" url="http://localhost:4000/assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Post Front-matters — Fields, Usage &amp;amp; Best Practices</title><link href="http://localhost:4000/docs/frontmatters" rel="alternate" type="text/html" title="Post Front-matters — Fields, Usage &amp;amp; Best Practices" /><published>2025-11-30T15:00:00+05:30</published><updated>2025-11-30T15:00:00+05:30</updated><id>http://localhost:4000/docs/post-frontmatters</id><content type="html" xml:base="http://localhost:4000/docs/frontmatters"><![CDATA[<h1 id="post-front-matters--fields-usage--best-practices">Post Front-matters — Fields, Usage &amp; Best Practices</h1>
+<p>If you’re still facing issues after clearing the data then you can raise an issue on the <a href="https://github.com/Materioa/web-frontend">Github Repo</a>.</p>]]></content><author><name></name></author><category term="whats-new" /><summary type="html"><![CDATA[This week Materio moved to vercel, launched Materio Originals, and feature drops to like Native dark-mode to PDFs with inversion filter, addition of the table of contents sidebar to the insightroom]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:49328/assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp" /><media:content medium="image" url="http://localhost:49328/assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Post Front-matters — Fields, Usage &amp;amp; Best Practices</title><link href="http://localhost:49328/docs/frontmatters" rel="alternate" type="text/html" title="Post Front-matters — Fields, Usage &amp;amp; Best Practices" /><published>2025-11-30T15:00:00+05:30</published><updated>2025-11-30T15:00:00+05:30</updated><id>http://localhost:49328/docs/post-frontmatters</id><content type="html" xml:base="http://localhost:49328/docs/frontmatters"><![CDATA[<h1 id="post-front-matters--fields-usage--best-practices">Post Front-matters — Fields, Usage &amp; Best Practices</h1>
 
 <p>This document explains the YAML front-matter keys used across the Materio site, gives common templates you can copy, and highlights pitfalls (for example: unquoted strings containing <code class="language-plaintext highlighter-rouge">:</code> break YAML). Use this as a quick authoring reference when creating or editing <code class="language-plaintext highlighter-rouge">_posts</code> entries.</p>
 
@@ -1748,7 +1813,120 @@ Advises about risks or negative outcomes of certain actions.</p>
 <span class="gt">
 &gt; "This is a styled quote."</span>
 {: .quote}
-</code></pre></div></div>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[Reference for post front-matter keys used in this site: meanings, examples, common pitfalls (YAML quoting, dates), and templates authors can reuse.]]></summary></entry><entry><title type="html">Promotions System — Configuration &amp;amp; Capabilities</title><link href="http://localhost:4000/docs/promotions" rel="alternate" type="text/html" title="Promotions System — Configuration &amp;amp; Capabilities" /><published>2025-11-30T12:00:00+05:30</published><updated>2025-11-30T12:00:00+05:30</updated><id>http://localhost:4000/docs/promotions-system</id><content type="html" xml:base="http://localhost:4000/docs/promotions"><![CDATA[<h1 id="promotions-system--configuration--capabilities">Promotions System — Configuration &amp; Capabilities</h1>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="link-cards-promotional-info-cards">Link Cards (Promotional Info Cards)</h2>
+
+<p>Link Cards allow you to attach promotional info cards below specific links in your post content. These cards display an image, title, and excerpt, making internal product links more engaging and visually prominent.</p>
+
+<h3 id="how-it-works">How It Works</h3>
+
+<ol>
+  <li>Define card data in the post’s front-matter using <code class="language-plaintext highlighter-rouge">link_cards</code></li>
+  <li>The system automatically matches links in your content by their <strong>link text</strong></li>
+  <li>A styled card appears below the matching link with an arrow pointing to it</li>
+</ol>
+
+<h3 id="front-matter-syntax">Front-matter Syntax</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">---</span>
+<span class="na">title</span><span class="pi">:</span> <span class="s">Your Post Title</span>
+<span class="na">layout</span><span class="pi">:</span> <span class="s">post</span>
+<span class="na">link_cards</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">id</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Materio</span><span class="nv"> </span><span class="s">Originals"</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/assets/img/covers/example.webp"</span>
+    <span class="na">title</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Materio</span><span class="nv"> </span><span class="s">Originals"</span>
+    <span class="na">excerpt</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Short</span><span class="nv"> </span><span class="s">description</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">what</span><span class="nv"> </span><span class="s">this</span><span class="nv"> </span><span class="s">link</span><span class="nv"> </span><span class="s">leads</span><span class="nv"> </span><span class="s">to."</span>
+  <span class="pi">-</span> <span class="na">id</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Another</span><span class="nv"> </span><span class="s">Feature"</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/assets/img/covers/feature.webp"</span>
+    <span class="na">title</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Another</span><span class="nv"> </span><span class="s">Feature"</span>
+    <span class="na">excerpt</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Description</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">another</span><span class="nv"> </span><span class="s">promotional</span><span class="nv"> </span><span class="s">link."</span>
+<span class="nn">---</span>
+</code></pre></div></div>
+
+<h3 id="properties">Properties</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Property</th>
+      <th>Type</th>
+      <th>Required</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">id</code></td>
+      <td>string</td>
+      <td>Yes</td>
+      <td>Text to match against link text (case-insensitive). The link with matching text will get the card.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">image</code></td>
+      <td>string</td>
+      <td>No</td>
+      <td>Path to the card’s preview image (150×128px recommended).</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">title</code></td>
+      <td>string</td>
+      <td>Yes</td>
+      <td>Title displayed on the card.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">excerpt</code></td>
+      <td>string</td>
+      <td>No</td>
+      <td>Short description text (2 lines max).</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">badge</code></td>
+      <td>string</td>
+      <td>No</td>
+      <td>Optional badge label (e.g., “Exclusive”, “New”).</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="example-usage">Example Usage</h3>
+
+<p><strong>In front-matter:</strong></p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">link_cards</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">id</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Materio</span><span class="nv"> </span><span class="s">Originals"</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/assets/img/covers/8abb551b-2bb4-4879-800e-e936a1c44632.webp"</span>
+    <span class="na">title</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Materio</span><span class="nv"> </span><span class="s">Originals"</span>
+    <span class="na">excerpt</span><span class="pi">:</span> <span class="s2">"</span><span class="s">A</span><span class="nv"> </span><span class="s">brand-new</span><span class="nv"> </span><span class="s">category</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">resources</span><span class="nv"> </span><span class="s">created,</span><span class="nv"> </span><span class="s">curated,</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">refined</span><span class="nv"> </span><span class="s">entirely</span><span class="nv"> </span><span class="s">by</span><span class="nv"> </span><span class="s">Materio."</span>
+</code></pre></div></div>
+
+<p><strong>In your markdown content:</strong></p>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Check out <span class="p">[</span><span class="nv">Materio Originals</span><span class="p">](</span><span class="sx">https://materioa.vercel.app/originals</span><span class="p">)</span> for exclusive study materials.
+</code></pre></div></div>
+
+<p>The card will automatically appear below the “Materio Originals” link.</p>
+
+<h3 id="card-features">Card Features</h3>
+
+<ul>
+  <li><strong>Dismissable</strong>: Users can close the card via the × button (only removes the card, link stays)</li>
+  <li><strong>Clickable</strong>: Clicking the card opens the link in a new tab</li>
+  <li><strong>Dynamic arrow</strong>: The arrow pointing to the link repositions on window resize</li>
+  <li><strong>Dark mode support</strong>: Cards automatically adapt to dark theme</li>
+  <li><strong>Responsive</strong>: Works on all screen sizes with fixed 150×128px image</li>
+</ul>
+
+<h3 id="best-practices">Best Practices</h3>
+
+<ul>
+  <li>Use for internal promotional links (features, products, important pages)</li>
+  <li>Keep excerpts concise (under 100 characters)</li>
+  <li>Use high-quality square or landscape images</li>
+  <li>Match the <code class="language-plaintext highlighter-rouge">id</code> exactly to your link text for reliable matching</li>
+</ul>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[Reference for post front-matter keys used in this site: meanings, examples, common pitfalls (YAML quoting, dates), and templates authors can reuse.]]></summary></entry><entry><title type="html">Promotions System — Configuration &amp;amp; Capabilities</title><link href="http://localhost:49328/docs/promotions" rel="alternate" type="text/html" title="Promotions System — Configuration &amp;amp; Capabilities" /><published>2025-11-30T12:00:00+05:30</published><updated>2025-11-30T12:00:00+05:30</updated><id>http://localhost:49328/docs/promotions-system</id><content type="html" xml:base="http://localhost:49328/docs/promotions"><![CDATA[<h1 id="promotions-system--configuration--capabilities">Promotions System — Configuration &amp; Capabilities</h1>
 
 <p>This note describes the promotions (promo modal) system used across Materio: the JSON fields available in <code class="language-plaintext highlighter-rouge">assets/data/promo.json</code>, the supported animation and button options, frequency controls, and quick testing tips. It’s written in the same practical style as the API docs so you can author promos confidently.</p>
 
@@ -1785,6 +1963,8 @@ Advises about risks or negative outcomes of certain actions.</p>
 
 <p>Here are the most commonly used fields and what they do:</p>
 
+<h3 id="core-fields">Core Fields</h3>
+
 <ul>
   <li><code class="language-plaintext highlighter-rouge">enabled</code> (boolean): turn the promotion on/off.</li>
   <li><code class="language-plaintext highlighter-rouge">category</code> (string): free-form tag to categorize promotions (e.g., “whats-new”).</li>
@@ -1793,11 +1973,116 @@ Advises about risks or negative outcomes of certain actions.</p>
   <li><code class="language-plaintext highlighter-rouge">title</code> (string): promo title displayed in modal.</li>
   <li><code class="language-plaintext highlighter-rouge">description</code> (string): markdown-like text parsed by the script.</li>
   <li><code class="language-plaintext highlighter-rouge">link</code> (string): primary action URL (can be <code class="language-plaintext highlighter-rouge">""</code>, <code class="language-plaintext highlighter-rouge">null</code>, or <code class="language-plaintext highlighter-rouge">#anchor</code>).</li>
-  <li><code class="language-plaintext highlighter-rouge">images</code> (array): list of media URLs (images or videos). If a video extension is detected, the script treats it as video.</li>
+</ul>
+
+<h3 id="media-fields">Media Fields</h3>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">media</code> (array): list of media URLs (images or videos). Supports both images and video files. If a video extension is detected (<code class="language-plaintext highlighter-rouge">.mp4</code>, <code class="language-plaintext highlighter-rouge">.webm</code>, <code class="language-plaintext highlighter-rouge">.ogg</code>, etc.), the script treats it as video.</li>
+</ul>
+
+<blockquote>
+  <p>[!WARNING] <em><code class="language-plaintext highlighter-rouge">images</code> is deprecated, while <code class="language-plaintext highlighter-rouge">images</code> is still supported for backward compatibility but <code class="language-plaintext highlighter-rouge">media</code> is preferred.</em></p>
+</blockquote>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">mediaFit</code> (string): controls how media fits within the frame. See table below.</li>
   <li><code class="language-plaintext highlighter-rouge">imageRotationInterval</code> (number): milliseconds between rotations.</li>
   <li><code class="language-plaintext highlighter-rouge">imageAnimation</code> (object): describes per-rotation animation (see below).</li>
+</ul>
+
+<h4 id="mediafit-options"><code class="language-plaintext highlighter-rouge">mediaFit</code> Options</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">contain</code></td>
+      <td>Scales media to fit within the frame <strong>without cropping</strong> (shows entire video/image)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">cover</code></td>
+      <td>Scales media to fill the frame, <strong>may crop edges</strong> (default for backward compatibility)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">fill</code></td>
+      <td>Stretches media to fill the frame (may distort aspect ratio)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">scale-down</code></td>
+      <td>Like <code class="language-plaintext highlighter-rouge">contain</code>, but never scales up beyond original size</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">none</code></td>
+      <td>Original size (no scaling)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Tip</strong>: Use <code class="language-plaintext highlighter-rouge">"mediaFit": "contain"</code> for videos to ensure the entire video is visible without cropping.</p>
+
+<h3 id="device-targeting">Device Targeting</h3>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">showOn</code> (string or array): controls which device types see the promotion.</li>
+</ul>
+
+<h4 id="showon-options"><code class="language-plaintext highlighter-rouge">showOn</code> Options</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Shows on</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">"all"</code></td>
+      <td>All devices (default if not specified)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">"desktop"</code></td>
+      <td>Windows, Mac, Linux, ChromeOS only</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">"mobile"</code></td>
+      <td>Phones only (iPhone, Android phones)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">"tablet"</code></td>
+      <td>Tablets only (iPad, Android tablets)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">["desktop", "mobile"]</code></td>
+      <td>Multiple devices (array format)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Example</strong>: To show a promo only on desktop:</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"showOn"</span><span class="p">:</span><span class="w"> </span><span class="s2">"desktop"</span><span class="w">
+</span></code></pre></div></div>
+
+<p>To show on both desktop and tablet:</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"showOn"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"desktop"</span><span class="p">,</span><span class="w"> </span><span class="s2">"tablet"</span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="scheduling-fields">Scheduling Fields</h3>
+
+<ul>
   <li><code class="language-plaintext highlighter-rouge">isLimitedOffer</code>, <code class="language-plaintext highlighter-rouge">startDate</code>, <code class="language-plaintext highlighter-rouge">endDate</code>: control showing within a date range.</li>
   <li><code class="language-plaintext highlighter-rouge">showDateInfo</code> (boolean): show human-friendly date in modal.</li>
+</ul>
+
+<h3 id="ui-fields">UI Fields</h3>
+
+<ul>
   <li><code class="language-plaintext highlighter-rouge">buttons</code> (object): <code class="language-plaintext highlighter-rouge">primary</code> and <code class="language-plaintext highlighter-rouge">secondary</code> button configuration.</li>
   <li><code class="language-plaintext highlighter-rouge">disclaimer</code> (object): controls small text below actions.</li>
   <li><code class="language-plaintext highlighter-rouge">options</code> (object): e.g., <code class="language-plaintext highlighter-rouge">showDontShowAgain</code> and related text.</li>
@@ -1870,7 +2155,8 @@ Advises about risks or negative outcomes of certain actions.</p>
   </span><span class="nl">"enabled"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
   </span><span class="nl">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"New: Materio Originals"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Check out curated resources created by Materio."</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"images"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp"</span><span class="p">],</span><span class="w">
+  </span><span class="nl">"media"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp"</span><span class="p">],</span><span class="w">
+  </span><span class="nl">"mediaFit"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cover"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"imageRotationInterval"</span><span class="p">:</span><span class="w"> </span><span class="mi">5000</span><span class="p">,</span><span class="w">
   </span><span class="nl">"imageAnimation"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"fade"</span><span class="p">,</span><span class="w"> </span><span class="nl">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mi">600</span><span class="w"> </span><span class="p">},</span><span class="w">
   </span><span class="nl">"frequency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"everytime"</span><span class="p">,</span><span class="w">
@@ -1878,13 +2164,14 @@ Advises about risks or negative outcomes of certain actions.</p>
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div></div>
 
-<p>Slide-left rotation (explicit type):</p>
+<p>Slide-left rotation with video (using <code class="language-plaintext highlighter-rouge">contain</code> to prevent cropping):</p>
 
 <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"images"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-    </span><span class="s2">"assets/img/covers/a.webp"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"media"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="s2">"assets/media/promo-video.webm"</span><span class="p">,</span><span class="w">
     </span><span class="s2">"assets/img/covers/b.webp"</span><span class="w">
   </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"mediaFit"</span><span class="p">:</span><span class="w"> </span><span class="s2">"contain"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"imageRotationInterval"</span><span class="p">:</span><span class="w"> </span><span class="mi">3000</span><span class="p">,</span><span class="w">
   </span><span class="nl">"imageAnimation"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"slide-left"</span><span class="p">,</span><span class="w"> </span><span class="nl">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mi">450</span><span class="w"> </span><span class="p">}</span><span class="w">
 </span><span class="p">}</span><span class="w">
@@ -1922,7 +2209,7 @@ Advises about risks or negative outcomes of certain actions.</p>
 
 <span class="c1">// Manually setup rotation with a short interval for testing</span>
 <span class="nb">window</span><span class="p">.</span><span class="nx">setupImageRotation</span> <span class="o">&amp;&amp;</span> <span class="nb">window</span><span class="p">.</span><span class="nf">setupImageRotation</span><span class="p">(</span>
-  <span class="p">(</span><span class="nx">promoData</span> <span class="o">&amp;&amp;</span> <span class="nx">promoData</span><span class="p">.</span><span class="nx">images</span><span class="p">)</span> <span class="o">||</span> <span class="p">[],</span>
+  <span class="p">(</span><span class="nx">promoData</span> <span class="o">&amp;&amp;</span> <span class="nx">promoData</span><span class="p">.</span><span class="nx">media</span><span class="p">)</span> <span class="o">||</span> <span class="p">[],</span>
   <span class="mi">2000</span><span class="p">,</span>
   <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="dl">'</span><span class="s1">slide-left</span><span class="dl">'</span><span class="p">,</span> <span class="na">duration</span><span class="p">:</span> <span class="mi">450</span> <span class="p">}</span>
 <span class="p">)</span>
@@ -1957,7 +2244,7 @@ Advises about risks or negative outcomes of certain actions.</p>
       <li>A: When enabled via <code class="language-plaintext highlighter-rouge">options.showDontShowAgain</code>, the close handler stores <code class="language-plaintext highlighter-rouge">promoDoNotShowAgain = 'true'</code> in <code class="language-plaintext highlighter-rouge">localStorage</code> and subsequent checks skip the promo.</li>
     </ul>
   </li>
-</ul>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[How the Materio promotions system works: JSON schema, animation options, button/config tags, frequency controls, and tips to test and author promos.]]></summary></entry><entry><title type="html">Number System</title><link href="http://localhost:4000/originals/number-system/" rel="alternate" type="text/html" title="Number System" /><published>2025-11-29T09:03:06+05:30</published><updated>2025-11-29T09:03:06+05:30</updated><id>http://localhost:4000/originals/number-system</id><content type="html" xml:base="http://localhost:4000/originals/number-system/"><![CDATA[<p>[attachment:https://static-materio.vercel.app/common/files/attach/de882c43-c10f-4708-81a3-31b027b5a289.pdf:Number System]</p>
+</ul>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[How the Materio promotions system works: JSON schema, animation options, button/config tags, frequency controls, and tips to test and author promos.]]></summary></entry><entry><title type="html">Number System</title><link href="http://localhost:49328/originals/number-system/" rel="alternate" type="text/html" title="Number System" /><published>2025-11-29T09:03:06+05:30</published><updated>2025-11-29T09:03:06+05:30</updated><id>http://localhost:49328/originals/number-system</id><content type="html" xml:base="http://localhost:49328/originals/number-system/"><![CDATA[<p>[attachment:https://static-materio.vercel.app/common/files/attach/de882c43-c10f-4708-81a3-31b027b5a289.pdf:Number System]</p>
 
 <p>The Number System is the framework used to represent and calculate quantities. Below are concise, exam-oriented notes starting from the basic building blocks up to Real numbers.</p>
 
@@ -3142,7 +3429,7 @@ Write <strong>5</strong></p>
   </li>
 </ul>
 
-<p><strong>Final Answer:</strong> \(\;56088\)</p>]]></content><author><name></name></author><category term="Originals" /><summary type="html"><![CDATA[This resource provides detailed notes about Number systems with Important points, examples and other things which are helpful for exams as well as contributes to better understanding of the topic.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/img/covers/b0ad7902-c47a-44d4-bbf0-d2694247aab7.webp" /><media:content medium="image" url="http://localhost:4000/assets/img/covers/b0ad7902-c47a-44d4-bbf0-d2694247aab7.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Software Engineering Important Questions</title><link href="http://localhost:4000/resource/software-engineering-important-questions/" rel="alternate" type="text/html" title="Software Engineering Important Questions" /><published>2025-11-21T08:02:35+05:30</published><updated>2025-11-21T08:02:35+05:30</updated><id>http://localhost:4000/resource/software-engineering-important-questions</id><content type="html" xml:base="http://localhost:4000/resource/software-engineering-important-questions/"><![CDATA[<h2 id="unit-1-introduction-to-software-engineering">UNIT 1: Introduction to Software Engineering</h2>
+<p><strong>Final Answer:</strong> \(\;56088\)</p>]]></content><author><name></name></author><category term="Originals" /><summary type="html"><![CDATA[This resource provides detailed notes about Number systems with Important points, examples and other things which are helpful for exams as well as contributes to better understanding of the topic.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:49328/assets/img/covers/b0ad7902-c47a-44d4-bbf0-d2694247aab7.webp" /><media:content medium="image" url="http://localhost:49328/assets/img/covers/b0ad7902-c47a-44d4-bbf0-d2694247aab7.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Software Engineering Important Questions</title><link href="http://localhost:49328/resource/software-engineering-important-questions/" rel="alternate" type="text/html" title="Software Engineering Important Questions" /><published>2025-11-21T08:02:35+05:30</published><updated>2025-11-21T08:02:35+05:30</updated><id>http://localhost:49328/resource/software-engineering-important-questions</id><content type="html" xml:base="http://localhost:49328/resource/software-engineering-important-questions/"><![CDATA[<h2 id="unit-1-introduction-to-software-engineering">UNIT 1: Introduction to Software Engineering</h2>
 
 <ol>
   <li>Define Software Engineering.</li>
@@ -3316,7 +3603,7 @@ Write <strong>5</strong></p>
   <li>Discuss the future trends in Advanced Software Engineering.</li>
 </ol>
 
-<hr />]]></content><author><name>Materio</name></author><category term="Resource" /><summary type="html"><![CDATA[This Resource lists important questions for end semester exams]]></summary></entry><entry><title type="html">DAA Mid Sem</title><link href="http://localhost:4000/paper-solution/daa-mid/" rel="alternate" type="text/html" title="DAA Mid Sem" /><published>2025-09-25T15:13:26+05:30</published><updated>2025-09-25T15:13:26+05:30</updated><id>http://localhost:4000/paper-solution/daa-mid</id><content type="html" xml:base="http://localhost:4000/paper-solution/daa-mid/"><![CDATA[<h2 id="multiple-choice-questions">Multiple Choice Questions</h2>
+<hr />]]></content><author><name>Materio</name></author><category term="Resource" /><summary type="html"><![CDATA[This Resource lists important questions for end semester exams]]></summary></entry><entry><title type="html">DAA Mid Sem</title><link href="http://localhost:49328/paper-solution/daa-mid/" rel="alternate" type="text/html" title="DAA Mid Sem" /><published>2025-09-25T15:13:26+05:30</published><updated>2025-09-25T15:13:26+05:30</updated><id>http://localhost:49328/paper-solution/daa-mid</id><content type="html" xml:base="http://localhost:49328/paper-solution/daa-mid/"><![CDATA[<h2 id="multiple-choice-questions">Multiple Choice Questions</h2>
 
 <p><strong>In recursion, the base case represents:</strong></p>
 
@@ -3820,7 +4107,7 @@ int main() {
     printf("%.2lf\\n", maxValue);
     return 0;
 }
-</code></pre>]]></content><author><name></name></author><category term="Paper Solution" /><summary type="html"><![CDATA[This resource covers all the questions with solutions from design and analysis of alogorithms mid semester exam.]]></summary></entry><entry><title type="html">Software Engineering Assignment</title><link href="http://localhost:4000/resource/software-engineering-assignment/" rel="alternate" type="text/html" title="Software Engineering Assignment" /><published>2025-09-20T11:20:10+05:30</published><updated>2025-09-20T11:20:10+05:30</updated><id>http://localhost:4000/resource/software-engineering-assignment</id><content type="html" xml:base="http://localhost:4000/resource/software-engineering-assignment/"><![CDATA[<div class="newtopic"></div>
+</code></pre>]]></content><author><name></name></author><category term="Paper Solution" /><summary type="html"><![CDATA[This resource covers all the questions with solutions from design and analysis of alogorithms mid semester exam.]]></summary></entry><entry><title type="html">Software Engineering Assignment</title><link href="http://localhost:49328/resource/software-engineering-assignment/" rel="alternate" type="text/html" title="Software Engineering Assignment" /><published>2025-09-20T11:20:10+05:30</published><updated>2025-09-20T11:20:10+05:30</updated><id>http://localhost:49328/resource/software-engineering-assignment</id><content type="html" xml:base="http://localhost:49328/resource/software-engineering-assignment/"><![CDATA[<div class="newtopic"></div>
 
 <h1 id="assignment-1">Assignment 1</h1>
 
@@ -4774,1468 +5061,4 @@ Focuses on developing software systems where processing and data are spread acro
   </li>
 </ul>
 
-<div style="text-align: center">⁂</div>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This resource provides with the solution of questions given in assignments 1 to 8 of Software Engineering.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/img/covers/759dad03-6b05-4760-9e78-96860d8ce44b.webp" /><media:content medium="image" url="http://localhost:4000/assets/img/covers/759dad03-6b05-4760-9e78-96860d8ce44b.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Calling auth API from CLI using cURL</title><link href="http://localhost:4000/docs/api" rel="alternate" type="text/html" title="Calling auth API from CLI using cURL" /><published>2025-09-03T15:34:00+05:30</published><updated>2025-09-03T15:34:00+05:30</updated><id>http://localhost:4000/docs/auth-cli</id><content type="html" xml:base="http://localhost:4000/docs/api"><![CDATA[<h1 id="materio-api-v2-documentation">Materio API v2 Documentation</h1>
-
-<p>This document provides comprehensive examples for calling all API endpoints using curl, PowerShell, and bash.</p>
-
-<h2 id="table-of-contents">Table of Contents</h2>
-
-<ol>
-  <li><a href="#base-url--headers">Base URL &amp; Headers</a></li>
-  <li><a href="#authentication-flow">Authentication Flow</a></li>
-  <li><a href="#1-user-authentication">User Authentication</a>
-    <ul>
-      <li><a href="#11-user-signup">1.1 User Signup</a></li>
-      <li><a href="#12-user-login">1.2 User Login</a></li>
-      <li><a href="#13-password-recovery">1.3 Password Recovery</a></li>
-      <li><a href="#14-user-logout">1.4 User Logout</a></li>
-    </ul>
-  </li>
-  <li><a href="#2-user-profile-management">User Profile Management</a>
-    <ul>
-      <li><a href="#21-get-user-profile">2.1 Get User Profile</a></li>
-      <li><a href="#22-update-user-profile">2.2 Update User Profile</a></li>
-      <li><a href="#23-delete-user-account">2.3 Delete User Account</a></li>
-    </ul>
-  </li>
-  <li><a href="#3-health-check">Health Check</a>
-    <ul>
-      <li><a href="#31-server-health">3.1 Server Health</a></li>
-    </ul>
-  </li>
-  <li><a href="#4-chat-api">Chat API</a>
-    <ul>
-      <li><a href="#41-chat-completion">4.1 Chat Completion</a></li>
-      <li><a href="#42-get-available-models">4.2 Get Available Models</a></li>
-    </ul>
-  </li>
-  <li><a href="#5-invite-management">Invite Management</a>
-    <ul>
-      <li><a href="#51-validate-invite-code">5.1 Validate Invite Code</a></li>
-      <li><a href="#52-toggle-admin-privileges-admin-only">5.2 Toggle Admin Privileges</a></li>
-      <li><a href="#53-diagnostic-invite">5.3 Diagnostic Invite</a></li>
-    </ul>
-  </li>
-  <li><a href="#6-cdn-management-admin-only">CDN Management (Admin Only)</a>
-    <ul>
-      <li><a href="#61-list-cdn-files">6.1 List CDN Files</a></li>
-      <li><a href="#62-upload-file-to-cdn">6.2 Upload File to CDN</a></li>
-      <li><a href="#63-batch-upload-to-cdn">6.3 Batch Upload to CDN</a></li>
-    </ul>
-  </li>
-  <li><a href="#7-google-drive-integration">Google Drive Integration</a>
-    <ul>
-      <li><a href="#71-google-drive-authentication">7.1 Google Drive Authentication</a></li>
-      <li><a href="#72-handle-oauth-callback">7.2 Handle OAuth Callback</a></li>
-      <li><a href="#73-list-google-drive-files">7.3 List Google Drive Files</a></li>
-      <li><a href="#74-upload-to-google-drive">7.4 Upload to Google Drive</a></li>
-    </ul>
-  </li>
-  <li><a href="#8-analytics--insights">Analytics &amp; Insights</a>
-    <ul>
-      <li><a href="#81-real-time-users">8.1 Real-time Users</a></li>
-    </ul>
-  </li>
-  <li><a href="#9-download-management">Download Management</a>
-    <ul>
-      <li><a href="#91-download-file">9.1 Download File</a></li>
-    </ul>
-  </li>
-  <li><a href="#10-search-api">Search API</a>
-    <ul>
-      <li><a href="#101-simple-search-get">10.1 Simple Search</a></li>
-      <li><a href="#102-advanced-search-post">10.2 Advanced Search</a></li>
-      <li><a href="#103-search-examples">10.3 Search Examples</a></li>
-      <li><a href="#104-search-configuration">10.4 Search Configuration</a></li>
-    </ul>
-  </li>
-  <li><a href="#error-responses">Error Responses</a></li>
-  <li><a href="#api-security">API Security</a></li>
-  <li><a href="#api-security">API Security</a></li>
-  <li><a href="#development-setup">Development Setup</a></li>
-  <li><a href="#testing-examples">Testing Examples</a></li>
-  <li><a href="#api-changelog">API Changelog</a></li>
-  <li><a href="#support--troubleshooting">Support &amp; Troubleshooting</a></li>
-  <li><a href="#license--usage">License &amp; Usage</a></li>
-</ol>
-
-<hr />
-
-<h2 id="base-url--headers">Base URL &amp; Headers</h2>
-<ul>
-  <li>Development: <code class="language-plaintext highlighter-rouge">http://localhost:8888/api/v1</code></li>
-  <li>Production: <code class="language-plaintext highlighter-rouge">https://materioa.netlify.app/api/v1</code></li>
-  <li>Legacy Auth API URL: <code class="language-plaintext highlighter-rouge">https://auth-materioa.netlify.app/.netlify/functions</code></li>
-</ul>
-
-<h2 id="common-headers">Common Headers</h2>
-<p>All requests should include:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Content-Type: application/json
-</code></pre></div></div>
-
-<p>For authenticated endpoints, include:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Authorization: Bearer YOUR_JWT_TOKEN
-</code></pre></div></div>
-
-<h2 id="authentication-flow">Authentication Flow</h2>
-<ol>
-  <li><strong>Signup</strong> → Get JWT token + recovery key</li>
-  <li><strong>Login</strong> → Get JWT token</li>
-  <li><strong>Use token</strong> in Authorization header for protected endpoints</li>
-  <li><strong>Password recovery</strong> → Use email + recovery key</li>
-</ol>
-
-<hr />
-
-<h2 id="1-user-authentication">1. User Authentication</h2>
-
-<h3 id="11-user-signup">1.1 User Signup</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">POST /signup</code></p>
-
-<p>Creates a new user account with invite code validation.</p>
-
-<h4 id="required-fields">Required Fields:</h4>
-<ul>
-  <li>username (string)</li>
-  <li>displayName (string)</li>
-  <li>email (string)</li>
-  <li>password (string)</li>
-  <li>inviteCode (string)</li>
-  <li>profilePicture (optional, base64 data URL)</li>
-</ul>
-
-<h4 id="curl-example">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/signup <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-d</span> <span class="s1">'{
-    "username": "johndoe",
-    "displayName": "John Doe",
-    "email": "john@example.com",
-    "password": "securePassword123",
-    "inviteCode": "INVITE123",
-    "profilePicture": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD..."
-  }'</span>
-</code></pre></div></div>
-
-<h4 id="powershell-example">PowerShell Example:</h4>
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
-    </span><span class="s2">"Content-Type"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-
-</span><span class="nv">$body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
-    </span><span class="nx">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"johndoe"</span><span class="w">
-    </span><span class="nx">displayName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"John Doe"</span><span class="w">
-    </span><span class="nx">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"john@example.com"</span><span class="w">
-    </span><span class="nx">password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"securePassword123"</span><span class="w">
-    </span><span class="nx">inviteCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"INVITE123"</span><span class="w">
-    </span><span class="nx">profilePicture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD..."</span><span class="w">
-</span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertTo-Json</span><span class="w">
-
-</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/signup"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$body</span><span class="w">
-</span></code></pre></div></div>
-
-<h4 id="response">Response:</h4>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"User created successfully"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"user"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"uuid"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"johndoe"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"displayName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John Doe"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"john@example.com"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"hasAdminPrivileges"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"isPlusUser"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"profilePicture"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://..."</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"recoveryKey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"recovery-key-string"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"grantedPlusFromInvite"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<h3 id="12-user-login">1.2 User Login</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">POST /login</code></p>
-
-<p>Authenticates user with username/email and password.</p>
-
-<h4 id="required-fields-1">Required Fields:</h4>
-<ul>
-  <li>username (string) - Can be username or email</li>
-  <li>password (string)</li>
-</ul>
-
-<h4 id="curl-example-1">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/login <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-d</span> <span class="s1">'{
-    "username": "johndoe",
-    "password": "securePassword123"
-  }'</span>
-</code></pre></div></div>
-
-<h4 id="powershell-example-1">PowerShell Example:</h4>
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
-    </span><span class="s2">"Content-Type"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-
-</span><span class="nv">$body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
-    </span><span class="nx">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"johndoe"</span><span class="w">
-    </span><span class="nx">password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"securePassword123"</span><span class="w">
-</span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertTo-Json</span><span class="w">
-
-</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/login"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$body</span><span class="w">
-</span></code></pre></div></div>
-
-<h4 id="response-1">Response:</h4>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Login successful"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"user"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"uuid"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"johndoe"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"displayName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John Doe"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"john@example.com"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"hasAdminPrivileges"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"isPlusUser"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"profilePicture"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://..."</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<h3 id="13-password-recovery">1.3 Password Recovery</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">POST /forgot-password</code></p>
-
-<p>Resets user password using email and recovery key.</p>
-
-<h4 id="required-fields-2">Required Fields:</h4>
-<ul>
-  <li>email (string)</li>
-  <li>recoveryKey (string)</li>
-  <li>newPassword (string, optional - if not provided, just validates recovery key)</li>
-</ul>
-
-<h4 id="curl-example-2">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Validate recovery key only</span>
-curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/forgot-password <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-d</span> <span class="s1">'{
-    "email": "john@example.com",
-    "recoveryKey": "recovery-key-string"
-  }'</span>
-
-<span class="c"># Reset password</span>
-curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/forgot-password <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-d</span> <span class="s1">'{
-    "email": "john@example.com",
-    "recoveryKey": "recovery-key-string",
-    "newPassword": "newSecurePassword123"
-  }'</span>
-</code></pre></div></div>
-
-<h4 id="powershell-example-2">PowerShell Example:</h4>
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
-    </span><span class="s2">"Content-Type"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-
-</span><span class="nv">$body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
-    </span><span class="nx">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"john@example.com"</span><span class="w">
-    </span><span class="nx">recoveryKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"recovery-key-string"</span><span class="w">
-    </span><span class="nx">newPassword</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"newSecurePassword123"</span><span class="w">
-</span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertTo-Json</span><span class="w">
-
-</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/forgot-password"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$body</span><span class="w">
-</span></code></pre></div></div>
-
-<h3 id="14-user-logout">1.4 User Logout</h3>
-
-<p><strong>Note:</strong> This API uses JWT (JSON Web Tokens) for authentication. Logout is handled client-side by discarding the token.</p>
-
-<h4 id="client-side-logout-process">Client-Side Logout Process:</h4>
-<ol>
-  <li><strong>Delete/Clear the JWT token</strong> from your storage (memory, file, etc.)</li>
-  <li><strong>Stop including the token</strong> in future requests</li>
-  <li><strong>Optional:</strong> Clear any cached user data</li>
-</ol>
-
-<h4 id="curl-example-simulating-logout">cURL Example (Simulating Logout):</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># After logout, requests without token will return 401 Unauthorized</span>
-curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v2/profile <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span>
-  <span class="c"># No Authorization header = logged out state</span>
-</code></pre></div></div>
-
-<h4 id="powershell-example-simulating-logout">PowerShell Example (Simulating Logout):</h4>
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Clear the token variable</span><span class="w">
-</span><span class="nv">$token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">$null</span><span class="w">
-
-</span><span class="c"># Subsequent requests will fail without authentication</span><span class="w">
-</span><span class="kr">try</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nv">$headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
-        </span><span class="s2">"Content-Type"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w">
-        </span><span class="c"># "Authorization" = "Bearer $token"  # No token = logged out</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-    </span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/profile"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">GET</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span><span class="kr">catch</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="n">Write-Host</span><span class="w"> </span><span class="s2">"Successfully logged out - Authentication required"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<h4 id="response-after-logout">Response (After Logout):</h4>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Authentication token required"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<h4 id="security-best-practices">Security Best Practices:</h4>
-<ul>
-  <li><strong>Immediate Effect</strong>: Unlike server-side sessions, JWT logout takes effect immediately</li>
-  <li><strong>Token Security</strong>: Never store tokens in plain text files or logs</li>
-  <li><strong>Token Lifecycle</strong>: Tokens expire automatically based on server configuration</li>
-  <li><strong>Secure Storage</strong>: Use secure storage mechanisms in production applications</li>
-</ul>
-
-<hr />
-
-<h2 id="2-user-profile-management">2. User Profile Management</h2>
-
-<h3 id="21-get-user-profile">2.1 Get User Profile</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">GET /profile</code></p>
-
-<p>Retrieves the authenticated user’s profile information.</p>
-
-<h4 id="headers-required">Headers Required:</h4>
-<ul>
-  <li>Authorization: Bearer YOUR_JWT_TOKEN</li>
-</ul>
-
-<h4 id="curl-example-3">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v2/profile <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Authorization: Bearer YOUR_JWT_TOKEN"</span>
-</code></pre></div></div>
-
-<h4 id="powershell-example-3">PowerShell Example:</h4>
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
-    </span><span class="s2">"Content-Type"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w">
-    </span><span class="s2">"Authorization"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Bearer YOUR_JWT_TOKEN"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-
-</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/profile"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">GET</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w">
-</span></code></pre></div></div>
-
-<h4 id="response-2">Response:</h4>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"user"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"uuid"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"johndoe"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"displayName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John Doe"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"john@example.com"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"profilePicture"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://..."</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"recoveryKey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"recovery-key-string"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"hasAdminPrivileges"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"isPlusUser"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-01T00:00:00Z"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-01T00:00:00Z"</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<h3 id="22-update-user-profile">2.2 Update User Profile</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">PUT /profile</code></p>
-
-<p>Updates the authenticated user’s profile information.</p>
-
-<h4 id="headers-required-1">Headers Required:</h4>
-<ul>
-  <li>Authorization: Bearer YOUR_JWT_TOKEN</li>
-</ul>
-
-<h4 id="optional-fields">Optional Fields:</h4>
-<ul>
-  <li>username (string)</li>
-  <li>displayName (string)</li>
-  <li>currentPassword (string, required for password changes and recovery key generation)</li>
-  <li>newPassword (string)</li>
-  <li>generateNewRecoveryKey (boolean)</li>
-  <li>profilePicture (string, base64 data URL)</li>
-</ul>
-
-<h4 id="curl-example-4">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> PUT https://materioa.netlify.app/api/v2/profile <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Authorization: Bearer YOUR_JWT_TOKEN"</span> <span class="se">\</span>
-  <span class="nt">-d</span> <span class="s1">'{
-    "username": "newusername",
-    "displayName": "New Display Name",
-    "currentPassword": "currentPassword123",
-    "newPassword": "newPassword123",
-    "generateNewRecoveryKey": true
-  }'</span>
-</code></pre></div></div>
-
-<h4 id="powershell-example-4">PowerShell Example:</h4>
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
-    </span><span class="s2">"Content-Type"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w">
-    </span><span class="s2">"Authorization"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Bearer YOUR_JWT_TOKEN"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-
-</span><span class="nv">$body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
-    </span><span class="nx">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"newusername"</span><span class="w">
-    </span><span class="nx">displayName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"New Display Name"</span><span class="w">
-    </span><span class="nx">currentPassword</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"currentPassword123"</span><span class="w">
-    </span><span class="nx">newPassword</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"newPassword123"</span><span class="w">
-    </span><span class="nx">generateNewRecoveryKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">$true</span><span class="w">
-</span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertTo-Json</span><span class="w">
-
-</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/profile"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">PUT</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$body</span><span class="w">
-</span></code></pre></div></div>
-
-<h3 id="23-delete-user-account">2.3 Delete User Account</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">DELETE /profile</code></p>
-
-<p>Permanently deletes the authenticated user’s account.</p>
-
-<h4 id="headers-required-2">Headers Required:</h4>
-<ul>
-  <li>Authorization: Bearer YOUR_JWT_TOKEN</li>
-</ul>
-
-<h4 id="required-fields-3">Required Fields:</h4>
-<ul>
-  <li>password (string) - Current password for confirmation</li>
-</ul>
-
-<h4 id="curl-example-5">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> DELETE https://materioa.netlify.app/api/v2/profile <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Authorization: Bearer YOUR_JWT_TOKEN"</span> <span class="se">\</span>
-  <span class="nt">-d</span> <span class="s1">'{
-    "password": "currentPassword123"
-  }'</span>
-</code></pre></div></div>
-
-<hr />
-
-<h2 id="3-health-check">3. Health Check</h2>
-
-<h3 id="31-server-health">3.1 Server Health</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">GET /health</code></p>
-
-<p>Checks if the server is running and healthy.</p>
-
-<h4 id="curl-example-6">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v2/health
-</code></pre></div></div>
-
-<h4 id="powershell-example-5">PowerShell Example:</h4>
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/health"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">GET</span><span class="w">
-</span></code></pre></div></div>
-
-<h4 id="response-3">Response:</h4>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ok"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Server is healthy"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-01T00:00:00Z"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"service"</span><span class="p">:</span><span class="w"> </span><span class="s2">"materio-api"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<hr />
-
-<h2 id="4-chat-api">4. Chat API</h2>
-
-<h3 id="41-chat-completion">4.1 Chat Completion</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">POST /chat</code></p>
-
-<p>Sends a message to AI chat with different modes and models.</p>
-
-<h4 id="required-fields-4">Required Fields:</h4>
-<ul>
-  <li>message (string)</li>
-</ul>
-
-<h4 id="optional-fields-1">Optional Fields:</h4>
-<ul>
-  <li>mode (string) - “general”, “reasoning”, “code” (default: “general”)</li>
-  <li>model (string) - Specific model to use</li>
-  <li>messages (array) - Previous conversation context</li>
-</ul>
-
-<h4 id="available-modes">Available Modes:</h4>
-<ul>
-  <li><strong>general</strong>: Multi-purpose conversations</li>
-  <li><strong>reasoning</strong>: Complex problem-solving and analysis</li>
-  <li><strong>code</strong>: Programming and technical assistance</li>
-</ul>
-
-<h4 id="curl-example-7">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/chat <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-d</span> <span class="s1">'{
-    "message": "Explain quantum computing",
-    "mode": "reasoning",
-    "messages": []
-  }'</span>
-</code></pre></div></div>
-
-<h4 id="powershell-example-6">PowerShell Example:</h4>
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
-    </span><span class="s2">"Content-Type"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-
-</span><span class="nv">$body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
-    </span><span class="nx">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Write a Python function to sort a list"</span><span class="w">
-    </span><span class="nx">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"code"</span><span class="w">
-    </span><span class="nx">messages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@()</span><span class="w">
-</span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertTo-Json</span><span class="w">
-
-</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/chat"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$body</span><span class="w">
-</span></code></pre></div></div>
-
-<h3 id="42-get-available-models">4.2 Get Available Models</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">GET /chat/models</code></p>
-
-<p>Returns available AI models categorized by mode.</p>
-
-<h4 id="curl-example-8">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v2/chat/models
-</code></pre></div></div>
-
-<h4 id="response-4">Response:</h4>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"models"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nl">"reasoning"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"google/gemma-3-27b-it:free"</span><span class="p">,</span><span class="w"> </span><span class="s2">"meta-llama/llama-4-maverick:free"</span><span class="p">],</span><span class="w">
-    </span><span class="nl">"code"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"deepseek/deepseek-r1-0528-qwen3-8b:free"</span><span class="p">,</span><span class="w"> </span><span class="s2">"qwen/qwen-2.5-coder-32b-instruct:free"</span><span class="p">],</span><span class="w">
-    </span><span class="nl">"general"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"google/gemini-2.0-flash-exp:free"</span><span class="p">,</span><span class="w"> </span><span class="s2">"mistralai/mistral-small-3.2-24b-instruct:free"</span><span class="p">]</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<hr />
-
-<h2 id="5-invite-management">5. Invite Management</h2>
-
-<h3 id="51-validate-invite-code">5.1 Validate Invite Code</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">POST /invites/validate</code></p>
-
-<p>Validates an invite code before signup.</p>
-
-<h4 id="required-fields-5">Required Fields:</h4>
-<ul>
-  <li>inviteCode (string)</li>
-</ul>
-
-<h4 id="curl-example-9">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/invites/validate <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-d</span> <span class="s1">'{
-    "inviteCode": "INVITE123"
-  }'</span>
-</code></pre></div></div>
-
-<h3 id="52-toggle-admin-privileges-admin-only">5.2 Toggle Admin Privileges (Admin Only)</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">POST /invites/toggle-admin</code></p>
-
-<p>Toggles admin privileges for a user.</p>
-
-<h4 id="headers-required-3">Headers Required:</h4>
-<ul>
-  <li>Authorization: Bearer YOUR_ADMIN_JWT_TOKEN</li>
-</ul>
-
-<h4 id="required-fields-6">Required Fields:</h4>
-<ul>
-  <li>targetUserId (string)</li>
-</ul>
-
-<h4 id="curl-example-10">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/invites/toggle-admin <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Authorization: Bearer YOUR_ADMIN_JWT_TOKEN"</span> <span class="se">\</span>
-  <span class="nt">-d</span> <span class="s1">'{
-    "targetUserId": "user-uuid"
-  }'</span>
-</code></pre></div></div>
-
-<h3 id="53-diagnostic-invite">5.3 Diagnostic Invite</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">POST /invites/diagnostic</code></p>
-
-<p>Gets detailed information about an invite code (Admin only).</p>
-
-<h4 id="required-fields-7">Required Fields:</h4>
-<ul>
-  <li>inviteCode (string)</li>
-</ul>
-
-<h3 id="54-premium-account-recovery-admin-only">5.4 Premium Account Recovery (Admin Only)</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">POST /admin-recovery</code></p>
-
-<p>Premium account recovery service for users who have lost both password and recovery key. Admin-only endpoint that returns complete user data including recovery key for manual password reset assistance.</p>
-
-<h4 id="headers-required-4">Headers Required:</h4>
-<ul>
-  <li>Authorization: Bearer YOUR_ADMIN_JWT_TOKEN</li>
-</ul>
-
-<h4 id="required-fields-8">Required Fields:</h4>
-<ul>
-  <li>email (string) - Target user’s email address</li>
-  <li>username (string) - Target user’s username</li>
-</ul>
-
-<h4 id="security-features">Security Features:</h4>
-<ul>
-  <li>Requires exact match of both email AND username</li>
-  <li>Admin privilege verification</li>
-  <li>Audit logging of recovery attempts</li>
-  <li>Does not return password hash</li>
-</ul>
-
-<h4 id="curl-example-11">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/admin-recovery <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Authorization: Bearer YOUR_ADMIN_JWT_TOKEN"</span> <span class="se">\</span>
-  <span class="nt">-d</span> <span class="s1">'{
-    "email": "user@example.com",
-    "username": "lostuser"
-  }'</span>
-</code></pre></div></div>
-
-<h4 id="powershell-example-7">PowerShell Example:</h4>
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
-    </span><span class="s2">"Content-Type"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w">
-    </span><span class="s2">"Authorization"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Bearer YOUR_ADMIN_JWT_TOKEN"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-
-</span><span class="nv">$body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
-    </span><span class="nx">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"user@example.com"</span><span class="w">
-    </span><span class="nx">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"lostuser"</span><span class="w">
-</span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertTo-Json</span><span class="w">
-
-</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/admin-recovery"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$body</span><span class="w">
-</span></code></pre></div></div>
-
-<h4 id="response-5">Response:</h4>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Account recovery data retrieved successfully"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"recoveryService"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Premium Admin Account Recovery"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"adminId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"admin-user-uuid"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"targetUser"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"target-user-uuid"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lostuser"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"displayName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Lost User"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user@example.com"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"profilePicture"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://..."</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"recoveryKey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user-recovery-key-string"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"hasAdminPrivileges"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"isPlusUser"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-01T00:00:00Z"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-01T00:00:00Z"</span><span class="w">
-  </span><span class="p">},</span><span class="w">
-  </span><span class="nl">"securityNote"</span><span class="p">:</span><span class="w"> </span><span class="s2">"This recovery includes the user's recovery key for password reset purposes"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-01T12:00:00Z"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<h4 id="use-case">Use Case:</h4>
-<p>This endpoint is designed for premium customer support scenarios where:</p>
-<ol>
-  <li>User has forgotten their password</li>
-  <li>User has lost/didn’t save their recovery key</li>
-  <li>User can provide both email and username for verification</li>
-  <li>Admin assistance is required for account recovery</li>
-</ol>
-
-<hr />
-
-<h2 id="6-cdn-management-admin-only">6. CDN Management (Admin Only)</h2>
-
-<h3 id="61-list-cdn-files">6.1 List CDN Files</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">GET /cdn?path=folder/path</code></p>
-
-<p>Lists files in the CDN repository.</p>
-
-<h4 id="headers-required-5">Headers Required:</h4>
-<ul>
-  <li>Authorization: Bearer YOUR_ADMIN_JWT_TOKEN</li>
-</ul>
-
-<h4 id="query-parameters">Query Parameters:</h4>
-<ul>
-  <li>path (string, optional) - Folder path to list</li>
-</ul>
-
-<h4 id="curl-example-12">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> GET <span class="s2">"https://materioa.netlify.app/api/v2/cdn?path=images"</span> <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Authorization: Bearer YOUR_ADMIN_JWT_TOKEN"</span>
-</code></pre></div></div>
-
-<h3 id="62-upload-file-to-cdn">6.2 Upload File to CDN</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">POST /cdn</code></p>
-
-<p>Uploads a single file to the CDN.</p>
-
-<h4 id="headers-required-6">Headers Required:</h4>
-<ul>
-  <li>Authorization: Bearer YOUR_ADMIN_JWT_TOKEN</li>
-</ul>
-
-<h4 id="required-fields-9">Required Fields:</h4>
-<ul>
-  <li>filename (string)</li>
-  <li>content (string) - Base64 encoded file content</li>
-  <li>path (string, optional) - Target folder path</li>
-</ul>
-
-<h4 id="curl-example-13">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/cdn <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Authorization: Bearer YOUR_ADMIN_JWT_TOKEN"</span> <span class="se">\</span>
-  <span class="nt">-d</span> <span class="s1">'{
-    "filename": "image.jpg",
-    "content": "base64-encoded-content",
-    "path": "images/"
-  }'</span>
-</code></pre></div></div>
-
-<h3 id="63-batch-upload-to-cdn">6.3 Batch Upload to CDN</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">POST /cdn?batch=true</code></p>
-
-<p>Uploads multiple files to the CDN in a single request.</p>
-
-<h4 id="headers-required-7">Headers Required:</h4>
-<ul>
-  <li>Authorization: Bearer YOUR_ADMIN_JWT_TOKEN</li>
-</ul>
-
-<h4 id="required-fields-10">Required Fields:</h4>
-<ul>
-  <li>files (array) - Array of file objects with filename, content, and path</li>
-</ul>
-
-<hr />
-
-<h2 id="7-google-drive-integration">7. Google Drive Integration</h2>
-
-<h3 id="71-google-drive-authentication">7.1 Google Drive Authentication</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">GET /google-drive/auth</code></p>
-
-<p>Initiates Google Drive OAuth flow.</p>
-
-<h4 id="headers-required-8">Headers Required:</h4>
-<ul>
-  <li>Authorization: Bearer YOUR_JWT_TOKEN</li>
-</ul>
-
-<h3 id="72-handle-oauth-callback">7.2 Handle OAuth Callback</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">GET /google-drive/callback</code></p>
-
-<p>Handles Google OAuth callback and stores tokens.</p>
-
-<h3 id="73-list-google-drive-files">7.3 List Google Drive Files</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">GET /google-drive/files</code></p>
-
-<p>Lists files in user’s Google Drive.</p>
-
-<h4 id="headers-required-9">Headers Required:</h4>
-<ul>
-  <li>Authorization: Bearer YOUR_JWT_TOKEN</li>
-</ul>
-
-<h3 id="74-upload-to-google-drive">7.4 Upload to Google Drive</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">POST /google-drive/upload</code></p>
-
-<p>Uploads a file to user’s Google Drive.</p>
-
-<h4 id="headers-required-10">Headers Required:</h4>
-<ul>
-  <li>Authorization: Bearer YOUR_JWT_TOKEN</li>
-</ul>
-
-<hr />
-
-<h2 id="8-analytics--insights">8. Analytics &amp; Insights</h2>
-
-<h3 id="81-real-time-users">8.1 Real-time Users</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">GET /insights</code></p>
-
-<p>Gets real-time user count from Google Analytics.</p>
-
-<h4 id="curl-example-14">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v2/insights
-</code></pre></div></div>
-
-<h4 id="response-6">Response:</h4>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"users"</span><span class="p">:</span><span class="w"> </span><span class="s2">"42"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<hr />
-
-<h2 id="9-download-management">9. Download Management</h2>
-
-<h3 id="91-download-file">9.1 Download File</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">POST /dwn/downloads</code></p>
-
-<p>Downloads a file from a URL to local storage.</p>
-
-<h4 id="required-fields-11">Required Fields:</h4>
-<ul>
-  <li>url (string)</li>
-  <li>filename (string)</li>
-  <li>title (string, optional)</li>
-</ul>
-
-<h4 id="curl-example-15">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/dwn/downloads <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-d</span> <span class="s1">'{
-    "url": "https://example.com/file.pdf",
-    "filename": "document.pdf",
-    "title": "Important Document"
-  }'</span>
-</code></pre></div></div>
-
-<hr />
-
-<h2 id="10-search-api">10. Search API</h2>
-
-<p>The Search API provides intelligent resource discovery across the Materio educational library using a hybrid approach combining algorithmic fuzzy matching (Fuse.js) and AI-powered semantic understanding (OpenRouter).</p>
-
-<h3 id="features">Features</h3>
-
-<p>✅ <strong>Fuzzy Matching</strong> - Handles typos and partial matches<br />
-✅ <strong>Abbreviation Support</strong> - Recognizes common abbreviations (e.g., “OS” → “Operating System”, “DADV” → “Data Analytics and Data Visualization”)<br />
-✅ <strong>Smart Scoring</strong> - Weighs subject names higher than categories or items<br />
-✅ <strong>AI Fallback</strong> - Uses AI when results are insufficient (50 queries/day limit)<br />
-✅ <strong>Fast &amp; Scalable</strong> - Works with expanding datasets across all branches<br />
-✅ <strong>CDN-Based</strong> - Always fetches latest resource data from CDN<br />
-✅ <strong>Automatic Caching</strong> - Reduces CDN load with intelligent caching (5-minute cache)</p>
-
-<h3 id="resource-library-urls">Resource Library URLs</h3>
-<ul>
-  <li><strong>Production</strong>: <code class="language-plaintext highlighter-rouge">https://cdn-materioa.netlify.app/databases/beta/resource.lib.json</code></li>
-  <li><strong>Development</strong>: <code class="language-plaintext highlighter-rouge">http://localhost:8080/databases/beta/resource.lib.json</code></li>
-</ul>
-
-<h3 id="101-simple-search-get">10.1 Simple Search (GET)</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">GET /search</code></p>
-
-<p>Quick search using query parameters.</p>
-
-<p><strong>Query Parameters:</strong></p>
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">q</code> or <code class="language-plaintext highlighter-rouge">query</code> (required) - The search query</li>
-</ul>
-
-<h4 id="curl-example-16">cURL Example:</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Simple search for "os introduction"</span>
-curl <span class="s2">"https://materioa.netlify.app/api/v2/search?q=os%20introduction"</span>
-
-<span class="c"># Search for "dadv qb"</span>
-curl <span class="s2">"https://materioa.netlify.app/api/v2/search?query=dadv%20qb"</span>
-</code></pre></div></div>
-
-<h4 id="powershell-example-8">PowerShell Example:</h4>
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Simple search</span><span class="w">
-</span><span class="nv">$query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"os introduction"</span><span class="w">
-</span><span class="nv">$encodedQuery</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">System.Web.HttpUtility</span><span class="p">]::</span><span class="n">UrlEncode</span><span class="p">(</span><span class="nv">$query</span><span class="p">)</span><span class="w">
-</span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/search?q=</span><span class="nv">$encodedQuery</span><span class="s2">"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">GET</span><span class="w">
-</span></code></pre></div></div>
-
-<h4 id="response-7">Response:</h4>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"query"</span><span class="p">:</span><span class="w"> </span><span class="s2">"os introduction"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"results"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-    </span><span class="p">{</span><span class="w">
-      </span><span class="nl">"semester"</span><span class="p">:</span><span class="w"> </span><span class="s2">"4"</span><span class="p">,</span><span class="w">
-      </span><span class="nl">"subject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Operating System"</span><span class="p">,</span><span class="w">
-      </span><span class="nl">"category"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Chapters"</span><span class="p">,</span><span class="w">
-      </span><span class="nl">"item"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Introduction"</span><span class="p">,</span><span class="w">
-      </span><span class="nl">"score"</span><span class="p">:</span><span class="w"> </span><span class="mi">95</span><span class="p">,</span><span class="w">
-      </span><span class="nl">"matchType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"high"</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-  </span><span class="p">],</span><span class="w">
-  </span><span class="nl">"count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"method"</span><span class="p">:</span><span class="w"> </span><span class="s2">"algorithmic"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<h3 id="102-advanced-search-post">10.2 Advanced Search (POST)</h3>
-
-<p><strong>Endpoint:</strong> <code class="language-plaintext highlighter-rouge">POST /search</code></p>
-
-<p>Advanced search with AI fallback option and custom threshold.</p>
-
-<p><strong>Request Body:</strong></p>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"query"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dadv qb"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"useAI"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"threshold"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.4</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<p><strong>Parameters:</strong></p>
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">query</code> (required) - Search query</li>
-  <li><code class="language-plaintext highlighter-rouge">useAI</code> (optional, default: <code class="language-plaintext highlighter-rouge">false</code>) - Enable AI-powered search</li>
-  <li><code class="language-plaintext highlighter-rouge">threshold</code> (optional, default: <code class="language-plaintext highlighter-rouge">0.4</code>) - Fuse.js threshold (0.0 = perfect match, 1.0 = match anything)</li>
-</ul>
-
-<h4 id="curl-example-algorithmic">cURL Example (Algorithmic):</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/search <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-d</span> <span class="s1">'{
-    "query": "dadv qb",
-    "useAI": false,
-    "threshold": 0.4
-  }'</span>
-</code></pre></div></div>
-
-<h4 id="curl-example-with-ai">cURL Example (With AI):</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/search <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-d</span> <span class="s1">'{
-    "query": "EPJ servlets",
-    "useAI": true
-  }'</span>
-</code></pre></div></div>
-
-<h4 id="powershell-example-9">PowerShell Example:</h4>
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Algorithmic search</span><span class="w">
-</span><span class="nv">$searchBody</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
-    </span><span class="nx">query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"dadv qb"</span><span class="w">
-    </span><span class="nx">useAI</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">$false</span><span class="w">
-    </span><span class="nx">threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.4</span><span class="w">
-</span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertTo-Json</span><span class="w">
-
-</span><span class="nv">$results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/search"</span><span class="w"> </span><span class="se">`
-</span><span class="w">    </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="se">`
-</span><span class="w">    </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$searchBody</span><span class="w"> </span><span class="se">`
-</span><span class="w">    </span><span class="nt">-ContentType</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w">
-
-</span><span class="n">Write-Host</span><span class="w"> </span><span class="s2">"Found </span><span class="si">$(</span><span class="nv">$results</span><span class="o">.</span><span class="nf">count</span><span class="si">)</span><span class="s2"> results"</span><span class="w">
-</span><span class="nv">$results</span><span class="o">.</span><span class="nf">results</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Format-Table</span><span class="w">
-
-</span><span class="c"># AI-powered search</span><span class="w">
-</span><span class="nv">$aiSearchBody</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
-    </span><span class="nx">query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"EPJ servlets"</span><span class="w">
-    </span><span class="nx">useAI</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">$true</span><span class="w">
-</span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertTo-Json</span><span class="w">
-
-</span><span class="nv">$aiResults</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v2/search"</span><span class="w"> </span><span class="se">`
-</span><span class="w">    </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="se">`
-</span><span class="w">    </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$aiSearchBody</span><span class="w"> </span><span class="se">`
-</span><span class="w">    </span><span class="nt">-ContentType</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w">
-</span></code></pre></div></div>
-
-<h4 id="response-algorithmic">Response (Algorithmic):</h4>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"query"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dadv qb"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"results"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-    </span><span class="p">{</span><span class="w">
-      </span><span class="nl">"semester"</span><span class="p">:</span><span class="w"> </span><span class="s2">"5"</span><span class="p">,</span><span class="w">
-      </span><span class="nl">"subject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Data Analytics and Data Visualization"</span><span class="p">,</span><span class="w">
-      </span><span class="nl">"category"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Question Banks"</span><span class="p">,</span><span class="w">
-      </span><span class="nl">"item"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Question Bank"</span><span class="p">,</span><span class="w">
-      </span><span class="nl">"score"</span><span class="p">:</span><span class="w"> </span><span class="mi">92</span><span class="p">,</span><span class="w">
-      </span><span class="nl">"matchType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"high"</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-  </span><span class="p">],</span><span class="w">
-  </span><span class="nl">"count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"method"</span><span class="p">:</span><span class="w"> </span><span class="s2">"algorithmic"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"aiUsed"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<h4 id="response-with-ai">Response (With AI):</h4>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"query"</span><span class="p">:</span><span class="w"> </span><span class="s2">"EPJ servlets"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"algorithmic"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nl">"results"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">],</span><span class="w">
-    </span><span class="nl">"count"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="w">
-  </span><span class="p">},</span><span class="w">
-  </span><span class="nl">"ai"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nl">"intent"</span><span class="p">:</span><span class="w"> </span><span class="s2">"User is looking for Servlet-related content in Enterprise Programming with Java"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"rankings"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-      </span><span class="p">{</span><span class="w">
-        </span><span class="nl">"semester"</span><span class="p">:</span><span class="w"> </span><span class="s2">"5"</span><span class="p">,</span><span class="w">
-        </span><span class="nl">"subject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Enterprise Programming with Java"</span><span class="p">,</span><span class="w">
-        </span><span class="nl">"category"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Chapters"</span><span class="p">,</span><span class="w">
-        </span><span class="nl">"item"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Servlets"</span><span class="p">,</span><span class="w">
-        </span><span class="nl">"relevance"</span><span class="p">:</span><span class="w"> </span><span class="s2">"high"</span><span class="p">,</span><span class="w">
-        </span><span class="nl">"explanation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Direct match to user's query"</span><span class="w">
-      </span><span class="p">}</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="nl">"suggestions"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"java servlets"</span><span class="p">,</span><span class="w"> </span><span class="s2">"epj web components"</span><span class="p">]</span><span class="w">
-  </span><span class="p">},</span><span class="w">
-  </span><span class="nl">"method"</span><span class="p">:</span><span class="w"> </span><span class="s2">"hybrid"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"aiUsed"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<h3 id="103-search-examples">10.3 Search Examples</h3>
-
-<h4 id="example-1-subject-abbreviation">Example 1: Subject Abbreviation</h4>
-<p><strong>Query:</strong> <code class="language-plaintext highlighter-rouge">"os introduction"</code><br />
-<strong>Matches:</strong> Operating System → Chapters → Introduction</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="s2">"https://materioa.netlify.app/api/v2/search?q=os%20introduction"</span>
-</code></pre></div></div>
-
-<h4 id="example-2-multiple-abbreviations">Example 2: Multiple Abbreviations</h4>
-<p><strong>Query:</strong> <code class="language-plaintext highlighter-rouge">"dadv qb"</code><br />
-<strong>Matches:</strong> Data Analytics and Data Visualization → Question Banks → Question Bank</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="s2">"https://materioa.netlify.app/api/v2/search?q=dadv%20qb"</span>
-</code></pre></div></div>
-
-<h4 id="example-3-subject--topic">Example 3: Subject + Topic</h4>
-<p><strong>Query:</strong> <code class="language-plaintext highlighter-rouge">"EPJ servlets"</code><br />
-<strong>Matches:</strong> Enterprise Programming with Java → Chapters → Servlets</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="s2">"https://materioa.netlify.app/api/v2/search?q=EPJ%20servlets"</span>
-</code></pre></div></div>
-
-<h4 id="example-4-partial-match">Example 4: Partial Match</h4>
-<p><strong>Query:</strong> <code class="language-plaintext highlighter-rouge">"intro os"</code><br />
-<strong>Matches:</strong> Operating System → Chapters → Introduction</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="s2">"https://materioa.netlify.app/api/v2/search?q=intro%20os"</span>
-</code></pre></div></div>
-
-<h4 id="example-5-full-text">Example 5: Full Text</h4>
-<p><strong>Query:</strong> <code class="language-plaintext highlighter-rouge">"python flask"</code><br />
-<strong>Matches:</strong> Programming in Python with Full Stack → Chapters → Flask Framework</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="s2">"https://materioa.netlify.app/api/v2/search?q=python%20flask"</span>
-</code></pre></div></div>
-
-<h3 id="104-search-configuration">10.4 Search Configuration</h3>
-
-<h4 id="algorithmic-search-fusejs">Algorithmic Search (Fuse.js)</h4>
-
-<p><strong>Index Building:</strong></p>
-<ul>
-  <li>Subject names + abbreviations</li>
-  <li>Category types + abbreviations</li>
-  <li>Content items + abbreviations</li>
-</ul>
-
-<p><strong>Weighted Scoring:</strong></p>
-<ul>
-  <li>Subject: 40% weight</li>
-  <li>Subject Abbreviations: 30% weight</li>
-  <li>Item: 30% weight</li>
-  <li>Item Abbreviations: 20% weight</li>
-  <li>Category: 15% weight</li>
-  <li>Category Abbreviations: 10% weight</li>
-</ul>
-
-<p><strong>Fuse.js Options:</strong></p>
-<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
-  <span class="nl">threshold</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>        <span class="c1">// Lower = more strict matching</span>
-  <span class="nx">distance</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>         <span class="c1">// Maximum search distance</span>
-  <span class="nx">minMatchCharLength</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="c1">// Minimum characters to match</span>
-  <span class="nx">ignoreLocation</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>  <span class="c1">// Don't consider position in text</span>
-  <span class="nx">includeScore</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>    <span class="c1">// Return match scores</span>
-  <span class="nx">useExtendedSearch</span><span class="p">:</span> <span class="kc">true</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<h4 id="ai-search-optional">AI Search (Optional)</h4>
-
-<p>When <code class="language-plaintext highlighter-rouge">useAI: true</code>:</p>
-<ol>
-  <li>Runs algorithmic search first</li>
-  <li>Sends top 10 results to AI (Gemini 2.0 Flash via OpenRouter)</li>
-  <li>AI analyzes user intent</li>
-  <li>Returns ranked results with explanations</li>
-  <li>Suggests alternative search terms if needed</li>
-</ol>
-
-<p><strong>AI Model:</strong> <code class="language-plaintext highlighter-rouge">google/gemini-2.0-flash-exp:free</code><br />
-<strong>Rate Limit:</strong> 50 queries/day (OpenRouter free tier)</p>
-
-<h4 id="performance-metrics">Performance Metrics</h4>
-
-<ul>
-  <li><strong>Algorithmic Search</strong>: ~10-50ms (depends on dataset size)</li>
-  <li><strong>AI Search</strong>: ~1-3s (network latency + AI processing)</li>
-  <li><strong>Recommended</strong>: Use algorithmic first, AI as fallback</li>
-</ul>
-
-<h4 id="testing-search-api">Testing Search API</h4>
-
-<p>Run local tests:</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Navigate to API directory</span>
-<span class="nb">cd </span>api/v1
-
-<span class="c"># Run test script</span>
-node search.js
-</code></pre></div></div>
-
-<p>This will test common queries:</p>
-<ul>
-  <li>“os introduction”</li>
-  <li>“intro os”</li>
-  <li>“dadv qb”</li>
-  <li>“EPJ servlets”</li>
-  <li>“data analytics question bank”</li>
-  <li>“operating system chapter 1”</li>
-  <li>“java enterprise programming”</li>
-  <li>“cnip week 5”</li>
-  <li>“python flask”</li>
-</ul>
-
-<h4 id="smart-search-strategy-frontend-integration">Smart Search Strategy (Frontend Integration)</h4>
-
-<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="kd">function</span> <span class="nf">smartSearch</span><span class="p">(</span><span class="nx">query</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">// Try algorithmic first</span>
-  <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">fetch</span><span class="p">(</span><span class="s2">`/api/v2/search?q=</span><span class="p">${</span><span class="nf">encodeURIComponent</span><span class="p">(</span><span class="nx">query</span><span class="p">)}</span><span class="s2">`</span><span class="p">);</span>
-  <span class="kd">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nf">json</span><span class="p">();</span>
-  
-  <span class="c1">// If poor results, use AI</span>
-  <span class="k">if </span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">results</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">data</span><span class="p">.</span><span class="nx">results</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">score</span> <span class="o">&lt;</span> <span class="mi">60</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">const</span> <span class="nx">aiResponse</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">/api/v2/search</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
-      <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">POST</span><span class="dl">'</span><span class="p">,</span>
-      <span class="na">headers</span><span class="p">:</span> <span class="p">{</span> <span class="dl">'</span><span class="s1">Content-Type</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">application/json</span><span class="dl">'</span> <span class="p">},</span>
-      <span class="na">body</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nf">stringify</span><span class="p">({</span> <span class="nx">query</span><span class="p">,</span> <span class="na">useAI</span><span class="p">:</span> <span class="kc">true</span> <span class="p">})</span>
-    <span class="p">});</span>
-    <span class="k">return</span> <span class="k">await</span> <span class="nx">aiResponse</span><span class="p">.</span><span class="nf">json</span><span class="p">();</span>
-  <span class="p">}</span>
-  
-  <span class="k">return</span> <span class="nx">data</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<hr />
-
-<h2 id="error-responses">Error Responses</h2>
-
-<p>All endpoints may return these common error responses:</p>
-
-<h3 id="400-bad-request">400 Bad Request</h3>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Missing required fields"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<h3 id="401-unauthorized">401 Unauthorized</h3>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Authentication token required"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<h3 id="403-forbidden">403 Forbidden</h3>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Admin privileges required"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<h3 id="404-not-found">404 Not Found</h3>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"User not found"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<h3 id="405-method-not-allowed">405 Method Not Allowed</h3>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Method not allowed"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<h3 id="409-conflict">409 Conflict</h3>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Email already exists"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<h3 id="500-internal-server-error">500 Internal Server Error</h3>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Internal server error"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"details"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Error message details"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<hr />
-
-<h2 id="api-security">API Security</h2>
-
-<h3 id="authentication-flow-1">Authentication Flow</h3>
-<ol>
-  <li><strong>Register</strong> with valid invite code → Receive JWT token + recovery key</li>
-  <li><strong>Login</strong> with credentials → Receive JWT token</li>
-  <li><strong>Include token</strong> in Authorization header: <code class="language-plaintext highlighter-rouge">Bearer YOUR_JWT_TOKEN</code></li>
-  <li><strong>Token expires</strong> → Re-login required</li>
-  <li><strong>Password recovery</strong> → Use email + recovery key</li>
-</ol>
-
-<h3 id="security-features-1">Security Features</h3>
-<ul>
-  <li><strong>JWT Tokens</strong>: Secure session management</li>
-  <li><strong>Password Hashing</strong>: bcrypt with salt</li>
-  <li><strong>Recovery Keys</strong>: Unique keys for password recovery</li>
-  <li><strong>Invite System</strong>: Controlled user registration</li>
-  <li><strong>Admin Privileges</strong>: Role-based access control</li>
-  <li><strong>CORS Protection</strong>: Cross-origin request security</li>
-</ul>
-
-<h3 id="rate-limiting">Rate Limiting</h3>
-<ul>
-  <li>API endpoints may be rate limited</li>
-  <li>Respect HTTP 429 responses</li>
-  <li>Implement exponential backoff</li>
-</ul>
-
-<hr />
-
-<h2 id="development-setup">Development Setup</h2>
-
-<h3 id="environment-variables-required">Environment Variables Required</h3>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Database</span>
-<span class="nv">SUPABASE_URL</span><span class="o">=</span>your_supabase_url
-<span class="nv">SUPABASE_ANON_KEY</span><span class="o">=</span>your_supabase_anon_key
-
-<span class="c"># Authentication</span>
-<span class="nv">JWT_SECRET</span><span class="o">=</span>your_jwt_secret
-
-<span class="c"># Google Drive Integration</span>
-<span class="nv">GOOGLE_CLIENT_ID</span><span class="o">=</span>your_google_client_id
-<span class="nv">GOOGLE_CLIENT_SECRET</span><span class="o">=</span>your_google_client_secret
-<span class="nv">GOOGLE_REDIRECT_URI</span><span class="o">=</span>your_redirect_uri
-
-<span class="c"># Analytics</span>
-<span class="nv">GA_SERVICE_ACCOUNT_KEY_BASE64</span><span class="o">=</span>your_ga_service_account_key
-<span class="nv">GA4_PROPERTY_ID</span><span class="o">=</span>your_ga4_property_id
-
-<span class="c"># GitHub CDN</span>
-<span class="nv">GITHUB_TOKEN</span><span class="o">=</span>your_github_token
-
-<span class="c"># Chat API</span>
-<span class="nv">OPENROUTER_API_KEY</span><span class="o">=</span>your_openrouter_api_key
-</code></pre></div></div>
-
-<h3 id="local-development">Local Development</h3>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Install dependencies</span>
-npm <span class="nb">install</span>
-
-<span class="c"># Start Netlify dev server</span>
-netlify dev
-
-<span class="c"># API will be available at:</span>
-<span class="c"># https://materioa.netlify.app/api/v1</span>
-</code></pre></div></div>
-
-<hr />
-
-<h2 id="testing-examples">Testing Examples</h2>
-
-<h3 id="1-complete-user-flow">1. Complete User Flow</h3>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
-
-<span class="c"># 1. Validate invite code</span>
-curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/invites/validate <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-d</span> <span class="s1">'{"inviteCode": "TESTCODE123"}'</span>
-
-<span class="c"># 2. Sign up new user</span>
-<span class="nv">SIGNUP_RESPONSE</span><span class="o">=</span><span class="si">$(</span>curl <span class="nt">-s</span> <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/signup <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-d</span> <span class="s1">'{
-    "username": "testuser",
-    "displayName": "Test User",
-    "email": "test@example.com",
-    "password": "testpass123",
-    "inviteCode": "TESTCODE123"
-  }'</span><span class="si">)</span>
-
-<span class="c"># Extract token from response</span>
-<span class="nv">TOKEN</span><span class="o">=</span><span class="si">$(</span><span class="nb">echo</span> <span class="nv">$SIGNUP_RESPONSE</span> | jq <span class="nt">-r</span> <span class="s1">'.token'</span><span class="si">)</span>
-
-<span class="c"># 3. Get user profile</span>
-curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v2/profile <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">"</span>
-
-<span class="c"># 4. Update profile</span>
-curl <span class="nt">-X</span> PUT https://materioa.netlify.app/api/v2/profile <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">"</span> <span class="se">\</span>
-  <span class="nt">-d</span> <span class="s1">'{
-    "displayName": "Updated Name"
-  }'</span>
-</code></pre></div></div>
-
-<h3 id="2-powershell-testing-script">2. PowerShell Testing Script</h3>
-<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># PowerShell complete flow</span><span class="w">
-</span><span class="nv">$baseUrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"https://materioa.netlify.app/api/v1"</span><span class="w">
-
-</span><span class="c"># Sign up</span><span class="w">
-</span><span class="nv">$signupBody</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
-    </span><span class="nx">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"testuser"</span><span class="w">
-    </span><span class="nx">displayName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Test User"</span><span class="w">
-    </span><span class="nx">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"test@example.com"</span><span class="w">
-    </span><span class="nx">password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"testpass123"</span><span class="w">
-    </span><span class="nx">inviteCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"TESTCODE123"</span><span class="w">
-</span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertTo-Json</span><span class="w">
-
-</span><span class="nv">$signupResponse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"</span><span class="nv">$baseUrl</span><span class="s2">/signup"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$signupBody</span><span class="w"> </span><span class="nt">-ContentType</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w">
-</span><span class="nv">$token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$signupResponse</span><span class="o">.</span><span class="nf">token</span><span class="w">
-
-</span><span class="c"># Get profile</span><span class="w">
-</span><span class="nv">$headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
-    </span><span class="s2">"Authorization"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Bearer </span><span class="nv">$token</span><span class="s2">"</span><span class="w">
-    </span><span class="s2">"Content-Type"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-
-</span><span class="nv">$profile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"</span><span class="nv">$baseUrl</span><span class="s2">/profile"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">GET</span><span class="w"> </span><span class="nt">-Headers</span><span class="w"> </span><span class="nv">$headers</span><span class="w">
-</span><span class="n">Write-Host</span><span class="w"> </span><span class="s2">"User Profile: </span><span class="si">$(</span><span class="nv">$profile</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertTo-Json</span><span class="w"> </span><span class="nt">-Depth</span><span class="w"> </span><span class="nx">3</span><span class="p">)</span><span class="s2">"</span><span class="w">
-
-</span><span class="c"># Test chat</span><span class="w">
-</span><span class="nv">$chatBody</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
-    </span><span class="nx">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Hello, how are you?"</span><span class="w">
-    </span><span class="nx">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"general"</span><span class="w">
-</span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertTo-Json</span><span class="w">
-
-</span><span class="nv">$chatResponse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"</span><span class="nv">$baseUrl</span><span class="s2">/chat"</span><span class="w"> </span><span class="nt">-Method</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="nt">-Body</span><span class="w"> </span><span class="nv">$chatBody</span><span class="w"> </span><span class="nt">-ContentType</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w">
-</span><span class="n">Write-Host</span><span class="w"> </span><span class="s2">"Chat Response: </span><span class="si">$(</span><span class="nv">$chatResponse</span><span class="o">.</span><span class="nf">response</span><span class="si">)</span><span class="s2">"</span><span class="w">
-</span></code></pre></div></div>
-
-<h3 id="3-error-handling-examples">3. Error Handling Examples</h3>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Test invalid credentials</span>
-curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/login <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-d</span> <span class="s1">'{
-    "username": "invalid",
-    "password": "wrong"
-  }'</span> | jq
-
-<span class="c"># Test unauthorized access</span>
-curl <span class="nt">-X</span> GET https://materioa.netlify.app/api/v2/profile <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Authorization: Bearer invalid_token"</span> | jq
-
-<span class="c"># Test missing required fields</span>
-curl <span class="nt">-X</span> POST https://materioa.netlify.app/api/v2/signup <span class="se">\</span>
-  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
-  <span class="nt">-d</span> <span class="s1">'{"username": "test"}'</span> | jq
-</code></pre></div></div>
-
-<hr />
-
-<h2 id="api-changelog">API Changelog</h2>
-
-<h3 id="version-200-current">Version 2.0.0 (Current)</h3>
-<ul>
-  <li>Initial API release</li>
-  <li>User authentication system</li>
-  <li>Profile management</li>
-  <li>Chat functionality with multiple AI models</li>
-  <li>Invite system with admin controls</li>
-  <li>CDN file management</li>
-  <li>Google Drive integration</li>
-  <li>Analytics insights</li>
-  <li>Download management</li>
-  <li>Health monitoring</li>
-</ul>
-
-<h3 id="upcoming-features">Upcoming Features</h3>
-<ul>
-  <li>File sharing system</li>
-  <li>Advanced user roles</li>
-  <li>API rate limiting</li>
-  <li>Webhook support</li>
-  <li>Enhanced analytics</li>
-  <li>Mobile app APIs</li>
-</ul>
-
-<hr />
-
-<h2 id="support--troubleshooting">Support &amp; Troubleshooting</h2>
-
-<h3 id="common-issues">Common Issues</h3>
-
-<h4 id="1-invalid-jwt-token">1. Invalid JWT Token</h4>
-<ul>
-  <li><strong>Issue</strong>: 401 Unauthorized responses</li>
-  <li><strong>Solution</strong>: Re-login to get fresh token</li>
-  <li><strong>Check</strong>: Token expiration, correct Authorization header format</li>
-</ul>
-
-<h4 id="2-invite-code-problems">2. Invite Code Problems</h4>
-<ul>
-  <li><strong>Issue</strong>: Invalid invite code during signup</li>
-  <li><strong>Solution</strong>: Validate invite code first using <code class="language-plaintext highlighter-rouge">/invites/validate</code></li>
-  <li><strong>Check</strong>: Code spelling, expiration, usage limits</li>
-</ul>
-
-<h4 id="3-cors-errors">3. CORS Errors</h4>
-<ul>
-  <li><strong>Issue</strong>: Browser blocking requests</li>
-  <li><strong>Solution</strong>: Use proper origin headers</li>
-  <li><strong>Check</strong>: Request from allowed domains</li>
-</ul>
-
-<h4 id="4-file-upload-issues">4. File Upload Issues</h4>
-<ul>
-  <li><strong>Issue</strong>: CDN upload failures</li>
-  <li><strong>Solution</strong>: Check file size limits, base64 encoding</li>
-  <li><strong>Check</strong>: Admin privileges, GitHub token configuration</li>
-</ul>
-
-<h3 id="debug-mode">Debug Mode</h3>
-<p>Add debug headers to requests:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>X-Debug: true
-</code></pre></div></div>
-
-<h3 id="api-status">API Status</h3>
-<p>Check API health:</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl https://materioa.netlify.app/api/v2/health
-</code></pre></div></div>
-
-<h3 id="contact-support">Contact Support</h3>
-<ul>
-  <li>GitHub Issues: <a href="https://github.com/your-repo/issues">Repository Issues</a></li>
-  <li>Email: support@materio.app</li>
-  <li>Documentation: <a href="https://docs.materio.app">API Docs</a></li>
-</ul>
-
-<hr />
-
-<h2 id="license--usage">License &amp; Usage</h2>
-
-<p>This API is part of the Materio platform. See the main repository LICENSE file for terms and conditions.</p>
-
-<p><strong>Rate Limits</strong>: Please respect API rate limits and implement proper error handling.</p>
-
-<p><strong>Data Privacy</strong>: User data is handled according to our Privacy Policy. Personal information is encrypted and securely stored.</p>
-
-<p><strong>API Versioning</strong>: This is version 1 of the API. Breaking changes will be introduced in new versions with proper migration guides.</p>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[Complete API documentation for Materio v2 with cURL and PowerShell examples covering authentication, profile management, chat AI, admin tools, CDN management, and premium account recovery features.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/img/covers/b82d9728-d54f-41c9-85be-3b0e5dcea670.webp" /><media:content medium="image" url="http://localhost:4000/assets/img/covers/b82d9728-d54f-41c9-85be-3b0e5dcea670.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+<div style="text-align: center">⁂</div>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This resource provides with the solution of questions given in assignments 1 to 8 of Software Engineering.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:49328/assets/img/covers/759dad03-6b05-4760-9e78-96860d8ce44b.webp" /><media:content medium="image" url="http://localhost:49328/assets/img/covers/759dad03-6b05-4760-9e78-96860d8ce44b.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

@@ -331,3 +331,77 @@ You can also use CSS classes directly on blockquotes for custom styling:
 {: .quote}
 ```
 
+---
+
+## Link Cards (Promotional Info Cards)
+
+Link Cards allow you to attach promotional info cards below specific links in your post content. These cards display an image, title, and excerpt, making internal product links more engaging and visually prominent.
+
+### How It Works
+
+1. Define card data in the post's front-matter using `link_cards`
+2. The system automatically matches links in your content by their **link text**
+3. A styled card appears below the matching link with an arrow pointing to it
+
+### Front-matter Syntax
+
+```yaml
+---
+title: Your Post Title
+layout: post
+link_cards:
+  - id: "Materio Originals"
+    image: "/assets/img/covers/example.webp"
+    title: "Materio Originals"
+    excerpt: "Short description of what this link leads to."
+  - id: "Another Feature"
+    image: "/assets/img/covers/feature.webp"
+    title: "Another Feature"
+    excerpt: "Description for another promotional link."
+---
+```
+
+### Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `id` | string | Yes | Text to match against link text (case-insensitive). The link with matching text will get the card. |
+| `image` | string | No | Path to the card's preview image (150×128px recommended). |
+| `title` | string | Yes | Title displayed on the card. |
+| `excerpt` | string | No | Short description text (2 lines max). |
+| `badge` | string | No | Optional badge label (e.g., "Exclusive", "New"). |
+
+### Example Usage
+
+**In front-matter:**
+
+```yaml
+link_cards:
+  - id: "Materio Originals"
+    image: "/assets/img/covers/8abb551b-2bb4-4879-800e-e936a1c44632.webp"
+    title: "Materio Originals"
+    excerpt: "A brand-new category of resources created, curated, and refined entirely by Materio."
+```
+
+**In your markdown content:**
+
+```markdown
+Check out [Materio Originals](https://materioa.vercel.app/originals) for exclusive study materials.
+```
+
+The card will automatically appear below the "Materio Originals" link.
+
+### Card Features
+
+- **Dismissable**: Users can close the card via the × button (only removes the card, link stays)
+- **Clickable**: Clicking the card opens the link in a new tab
+- **Dynamic arrow**: The arrow pointing to the link repositions on window resize
+- **Dark mode support**: Cards automatically adapt to dark theme
+- **Responsive**: Works on all screen sizes with fixed 150×128px image
+
+### Best Practices
+
+- Use for internal promotional links (features, products, important pages)
+- Keep excerpts concise (under 100 characters)
+- Use high-quality square or landscape images
+- Match the `id` exactly to your link text for reliable matching

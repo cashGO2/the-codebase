@@ -600,9 +600,28 @@ window.addEventListener('insightroomPostsLoaded', function () {
     }
 });
 
+// Fullscreen management - prevent ESC from exiting, only Shift+F or button can toggle
 const fullscreenButton = document.getElementById('fullscreenButton');
+let intentionalFullscreenExit = false; // Flag to track if exit was triggered by user action (button/shortcut)
+
+// Intercept ESC key to prevent browser from exiting fullscreen
+// This listener must be added with capture:true to intercept before browser handles it
+document.addEventListener('keydown', (e) => {
+    // Only intercept ESC when in fullscreen mode
+    if (e.key === 'Escape' && document.fullscreenElement) {
+        // Prevent the default browser behavior (exiting fullscreen)
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        // Do nothing - fullscreen stays active
+        // User must use Shift+F or click fullscreen button to exit
+        return false;
+    }
+}, true); // capture: true is critical to intercept before browser
+
 fullscreenButton.addEventListener('click', () => {
     if (!document.fullscreenElement) {
+        intentionalFullscreenExit = false;
         document.documentElement.requestFullscreen().then(() => {
             popup.classList.add('fullscreen');
             // Change to exit fullscreen icon
@@ -613,6 +632,8 @@ fullscreenButton.addEventListener('click', () => {
             console.error(`Failed to enable fullscreen mode: ${err.message}`);
         });
     } else {
+        // Mark this as an intentional exit so fullscreenchange handler doesn't block it
+        intentionalFullscreenExit = true;
         document.exitFullscreen().then(() => {
             popup.classList.remove('fullscreen');
             // Change to enter fullscreen icon
@@ -624,6 +645,24 @@ fullscreenButton.addEventListener('click', () => {
         });
     }
 });
+
+// Listen for fullscreen changes to update UI state
+document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement) {
+        // Fullscreen was exited - update UI
+        popup.classList.remove('fullscreen');
+        const icon = fullscreenButton.querySelector('i');
+        icon.className = 'fas fa-expand';
+        fullscreenButton.setAttribute('aria-label', 'Enter fullscreen');
+        // Reset flag
+        intentionalFullscreenExit = false;
+    }
+});
+
+// Expose the intentional exit flag globally so keyboard-shortcuts.js can set it
+window.setIntentionalFullscreenExit = (value) => {
+    intentionalFullscreenExit = value;
+};
 
 // Function to load resources data
 function loadResourcesData(restoreSemester = null) {
@@ -1183,10 +1222,30 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Show blogs card only if user is plus user OR admin
+        // Show blogs card only if user is plus user OR admin AND InsightRoom toggle is enabled
         if (blogsCard) {
             if (isPlusUser || hasAdminPrivileges) {
-                blogsCard.style.display = 'block';
+                // Check if InsightRoom is enabled from saved cookie (read directly to avoid scope issues)
+                let isInsightroomEnabled = true; // default
+                const settingsCookie = getCookie('insightroomSettings');
+                if (settingsCookie) {
+                    try {
+                        // Handle both encoded and non-encoded cookie values
+                        let decoded = settingsCookie;
+                        try {
+                            decoded = decodeURIComponent(settingsCookie);
+                        } catch (e) {
+                            // Already decoded or not encoded
+                        }
+                        const settings = JSON.parse(decoded);
+                        if (Array.isArray(settings) && settings.length === 2) {
+                            isInsightroomEnabled = settings[0];
+                        }
+                    } catch (e) {
+                        // ignore parse errors, use default
+                    }
+                }
+                blogsCard.style.display = isInsightroomEnabled ? 'block' : 'none';
             } else {
                 blogsCard.style.display = 'none';
                 return;
@@ -1411,7 +1470,14 @@ function getInsightroomSettings() {
     const settingsCookie = getCookie('insightroomSettings');
     if (settingsCookie) {
         try {
-            const settings = JSON.parse(settingsCookie);
+            // Try to decode URI component (for newly saved cookies)
+            let decoded = settingsCookie;
+            try {
+                decoded = decodeURIComponent(settingsCookie);
+            } catch (e) {
+                // Already decoded or not encoded, use as-is
+            }
+            const settings = JSON.parse(decoded);
             if (Array.isArray(settings) && settings.length === 2) {
                 return settings;
             }
@@ -1426,7 +1492,8 @@ function getInsightroomSettings() {
 // Function to save Insightroom settings to cookie
 function saveInsightroomSettings(enabled, view) {
     const settings = [enabled, view];
-    setCookie('insightroomSettings', JSON.stringify(settings), 365);
+    // Use encodeURIComponent to properly escape JSON special characters
+    setCookie('insightroomSettings', encodeURIComponent(JSON.stringify(settings)), 365);
 }
 
 // Function to handle Insightroom section visibility and view mode
@@ -1475,7 +1542,9 @@ function handleInsightroomToggle() {
     // Add event listener for toggle changes
     insightroomToggle.addEventListener('change', function () {
         const enabled = this.checked;
-        const currentView = selectedText && selectedText.textContent.toLowerCase() === 'folded' ? 'folded' : 'normal';
+        // Read the view mode from saved settings to preserve it, not from DOM which could be stale
+        const [, savedViewMode] = getInsightroomSettings();
+        const currentView = savedViewMode || 'normal';
 
         // Show/hide view options
         if (viewOptions) {
@@ -1612,8 +1681,8 @@ function toggleBlogFoldedState() {
 
 // Initialize Insightroom toggle when DOM is loaded
 document.addEventListener('DOMContentLoaded', function () {
-    // Small delay to ensure all other elements are initialized first
-    setTimeout(handleInsightroomToggle, 100);
+    // Initialize immediately - no delay needed, this prevents flash of incorrect state
+    handleInsightroomToggle();
 
     // Add click handler for header in folded mode
     const headerContainer = document.getElementById('blogHeaderContainer');
@@ -1630,6 +1699,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+// Global function to toggle Insightroom feed on/off (used by keyboard shortcuts)
+// This properly toggles AND persists the state
+window.toggleInsightroomFeed = function () {
+    const insightroomToggle = document.getElementById('insightroomToggle');
+    if (insightroomToggle) {
+        // Toggle the checkbox state
+        insightroomToggle.checked = !insightroomToggle.checked;
+        // Dispatch change event to trigger the handler
+        insightroomToggle.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+};
 
 // ================================================
 // CLEAR SITE DATA FUNCTIONALITY

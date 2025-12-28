@@ -42,6 +42,8 @@ The system supports:
 
 Here are the most commonly used fields and what they do:
 
+### Core Fields
+
 - `enabled` (boolean): turn the promotion on/off.
 - `category` (string): free-form tag to categorize promotions (e.g., "whats-new").
 - `frequency` (string): how often to show — see Frequency section below.
@@ -49,11 +51,60 @@ Here are the most commonly used fields and what they do:
 - `title` (string): promo title displayed in modal.
 - `description` (string): markdown-like text parsed by the script.
 - `link` (string): primary action URL (can be `""`, `null`, or `#anchor`).
-- `images` (array): list of media URLs (images or videos). If a video extension is detected, the script treats it as video.
+
+### Media Fields
+
+- `media` (array): list of media URLs (images or videos). Supports both images and video files. If a video extension is detected (`.mp4`, `.webm`, `.ogg`, etc.), the script treats it as video.
+
+> [!WARNING] *`images` is deprecated, while `images` is still supported for backward compatibility but `media` is preferred.*
+
+- `mediaFit` (string): controls how media fits within the frame. See table below.
 - `imageRotationInterval` (number): milliseconds between rotations.
 - `imageAnimation` (object): describes per-rotation animation (see below).
+
+#### `mediaFit` Options
+
+| Value | Description |
+|-------|-------------|
+| `contain` | Scales media to fit within the frame **without cropping** (shows entire video/image) |
+| `cover` | Scales media to fill the frame, **may crop edges** (default for backward compatibility) |
+| `fill` | Stretches media to fill the frame (may distort aspect ratio) |
+| `scale-down` | Like `contain`, but never scales up beyond original size |
+| `none` | Original size (no scaling) |
+
+**Tip**: Use `"mediaFit": "contain"` for videos to ensure the entire video is visible without cropping.
+
+### Device Targeting
+
+- `showOn` (string or array): controls which device types see the promotion.
+
+#### `showOn` Options
+
+| Value | Shows on |
+|-------|----------|
+| `"all"` | All devices (default if not specified) |
+| `"desktop"` | Windows, Mac, Linux, ChromeOS only |
+| `"mobile"` | Phones only (iPhone, Android phones) |
+| `"tablet"` | Tablets only (iPad, Android tablets) |
+| `["desktop", "mobile"]` | Multiple devices (array format) |
+
+**Example**: To show a promo only on desktop:
+```json
+"showOn": "desktop"
+```
+
+To show on both desktop and tablet:
+```json
+"showOn": ["desktop", "tablet"]
+```
+
+### Scheduling Fields
+
 - `isLimitedOffer`, `startDate`, `endDate`: control showing within a date range.
 - `showDateInfo` (boolean): show human-friendly date in modal.
+
+### UI Fields
+
 - `buttons` (object): `primary` and `secondary` button configuration.
 - `disclaimer` (object): controls small text below actions.
 - `options` (object): e.g., `showDontShowAgain` and related text.
@@ -116,7 +167,8 @@ Minimal promo (single image, simple fade):
   "enabled": true,
   "title": "New: Materio Originals",
   "description": "Check out curated resources created by Materio.",
-  "images": ["assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp"],
+  "media": ["assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp"],
+  "mediaFit": "cover",
   "imageRotationInterval": 5000,
   "imageAnimation": { "type": "fade", "duration": 600 },
   "frequency": "everytime",
@@ -124,14 +176,15 @@ Minimal promo (single image, simple fade):
 }
 ```
 
-Slide-left rotation (explicit type):
+Slide-left rotation with video (using `contain` to prevent cropping):
 
 ```json
 {
-  "images": [
-    "assets/img/covers/a.webp",
+  "media": [
+    "assets/media/promo-video.webm",
     "assets/img/covers/b.webp"
   ],
+  "mediaFit": "contain",
   "imageRotationInterval": 3000,
   "imageAnimation": { "type": "slide-left", "duration": 450 }
 }
@@ -170,7 +223,7 @@ forceLoadPromo()
 
 // Manually setup rotation with a short interval for testing
 window.setupImageRotation && window.setupImageRotation(
-  (promoData && promoData.images) || [],
+  (promoData && promoData.media) || [],
   2000,
   { type: 'slide-left', duration: 450 }
 )

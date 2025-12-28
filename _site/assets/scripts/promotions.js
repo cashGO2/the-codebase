@@ -96,6 +96,7 @@ function shouldDisplayPromotion(data) {
 function checkDeviceType(showOn) {
   // Default to 'All' if not specified
   if (!showOn) {
+    console.log('[Promo Debug] showOn not specified, showing on all devices');
     return true;
   }
 
@@ -107,13 +108,17 @@ function checkDeviceType(showOn) {
 
   // Check for 'all'
   if (normalizedDevices.includes('all')) {
+    console.log('[Promo Debug] showOn is "all", showing on all devices');
     return true;
   }
 
   // Detect current device type
   const currentDevice = detectDeviceType();
 
-  return normalizedDevices.includes(currentDevice);
+  const matches = normalizedDevices.includes(currentDevice);
+  console.log(`[Promo Debug] showOn: ${JSON.stringify(normalizedDevices)}, detected device: "${currentDevice}", matches: ${matches}`);
+
+  return matches;
 }
 
 // Detect current device type based on OS/platform via user agent
@@ -318,10 +323,12 @@ function displayPromotionModal(data) {
     // console.log('Modal style display:', modal.style.display);
   }, 1000);
 
-  // Setup image rotation if multiple images
-  if (data.images && data.images.length > 1) {
-    // console.log('Setting up image rotation for', data.images.length, 'images');
-    setupImageRotation(data.images, data.imageRotationInterval || 5000, data.imageAnimation);
+  // Setup media rotation if multiple media items
+  // Support both 'media' (new) and 'images' (legacy) properties
+  const mediaItems = data.media || data.images;
+  if (mediaItems && mediaItems.length > 1) {
+    // console.log('Setting up media rotation for', mediaItems.length, 'items');
+    setupImageRotation(mediaItems, data.imageRotationInterval || 5000, data.imageAnimation);
   }
 
   // Debug function to check video controls
@@ -378,8 +385,23 @@ function updateModalContent(modal, data) {
   const imageContainer = modal.querySelector('.promo-image');
   const modalContainer = modal.querySelector('.promo-modal');
 
-  if (data.images && data.images.length > 0) {
-    const firstMedia = data.images[0];
+  // Support both 'media' (new) and 'images' (legacy) properties
+  const mediaItems = data.media || data.images;
+
+  // Apply media fit style
+  // Options: 'contain' (fit without cropping), 'cover' (fill and crop), 'fill' (stretch),
+  //          'scale-down' (like contain but never scale up), 'none' (original size)
+  const mediaFit = data.mediaFit || 'cover'; // Default to 'cover' for backward compatibility
+
+  if (imageEl) {
+    imageEl.style.objectFit = mediaFit;
+  }
+  if (videoEl) {
+    videoEl.style.objectFit = mediaFit;
+  }
+
+  if (mediaItems && mediaItems.length > 0) {
+    const firstMedia = mediaItems[0];
     const isVideo = isVideoFile(firstMedia);
 
     if (isVideo) {
@@ -423,7 +445,7 @@ function updateModalContent(modal, data) {
     if (modalContainer) {
       modalContainer.classList.add('no-image');
     }
-    // console.log('Hidden media (no images available)');
+    // console.log('Hidden media (no media available)');
   }
 
   // Hide video controls for images

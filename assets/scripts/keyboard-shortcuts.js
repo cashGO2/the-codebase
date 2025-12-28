@@ -385,7 +385,13 @@
 
             toggleViewerFullscreen: () => {
                 const fullscreenBtn = document.getElementById('fullscreenButton');
-                if (fullscreenBtn) fullscreenBtn.click();
+                if (fullscreenBtn) {
+                    // If we're currently in fullscreen and about to exit, set the intentional flag
+                    if (document.fullscreenElement && typeof window.setIntentionalFullscreenExit === 'function') {
+                        window.setIntentionalFullscreenExit(true);
+                    }
+                    fullscreenBtn.click();
+                }
             },
 
             downloadBookmark: () => {
@@ -588,8 +594,14 @@
             },
 
             toggleInsightroom: () => {
-                const toggle = document.getElementById('insightroomToggle');
-                if (toggle) toggle.click();
+                // Use the global function that properly toggles and persists state
+                if (typeof window.toggleInsightroomFeed === 'function') {
+                    window.toggleInsightroomFeed();
+                } else {
+                    // Fallback: click the toggle
+                    const toggle = document.getElementById('insightroomToggle');
+                    if (toggle) toggle.click();
+                }
             },
 
             toggleInsightroomView: () => {
