@@ -1,7 +1,7 @@
 {
   "enabled": true,
   "category": "whats-new",
-  "frequency": "everytime",
+  "frequency": "every-12hr",
   "customFrequencyHours": "null",
   "title": "What's New",
   "link": "/changelog",

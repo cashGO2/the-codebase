@@ -9,7 +9,7 @@ category: whats-new
 no-ads: true
 hide_author: true
 hide_print: true
-date: '2025-12-28 08:43:10'
+date: 2025-12-28 08:43:10 +0530
 link_cards:
   - id: "Materio Originals"
     image: "/assets/img/covers/8abb551b-2bb4-4879-800e-e936a1c44632.webp"

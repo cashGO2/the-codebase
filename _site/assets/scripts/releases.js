@@ -6,7 +6,7 @@ window.addEventListener("DOMContentLoaded", function () {
     } else if (url.indexOf("/labs") !== -1) {
         branch = "labs";
     }
-    fetch('/assets/data/releases.json')
+    fetch('/assets/data/releases.json?v=20253c725f')
         .then(function (response) {
             return response.json();
         })
