@@ -279,6 +279,16 @@ body::after {
     z-index: 998;
 }
 
+/* =============================================
+   MOBILE FRAME CORNERS - Hidden on desktop
+   ============================================= */
+.mobile-corner-tl,
+.mobile-corner-tr,
+.mobile-corner-bl,
+.mobile-corner-br {
+    display: none;
+}
+
 .navbar a {
     color: #4d4d4d;
     text-decoration: none;
@@ -522,12 +532,13 @@ i span {
 #popup {
     display: none;
     position: fixed;
-    top: 2%;
-    left: 2%;
-    width: 95%;
-    height: 95%;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    width: auto;
+    height: auto;
     background-color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     z-index: 1000;
     overflow: auto;
     border-radius: 10px;
@@ -549,9 +560,20 @@ i span {
 
 #popupContent {
     padding: 5px;
-    height: calc(100% - 15px);
-
+    padding-top: 0;
+    height: 100%;
     box-sizing: border-box;
+}
+
+/* PDF viewer iframe - custom border-radius */
+#pdf-iframe {
+    border: none;
+    width: 100%;
+    height: calc(100% - 22px) !important;
+    margin-top: 22px;
+    border-radius: 14px 14px 25px 25px !important;
+    corner-shape: squircle;
+    overflow: hidden;
 }
 
 #closePopup {
@@ -778,6 +800,23 @@ input:checked+.slider:before {
     gap: 8px;
 }
 
+/* Dark mode toggle switch styles */
+body.dark-mode .slider {
+    background-color: #444;
+}
+
+body.dark-mode .slider:before {
+    background-color: #e0e0e0;
+}
+
+body.dark-mode input:checked+.slider {
+    background-color: #ff8400;
+}
+
+body.dark-mode input:checked+.slider:before {
+    background-color: white;
+}
+
 
 body.dark-mode {
     background-color: #121212;
@@ -919,14 +958,163 @@ body.dark-mode #gh .contribute-button span {
         background-color: rgba(33, 33, 33, 0.5);
     }
 
-    /* Hide all inner corners and frame strips on mobile */
+    /* =============================================
+       MOBILE FRAME - 3 strips (left, right, bottom) + 4 rounded corners
+       Header already exists, so no top strip needed
+       ============================================= */
+
+    /* Reset PC-specific pseudo-elements */
     .navbar::after,
-    header::after,
-    body::before,
-    body::after,
-    .container::before,
-    .container::after {
+    header::after {
         display: none !important;
+    }
+
+    /* Left strip - from below header to bottom */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 40px;
+        left: 0;
+        bottom: 0;
+        width: 5px;
+        background-color: rgba(231, 231, 221, 0.5);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        pointer-events: none;
+        z-index: 999;
+        display: block !important;
+        height: auto;
+        right: auto;
+    }
+
+    /* Right strip - from below header to bottom */
+    body::after {
+        content: "";
+        position: fixed;
+        top: 40px;
+        right: 0;
+        bottom: 0;
+        width: 5px;
+        background-color: rgba(231, 231, 221, 0.5);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        pointer-events: none;
+        z-index: 999;
+        display: block !important;
+        height: auto;
+        left: auto;
+    }
+
+    /* Bottom strip - full width */
+    .container::after {
+        content: "";
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background-color: rgba(231, 231, 221, 0.5);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        pointer-events: none;
+        z-index: 998;
+        display: block !important;
+        top: auto;
+        width: auto;
+    }
+
+    /* Hide the right strip from PC (we're using body::after instead) */
+    .container::before {
+        display: none !important;
+    }
+
+    /* Top-left corner - at inner edge of left strip, below header */
+    .mobile-corner-tl {
+        display: block;
+        position: fixed;
+        top: 60px;
+        left: 5px;
+        width: 20px;
+        height: 20px;
+        background: radial-gradient(circle at 100% 100%, transparent 20px, rgba(231, 231, 221, 0.5) 20px);
+        pointer-events: none;
+        z-index: 1000;
+    }
+
+    /* Top-right corner - at inner edge of right strip, below header */
+    .mobile-corner-tr {
+        display: block;
+        position: fixed;
+        top: 60px;
+        right: 5px;
+        width: 20px;
+        height: 20px;
+        background: radial-gradient(circle at 0% 100%, transparent 20px, rgba(231, 231, 221, 0.5) 20px);
+        pointer-events: none;
+        z-index: 1000;
+    }
+
+    /* Bottom-left corner - at inner edge of both strips */
+    .mobile-corner-bl {
+        display: block;
+        position: fixed;
+        bottom: 5px;
+        left: 5px;
+        width: 20px;
+        height: 20px;
+        background: radial-gradient(circle at 100% 0%, transparent 20px, rgba(231, 231, 221, 0.5) 20px);
+        pointer-events: none;
+        z-index: 1000;
+    }
+
+    /* Bottom-right corner - at inner edge of both strips */
+    .mobile-corner-br {
+        display: block;
+        position: fixed;
+        bottom: 5px;
+        right: 5px;
+        width: 20px;
+        height: 20px;
+        background: radial-gradient(circle at 0% 0%, transparent 20px, rgba(231, 231, 221, 0.5) 20px);
+        pointer-events: none;
+        z-index: 1000;
+    }
+
+    /* Dark mode for mobile frame strips and corners */
+    body.dark-mode body::before,
+    body.dark-mode body::after,
+    body.dark-mode .container::after {
+        background-color: rgba(33, 33, 33, 0.5);
+    }
+
+    body.dark-mode .mobile-corner-tl {
+        background: radial-gradient(circle at 100% 100%, transparent 20px, rgba(33, 33, 33, 0.5) 20px);
+    }
+
+    body.dark-mode .mobile-corner-tr {
+        background: radial-gradient(circle at 0% 100%, transparent 20px, rgba(33, 33, 33, 0.5) 20px);
+    }
+
+    body.dark-mode .mobile-corner-bl {
+        background: radial-gradient(circle at 100% 0%, transparent 20px, rgba(33, 33, 33, 0.5) 20px);
+    }
+
+    body.dark-mode .mobile-corner-br {
+        background: radial-gradient(circle at 0% 0%, transparent 20px, rgba(33, 33, 33, 0.5) 20px);
+    }
+
+    /* Adjust container padding for mobile frame strips */
+    .container {
+        padding-top: 60px !important;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        padding-bottom: 5px !important;
+    }
+
+    .content {
+        padding: 15px;
+        padding-bottom: 70px;
+        /* extra space for floating navbar */
     }
 
     .btn {
@@ -1027,14 +1215,15 @@ body.dark-mode #gh .contribute-button span {
 #popup {
     display: none;
     position: fixed;
-    top: 2%;
-    left: 2%;
-    width: 95%;
-    height: 95%;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    width: auto;
+    height: auto;
     background-color: rgba(255, 245, 223, 0.5);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     z-index: 1000;
     overflow: auto;
     border-radius: 25px;
