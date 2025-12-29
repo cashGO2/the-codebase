@@ -8,64 +8,153 @@
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
       ]
     },
     {
       "source": "/assets/data/(.*).json",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
-        { "key": "Pragma", "value": "no-cache" },
-        { "key": "Expires", "value": "0" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        },
+        {
+          "key": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "key": "Expires",
+          "value": "0"
+        }
       ]
     },
     {
       "source": "/channels/(.*).json",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
-        { "key": "Pragma", "value": "no-cache" },
-        { "key": "Expires", "value": "0" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        },
+        {
+          "key": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "key": "Expires",
+          "value": "0"
+        }
       ]
     },
     {
       "source": "/manifest.json",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
-        { "key": "Pragma", "value": "no-cache" },
-        { "key": "Expires", "value": "0" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        },
+        {
+          "key": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "key": "Expires",
+          "value": "0"
+        }
       ]
     },
     {
       "source": "/assets/(style|scripts|img)/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
       ]
     },
     {
       "source": "/account/css/(.*).css",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
       ]
     }
   ],
   "rewrites": [
-    { "source": "/api/v2/search", "destination": "/api/v2/search.js" },
-    { "source": "/api/v2/features/:path*", "destination": "/api/v2/features.js" },
-    { "source": "/api/v2/invites/sharelink-info", "destination": "/api/v2/invites.js" },
-    { "source": "/api/v2/invites/:path*", "destination": "/api/v2/invites.js" },
-    { "source": "/sharelink-info", "destination": "/api/v2/invites.js" },
-    { "source": "/invites/:code", "destination": "/invite.html" },
-    { "source": "/account/profile", "destination": "/account/profile.html" },
-    { "source": "/account/signup", "destination": "/account/signup.html" },
-    { "source": "/account/forgot-password", "destination": "/account/forgot-password.html" },
-    { "source": "/sharelink-test", "destination": "/sharelink-test.html" },
-    { "source": "/api/v1/:path*", "destination": "/api/v2/:path*" }
+    {
+      "source": "/api/v2/search",
+      "destination": "/api/v2/search.js"
+    },
+    {
+      "source": "/api/v2/features/:path*",
+      "destination": "/api/v2/features.js"
+    },
+    {
+      "source": "/api/v2/invites/sharelink-info",
+      "destination": "/api/v2/invites.js"
+    },
+    {
+      "source": "/api/v2/invites/:path*",
+      "destination": "/api/v2/invites.js"
+    },
+    {
+      "source": "/sharelink-info",
+      "destination": "/api/v2/invites.js"
+    },
+    {
+      "source": "/invites/:code",
+      "destination": "/invite.html"
+    },
+    {
+      "source": "/account/profile",
+      "destination": "/account/profile.html"
+    },
+    {
+      "source": "/account/signup",
+      "destination": "/account/signup.html"
+    },
+    {
+      "source": "/account/forgot-password",
+      "destination": "/account/forgot-password.html"
+    },
+    {
+      "source": "/sharelink-test",
+      "destination": "/sharelink-test.html"
+    },
+    {
+      "source": "/api/v1/:path*",
+      "destination": "/api/v2/:path*"
+    }
   ],
   "redirects": [
-    { "source": "/blog", "destination": "/room", "permanent": true },
-    { "source": "/programming%20humor/(.*)", "destination": "/programming-humor/$1", "permanent": true },
-    { "source": "/code%20craftsmanship/(.*)", "destination": "/code-craftsmanship/$1", "permanent": true },
-    { "source": "/paper%20solution/(.*)", "destination": "/paper-solution/$1", "permanent": true },
-    { "source": "/status", "destination":"https://statuspage.incident.io/materio", "permanent":true}
+    {
+      "source": "/blog",
+      "destination": "/room",
+      "permanent": true
+    },
+    {
+      "source": "/programming%20humor/(.*)",
+      "destination": "/programming-humor/$1",
+      "permanent": true
+    },
+    {
+      "source": "/code%20craftsmanship/(.*)",
+      "destination": "/code-craftsmanship/$1",
+      "permanent": true
+    },
+    {
+      "source": "/paper%20solution/(.*)",
+      "destination": "/paper-solution/$1",
+      "permanent": true
+    },
+    {
+      "source": "/status",
+      "destination": "https://statuspage.incident.io/materio",
+      "permanent": true
+    }
   ]
 }

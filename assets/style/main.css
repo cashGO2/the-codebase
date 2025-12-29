@@ -32,7 +32,11 @@ header {
 
 .container {
     padding-top: 60px;
+    padding-bottom: 5px;
+    /* account for bottom strip */
     margin-left: 50px;
+    margin-right: 5px;
+    /* account for right strip */
     display: flex;
     flex: 1;
 }
@@ -172,6 +176,109 @@ header {
     z-index: 999;
 }
 
+/* =============================================
+   INNER ROUNDED CORNERS - Creates frame effect
+   4 corners using radial-gradient pseudo-elements
+   
+   Original (top-left): circle at 100% 100%
+   Flip horizontal:     swap X → circle at 0% 100%
+   Flip vertical:       swap Y → circle at 100% 0%
+   Flip both:           swap both → circle at 0% 0%
+   ============================================= */
+
+/* Top-left corner (where navbar meets header/content) */
+.navbar::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -20px;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle at 100% 100%, transparent 20px, rgba(231, 231, 221, 0.5) 20px);
+    pointer-events: none;
+}
+
+/* Top-right corner (flipped horizontally) - shifted left for strip */
+header::after {
+    content: "";
+    position: absolute;
+    bottom: -20px;
+    right: 5px;
+    /* shifted left by strip width */
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle at 0% 100%, transparent 20px, rgba(231, 231, 221, 0.5) 20px);
+    pointer-events: none;
+}
+
+/* Bottom-left corner (flipped vertically) - shifted up for strip */
+body::before {
+    content: "";
+    position: fixed;
+    bottom: 5px;
+    /* shifted up by strip height */
+    left: 50px;
+    /* navbar width */
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle at 100% 0%, transparent 20px, rgba(231, 231, 221, 0.5) 20px);
+    pointer-events: none;
+    z-index: 999;
+}
+
+/* Bottom-right corner (flipped both ways) - shifted for both strips */
+body::after {
+    content: "";
+    position: fixed;
+    bottom: 5px;
+    /* shifted up by strip height */
+    right: 5px;
+    /* shifted left by strip width */
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle at 0% 0%, transparent 20px, rgba(231, 231, 221, 0.5) 20px);
+    pointer-events: none;
+    z-index: 999;
+}
+
+/* =============================================
+   FRAME STRIPS - Right and Bottom edges (5px)
+   ============================================= */
+
+/* Right strip (like navbar but on right side) */
+.container::before {
+    content: "";
+    position: fixed;
+    top: 60px;
+    /* below header */
+    bottom: 0;
+    /* extend all the way to bottom */
+    right: 0;
+    width: 5px;
+    background-color: rgba(231, 231, 221, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    pointer-events: none;
+    z-index: 998;
+}
+
+/* Bottom strip (like header but at bottom) */
+.container::after {
+    content: "";
+    position: fixed;
+    bottom: 0;
+    left: 50px;
+    /* after navbar */
+    right: 0;
+    /* extend all the way to right */
+    height: 5px;
+    background-color: rgba(231, 231, 221, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    pointer-events: none;
+    z-index: 998;
+}
+
 .navbar a {
     color: #4d4d4d;
     text-decoration: none;
@@ -214,15 +321,15 @@ header.dark-mode {
     background-size: contain;
     background-position: center;
     cursor: pointer;
+    /* Default to light mode logo */
+    background-image: url('/assets/img/materio_new_bk.svg');
 }
 
-.light-mode .header-logo {
-    background-image: var(--header-logo-light, url('/assets/img/materio_new_bk.svg'));
+/* Dark mode logo - when body has dark-mode class */
+body.dark-mode .header-logo {
+    background-image: url('/assets/img/materio_new_wh.svg');
 }
 
-.dark-mode .header-logo {
-    background-image: var(--header-logo-dark, url('/assets/img/materio_new_wh.svg'));
-}
 
 /* Health Status Indicator */
 .health-status-container {
@@ -373,6 +480,11 @@ p {
     margin: 20px 0;
     min-height: 150px;
     corner-shape: squircle;
+}
+
+/* Remove margin for reading card */
+#reading.card-one {
+    margin: 0;
 }
 
 .card-layout {
@@ -698,6 +810,29 @@ header.dark-mode {
     border-color: rgba(68, 68, 68, 0.5);
 }
 
+/* Dark mode inner corners - all 4 corners */
+.navbar.dark-mode::after {
+    background: radial-gradient(circle at 100% 100%, transparent 20px, rgba(34, 34, 34, 0.5) 20px);
+}
+
+header.dark-mode::after {
+    background: radial-gradient(circle at 0% 100%, transparent 20px, rgba(34, 34, 34, 0.5) 20px);
+}
+
+body.dark-mode::before {
+    background: radial-gradient(circle at 100% 0%, transparent 20px, rgba(34, 34, 34, 0.5) 20px);
+}
+
+body.dark-mode::after {
+    background: radial-gradient(circle at 0% 0%, transparent 20px, rgba(34, 34, 34, 0.5) 20px);
+}
+
+/* Dark mode frame strips */
+body.dark-mode .container::before,
+body.dark-mode .container::after {
+    background-color: rgba(34, 34, 34, 0.5);
+}
+
 .navbar.dark-mode a {
     color: rgb(210, 210, 210);
 }
@@ -782,6 +917,16 @@ body.dark-mode #gh .contribute-button span {
 
     .navbar.dark-mode {
         background-color: rgba(33, 33, 33, 0.5);
+    }
+
+    /* Hide all inner corners and frame strips on mobile */
+    .navbar::after,
+    header::after,
+    body::before,
+    body::after,
+    .container::before,
+    .container::after {
+        display: none !important;
     }
 
     .btn {

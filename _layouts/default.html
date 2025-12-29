@@ -6,15 +6,34 @@
     <link rel="stylesheet" href="{{ '/assets/style/notification.css' | relative_url }}">
     <link rel="stylesheet" href="{{ '/assets/style/gestures.css' | relative_url }}">
     <link rel="stylesheet" href="{{ '/assets/style/ota-update.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/style/splash.css' | relative_url }}">
     <!-- {% include fa-icons.html %} -->
+
+    <!-- Inline critical theme detection to prevent FOUC -->
+    <script>
+        (function () {
+            function getCookie(name) {
+                var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+                return match ? match[2] : null;
+            }
+            var theme = getCookie('theme');
+            var systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (theme === 'dark' || (!theme && systemDark)) {
+                document.documentElement.classList.add('dark-mode');
+                document.body && document.body.classList.add('dark-mode');
+            }
+        })();
+    </script>
 </head>
 
 <body>
+
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M6PC6RJL" height="0" width="0"
             style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
-    <header>
+
+    <header class="actual-content">
         <a href="/" class="header-logo" role="button" aria-label="Go to homepage"></a>
         <a href="https://statuspage.incident.io/materio" target="_blank" class="health-status-container"
             aria-label="System Status">
@@ -25,6 +44,7 @@
     <main>
         {% include main.html %}
     </main>
+
 
     <!-- PERFORMANCE OPTIMIZED SCRIPT LOADING -->
     <!-- Critical scripts loaded immediately -->

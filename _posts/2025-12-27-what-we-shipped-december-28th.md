@@ -34,13 +34,12 @@ You can also set custom keybinds by clicking on **<i class="fa-regular fa-pencil
 
 
 
-## Improved Search UI
+## Improved Home & Search UI
+![home-ui-preview](/assets/img/post-content/aa2cb12f-70ac-4927-b288-db08f211fdce.webp)
 
-The search interface has been refined for better usability and clarity.
+The Home UI has been refined to feel cleaner, calmer, and more consistent, built on the **Serene Utility** design system. Rounded corners, improved padding, and better spacing bring a smoother visual flow across sections, making the interface feel more intentional and easy on the eyes. New utility icons enhance discoverability, with the **question mark** providing quick access to keyboard shortcuts and the **ship icon** linking to the changelog, so users can stay productive and informed without friction. Overall, the update focuses on clarity, balance, and everyday usability.
 
-A new <i class="fa-solid fa-xmark"></i> button lets you quickly clear or cancel your search query.
-
-On mobile, search results no longer cover the search bar, giving you a cleaner layout and better visibility while browsing results.
+The search interface has been refined for improved clarity and ease of use. A new <i class="fa-solid fa-xmark"></i> button allows you to instantly clear or cancel your search query, reducing friction during repeated searches. On mobile devices, search results no longer overlap the search bar, resulting in a cleaner layout and better visibility while browsing and refining results.
 
 
 
