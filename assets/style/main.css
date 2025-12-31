@@ -974,6 +974,7 @@ body.dark-mode #gh .contribute-button span {
         content: "";
         position: fixed;
         top: 40px;
+        /* Overlap slightly with header to eliminate gap */
         left: 0;
         bottom: 0;
         width: 5px;
@@ -992,6 +993,7 @@ body.dark-mode #gh .contribute-button span {
         content: "";
         position: fixed;
         top: 40px;
+        /* Overlap slightly with header to eliminate gap */
         right: 0;
         bottom: 0;
         width: 5px;
@@ -5319,6 +5321,24 @@ body.dark-mode .paper-texture-item.selected {
     .desktop-only {
         display: none !important;
     }
+
+    /* Hide LocalCDN icon on mobile - feature is desktop-only */
+    #localTabLink {
+        display: none !important;
+    }
+}
+
+/* Icon button tooltip - only show on hover */
+.icon-button .tooltip-text {
+    opacity: 0 !important;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.icon-button:hover .tooltip-text {
+    opacity: 1 !important;
+    visibility: visible;
 }
 
 /* Mobile-only helper class */

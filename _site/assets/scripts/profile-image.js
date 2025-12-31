@@ -67,6 +67,12 @@ document.addEventListener('DOMContentLoaded', function() {
           // Update aria-hidden for accessibility
           currentDropdown.setAttribute('aria-hidden', isShowing ? 'true' : 'false');
           
+          // Update tabindex for focusable items
+          const dropdownItems = currentDropdown.querySelectorAll('.dropdown-item');
+          dropdownItems.forEach(item => {
+            item.setAttribute('tabindex', isShowing ? '-1' : '0');
+          });
+          
           // Focus management for accessibility
           if (!isShowing) {
             // Dropdown is now open, focus first item
@@ -89,6 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Close dropdown
         profileDropdown.classList.remove('show');
         profileDropdown.setAttribute('aria-hidden', 'true');
+        profileDropdown.querySelectorAll('.dropdown-item').forEach(item => item.setAttribute('tabindex', '-1'));
         
         // Trigger settings tab switch
         showSettingsTab();
@@ -105,6 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Close dropdown
         profileDropdown.classList.remove('show');
         profileDropdown.setAttribute('aria-hidden', 'true');
+        profileDropdown.querySelectorAll('.dropdown-item').forEach(item => item.setAttribute('tabindex', '-1'));
         
         // Trigger downloads tab switch
         showDownloadsTab();
@@ -149,6 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
         !currentProfileDropdown.contains(e.target)) {
       currentProfileDropdown.classList.remove('show');
       currentProfileDropdown.setAttribute('aria-hidden', 'true');
+      currentProfileDropdown.querySelectorAll('.dropdown-item').forEach(item => item.setAttribute('tabindex', '-1'));
     }
   }
   
@@ -168,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         currentProfileDropdown.classList.remove('show');
         currentProfileDropdown.setAttribute('aria-hidden', 'true');
+        currentProfileDropdown.querySelectorAll('.dropdown-item').forEach(item => item.setAttribute('tabindex', '-1'));
         currentProfileIconLink.focus();
         break;
       case 'ArrowDown':
