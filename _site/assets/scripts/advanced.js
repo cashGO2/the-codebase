@@ -323,6 +323,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (enableBgToggle) {
         enableBgToggle.addEventListener("change", function () {
+            // Haptic feedback
+            if (window.MaterioHaptics) {
+                window.MaterioHaptics.vibrate(this.checked ? 'toggleOn' : 'toggleOff');
+            }
             if (!this.checked) {
                 homeElem.style.setProperty("--bg-img", "none");
             } else {
@@ -334,6 +338,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (enableNoiseToggle) {
         enableNoiseToggle.addEventListener("change", function () {
+            // Haptic feedback
+            if (window.MaterioHaptics) {
+                window.MaterioHaptics.vibrate(this.checked ? 'toggleOn' : 'toggleOff');
+            }
             if (!this.checked) {
                 homeElem.classList.add("no-noise");
             } else {
@@ -666,6 +674,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize paper mode on page load
     initializePaperMode(); if (paperModeToggle) {
         paperModeToggle.addEventListener("change", function () {
+            // Haptic feedback
+            if (window.MaterioHaptics) {
+                window.MaterioHaptics.vibrate(this.checked ? 'toggleOn' : 'toggleOff');
+            }
             if (this.checked) {
                 enablePaperMode();
                 setCookie("paperMode", "true", 30);
@@ -678,8 +690,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Grain size slider event listener
     if (grainSizeSlider) {
+        let lastSliderValue = grainSizeSlider.value;
         grainSizeSlider.addEventListener("input", function () {
             const size = this.value;
+            // Haptic feedback for slider tick
+            if (window.MaterioHaptics && Math.abs(size - lastSliderValue) >= 5) {
+                window.MaterioHaptics.vibrate('tick');
+                lastSliderValue = size;
+            }
             updateGrainSize(size);
             setCookie("grainSize", size, 30);
         });
@@ -770,6 +788,11 @@ document.addEventListener('DOMContentLoaded', function () {
         paperTextureDropdownTrigger.addEventListener("click", function (e) {
             e.preventDefault();
             e.stopPropagation();
+            const isOpen = paperTextureDropdownWrapper.classList.contains('open');
+            // Haptic feedback
+            if (window.MaterioHaptics) {
+                window.MaterioHaptics.vibrate(isOpen ? 'dropdownClose' : 'dropdownOpen');
+            }
             paperTextureDropdownWrapper.classList.toggle("open");
             paperTextureDropdown.classList.toggle("show");
         });
@@ -780,6 +803,11 @@ document.addEventListener('DOMContentLoaded', function () {
         item.addEventListener("click", function (e) {
             e.preventDefault();
             e.stopPropagation();
+
+            // Haptic feedback
+            if (window.MaterioHaptics) {
+                window.MaterioHaptics.vibrate('select');
+            }
 
             const textureId = this.dataset.value;
             updatePaperTexture(textureId);
@@ -961,6 +989,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (nightReadingToggle) {
         nightReadingToggle.addEventListener("change", function () {
+            // Haptic feedback
+            if (window.MaterioHaptics) {
+                window.MaterioHaptics.vibrate(this.checked ? 'toggleOn' : 'toggleOff');
+            }
             if (this.checked) {
                 enableNightReading();
                 setCookie("nightReading", "true", 30);
@@ -1081,6 +1113,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (invertModeToggle) {
         invertModeToggle.addEventListener('change', function () {
+            // Haptic feedback
+            if (window.MaterioHaptics) {
+                window.MaterioHaptics.vibrate(this.checked ? 'toggleOn' : 'toggleOff');
+            }
             if (this.checked) {
                 enableInvertMode();
                 setCookie('invertMode', 'true', 30);
@@ -1093,6 +1129,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (einkModeToggle) {
         einkModeToggle.addEventListener("change", function () {
+            // Haptic feedback
+            if (window.MaterioHaptics) {
+                window.MaterioHaptics.vibrate(this.checked ? 'toggleOn' : 'toggleOff');
+            }
             if (this.checked) {
                 enableEinkMode();
                 setCookie("einkMode", "true", 30);
@@ -1121,69 +1161,75 @@ document.addEventListener('DOMContentLoaded', function () {
             attributeFilter: ['style', 'class']
         });
     }
-
-    // Save time settings when changed
-    function updateWarmth(value) {
-        const warmthOpacity = value / 100 * 0.3; // Scale from 0-100% to 0-0.3 opacity
-        if (popup) {
-            popup.style.setProperty('--warmth-opacity', warmthOpacity);
-        }
-        if (warmthValue) {
-            warmthValue.textContent = `${value}%`;
-        }
-
-        // Send warmth level to PDF iframe
-        applyWarmthToPDFIframe(warmthOpacity);
-
-        // Log the warmth update for debugging
-        // console.log(`Warmth updated: ${value}% (opacity: ${warmthOpacity.toFixed(3)})`);
-    }
-    // Helper function to apply warmth to PDF iframe
-    function applyWarmthToPDFIframe(opacity) {
-        const pdfIframe = document.getElementById('pdf-iframe');
-        if (pdfIframe && popup.classList.contains('night-reading')) {
-            // Try direct access first (same-origin)
-            try {
-                const iframeDoc = pdfIframe.contentDocument;
-                if (iframeDoc) {
-                    iframeDoc.documentElement.style.setProperty('--warmth-opacity', opacity);
-
-                    // Force repaint to ensure changes are applied
-                    if (iframeDoc.body.classList.contains('night-reading')) {
-                        const viewer = iframeDoc.getElementById('viewer');
-                        if (viewer) {
-                            viewer.style.transform = 'translateZ(0)';
-                            setTimeout(() => {
-                                viewer.style.transform = '';
-                            }, 10);
-                        }
-                    }
-
-                    return; // Success with direct access
-                }
-            } catch (e) {
-                // Cross-origin, use postMessage
-                // console.log('Direct access failed, using postMessage:', e.message);
-            }
-
-            // Use postMessage for cross-origin communication
-            try {
-                pdfIframe.contentWindow.postMessage({
-                    type: 'nightWarmth',
-                    opacity: opacity
-                }, '*');
-            } catch (e) {
-                // console.log('Could not send warmth level to PDF iframe');
-            }
-        }
-    }
-
-    // Warmth slider event listener
-    if (warmthSlider) {
-        warmthSlider.addEventListener("input", function () {
-            const value = this.value;
-            updateWarmth(value);
-            setCookie("nightWarmth", value, 30);
-        });
-    }
 });
+
+// Save time settings when changed
+function updateWarmth(value) {
+    const warmthOpacity = value / 100 * 0.3; // Scale from 0-100% to 0-0.3 opacity
+    if (popup) {
+        popup.style.setProperty('--warmth-opacity', warmthOpacity);
+    }
+    if (warmthValue) {
+        warmthValue.textContent = `${value}%`;
+    }
+
+    // Send warmth level to PDF iframe
+    applyWarmthToPDFIframe(warmthOpacity);
+
+    // Log the warmth update for debugging
+    // console.log(`Warmth updated: ${value}% (opacity: ${warmthOpacity.toFixed(3)})`);
+}
+// Helper function to apply warmth to PDF iframe
+function applyWarmthToPDFIframe(opacity) {
+    const pdfIframe = document.getElementById('pdf-iframe');
+    if (pdfIframe && popup.classList.contains('night-reading')) {
+        // Try direct access first (same-origin)
+        try {
+            const iframeDoc = pdfIframe.contentDocument;
+            if (iframeDoc) {
+                iframeDoc.documentElement.style.setProperty('--warmth-opacity', opacity);
+
+                // Force repaint to ensure changes are applied
+                if (iframeDoc.body.classList.contains('night-reading')) {
+                    const viewer = iframeDoc.getElementById('viewer');
+                    if (viewer) {
+                        viewer.style.transform = 'translateZ(0)';
+                        setTimeout(() => {
+                            viewer.style.transform = '';
+                        }, 10);
+                    }
+                }
+
+                return; // Success with direct access
+            }
+        } catch (e) {
+            // Cross-origin, use postMessage
+            // console.log('Direct access failed, using postMessage:', e.message);
+        }
+
+        // Use postMessage for cross-origin communication
+        try {
+            pdfIframe.contentWindow.postMessage({
+                type: 'nightWarmth',
+                opacity: opacity
+            }, '*');
+        } catch (e) {
+            // console.log('Could not send warmth level to PDF iframe');
+        }
+    }
+}
+
+// Warmth slider event listener
+if (warmthSlider) {
+    let lastWarmthValue = warmthSlider.value;
+    warmthSlider.addEventListener("input", function () {
+        const value = this.value;
+        // Haptic feedback for slider tick
+        if (window.MaterioHaptics && Math.abs(value - lastWarmthValue) >= 5) {
+            window.MaterioHaptics.vibrate('tick');
+            lastWarmthValue = value;
+        }
+        updateWarmth(value);
+        setCookie("nightWarmth", value, 30);
+    });
+}

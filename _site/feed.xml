@@ -1,4 +1,395 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:63586/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:63586/" rel="alternate" type="text/html" /><updated>2025-12-31T22:05:09+05:30</updated><id>http://localhost:63586/feed.xml</id><title type="html">The InsightRoom.</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">What We Shipped - December 28th</title><link href="http://localhost:63586/whats-new/what-we-shipped-december-28th/" rel="alternate" type="text/html" title="What We Shipped - December 28th" /><published>2025-12-28T08:43:10+05:30</published><updated>2025-12-28T08:43:10+05:30</updated><id>http://localhost:63586/whats-new/what-we-shipped-december-28th</id><content type="html" xml:base="http://localhost:63586/whats-new/what-we-shipped-december-28th/"><![CDATA[<h2 id="keyboard-shortcuts">Keyboard Shortcuts</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:60040/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:60040/" rel="alternate" type="text/html" /><updated>2026-01-02T11:48:12+05:30</updated><id>http://localhost:60040/feed.xml</id><title type="html">The InsightRoom.</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">What We Shipped - January 2nd</title><link href="http://localhost:60040/whats-new/what-we-shipped-january-2nd/" rel="alternate" type="text/html" title="What We Shipped - January 2nd" /><published>2026-01-02T00:00:00+05:30</published><updated>2026-01-02T00:00:00+05:30</updated><id>http://localhost:60040/whats-new/what-we-shipped-january-2nd</id><content type="html" xml:base="http://localhost:60040/whats-new/what-we-shipped-january-2nd/"><![CDATA[<h2 id="community-contributions">Community Contributions</h2>
+
+<p>Materio now makes it easier than ever for students to give back to the community. The new <strong>Community Contributions</strong> feature allows you to share your study materials directly through Materio, helping fellow students access resources that might otherwise be difficult to find.</p>
+
+<h3 id="how-it-works">How It Works</h3>
+
+<p>The contribution flow is designed to be straightforward and welcoming:</p>
+
+<ol>
+  <li>
+    <p><strong>Choose Your Identity</strong> – Contribute using your Materio account, link your GitHub profile for attribution, or stay completely anonymous.</p>
+  </li>
+  <li>
+    <p><strong>Select Your Course</strong> – Pick your semester and subject from the dynamic lists that match Materio’s existing structure.</p>
+  </li>
+  <li>
+    <p><strong>Upload Your Materials</strong> – Share chapters, presentations, assignments, question banks, lab materials, previous year papers, reference books, lecture notes, handwritten notes, NPTEL content, and more.</p>
+  </li>
+  <li>
+    <p><strong>Submit for Review</strong> – Your contribution goes through a review process before being added to help maintain quality.</p>
+  </li>
+</ol>
+
+<h3 id="why-contribute">Why Contribute?</h3>
+
+<p>Your notes could help hundreds of students ace their exams. Whether it’s that hard-to-find reference book, detailed handwritten explanations, or solved question papers – every contribution makes Materio more valuable for everyone.</p>
+
+<p>The contribution form supports multiple file uploads with a 6MB limit, ensuring you can share comprehensive materials in a single submission.</p>
+
+<h2 id="haptic-feedback">Haptic Feedback</h2>
+<p><em>A tactile dimension to mobile interactions.</em></p>
+
+<p>Materio now supports <strong>Haptic Feedback</strong> on mobile devices, bringing a subtle but satisfying physical response to your interactions. Using the Web Vibration API, this feature adds a tactile layer to the browsing experience that makes navigation feel more responsive and engaging.</p>
+
+<h3 id="what-gets-haptic-feedback">What Gets Haptic Feedback?</h3>
+
+<p>The system includes carefully designed vibration patterns for different interactions:</p>
+
+<ul>
+  <li><strong>Light taps</strong> for toggles, checkboxes, and radio buttons</li>
+  <li><strong>Medium taps</strong> for buttons and navbar clicks</li>
+  <li><strong>Strong taps</strong> for important actions like form submissions</li>
+  <li><strong>Double taps</strong> for dropdown actions</li>
+  <li><strong>Success patterns</strong> for completed actions</li>
+  <li><strong>Tab switch patterns</strong> for navigation changes</li>
+  <li><strong>Loading sequences</strong> that pulse while content loads, then confirm completion</li>
+</ul>
+
+<h3 id="customizable-intensity">Customizable Intensity</h3>
+
+<p>Not everyone wants the same level of feedback. That’s why the haptic system includes three intensity levels you can adjust from settings:</p>
+
+<ul>
+  <li><strong>Minimal</strong> – subtle, barely-there feedback</li>
+  <li><strong>Medium</strong> – balanced, noticeable feedback (default)</li>
+  <li><strong>Strong</strong> – pronounced, unmistakable feedback</li>
+</ul>
+
+<p>The intensity slider in settings lets you fine-tune the experience to your preference, and you can disable haptics entirely if you prefer a silent experience.</p>
+
+<h3 id="smart-auto-attachment">Smart Auto-Attachment</h3>
+
+<p>The haptic system automatically attaches feedback to interactive elements across the site – buttons, toggles, sliders, tabs, and dropdown items all receive appropriate feedback without requiring any additional setup. It even re-attaches haptics when new content loads dynamically, ensuring a consistent experience throughout your session.</p>
+
+<h2 id="mermaid-diagrams-in-insightroom">Mermaid Diagrams in InsightRoom</h2>
+<p><em>Visualize complex concepts directly in your reading.</em></p>
+
+<p>InsightRoom now supports <strong>Mermaid diagrams</strong>, bringing powerful visualization capabilities directly into posts and articles. This means you can now see mindmaps, flowcharts, finite state machines, automata diagrams, and more rendered beautifully within the content you’re reading.</p>
+
+<h3 id="supported-diagram-types">Supported Diagram Types</h3>
+
+<p>The Mermaid integration supports a wide variety of diagram types:</p>
+
+<p><strong>Mindmaps</strong> – Perfect for organizing concepts hierarchically, great for revision and understanding topic relationships.</p>
+
+<p><strong>Flowcharts</strong> – Step-by-step process visualization, ideal for algorithms and decision trees.</p>
+
+<p><strong>Finite State Machines (FSM)</strong> – Essential for Theory of Computation and formal languages courses, now rendered as proper state diagrams.</p>
+
+<p><strong>Automata Diagrams</strong> – DFA, NFA, and other automata representations that bring theoretical concepts to life.</p>
+
+<p><strong>Sequence Diagrams</strong> – Useful for understanding interactions between components in software engineering.</p>
+
+<p><strong>Class Diagrams</strong> – Object-oriented design visualizations for OOPS and software design courses.</p>
+
+<h3 id="theme-aware-rendering">Theme-Aware Rendering</h3>
+
+<p>Diagrams automatically adapt to your current theme. In dark mode, diagrams use dark-friendly colors with proper contrast. Switch to light mode, and they adjust accordingly. This ensures diagrams remain readable and visually consistent with the rest of your reading experience.</p>
+
+<h3 id="print-ready">Print-Ready</h3>
+
+<p>When you print an InsightRoom post, Mermaid diagrams are included at an appropriate size, making your printed notes complete with all the visual aids from the original article.</p>
+
+<h2 id="flashcards-in-insightroom">Flashcards in InsightRoom</h2>
+<p><em>Active recall made simple.</em></p>
+
+<p>InsightRoom introduces <strong>Flashcards</strong> – an interactive way to test your knowledge while reading. Instead of passively consuming content, you can now engage with material through flip-card interactions that reinforce learning.</p>
+
+<h3 id="how-flashcards-work">How Flashcards Work</h3>
+
+<p>Flashcards appear inline within posts where authors have included them. Each card presents a question or prompt on the front face. Click or tap to flip the card and reveal the answer. This simple interaction engages active recall, one of the most effective learning techniques.</p>
+
+<h3 id="carousel-navigation">Carousel Navigation</h3>
+
+<p>When multiple flashcards are present, they’re organized in a smooth carousel that lets you swipe or click through the deck. Navigation arrows appear inline with the cards, keeping the interface clean while providing easy access to the full set.</p>
+
+<h3 id="perfect-for-exam-prep">Perfect for Exam Prep</h3>
+
+<p>Flashcards are especially valuable for:</p>
+
+<ul>
+  <li><strong>Quick definitions</strong> – flip to see the meaning</li>
+  <li><strong>Formula recall</strong> – question on front, derivation on back</li>
+  <li><strong>Concept testing</strong> – scenario on front, answer on back</li>
+  <li><strong>Key terms</strong> – term on front, explanation on back</li>
+</ul>
+
+<p>Authors can embed flashcard sets directly into their posts, making study materials more interactive and engaging.</p>
+
+<h2 id="other-changes">Other Changes</h2>
+
+<p>This update also includes refinements and fixes across the platform:</p>
+
+<ul>
+  <li><strong>Mobile bottom sheet dismiss</strong> – Swipe down to close bottom sheet modals on mobile for a more intuitive dismissal gesture.</li>
+  <li><strong>Improved dark mode persistence</strong> – Theme preferences now persist more reliably across sessions.</li>
+  <li><strong>Performance optimizations</strong> – Reduced overhead in dynamic content loading.</li>
+</ul>]]></content><author><name></name></author><category term="whats-new" /><summary type="html"><![CDATA[This week Materio introduces Community Contributions for sharing study materials, Haptic Feedback system for mobile interactions, and enhanced InsightRoom with Mermaid diagrams for mindmaps, FSM, automata visualizations and interactive flashcards.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:60040/assets/img/covers/6c35b879-59e5-49f3-ac34-50da3110547b.webp" /><media:content medium="image" url="http://localhost:60040/assets/img/covers/6c35b879-59e5-49f3-ac34-50da3110547b.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Dynamic Forms &amp;amp; Activity System — Configuration &amp;amp; Capabilities</title><link href="http://localhost:60040/docs/forms-system" rel="alternate" type="text/html" title="Dynamic Forms &amp;amp; Activity System — Configuration &amp;amp; Capabilities" /><published>2026-01-01T12:00:00+05:30</published><updated>2026-01-01T12:00:00+05:30</updated><id>http://localhost:60040/docs/forms-system</id><content type="html" xml:base="http://localhost:60040/docs/forms-system"><![CDATA[<h1 id="dynamic-forms--activity-system--configuration--capabilities">Dynamic Forms &amp; Activity System — Configuration &amp; Capabilities</h1>
+
+<p>This document outlines the architecture and configuration of the Dynamic Forms system in Materio. This system allows for creating complex, multi-step forms (wizards) and triggering them based on user behavior (activity) without touching the code.</p>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+
+<ol>
+  <li><a href="#overview">Overview</a></li>
+  <li><a href="#architecture">Architecture</a></li>
+  <li><a href="#form-configuration">Form Configuration (<code class="language-plaintext highlighter-rouge">forms-config.json</code>)</a></li>
+  <li><a href="#activity-triggers">Activity Triggers (<code class="language-plaintext highlighter-rouge">formActivity.json</code>)</a></li>
+  <li><a href="#wizard-system">Wizard System</a></li>
+  <li><a href="#field-types">Field Types</a></li>
+  <li><a href="#api--data-storage">API &amp; Data Storage</a></li>
+  <li><a href="#global-functions-for-testing">Global Functions for Testing</a></li>
+</ol>
+
+<hr />
+
+<h2 id="overview">Overview</h2>
+
+<p>The forms system is split into two parts:</p>
+<ol>
+  <li><strong>Forms Definition</strong>: What the form looks like (fields, wizard pages, validation).</li>
+  <li><strong>Activity Triggers</strong>: When the form should appear (page load, visit count, user type).</li>
+</ol>
+
+<p>It supports:</p>
+<ul>
+  <li><strong>Multi-page Wizards</strong>: Cover pages (with video/image backgrounds), info pages, and form pages.</li>
+  <li><strong>Conditional Logic</strong>: Show/hide fields based on other field values.</li>
+  <li><strong>Rich Media</strong>: Video backgrounds, gradients, and animated icons.</li>
+  <li><strong>Device Targeting</strong>: specific forms for mobile vs desktop.</li>
+  <li><strong>User Targeting</strong>: target anonymous vs authenticated users.</li>
+</ul>
+
+<h2 id="architecture">Architecture</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>File</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">assets/data/forms-config.json</code></td>
+      <td>Defines the structure, fields, and wizard pages for each form.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">assets/data/formActivity.json</code></td>
+      <td>Defines rules for <em>when</em> forms should automatically trigger.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">assets/scripts/forms.js</code></td>
+      <td>Core logic for rendering, state management, and API submission.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">_includes/dynamic-forms.html</code></td>
+      <td>HTML template and CSS styles for the modal.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">api/v2/features.js</code></td>
+      <td>Backend handler for saving submissions to MongoDB and GitHub.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="form-configuration">Form Configuration</h2>
+
+<p>Defined in <code class="language-plaintext highlighter-rouge">assets/data/forms-config.json</code>. The root object <code class="language-plaintext highlighter-rouge">forms</code> contains keys for each form ID.</p>
+
+<h3 id="basic-structure">Basic Structure</h3>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"contribution"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"contribution"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Community Contributions"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"fa-regular fa-users"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Form description..."</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"wizard"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"fields"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="p">],</span><span class="w">
+    </span><span class="nl">"submitButton"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Submit"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"fa-paper-plane"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="wizard-configuration">Wizard Configuration</h3>
+
+<p>Enable multi-step flows by adding a <code class="language-plaintext highlighter-rouge">wizard</code> object.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"wizard"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"enabled"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"pages"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cover"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cover"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"backgroundImage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/assets/media/video.webm"</span><span class="p">,</span><span class="w"> </span><span class="err">//</span><span class="w"> </span><span class="err">Support</span><span class="w"> </span><span class="err">for</span><span class="w"> </span><span class="err">.webm</span><span class="p">,</span><span class="w"> </span><span class="err">.mp</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="err">.webp</span><span class="p">,</span><span class="w"> </span><span class="err">.gif</span><span class="w">
+            </span><span class="nl">"backgroundGradient"</span><span class="p">:</span><span class="w"> </span><span class="s2">"linear-gradient(...)"</span><span class="p">,</span><span class="w">   </span><span class="err">//</span><span class="w"> </span><span class="err">Overlay</span><span class="w"> </span><span class="err">for</span><span class="w"> </span><span class="err">video</span><span class="w"> </span><span class="err">or</span><span class="w"> </span><span class="err">fallback</span><span class="w">
+            </span><span class="nl">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Welcome"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"subtitle"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Get started"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"fa-solid fa-star"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"nextButton"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Start"</span><span class="p">,</span><span class="w"> </span><span class="nl">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"fa-arrow-right"</span><span class="w"> </span><span class="p">}</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"info"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"info"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Why do this?"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"content"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                </span><span class="s2">"Simple paragraph text is supported."</span><span class="p">,</span><span class="w">
+                </span><span class="p">{</span><span class="w"> </span><span class="nl">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"fa-user"</span><span class="p">,</span><span class="w"> </span><span class="nl">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Benefit 1"</span><span class="p">,</span><span class="w"> </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Details..."</span><span class="w"> </span><span class="p">},</span><span class="w">
+                </span><span class="p">{</span><span class="w"> </span><span class="nl">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Just Text"</span><span class="p">,</span><span class="w"> </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"No icon needed for simple blocks."</span><span class="w"> </span><span class="p">}</span><span class="w">
+            </span><span class="p">],</span><span class="w">
+            </span><span class="nl">"continueButton"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Next"</span><span class="w"> </span><span class="p">},</span><span class="w">
+            </span><span class="nl">"exitButton"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Exit"</span><span class="w"> </span><span class="p">}</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"form"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"form"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Enter Details"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="supported-media">Supported Media</h3>
+<ul>
+  <li><strong>Images</strong>: <code class="language-plaintext highlighter-rouge">.webp</code>, <code class="language-plaintext highlighter-rouge">.png</code>, <code class="language-plaintext highlighter-rouge">.jpg</code>, <code class="language-plaintext highlighter-rouge">.jpeg</code>, <code class="language-plaintext highlighter-rouge">.gif</code> (animated)</li>
+  <li><strong>Video</strong>: <code class="language-plaintext highlighter-rouge">.webm</code>, <code class="language-plaintext highlighter-rouge">.mp4</code>, <code class="language-plaintext highlighter-rouge">.mov</code>, <code class="language-plaintext highlighter-rouge">.ogg</code> (auto-plays, loops, muted)</li>
+</ul>
+
+<p>When using video, the <code class="language-plaintext highlighter-rouge">backgroundGradient</code> is applied as a semi-transparent overlay (85% opacity) to ensure text legibility.</p>
+
+<h2 id="activity-triggers">Activity Triggers</h2>
+
+<p>Defined in <code class="language-plaintext highlighter-rouge">assets/data/formActivity.json</code>.</p>
+
+<h3 id="trigger-structure">Trigger Structure</h3>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"satisfaction-survey"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"enabled"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"formType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"satisfaction"</span><span class="p">,</span><span class="w">  </span><span class="err">//</span><span class="w"> </span><span class="err">Must</span><span class="w"> </span><span class="err">match</span><span class="w"> </span><span class="err">ID</span><span class="w"> </span><span class="err">in</span><span class="w"> </span><span class="err">forms-config.json</span><span class="w">
+    </span><span class="nl">"trigger"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pageLoad"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"delay"</span><span class="p">:</span><span class="w"> </span><span class="mi">3000</span><span class="p">,</span><span class="w">           </span><span class="err">//</span><span class="w"> </span><span class="err">Wait</span><span class="w"> </span><span class="mi">3</span><span class="err">s</span><span class="w"> </span><span class="err">after</span><span class="w"> </span><span class="err">load</span><span class="w">
+        </span><span class="nl">"conditions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"minVisits"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">      </span><span class="err">//</span><span class="w"> </span><span class="err">User</span><span class="w"> </span><span class="err">must</span><span class="w"> </span><span class="err">have</span><span class="w"> </span><span class="err">visited</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="err">times</span><span class="w">
+            </span><span class="nl">"minDaysSinceFirstVisit"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"pages"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"home"</span><span class="p">],</span><span class="w">   </span><span class="err">//</span><span class="w"> </span><span class="err">Only</span><span class="w"> </span><span class="err">trigger</span><span class="w"> </span><span class="err">on</span><span class="w"> </span><span class="err">home</span><span class="w"> </span><span class="err">page</span><span class="w">
+            </span><span class="nl">"userType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"any"</span><span class="w">    </span><span class="err">//</span><span class="w"> </span><span class="s2">"any"</span><span class="p">,</span><span class="w"> </span><span class="s2">"authenticated"</span><span class="p">,</span><span class="w"> </span><span class="s2">"anonymous"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"frequency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"every-30days"</span><span class="p">,</span><span class="w"> </span><span class="err">//</span><span class="w"> </span><span class="s2">"once"</span><span class="p">,</span><span class="w"> </span><span class="s2">"everytime"</span><span class="p">,</span><span class="w"> </span><span class="s2">"every-visit"</span><span class="p">,</span><span class="w"> </span><span class="s2">"daily"</span><span class="p">,</span><span class="w"> </span><span class="s2">"weekly"</span><span class="w">
+    </span><span class="nl">"priority"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">                </span><span class="err">//</span><span class="w"> </span><span class="err">Lower</span><span class="w"> </span><span class="err">number</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="err">higher</span><span class="w"> </span><span class="err">priority</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="frequency-options">Frequency Options</h3>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">once</code>: Show only once ever (persisted in localStorage).</li>
+  <li><code class="language-plaintext highlighter-rouge">everytime</code> / <code class="language-plaintext highlighter-rouge">every-visit</code>: Show on every eligible page load.</li>
+  <li><code class="language-plaintext highlighter-rouge">daily</code> / <code class="language-plaintext highlighter-rouge">every-24hr</code>: Once every 24 hours.</li>
+  <li><code class="language-plaintext highlighter-rouge">weekly</code>: Once every 7 days.</li>
+  <li><code class="language-plaintext highlighter-rouge">monthly</code> / <code class="language-plaintext highlighter-rouge">every-30days</code>: Once every 30 days.</li>
+</ul>
+
+<h2 id="field-types">Field Types</h2>
+
+<p>The system supports various field types in the <code class="language-plaintext highlighter-rouge">fields</code> array:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Properties</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">text</code></td>
+      <td><code class="language-plaintext highlighter-rouge">name</code>, <code class="language-plaintext highlighter-rouge">label</code>, <code class="language-plaintext highlighter-rouge">placeholder</code>, <code class="language-plaintext highlighter-rouge">required</code>, <code class="language-plaintext highlighter-rouge">minLength</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">textarea</code></td>
+      <td>same as text + <code class="language-plaintext highlighter-rouge">maxLength</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">email</code></td>
+      <td>standard email validation</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">select</code></td>
+      <td><code class="language-plaintext highlighter-rouge">options</code> ([{value, label}]), <code class="language-plaintext highlighter-rouge">allowOther</code> (adds “Other” option)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">rating</code></td>
+      <td><code class="language-plaintext highlighter-rouge">max</code> (default 5), stars turn orange (#ff8200) on selection</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">file</code></td>
+      <td><code class="language-plaintext highlighter-rouge">accept</code> (.pdf), <code class="language-plaintext highlighter-rouge">multiple</code>, <code class="language-plaintext highlighter-rouge">maxSize</code> (bytes)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="conditional-logic">Conditional Logic</h3>
+<p>Fields can show/hide based on other values using <code class="language-plaintext highlighter-rouge">showWhen</code>:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"showWhen"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"field"</span><span class="p">:</span><span class="w"> </span><span class="s2">"userIdentity"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"github"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="api--data-storage">API &amp; Data Storage</h2>
+
+<ul>
+  <li><strong>General Forms</strong>: Submitted to <code class="language-plaintext highlighter-rouge">/api/v2/features?action=forms</code>. Saved to MongoDB <code class="language-plaintext highlighter-rouge">forms</code> collection.</li>
+  <li><strong>File Uploads</strong>: Submitted to <code class="language-plaintext highlighter-rouge">/api/v2/features?action=contribute</code>. Files pushed to GitHub repo, metadata saved to MongoDB.</li>
+</ul>
+
+<p><strong>User Identity</strong>:</p>
+<ul>
+  <li>The system automatically checks <code class="language-plaintext highlighter-rouge">localStorage.getItem('materio_user')</code>.</li>
+  <li>If found, the user object is attached to the submission, even for anonymous forms.</li>
+  <li>In forms with an “Identity” dropdown, “Materio Account” is pre-selected if logged in.</li>
+</ul>
+
+<h2 id="global-functions-for-testing">Global Functions for Testing</h2>
+
+<p>You can use these in the browser console:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Function</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">openDynamicForm('formId', skipWizard)</code></td>
+      <td>Open a form. Pass <code class="language-plaintext highlighter-rouge">true</code> as 2nd arg to skip wizard intro.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">triggerFormActivityById('activityId')</code></td>
+      <td>Test a specific activity trigger logic.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">submitDynamicForm()</code></td>
+      <td>Programmatically submit the currently open form.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">goToWizardPage(index)</code></td>
+      <td>Jump to a specific wizard step (0-based index).</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">resetDynamicForm()</code></td>
+      <td>Clear all fields and validation states.</td>
+    </tr>
+  </tbody>
+</table>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[Documentation for the Materio Dynamic Forms system: JSON configuration, multi-page wizards, activity triggers, conditions, and field types.]]></summary></entry><entry><title type="html">What We Shipped - December 28th</title><link href="http://localhost:60040/whats-new/what-we-shipped-december-28th/" rel="alternate" type="text/html" title="What We Shipped - December 28th" /><published>2025-12-28T08:43:10+05:30</published><updated>2025-12-28T08:43:10+05:30</updated><id>http://localhost:60040/whats-new/what-we-shipped-december-28th</id><content type="html" xml:base="http://localhost:60040/whats-new/what-we-shipped-december-28th/"><![CDATA[<h2 id="keyboard-shortcuts">Keyboard Shortcuts</h2>
 <p>[video: /assets/media/d800e899-1803-4f3a-8652-c7c6ec9ee4a6.webm: shortcuts-preview]</p>
 
 <p>Materio now supports keyboard shortcuts on desktop to make navigation, reading, and everyday actions faster and more fluid.</p>
@@ -62,7 +453,7 @@ A minimal, non intrusive view that displays only the heading “Latest from the 
   <li>Sandpaper</li>
   <li>Textured Paper</li>
   <li>Gaussian</li>
-</ol>]]></content><author><name></name></author><category term="whats-new" /><summary type="html"><![CDATA[Materio rolled out keyboard shortcuts - a new way to interact and navigate, Option to set disable and set different views for insightroom feed, Smart dark mode and pure light mode, Improved search UI and bunch of stability and performance fixes.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:63586/assets/img/covers/caa86fee-605f-4636-a01f-36a9e967990c.webp" /><media:content medium="image" url="http://localhost:63586/assets/img/covers/caa86fee-605f-4636-a01f-36a9e967990c.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Introduction to Android OS</title><link href="http://localhost:63586/originals/introduction-to-android-os/" rel="alternate" type="text/html" title="Introduction to Android OS" /><published>2025-12-06T15:17:45+05:30</published><updated>2025-12-06T15:17:45+05:30</updated><id>http://localhost:63586/originals/introduction-to-android-os</id><content type="html" xml:base="http://localhost:63586/originals/introduction-to-android-os/"><![CDATA[<p>[attachment:https://static-materio.vercel.app/common/files/attach/4f3001a2-d238-44ff-8108-afb6651fb90c.pdf:Introduction to Android OS]</p>
+</ol>]]></content><author><name></name></author><category term="whats-new" /><summary type="html"><![CDATA[Materio rolled out keyboard shortcuts - a new way to interact and navigate, Option to set disable and set different views for insightroom feed, Smart dark mode and pure light mode, Improved search UI and bunch of stability and performance fixes.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:60040/assets/img/covers/caa86fee-605f-4636-a01f-36a9e967990c.webp" /><media:content medium="image" url="http://localhost:60040/assets/img/covers/caa86fee-605f-4636-a01f-36a9e967990c.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Introduction to Android OS</title><link href="http://localhost:60040/originals/introduction-to-android-os/" rel="alternate" type="text/html" title="Introduction to Android OS" /><published>2025-12-06T15:17:45+05:30</published><updated>2025-12-06T15:17:45+05:30</updated><id>http://localhost:60040/originals/introduction-to-android-os</id><content type="html" xml:base="http://localhost:60040/originals/introduction-to-android-os/"><![CDATA[<p>[attachment:https://static-materio.vercel.app/common/files/attach/4f3001a2-d238-44ff-8108-afb6651fb90c.pdf:Introduction to Android OS]</p>
 
 <p>Android is a mobile operating system that powers most of today’s smartphones and many other smart devices, built mainly for touchscreens and developed by Google using open‑source technologies. It provides the basic “brain” that lets apps run, manages hardware like camera and sensors, and gives the familiar home screen, notifications, and settings you use every day.</p>
 
@@ -1035,7 +1426,7 @@ RES FAMILY: UI customization
 
 <blockquote>
   <p>[!NOTE] No manifest = Android ignores your app completely; it’s the first file system reads.</p>
-</blockquote>]]></content><author><name></name></author><category term="Originals" /><summary type="html"><![CDATA[This resource provides overview about Android, its Architecture, Versions, Features, Open Handset Alliance, Dalvik VM, SDK, Development Tools and Environment, AVD, Directory structure and Manifest files]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:63586/assets/img/covers/070444b6-4a51-4695-8049-6710ccefe078.webp" /><media:content medium="image" url="http://localhost:63586/assets/img/covers/070444b6-4a51-4695-8049-6710ccefe078.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">MEAN Stack Web Development</title><link href="http://localhost:63586/originals/mean-stack-web-development/" rel="alternate" type="text/html" title="MEAN Stack Web Development" /><published>2025-12-05T20:27:50+05:30</published><updated>2025-12-05T20:27:50+05:30</updated><id>http://localhost:63586/originals/mean-stack-web-development</id><content type="html" xml:base="http://localhost:63586/originals/mean-stack-web-development/"><![CDATA[<!-- 
+</blockquote>]]></content><author><name></name></author><category term="Originals" /><summary type="html"><![CDATA[This resource provides overview about Android, its Architecture, Versions, Features, Open Handset Alliance, Dalvik VM, SDK, Development Tools and Environment, AVD, Directory structure and Manifest files]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:60040/assets/img/covers/070444b6-4a51-4695-8049-6710ccefe078.webp" /><media:content medium="image" url="http://localhost:60040/assets/img/covers/070444b6-4a51-4695-8049-6710ccefe078.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">MEAN Stack Web Development</title><link href="http://localhost:60040/originals/mean-stack-web-development/" rel="alternate" type="text/html" title="MEAN Stack Web Development" /><published>2025-12-05T20:27:50+05:30</published><updated>2025-12-05T20:27:50+05:30</updated><id>http://localhost:60040/originals/mean-stack-web-development</id><content type="html" xml:base="http://localhost:60040/originals/mean-stack-web-development/"><![CDATA[<!-- 
 - What is MEAN
 - Why JS ?
 - why Node.js when there's Java, C#, Python?
@@ -1247,7 +1638,7 @@ NoSQL - scalable, flexible, high performance
 why NoSQL is popular 
 types of NoSQL -documentbase -  mongo, key/value, column/family - casandra , graph
 
-mongodb  -json->BSON (binary json)->int32, int64 -->]]></content><author><name></name></author><category term="Originals" /><summary type="html"><![CDATA[This resource provides basics about MEAN Stack and web development]]></summary></entry><entry><title type="html">What We Shipped - December 1st</title><link href="http://localhost:63586/whats-new/what-we-shipped-december-1st/" rel="alternate" type="text/html" title="What We Shipped - December 1st" /><published>2025-12-01T00:00:00+05:30</published><updated>2025-12-01T00:00:00+05:30</updated><id>http://localhost:63586/whats-new/what-we-shipped-december-1st</id><content type="html" xml:base="http://localhost:63586/whats-new/what-we-shipped-december-1st/"><![CDATA[<h2 id="a-new-home-for-materios-reliability">A New Home for Materio’s Reliability</h2>
+mongodb  -json->BSON (binary json)->int32, int64 -->]]></content><author><name></name></author><category term="Originals" /><summary type="html"><![CDATA[This resource provides basics about MEAN Stack and web development]]></summary></entry><entry><title type="html">What We Shipped - December 1st</title><link href="http://localhost:60040/whats-new/what-we-shipped-december-1st/" rel="alternate" type="text/html" title="What We Shipped - December 1st" /><published>2025-12-01T00:00:00+05:30</published><updated>2025-12-01T00:00:00+05:30</updated><id>http://localhost:60040/whats-new/what-we-shipped-december-1st</id><content type="html" xml:base="http://localhost:60040/whats-new/what-we-shipped-december-1st/"><![CDATA[<h2 id="a-new-home-for-materios-reliability">A New Home for Materio’s Reliability</h2>
 <p>This week marks an important milestone for Materio.
 After months of growth, higher traffic, and increasing demand from students across multiple semesters, Materio has officially shifted its deployment to Vercel.</p>
 
@@ -1321,7 +1712,7 @@ A brand-new category of resources created, curated, and refined entirely by Mate
 <p>You might need to clear the site data once and check if the issues still persists, Here’s how you can clear data and old cache.
 [video:/assets/media/0d862b05-559b-44c6-b8fa-c9207d1ddfd1.webm]</p>
 
-<p>If you’re still facing issues after clearing the data then you can raise an issue on the <a href="https://github.com/Materioa/web-frontend">Github Repo</a>.</p>]]></content><author><name></name></author><category term="whats-new" /><summary type="html"><![CDATA[This week Materio moved to vercel, launched Materio Originals, and feature drops to like Native dark-mode to PDFs with inversion filter, addition of the table of contents sidebar to the insightroom]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:63586/assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp" /><media:content medium="image" url="http://localhost:63586/assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Post Front-matters — Fields, Usage &amp;amp; Best Practices</title><link href="http://localhost:63586/docs/frontmatters" rel="alternate" type="text/html" title="Post Front-matters — Fields, Usage &amp;amp; Best Practices" /><published>2025-11-30T15:00:00+05:30</published><updated>2025-11-30T15:00:00+05:30</updated><id>http://localhost:63586/docs/post-frontmatters</id><content type="html" xml:base="http://localhost:63586/docs/frontmatters"><![CDATA[<h1 id="post-front-matters--fields-usage--best-practices">Post Front-matters — Fields, Usage &amp; Best Practices</h1>
+<p>If you’re still facing issues after clearing the data then you can raise an issue on the <a href="https://github.com/Materioa/web-frontend">Github Repo</a>.</p>]]></content><author><name></name></author><category term="whats-new" /><summary type="html"><![CDATA[This week Materio moved to vercel, launched Materio Originals, and feature drops to like Native dark-mode to PDFs with inversion filter, addition of the table of contents sidebar to the insightroom]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:60040/assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp" /><media:content medium="image" url="http://localhost:60040/assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Post Front-matters — Fields, Usage &amp;amp; Best Practices</title><link href="http://localhost:60040/docs/frontmatters" rel="alternate" type="text/html" title="Post Front-matters — Fields, Usage &amp;amp; Best Practices" /><published>2025-11-30T15:00:00+05:30</published><updated>2025-11-30T15:00:00+05:30</updated><id>http://localhost:60040/docs/post-frontmatters</id><content type="html" xml:base="http://localhost:60040/docs/frontmatters"><![CDATA[<h1 id="post-front-matters--fields-usage--best-practices">Post Front-matters — Fields, Usage &amp; Best Practices</h1>
 
 <p>This document explains the YAML front-matter keys used across the Materio site, gives common templates you can copy, and highlights pitfalls (for example: unquoted strings containing <code class="language-plaintext highlighter-rouge">:</code> break YAML). Use this as a quick authoring reference when creating or editing <code class="language-plaintext highlighter-rouge">_posts</code> entries.</p>
 
@@ -1925,7 +2316,7 @@ Advises about risks or negative outcomes of certain actions.</p>
   <li>Keep excerpts concise (under 100 characters)</li>
   <li>Use high-quality square or landscape images</li>
   <li>Match the <code class="language-plaintext highlighter-rouge">id</code> exactly to your link text for reliable matching</li>
-</ul>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[Reference for post front-matter keys used in this site: meanings, examples, common pitfalls (YAML quoting, dates), and templates authors can reuse.]]></summary></entry><entry><title type="html">Promotions System — Configuration &amp;amp; Capabilities</title><link href="http://localhost:63586/docs/promotions" rel="alternate" type="text/html" title="Promotions System — Configuration &amp;amp; Capabilities" /><published>2025-11-30T12:00:00+05:30</published><updated>2025-11-30T12:00:00+05:30</updated><id>http://localhost:63586/docs/promotions-system</id><content type="html" xml:base="http://localhost:63586/docs/promotions"><![CDATA[<h1 id="promotions-system--configuration--capabilities">Promotions System — Configuration &amp; Capabilities</h1>
+</ul>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[Reference for post front-matter keys used in this site: meanings, examples, common pitfalls (YAML quoting, dates), and templates authors can reuse.]]></summary></entry><entry><title type="html">Promotions System — Configuration &amp;amp; Capabilities</title><link href="http://localhost:60040/docs/promotions" rel="alternate" type="text/html" title="Promotions System — Configuration &amp;amp; Capabilities" /><published>2025-11-30T12:00:00+05:30</published><updated>2025-11-30T12:00:00+05:30</updated><id>http://localhost:60040/docs/promotions-system</id><content type="html" xml:base="http://localhost:60040/docs/promotions"><![CDATA[<h1 id="promotions-system--configuration--capabilities">Promotions System — Configuration &amp; Capabilities</h1>
 
 <p>This note describes the promotions (promo modal) system used across Materio: the JSON fields available in <code class="language-plaintext highlighter-rouge">assets/data/promo.json</code>, the supported animation and button options, frequency controls, and quick testing tips. It’s written in the same practical style as the API docs so you can author promos confidently.</p>
 
@@ -2243,7 +2634,7 @@ Advises about risks or negative outcomes of certain actions.</p>
       <li>A: When enabled via <code class="language-plaintext highlighter-rouge">options.showDontShowAgain</code>, the close handler stores <code class="language-plaintext highlighter-rouge">promoDoNotShowAgain = 'true'</code> in <code class="language-plaintext highlighter-rouge">localStorage</code> and subsequent checks skip the promo.</li>
     </ul>
   </li>
-</ul>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[How the Materio promotions system works: JSON schema, animation options, button/config tags, frequency controls, and tips to test and author promos.]]></summary></entry><entry><title type="html">Number System</title><link href="http://localhost:63586/originals/number-system/" rel="alternate" type="text/html" title="Number System" /><published>2025-11-29T09:03:06+05:30</published><updated>2025-11-29T09:03:06+05:30</updated><id>http://localhost:63586/originals/number-system</id><content type="html" xml:base="http://localhost:63586/originals/number-system/"><![CDATA[<p>[attachment:https://static-materio.vercel.app/common/files/attach/de882c43-c10f-4708-81a3-31b027b5a289.pdf:Number System]</p>
+</ul>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[How the Materio promotions system works: JSON schema, animation options, button/config tags, frequency controls, and tips to test and author promos.]]></summary></entry><entry><title type="html">Number System</title><link href="http://localhost:60040/originals/number-system/" rel="alternate" type="text/html" title="Number System" /><published>2025-11-29T09:03:06+05:30</published><updated>2025-11-29T09:03:06+05:30</updated><id>http://localhost:60040/originals/number-system</id><content type="html" xml:base="http://localhost:60040/originals/number-system/"><![CDATA[<p>[attachment:https://static-materio.vercel.app/common/files/attach/de882c43-c10f-4708-81a3-31b027b5a289.pdf:Number System]</p>
 
 <p>The Number System is the framework used to represent and calculate quantities. Below are concise, exam-oriented notes starting from the basic building blocks up to Real numbers.</p>
 
@@ -3428,7 +3819,7 @@ Write <strong>5</strong></p>
   </li>
 </ul>
 
-<p><strong>Final Answer:</strong> \(\;56088\)</p>]]></content><author><name></name></author><category term="Originals" /><summary type="html"><![CDATA[This resource provides detailed notes about Number systems with Important points, examples and other things which are helpful for exams as well as contributes to better understanding of the topic.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:63586/assets/img/covers/b0ad7902-c47a-44d4-bbf0-d2694247aab7.webp" /><media:content medium="image" url="http://localhost:63586/assets/img/covers/b0ad7902-c47a-44d4-bbf0-d2694247aab7.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Software Engineering Important Questions</title><link href="http://localhost:63586/resource/software-engineering-important-questions/" rel="alternate" type="text/html" title="Software Engineering Important Questions" /><published>2025-11-21T08:02:35+05:30</published><updated>2025-11-21T08:02:35+05:30</updated><id>http://localhost:63586/resource/software-engineering-important-questions</id><content type="html" xml:base="http://localhost:63586/resource/software-engineering-important-questions/"><![CDATA[<h2 id="unit-1-introduction-to-software-engineering">UNIT 1: Introduction to Software Engineering</h2>
+<p><strong>Final Answer:</strong> \(\;56088\)</p>]]></content><author><name></name></author><category term="Originals" /><summary type="html"><![CDATA[This resource provides detailed notes about Number systems with Important points, examples and other things which are helpful for exams as well as contributes to better understanding of the topic.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:60040/assets/img/covers/b0ad7902-c47a-44d4-bbf0-d2694247aab7.webp" /><media:content medium="image" url="http://localhost:60040/assets/img/covers/b0ad7902-c47a-44d4-bbf0-d2694247aab7.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Software Engineering Important Questions</title><link href="http://localhost:60040/resource/software-engineering-important-questions/" rel="alternate" type="text/html" title="Software Engineering Important Questions" /><published>2025-11-21T08:02:35+05:30</published><updated>2025-11-21T08:02:35+05:30</updated><id>http://localhost:60040/resource/software-engineering-important-questions</id><content type="html" xml:base="http://localhost:60040/resource/software-engineering-important-questions/"><![CDATA[<h2 id="unit-1-introduction-to-software-engineering">UNIT 1: Introduction to Software Engineering</h2>
 
 <ol>
   <li>Define Software Engineering.</li>
@@ -3602,1462 +3993,4 @@ Write <strong>5</strong></p>
   <li>Discuss the future trends in Advanced Software Engineering.</li>
 </ol>
 
-<hr />]]></content><author><name>Materio</name></author><category term="Resource" /><summary type="html"><![CDATA[This Resource lists important questions for end semester exams]]></summary></entry><entry><title type="html">DAA Mid Sem</title><link href="http://localhost:63586/paper-solution/daa-mid/" rel="alternate" type="text/html" title="DAA Mid Sem" /><published>2025-09-25T15:13:26+05:30</published><updated>2025-09-25T15:13:26+05:30</updated><id>http://localhost:63586/paper-solution/daa-mid</id><content type="html" xml:base="http://localhost:63586/paper-solution/daa-mid/"><![CDATA[<h2 id="multiple-choice-questions">Multiple Choice Questions</h2>
-
-<p><strong>In recursion, the base case represents:</strong></p>
-
-<ul>
-  <li>A termination condition <i class="fas fa-check" style="color: green; float: right;"></i></li>
-  <li>A loop</li>
-  <li>None of the mentioned</li>
-  <li>An infinite call</li>
-</ul>
-
-<p><strong>Which of the following is not a Divide and Conquer algorithm?</strong></p>
-
-<ul>
-  <li>Linear Search <i class="fas fa-check" style="color: green; float: right;"></i></li>
-  <li>Merge Sort</li>
-  <li>Strassen’s Matrix Multiplication</li>
-  <li>Quick Sort</li>
-</ul>
-
-<p><strong>Which of the following is not a property of an algorithm?</strong></p>
-
-<ul>
-  <li>Ambiguity <i class="fas fa-check" style="color: green; float: right;"></i></li>
-  <li>Finiteness</li>
-  <li>Input</li>
-  <li>Definiteness</li>
-</ul>
-
-<p><strong>The best case time complexity for Binary Search is:</strong></p>
-
-<ul>
-  <li>
-\[O(n \log n)\]
-  </li>
-  <li>
-\[O(n)\]
-  </li>
-  <li>\(O(1)\) <i class="fas fa-check" style="color: green; float: right;"></i></li>
-  <li>
-\[O(\log n)\]
-  </li>
-</ul>
-
-<p><strong>Which notation gives a tight bound on an algorithm’s growth?</strong></p>
-
-<ul>
-  <li>Big \(\Theta\) <i class="fas fa-check" style="color: green; float: right;"></i></li>
-  <li>Big \(O\)</li>
-  <li>Little \(o\)</li>
-  <li>Big \(\Omega\)</li>
-</ul>
-
-<p><strong>The worst case time complexity of Bubble Sort is:</strong></p>
-
-<ul>
-  <li>
-\[O(n)\]
-  </li>
-  <li>
-\[O(n \log n)\]
-  </li>
-  <li>
-\[O(\log n)\]
-  </li>
-  <li>\(O(n^2)\) <i class="fas fa-check" style="color: green; float: right;"></i></li>
-</ul>
-
-<p><strong>The Activity Selection Problem is optimally solved using:</strong></p>
-
-<ul>
-  <li>Divide and Conquer</li>
-  <li>Dynamic Programming</li>
-  <li>Brute Force</li>
-  <li>Greedy Strategy <i class="fas fa-check" style="color: green; float: right;"></i></li>
-</ul>
-
-<p><strong>Kruskal’s algorithm is designed to find:</strong></p>
-
-<ul>
-  <li>A Minimum Spanning Tree <i class="fas fa-check" style="color: green; float: right;"></i></li>
-  <li>A matrix product</li>
-  <li>A shortest path</li>
-  <li>A tree traversal</li>
-</ul>
-
-<p><strong>Which algorithm uses a priority queue to compute shortest paths?</strong></p>
-
-<ul>
-  <li>Dijkstra’s <i class="fas fa-check" style="color: green; float: right;"></i></li>
-  <li>Kruskal’s</li>
-  <li>Bubble Sort</li>
-  <li>Prim’s</li>
-</ul>
-
-<p><strong>The notation that provides an upper bound on the running time of an algorithm is called _____.</strong></p>
-
-<p><strong>Answer:</strong> O, Big O, Big Oh, Big oh <i class="fas fa-check" style="color: green; float: right;"></i></p>
-
-<p><strong>The algorithm that selects the minimum weight edge that does not form a cycle in a graph to build a Minimum Spanning Tree is _____</strong></p>
-
-<p><strong>Answer:</strong> Kruskal, kruskals, kruskal’s <i class="fas fa-check" style="color: green; float: right;"></i></p>
-
-<p><strong>In the Divide and Conquer technique, a problem is divided into smaller subproblems, solved recursively, and then the solutions are _____ to solve the original problem.</strong></p>
-
-<p><strong>Answer:</strong> <strong>merged</strong> <i class="fas fa-check" style="color: green; float: right;"></i></p>
-
-<p><strong>In algorithm analysis, the case where the input causes the algorithm to take the least amount of time is known as the _____ case.</strong></p>
-
-<p><strong>Answer:</strong> <strong>Best</strong> <i class="fas fa-check" style="color: green; float: right;"></i></p>
-
-<p><strong>The recurrence relation \(T(n) = 2T(n/2) + O(n)\) corresponds to the time complexity of _______ sort using the divide and conquer method.</strong></p>
-
-<p><strong>Answer:</strong> <strong>merge</strong> <i class="fas fa-check" style="color: green; float: right;"></i></p>
-
-<hr />
-
-<h2 id="programming-tasks">Programming Tasks</h2>
-
-<h3 id="bubble-sort">Bubble Sort</h3>
-
-<p>You are given an unsorted array of integers. Your task is to implement a program to sort the array in <strong>ascending order</strong> using the <strong>Bubble Sort algorithm</strong>. Print the final sorted array in the specified output format.</p>
-
-<p><strong>Input Format:</strong></p>
-
-<ul>
-  <li>A single line of space-separated integers representing the elements of the array.</li>
-</ul>
-
-<p><strong>Output Format:</strong></p>
-
-<ul>
-  <li>Print the sorted array where <num1> to <numN> are sorted integers in ascending order, each separated by a single space.</numN></num1></li>
-</ul>
-
-<p><strong>Constraints:</strong></p>
-
-<ul>
-  <li>The array will contain <strong>1 to 100</strong> integers.</li>
-  <li>The values of the integers will be in the range <strong>[-10^4 to 10^4]</strong>.</li>
-</ul>
-
-<p><strong>File Name:</strong> <code class="language-plaintext highlighter-rouge">Bubblesort.c</code></p>
-
-<pre><code class="language-C">#include &lt;stdio.h&gt;
-
-void bubbleSort(int arr[],int n){
-    int i,j,temp;
-    for(i=0;i&lt;n;i++){
-        for(j=0;j&lt;n-i-1;j++){
-            if(arr[j]&gt;arr[j+1]){
-                temp=arr[j];
-                arr[j]=arr[j+1];
-                arr[j+1]=temp;
-            }
-        }
-    }
-}
-
-int main(){
-    int n;
-    scanf("%d",&amp;n);
-
-    int arr[n];
-    for(int i=0;i&lt;n;i++){
-        scanf("%d",&amp;arr[i]);
-    }
-
-    bubbleSort(arr,n);
-
-    for(int i=0;i&lt;n;i++){
-        printf("%d ",arr[i]);
-    }
-}
-</code></pre>
-
-<hr />
-
-<h3 id="min-max-using-divide-and-conquer">Min-Max Using Divide and Conquer</h3>
-
-<p>Implement a program to find <strong>Min-Max in a given array</strong> using the <strong>Divide and Conquer</strong> technique. The function should take three arguments: <code class="language-plaintext highlighter-rouge">(arr, low, high)</code> and recursively determine the minimum and maximum elements.</p>
-
-<p><strong>Input Format:</strong></p>
-
-<ul>
-  <li>The first line contains an integer N, the number of elements in the array.</li>
-  <li>The second line contains N space-separated integers representing the elements of the array.</li>
-</ul>
-
-<p><strong>Output Format:</strong></p>
-
-<ul>
-  <li>
-    <p>Print the <strong>minimum</strong> and <strong>maximum</strong> element from the array using two separate lines in the following format:</p>
-
-    <ul>
-      <li>Minimum: <value></value></li>
-      <li>Maximum: <value></value></li>
-    </ul>
-  </li>
-</ul>
-
-<p><strong>Constraints:</strong></p>
-
-<ul>
-  <li>
-\[2 \leq N \leq 100\]
-  </li>
-  <li>
-\[-1000 \leq arr[i] \leq 1000\]
-  </li>
-</ul>
-
-<p><strong>File Name:</strong> <code class="language-plaintext highlighter-rouge">MinMax.c</code></p>
-
-<pre><code class="language-C">#include &lt;stdio.h&gt;
-
-void findMinMax(int arr[],int low,int high,int *min,int *max){
-    if(low==high){
-        *min=arr[low];
-        *max=arr[low];
-        return;
-    }
-    int mid=(low+high)/2;
-    int leftMin,leftMax,rightMin,rightMax;
-
-    findMinMax(arr,low,mid,&amp;leftMin,&amp;leftMax);
-    findMinMax(arr,mid+1,high,&amp;rightMin,&amp;rightMax);
-
-    *min=(leftMin&lt;rightMin)?leftMin:rightMin;
-    *max=(leftMax&gt;rightMax)?leftMax:rightMax;
-}
-
-int main(){
-    int n;
-    scanf("%d",&amp;n);
-
-    int arr[n];
-    for(int i=0;i&lt;n;i++){
-        scanf("%d",&amp;arr[i]);
-    }
-
-    int minVal,maxVal;
-    findMinMax(arr,0,n-1,&amp;minVal,&amp;maxVal);
-
-    printf("Minimum: %d\\n",minVal);
-    printf("Maximum: %d\\n",maxVal);
-}
-</code></pre>
-
-<hr />
-
-<h3 id="search-insert-position">Search Insert Position</h3>
-
-<p>Given a sorted array and a target value, return the index if the target is found. If not, return the index where it would be if it were inserted in order.</p>
-
-<p><strong>Input Format:</strong></p>
-
-<ul>
-  <li>The first line of input contains an integer N, representing the number of elements in the array.</li>
-  <li>The second line contains N space-separated integers sorted in <strong>increasing order</strong>.</li>
-  <li>The third line contains an integer representing the <strong>target</strong> value.</li>
-</ul>
-
-<p><strong>Output Format:</strong></p>
-
-<ul>
-  <li>Print a single integer — the index at which the target is found, or the index where it should be inserted.</li>
-</ul>
-
-<p><strong>Constraints:</strong></p>
-
-<ul>
-  <li>
-\[1 \leq N \leq 100\]
-  </li>
-  <li>\(-10^4 \leq\) Array elements, Target \(\leq 10^4\)</li>
-  <li>All array elements are distinct and sorted in increasing order.</li>
-</ul>
-
-<p><strong>File Name:</strong> <code class="language-plaintext highlighter-rouge">Search.c</code></p>
-
-<pre><code class="language-C">#include &lt;stdio.h&gt;
-int searchInsert(int* nums, int numsSize, int target) {
-    int left = 0, right = numsSize - 1;
-
-    while (left &lt;= right) {
-        int mid = left + (right - left) / 2;
-        if (nums[mid] == target) {
-            return mid;
-        } else if (nums[mid] &lt; target) {
-            left = mid + 1;
-        } else {
-            right  = mid - 1;
-        }
-    }
-    return left;
-}
-
-int main() {
-    int N;
-    scanf("%d", &amp;N);
-
-    int nums[N];
-    for(int i = 0; i&lt; N; i++) {
-        scanf("%d", &amp;nums[i]);
-    }
-    int target;
-    scanf("%d", &amp;target);
-
-    int index = searchInsert(nums, N, target);
-    printf("%d\\n", index);
-
-    return 0;
-}
-</code></pre>
-
-<hr />
-
-<h3 id="mahishmati-sword-search">Mahishmati Sword Search</h3>
-
-<p>In the majestic kingdom of <strong>Mahishmati</strong>, the royal arsenal contains a <strong>sorted array</strong> of swords based on their strength. When <strong>Baahubali</strong> is about to go to war, he seeks a mightier sword than what he currently holds. But time is short — he needs to find this in the fastest way possible.</p>
-
-<p><strong>Problem Statement:</strong> Given a sorted array of integers representing the strength of swords in ascending order (duplicates allowed), and an integer x representing the strength Baahubali currently holds, find the <strong>smallest sword strength strictly greater than x</strong>. If no such sword exists, return -1.</p>
-
-<p><strong>Input Format:</strong></p>
-
-<ul>
-  <li>First line: Two integers n and x
-n: Number of swords
-x: Baahubali’s current strength</li>
-  <li>Second line: n space-separated integers denoting the strengths of the swords (sorted in non-decreasing order)</li>
-</ul>
-
-<p><strong>Output Format:</strong></p>
-
-<ul>
-  <li>A single integer — the strength of the <strong>smallest sword strictly greater than x</strong>, or -1 if no such sword exists.</li>
-</ul>
-
-<p><strong>Constraints:</strong></p>
-
-<ul>
-  <li>
-\[1\leq n \leq 10^5\]
-  </li>
-  <li>
-\[-10^9\leq arr[i], x \leq 10^9\]
-  </li>
-  <li>arr is sorted in non-decreasing order</li>
-</ul>
-
-<p><strong>Explanation of Test Case:</strong></p>
-
-<ul>
-  <li><strong>Input:</strong>
-5 10
-5 10 10 20 30</li>
-  <li><strong>Output:</strong>
-20</li>
-  <li><strong>Explanation:</strong> Baahubali’s current strength is 10. Among the swords, the next stronger sword is 20. Hence, the output is 20.</li>
-</ul>
-
-<p><strong>File Name:</strong> <code class="language-plaintext highlighter-rouge">Mahishmati.c</code></p>
-
-<pre><code class="language-C">#include &lt;stdio.h&gt;
-
-int find(int n,int x, int arr[]) {
-    int left =0, right= n-1;
-    while (left &lt;= right) {
-        int mid = left + (right - left) / 2;
-        if (arr[mid] &lt;= x) {
-            left = mid + 1;
-        } else {
-            right = mid - 1;
-        }
-    }
-    return (left &lt; n) ? arr[left] : -1;
-}
-
-int main() {
-    int n, x;
-    scanf("%d %d", &amp;n, &amp;x);
-    int arr[n];
-    for (int i= 0; i&lt;n; i++) {
-        scanf("%d", &amp;arr[i]);
-    }
-    int result = find(n, x, arr);
-    printf("%d\\n", result);
-    return 0;
-}
-</code></pre>
-
-<hr />
-
-<h3 id="operation-sindoor-fractional-knapsack">Operation SINDOOR: Fractional Knapsack</h3>
-
-<p>During <strong>Operation SINDOOR</strong>, a strategic tri-services mission post the Pahalgam terror attack, a critical logistics challenge emerged. Aerial units were tasked with dropping high-value military supplies to border units under constant threat of UAVs and drone strikes. Each supply item had an <strong>impact value</strong> based on intelligence reports and a <strong>weight</strong> determining drone load. You must help the Integrated Command and Control System (ICCS) <strong>maximize mission impact</strong> with limited drone carrying capacity.</p>
-
-<p><strong>Problem Statement:</strong> Given n supply packages, each with a value \(v_i\) and weight \(w_i\), and a total drone capacity W, you can <strong>fractionally divide</strong> supplies to load the drone. Return the <strong>maximum possible total value</strong> (to 2 decimal places) of supplies that can be delivered during the supply drop mission.</p>
-
-<p><strong>Input Format:</strong></p>
-
-<ul>
-  <li>An integer n (number of supply items)</li>
-  <li>A float W (maximum drone weight capacity)</li>
-  <li>n lines, each containing two space-separated integers \(v_i\) and \(w_i\)</li>
-</ul>
-
-<p><strong>Output Format:</strong></p>
-
-<ul>
-  <li>A single float: maximum value the drone can carry (rounded to 2 decimal places)</li>
-</ul>
-
-<p><strong>Constraints:</strong></p>
-
-<ul>
-  <li>
-\[1\leq n \leq 10^5\]
-  </li>
-  <li>
-\[1\leq W\leq10^4\]
-  </li>
-  <li>
-\[1\leq v_i, w_i &lt;10^4\]
-  </li>
-  <li>Output must be accurate to <strong>2 decimal places.</strong></li>
-</ul>
-
-<p><strong>Explanation of Test Case:</strong></p>
-
-<ul>
-  <li><strong>Input:</strong>
-3
-50
-60 10
-100 20
-120 30</li>
-  <li><strong>Output:</strong>
-240.00</li>
-  <li>
-    <p><strong>Explanation:</strong></p>
-
-    <ul>
-      <li>Drone carries full package 1 → 10kg for 60 impact</li>
-      <li>Drone carries full package 2 → 20kg for 100 impact</li>
-      <li>Drone carries 20kg (2/3) of package 3 → (2/3 × 120) = 80 impact</li>
-      <li><strong>Total impact value = 60 + 100 + 80 = 240.00</strong></li>
-    </ul>
-  </li>
-</ul>
-
-<p><strong>File Name:</strong> <code class="language-plaintext highlighter-rouge">Sindoor.c</code></p>
-
-<pre><code class="language-C">#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-
-// Structure to store supply items
-struct Item {
-    int value, weight;
-    double ratio;
-};
-
-// Comparator function for sorting by value/weight ratio (descending)
-int cmp(const void *a, const void *b) {
-    double r1 = ((struct Item*)a)-&gt;ratio;
-    double r2 = ((struct Item*)b)-&gt;ratio;
-    if (r1 &lt; r2) return 1;
-    else if (r1 &gt; r2) return -1;
-    return 0;
-}
-
-int main() {
-    int n;
-    double W;
-    scanf("%d", &amp;n);
-    scanf("%lf", &amp;W);
-
-    struct Item items[n];
-
-    for (int i = 0; i &lt; n; i++) {
-        scanf("%d %d", &amp;items[i].value, &amp;items[i].weight);
-        items[i].ratio = (double)items[i].value / items[i].weight;
-    }
-
-    // Sort items by value-to-weight ratio in descending order
-    qsort(items, n, sizeof(struct Item), cmp);
-
-    double maxValue = 0.0;
-
-    for (int i = 0; i &lt; n &amp;&amp; W &gt; 0; i++) {
-        if (items[i].weight &lt;= W) {
-            maxValue += items[i].value;
-            W -= items[i].weight;
-        } else {
-            maxValue += items[i].ratio * W;
-            W = 0;
-        }
-    }
-
-    printf("%.2lf\\n", maxValue);
-    return 0;
-}
-</code></pre>]]></content><author><name></name></author><category term="Paper Solution" /><summary type="html"><![CDATA[This resource covers all the questions with solutions from design and analysis of alogorithms mid semester exam.]]></summary></entry><entry><title type="html">Software Engineering Assignment</title><link href="http://localhost:63586/resource/software-engineering-assignment/" rel="alternate" type="text/html" title="Software Engineering Assignment" /><published>2025-09-20T11:20:10+05:30</published><updated>2025-09-20T11:20:10+05:30</updated><id>http://localhost:63586/resource/software-engineering-assignment</id><content type="html" xml:base="http://localhost:63586/resource/software-engineering-assignment/"><![CDATA[<div class="newtopic"></div>
-
-<h1 id="assignment-1">Assignment 1</h1>
-
-<p><strong>1. Compare and contrast the Waterfall model, Incremental model, and Spiral model in software development. Discuss scenarios where each model is most appropriately applied.</strong></p>
-
-<ul>
-  <li><strong>Waterfall Model:</strong>
-    <ul>
-      <li><strong>Structure:</strong> Sequential process—requirements → design → implementation → testing → deployment.</li>
-      <li><strong>Advantages:</strong> Simple, easy to manage, clear milestones.</li>
-      <li><strong>Best For:</strong> Well-defined projects with clear, unchanging requirements, e.g., government projects, safety-critical systems.</li>
-    </ul>
-  </li>
-  <li><strong>Incremental Model:</strong>
-    <ul>
-      <li><strong>Structure:</strong> Develops system in small parts (increments), each increment adds functionality.</li>
-      <li><strong>Advantages:</strong> Early partial product available, flexible to changes, lower initial delivery time.</li>
-      <li><strong>Best For:</strong> Projects where requirements are expected to evolve (e.g., mobile apps, web platforms).</li>
-    </ul>
-  </li>
-  <li><strong>Spiral Model:</strong>
-    <ul>
-      <li><strong>Structure:</strong> Combines iterative nature of prototyping with risk analysis at every iteration (“spirals”), each loop is a phase—planning, risk analysis, engineering, and evaluation.</li>
-      <li><strong>Advantages:</strong> Manages risks effectively, useful for large, high-risk projects.</li>
-      <li><strong>Best For:</strong> Complex, high-risk projects where requirements may change or risks must be controlled (e.g., large enterprise software, defense systems).</li>
-    </ul>
-  </li>
-</ul>
-
-<p><strong>2. Discuss the essential characteristics of high-quality software. How do these characteristics influence the design and development of software applications?</strong></p>
-
-<ul>
-  <li><strong>Essential Characteristics:</strong>
-    <ul>
-      <li>Correctness</li>
-      <li>Reliability</li>
-      <li>Efficiency</li>
-      <li>Usability</li>
-      <li>Maintainability</li>
-      <li>Portability</li>
-      <li>Reusability</li>
-      <li>Integrity/Security</li>
-    </ul>
-  </li>
-  <li><strong>Influence:</strong> These characteristics guide developers to design applications that meet user expectations, are robust, easy to fix/extend, adaptable, and secure. For instance, high maintainability encourages modular code, efficiency requires optimization, and usability demands a good UI/UX.</li>
-</ul>
-
-<p><strong>3. Choose a software application you are familiar with and perform a detailed analysis of its architecture. Identify its components, the interactions between them, and discuss how it adheres to the principles of software engineering.</strong></p>
-
-<ul>
-  <li><strong>Application Example:</strong> WhatsApp</li>
-  <li><strong>Components:</strong>
-    <ul>
-      <li>Client App (frontend—UI, message input, notifications)</li>
-      <li>Server (backend—authentication, message routing)</li>
-      <li>Database (message and contact storage)</li>
-      <li>Encryption Module (security)</li>
-    </ul>
-  </li>
-  <li><strong>Interactions:</strong> Client interacts with server for authentication and messaging; server communicates with database for data storage/retrieval; encryption module secures communication.</li>
-  <li><strong>Principles Adherence:</strong> Uses modular design (separation of concerns), security-by-design (end-to-end encryption), scalability (cloud infrastructure), and maintainability (versioned APIs).</li>
-</ul>
-
-<p><strong>4. Describe the layered technology stack commonly used in web application development. Explain how each layer contributes to the overall functionality and performance of the application.</strong></p>
-
-<ul>
-  <li><strong>Layers:</strong>
-    <ul>
-      <li>Presentation Layer (UI): Handles user interface and experience.</li>
-      <li>Application Layer (Business logic): Contains rules/business logic, processes inputs, manages workflows.</li>
-      <li>Data Access Layer: Facilitates communication between business logic and data storage.</li>
-      <li>Database Layer: Physical storage of data.</li>
-    </ul>
-  </li>
-  <li><strong>Contributions:</strong> Each layer isolates concerns, improving maintainability; the presentation layer ensures good UX, while backend layers manage logic and data efficiently.</li>
-</ul>
-
-<p><strong>5.Explain the generic phases of software engineering as described by the IEEE standard for software lifecycle processes. How do these phases ensure the development of robust and maintainable software?</strong></p>
-
-<ul>
-  <li><strong>Generic Phases:</strong>
-    <ul>
-      <li>Requirements Analysis</li>
-      <li>Design</li>
-      <li>Implementation</li>
-      <li>Testing</li>
-      <li>Deployment</li>
-      <li>Maintenance</li>
-    </ul>
-  </li>
-  <li><strong>Ensures Robustness/Maintainability:</strong> Each phase ensures progressive refinement—requirements ensure scope clarity, design for maintainability, testing for quality, deployment for stability, and maintenance for longevity and adaptability.</li>
-</ul>
-
-<p><strong>6. Discuss the principles of Agile development. How does Agile address the limitations of traditional software development models?</strong></p>
-
-<ul>
-  <li><strong>Principles:</strong> Iterative progress, customer collaboration, adaptive planning, continuous delivery.</li>
-  <li><strong>Addressing Limitations:</strong> Agile reduces rigidity and increases adaptability seen in models like Waterfall, delivering frequent iterations and faster feedback, supporting changing requirements and user feedback.</li>
-</ul>
-
-<p><strong>7. Explain the key practices of Extreme Programming (XP). How do these practices contribute to the success of software projects in an Agile environment?</strong></p>
-
-<ul>
-  <li><strong>Key Practices:</strong> Pair programming, test-driven development, continuous integration, collective code ownership, simple design, frequent releases, customer involvement.</li>
-  <li><strong>Contribution:</strong> These practices increase code quality, ensure code correctness, allow rapid changes, and facilitate ongoing customer feedback, leading to higher success rates in Agile projects.</li>
-</ul>
-
-<div style="text-align: center">⁂</div>
-
-<div class="newtopic"></div>
-
-<h1 id="assignment-2">Assignment 2</h1>
-
-<p><strong>1. Discuss the 4Ps of the management spectrum: People, Product, Process, and Project. How do these elements interact to ensure successful software project management?</strong></p>
-
-<p>The 4Ps of software project management—<strong>People</strong>, <strong>Product</strong>, <strong>Process</strong>, and <strong>Project</strong>—are essential elements that together determine the outcome of a software project.</p>
-
-<ul>
-  <li><strong>People:</strong> This refers to everyone involved in the project, including stakeholders, managers, developers, testers, and users. Effective communication, leadership, motivation, and team dynamics among people are critical for success.</li>
-  <li><strong>Product:</strong> This defines what is being built: its features, requirements, constraints, and quality standards. A clear understanding of the product ensures that development aligns with user needs and expectations.</li>
-  <li><strong>Process:</strong> The process is the framework or methodology used to develop the product (e.g., Agile, Waterfall, DevOps). It provides structure, roles, tasks, and ensures consistency and quality.</li>
-  <li><strong>Project:</strong> This entails the act of managing resources—time, cost, scope, and risk—to achieve goals within constraints.</li>
-</ul>
-
-<p><strong>Interaction:</strong><br />
-These elements interact continuously:</p>
-<ul>
-  <li>The <strong>people</strong> use a defined <strong>process</strong> to develop a <strong>product</strong> within the scope of a <strong>project</strong>.</li>
-  <li>Any weakness in one element can jeopardize the others. For example, a great process with unmotivated people may still fail; a well-managed team with unclear product goals will also struggle.</li>
-  <li>Effective coordination ensures that each P reinforces the others for project success.</li>
-</ul>
-
-<p><strong>2. Describe the W5HH principle and its significance in software project management. How does this principle help in addressing common project management challenges?</strong></p>
-
-<p>The <strong>W5HH Principle</strong> is a project management framework that guides planning and execution by answering seven key questions:</p>
-
-<ol>
-  <li><strong>Why</strong> is the system being developed? (Purpose/justification)</li>
-  <li><strong>What</strong> will be done? (Task breakdown and deliverables)</li>
-  <li><strong>When</strong> will it be accomplished? (Timeline/schedule)</li>
-  <li><strong>Who</strong> is responsible for each task? (Resource allocation)</li>
-  <li><strong>Where</strong> are activities to be coordinated? (Location, environment)</li>
-  <li><strong>How</strong> will the job be done? (Methods, tools, techniques)</li>
-  <li><strong>How much</strong> of each resource is needed? (Effort, cost, budget)</li>
-</ol>
-
-<p><strong>Significance:</strong></p>
-<ul>
-  <li>The W5HH principle ensures thorough project planning, clarifies objectives, allocates responsibilities, and identifies requirements.</li>
-  <li>By systematically considering these dimensions, it helps avoid ambiguity, scope creep, and miscommunication—the most common project management pitfalls.</li>
-</ul>
-
-<p><strong>3. Discuss the importance of effective team management in software projects. What strategies can be used to build and maintain a high-performing team?</strong></p>
-
-<p><strong>Importance:</strong><br />
-Effective team management is crucial because software projects depend heavily on collaboration, knowledge sharing, and collective problem-solving.</p>
-
-<p><strong>Strategies:</strong></p>
-<ul>
-  <li><strong>Clear Roles and Responsibilities:</strong> Assign specific duties to team members to reduce confusion and overlap.</li>
-  <li><strong>Effective Communication:</strong> Foster open, regular communication through meetings, updates, and collaborative tools.</li>
-  <li><strong>Motivation and Recognition:</strong> Encourage members through feedback, rewards, and recognizing achievements.</li>
-  <li><strong>Training and Growth Opportunities:</strong> Provide avenues for team members to upskill and grow.</li>
-  <li><strong>Constructive Conflict Resolution:</strong> Address conflicts promptly and constructively.</li>
-  <li><strong>Team-Building Activities:</strong> Promote trust and rapport through formal and informal activities.</li>
-</ul>
-
-<p><strong>Maintaining High Performance:</strong><br />
-Regular reviews, adapting processes to team strengths, and maintaining a positive work culture help the team stay efficient and innovative.</p>
-
-<p><strong>4. Explain the steps involved in determining the scope and feasibility of a software project. Why are these steps critical in the early stages of project planning?</strong></p>
-
-<p><strong>Steps:</strong></p>
-<ol>
-  <li><strong>Requirements Gathering:</strong> Identify what stakeholders want from the system.</li>
-  <li><strong>Define Objectives:</strong> Clarify the goals and limitations of the project.</li>
-  <li><strong>Feasibility Study:</strong> Assess technical, financial, and operational viability.
-    <ul>
-      <li><em>Technical feasibility:</em> Is the required technology available?</li>
-      <li><em>Economic feasibility:</em> Is the project cost-effective?</li>
-      <li><em>Operational feasibility:</em> Will users accept and adopt the system?</li>
-    </ul>
-  </li>
-  <li><strong>Scope Definition:</strong> Document and communicate what is in and out of scope.</li>
-  <li><strong>Risk Assessment:</strong> Identify potential obstacles and their impact.</li>
-  <li><strong>Resource Estimation:</strong> Determine the people, time, and tools needed.</li>
-</ol>
-
-<p><strong>Critical Nature:</strong><br />
-Doing this early prevents wasted effort, controls expectations, minimizes risks, and provides a foundation for scheduling and budgeting.</p>
-
-<p><strong>5. Discuss various techniques for effort estimation in software projects. Compare and contrast at least two methods and explain their strengths and weaknesses.</strong></p>
-
-<p><strong>Techniques:</strong></p>
-<ul>
-  <li><strong>Expert Judgment (Delphi, analogy)</strong></li>
-  <li><strong>Function Point Analysis</strong></li>
-  <li><strong>COCOMO (Constructive Cost Model)</strong></li>
-  <li><strong>Story Points (Agile)</strong></li>
-  <li><strong>Bottom-Up Estimation</strong></li>
-  <li><strong>Three-Point Estimation (PERT)</strong></li>
-</ul>
-
-<p><strong>Comparison:</strong></p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Method</th>
-      <th>Strengths</th>
-      <th>Weaknesses</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Expert Judgment</td>
-      <td>Quick, uses prior experience</td>
-      <td>Subjective, prone to bias</td>
-    </tr>
-    <tr>
-      <td>Function Points</td>
-      <td>Objective, independent of technology</td>
-      <td>Can be complex to apply</td>
-    </tr>
-    <tr>
-      <td>COCOMO</td>
-      <td>Based on historical data, systematic</td>
-      <td>Needs calibration, less accurate for unprecedented projects</td>
-    </tr>
-    <tr>
-      <td>Story Points</td>
-      <td>Suits agile/iterative development</td>
-      <td>Relies on team maturity</td>
-    </tr>
-  </tbody>
-</table>
-
-<p><strong>6. Describe the process of risk management in software projects. How are risks identified, assessed, and controlled? Provide examples of common risks and their mitigation strategies.</strong></p>
-
-<p><strong>Process:</strong></p>
-<ol>
-  <li><strong>Risk Identification:</strong> List possible risks (e.g., requirement changes, technology failures).</li>
-  <li><strong>Risk Assessment:</strong> Evaluate the likelihood and impact (qualitative or quantitative analysis).</li>
-  <li><strong>Risk Prioritization:</strong> Rank risks to focus on most critical.</li>
-  <li><strong>Risk Control:</strong> Develop action plans—avoid, mitigate, transfer, or accept risks.</li>
-  <li><strong>Monitoring:</strong> Continuously track and update risks throughout the project.</li>
-</ol>
-
-<p><strong>Examples &amp; Mitigation:</strong></p>
-<ul>
-  <li><em>Scope Creep:</em> Mitigate with strict change control processes.</li>
-  <li><em>Technology Risk:</em> Mitigate by prototyping or training.</li>
-  <li><em>Resource Risk:</em> Secure backup resources and cross-train team members.</li>
-</ul>
-
-<p><strong>7. Consider a real or hypothetical software project. Develop a comprehensive risk management plan, including identification, assessment, and control strategies for potential risks.</strong></p>
-
-<p><strong>Example: Online Retail Website Development</strong></p>
-
-<ul>
-  <li><strong>Risk Identification:</strong>
-    <ul>
-      <li>Delayed third-party integration</li>
-      <li>Security vulnerabilities</li>
-      <li>Requirement changes</li>
-      <li>Team member turnover</li>
-    </ul>
-  </li>
-  <li><strong>Risk Assessment:</strong>
-    <ul>
-      <li><em>Delayed integration</em>: High probability, High impact</li>
-      <li><em>Security flaws</em>: Medium probability, Very high impact</li>
-      <li><em>Requirement changes</em>: Medium probability, Medium impact</li>
-      <li><em>Turnover</em>: Low probability, High impact</li>
-    </ul>
-  </li>
-  <li><strong>Control Strategies:</strong>
-    <ul>
-      <li><em>Integration delays</em>: Schedule buffer, early vendor engagement</li>
-      <li><em>Security</em>: Regular code reviews, security testing</li>
-      <li><em>Requirements</em>: Use agile for incremental updates, tight change control</li>
-      <li><em>Turnover</em>: Maintain documentation, cross-training, knowledge sharing</li>
-    </ul>
-  </li>
-  <li><strong>Monitoring:</strong> Weekly risk review meetings, update action plans as needed.</li>
-</ul>
-
-<div style="text-align: center">⁂</div>
-<div class="newtopic"></div>
-
-<h1 id="assignment-3">Assignment 3</h1>
-
-<p><strong>1. Describe the importance of problem recognition in the context of software development. How can a failure to properly recognize and define the problem impact the outcome of a project?</strong></p>
-
-<p><strong>Importance:</strong><br />
-Problem recognition is the first and most critical step in software development. It involves understanding and precisely defining what needs to be solved, ensuring that all stakeholders have a shared understanding of the project’s goals.</p>
-
-<ul>
-  <li>If a problem is not correctly recognized or is incorrectly defined:
-    <ul>
-      <li>The software may solve the <em>wrong</em> problem, making it irrelevant to users.</li>
-      <li>Resources such as time, money, and effort may be wasted.</li>
-      <li>Project delays, cost overruns, or total project failure can result.</li>
-      <li>It may cause miscommunication among stakeholders, leading to conflicting requirements.</li>
-    </ul>
-  </li>
-</ul>
-
-<p><strong>2. Outline the primary tasks involved in requirement engineering. How do these tasks contribute to the development of a clear and comprehensive set of requirements?</strong></p>
-
-<p><strong>Primary tasks in requirement engineering:</strong></p>
-<ul>
-  <li><strong>Requirements Elicitation:</strong> Gathering information from stakeholders using interviews, surveys, observations, and document analysis.</li>
-  <li><strong>Requirements Analysis:</strong> Evaluating gathered requirements for conflicts, feasibility, and completeness.</li>
-  <li><strong>Requirements Specification:</strong> Documenting requirements in a clear, organized, and detailed way.</li>
-  <li><strong>Requirements Validation:</strong> Ensuring the documented requirements accurately reflect stakeholder needs and are achievable.</li>
-  <li><strong>Requirements Management:</strong> Handling changes to requirements throughout the project lifecycle.</li>
-</ul>
-
-<p>These tasks ensure that all user and stakeholder needs are thoroughly understood, agreed upon, and documented, forming a solid foundation for development.</p>
-
-<p><strong>3. Explain the different processes involved in requirement engineering. How do these processes ensure that the requirements are accurately captured and documented?</strong></p>
-
-<p><strong>Processes in requirement engineering:</strong></p>
-
-<ol>
-  <li><strong>Elicitation:</strong> Collecting needs from stakeholders.</li>
-  <li><strong>Analysis:</strong> Structuring, prioritizing, and negotiating requirements to resolve ambiguities.</li>
-  <li><strong>Specification:</strong> Writing clear requirement documents or models.</li>
-  <li><strong>Validation &amp; Verification:</strong> Checking completeness, correctness, and feasibility.</li>
-  <li><strong>Management:</strong> Tracking requirement changes and version control.</li>
-</ol>
-
-<p>Through these iterative and collaborative processes, requirements are clarified, ambiguities are resolved, and all stakeholder expectations are formally documented.</p>
-
-<p><strong>4. Discuss the importance of requirements specification in software engineering. What are the key components of a well-written requirements specification document?</strong></p>
-
-<p><strong>Importance:</strong><br />
-A requirements specification acts as a contract between stakeholders and the development team, reducing ambiguity and providing a framework for design, development, and testing.</p>
-
-<p><strong>Key components:</strong></p>
-<ul>
-  <li>Introduction (purpose, scope, definitions)</li>
-  <li>Functional requirements (system behaviors, use cases)</li>
-  <li>Non-functional requirements (performance, security, usability, etc.)</li>
-  <li>Data requirements (data formats, storage)</li>
-  <li>Interface requirements (user and external interfaces)</li>
-  <li>Constraints (legal, regulatory, design limitations)</li>
-  <li>Acceptance criteria (how deliverables will be validated)</li>
-</ul>
-
-<p><strong>5. Explain the role of use cases in functional specification. How do use cases help in capturing functional requirements, and what are their benefits?</strong></p>
-
-<p><strong>Role of use cases:</strong></p>
-<ul>
-  <li>Use cases describe interactions between users (actors) and the system to achieve specific goals.</li>
-  <li>They focus on how the system should behave in response to user actions.</li>
-</ul>
-
-<p><strong>Benefits:</strong></p>
-<ul>
-  <li>Help identify and clarify all system functions from the user’s perspective.</li>
-  <li>Facilitate communication among stakeholders.</li>
-  <li>Provide a basis for test case development.</li>
-  <li>Serve as a blueprint for system design and documentation.</li>
-</ul>
-
-<p><strong>6. Discuss the purpose of requirements analysis in software engineering. How does this phase contribute to the development of a successful software product?</strong></p>
-
-<p><strong>Purpose:</strong></p>
-<ul>
-  <li>To ensure requirements are complete, consistent, feasible, and testable.</li>
-  <li>To detect and resolve conflicts and prioritize requirements.</li>
-  <li>To translate stakeholder needs into actionable development items.</li>
-</ul>
-
-<p><strong>Contribution:</strong></p>
-<ul>
-  <li>Reduces risk of misunderstandings.</li>
-  <li>Ensures the delivered software meets user expectations.</li>
-  <li>Helps in early detection of potential issues, minimizing costly changes later.</li>
-</ul>
-
-<p><strong>7. How can problem recognition be integrated with requirement engineering tasks to ensure a seamless transition from identifying a problem to specifying its solution?</strong></p>
-
-<p>Integration is achieved by:</p>
-<ul>
-  <li>Ensuring problem recognition leads directly into requirements elicitation, with clear documentation of the problem context.</li>
-  <li>Stakeholder discussions about the problem form the starting point for requirement gathering.</li>
-  <li>Maintaining traceability from initial problem statements through analysis, specification, and management ensures each requirement addresses a real need.</li>
-  <li>Iterative validation ensures evolving requirements remain aligned to the recognized problem.</li>
-</ul>
-
-<p><strong>8. Explain the role of stakeholders in the requirement engineering process. How can effective communication and collaboration with stakeholders be maintained throughout the project?</strong></p>
-
-<p><strong>Role:</strong></p>
-<ul>
-  <li>Stakeholders provide requirements, feedback, validation, and approval.</li>
-  <li>They ensure the software aligns with organizational needs and user expectations.</li>
-</ul>
-
-<p><strong>Effective communication and collaboration:</strong></p>
-<ul>
-  <li>Regular meetings, updates, and feedback sessions.</li>
-  <li>Use of collaboration tools (e.g., issue trackers, documentation platforms).</li>
-  <li>Clear documentation with agreed terminology.</li>
-  <li>Active listening and openness to feedback.</li>
-  <li>Stakeholder involvement during all requirement engineering phases.</li>
-</ul>
-
-<div style="text-align: center">⁂</div>
-<div class="newtopic"></div>
-
-<h1 id="assignment-4">Assignment 4</h1>
-
-<p><strong>1. Explain the role of design concepts in software development. How do abstraction, refinement, and modularity contribute to effective software design?</strong></p>
-
-<p>Design concepts are foundational principles guiding how software is structured and built. They help developers manage complexity and ensure that the solution is scalable, maintainable, and robust.</p>
-
-<ul>
-  <li><strong>Abstraction:</strong> Involves focusing on essential qualities, hiding unnecessary details. It allows designers to define high-level models, making complex systems understandable by breaking them into simpler views.</li>
-  <li><strong>Refinement:</strong> Is the process of elaborating or detailing an abstraction into more concrete components. Designers iteratively add detail to an abstract solution, ensuring each level is clearly understood.</li>
-  <li><strong>Modularity:</strong> Involves decomposing a system into smaller, self-contained modules or components. This makes software easier to design, develop, test, and maintain, as changes in one module have minimal effects on others.</li>
-</ul>
-
-<p><strong>2. Describe the importance of cohesion and coupling in software design. How do these concepts impact the maintainability of software?</strong></p>
-
-<ul>
-  <li><strong>Cohesion:</strong> Refers to how closely related and focused the responsibilities of a single module are. High cohesion means a module does one thing well, making it easier to maintain, test, and reuse.</li>
-  <li><strong>Coupling:</strong> Describes the degree of interdependence between modules. Low coupling (modules are independent) is ideal, because changes in one module are less likely to impact others.</li>
-</ul>
-
-<p><strong>Impact on Maintainability:</strong></p>
-<ul>
-  <li>High cohesion and low coupling result in systems that are easier to modify, test, and scale, reducing bugs and maintenance effort.</li>
-</ul>
-
-<p><strong>3. How do data design, architectural design, and component-level design fit into the overall design model?</strong></p>
-
-<ul>
-  <li><strong>Data Design:</strong> Defines data structures, storage, and relationships, shaping how data flows and is processed within the application.</li>
-  <li><strong>Architectural Design:</strong> Establishes the overall structure of the system, describing major components (modules), their responsibilities, and interactions.</li>
-  <li><strong>Component-Level Design:</strong> Details the implementation of each system component or module, specifying algorithms, logic, and interfaces.</li>
-</ul>
-
-<p>Together, these levels of design move from high-level structure (architecture), through mid-level organization (components), down to specifics (data).</p>
-
-<p><strong>4. What is software architecture, and why is it critical in the software development process?</strong></p>
-
-<p><strong>Software architecture</strong> is the high-level structure of a software system—the blueprint showing major components and their interactions.<br />
-<strong>Importance:</strong></p>
-<ul>
-  <li>Provides a roadmap for development.</li>
-  <li>Ensures consistency, scalability, and reliability.</li>
-  <li>Enables clear communication among stakeholders.</li>
-  <li>Helps manage complexity and anticipate future requirements or integrations.</li>
-</ul>
-
-<p><strong>5. Explain the process of component-level design in software engineering. How do UML diagrams aid in modeling component-level design?</strong></p>
-
-<p><strong>Process:</strong></p>
-<ul>
-  <li>Identify each software component and define their responsibilities.</li>
-  <li>Specify internal logic, data processing, and interfaces.</li>
-  <li>Ensure that components interact as intended, respecting design principles (e.g., low coupling).</li>
-</ul>
-
-<p><strong>UML diagrams:</strong></p>
-<ul>
-  <li><em>Class diagrams</em> represent component structure and relationships.</li>
-  <li><em>Sequence diagrams</em> show interactions over time.</li>
-  <li><em>Activity diagrams</em> model workflows within components.</li>
-</ul>
-
-<p>Visual modeling with UML clarifies design, reducing misunderstandings.</p>
-
-<p><strong>6. Create a flowchart for a simple software module using procedural design principles. Explain each step in the process.</strong></p>
-
-<p><em>Example: User Login Module Flowchart</em></p>
-
-<ul>
-  <li><strong>Start</strong></li>
-  <li>Prompt user for username/password</li>
-  <li>Validate inputs (not empty)</li>
-  <li>If inputs invalid → Show error, End</li>
-  <li>If valid → Authenticate user (check credentials)</li>
-  <li>If authentication fails → Show error, End</li>
-  <li>If succeeds → Grant access, End</li>
-</ul>
-
-<p><strong>Explanation:</strong><br />
-This flowchart represents step-by-step logic for securely handling user login.</p>
-
-<p><strong>7. Explain how object-oriented design principles are applied in the below design.</strong></p>
-
-<p><em>Since “below design” is not provided, a general answer:</em></p>
-
-<p>Object-oriented design applies these core principles:</p>
-<ul>
-  <li><strong>Encapsulation:</strong> Bundles data with methods that operate on it; hides internal state.</li>
-  <li><strong>Inheritance:</strong> Allows new classes to inherit traits of existing ones, promoting reuse.</li>
-  <li><strong>Polymorphism:</strong> Enables entities to take multiple forms, allowing flexible code.</li>
-  <li><strong>Abstraction:</strong> Exposes necessary features, hiding complexity.</li>
-</ul>
-
-<p>These principles create modular, extensible, and reusable software.</p>
-
-<p><strong>8. How does data become information in the context of software systems? Discuss the process and its significance.</strong></p>
-
-<ul>
-  <li><strong>Data</strong> is raw, unprocessed facts (e.g., numbers, text).</li>
-  <li><strong>Processing:</strong> Data is organized, analyzed, and interpreted by software (via algorithms, reporting, etc.).</li>
-  <li><strong>Information:</strong> Meaningful output that aids decision-making and action.</li>
-</ul>
-
-<p><strong>Significance:</strong><br />
-The transformation from data to information adds value, making software systems valuable for users and organizations.</p>
-
-<p><strong>9. Develop a dataflow diagram (DFD) for an online shopping system. Discuss the levels of DFD and the significance of each level.</strong></p>
-
-<p><strong>DFD Levels:</strong></p>
-<ul>
-  <li><strong>Level 0 (Context):</strong> Shows the whole system as a single process with inputs (user orders, payments) and outputs (order confirmations).</li>
-  <li><strong>Level 1:</strong> Decomposes main system into major functions: User Registration, Product Browsing, Order Processing, Payment Handling.</li>
-  <li><strong>Level 2+:</strong> Further refines each function (e.g., within Order Processing: Add to Cart, Checkout, Inventory Update).</li>
-</ul>
-
-<p><strong>Significance:</strong><br />
-Each level adds detail, helping designers and stakeholders understand data movement and processing, thereby ensuring all requirements are addressed.</p>
-
-<div style="text-align: center">⁂</div>
-<div class="newtopic"></div>
-
-<h1 id="assignment-5">Assignment 5</h1>
-
-<p><strong>Q1. Define the term “programming principles.” Discuss the importance of following programming guidelines when writing code.</strong></p>
-
-<p><strong>Programming principles</strong> are fundamental rules and best practices that guide software developers in writing clean, efficient, and maintainable code. Examples include DRY (Don’t Repeat Yourself), KISS (Keep It Simple, Stupid), and SOLID (five principles for object-oriented programming).</p>
-
-<p><strong>Importance of Following Guidelines:</strong></p>
-<ul>
-  <li>Ensures code is <strong>readable</strong> and easily understood by others.</li>
-  <li>Facilitates <strong>collaboration</strong> in team environments.</li>
-  <li>Helps in <strong>maintaining</strong> and <strong>scaling</strong> projects over time.</li>
-  <li>Reduces the likelihood of <strong>bugs</strong> and improves code <strong>quality</strong>.</li>
-  <li>Makes code <strong>reusable</strong> and <strong>efficient</strong>, saving development time.</li>
-</ul>
-
-<p><strong>Q2. Discuss the role of comments, naming conventions, and indentation in programming practices. Why are they important for team-based development?</strong></p>
-
-<ul>
-  <li><strong>Comments</strong>: Help explain what the code does and why, making it easier for others (or yourself) to understand, debug, or modify the code later.</li>
-  <li><strong>Naming Conventions</strong>: Using clear, consistent names for variables, functions, and classes improves clarity and prevents confusion.</li>
-  <li><strong>Indentation</strong>: Proper indentation visually organizes code structure, aiding readability and error detection.</li>
-</ul>
-
-<p><strong>Why Important for Teams:</strong></p>
-<ul>
-  <li>Supports <strong>collaboration</strong>, as team members can more easily understand each other’s code.</li>
-  <li>Prevents misunderstandings and mistakes by enforcing consistency.</li>
-  <li>Speeds up onboarding of new team members.</li>
-</ul>
-
-<p><strong>Q3. Define unit testing and explain how it applies to procedural units and classes. Why is it critical in software development?</strong></p>
-
-<p><strong>Unit Testing</strong> is the process of testing individual components (units) of a program—such as functions, procedures, or classes—to ensure each works as intended.</p>
-
-<ul>
-  <li><strong>Procedural Units</strong>: Functions/procedures are tested independently with sets of input data and expected outputs.</li>
-  <li><strong>Classes</strong>: Methods within a class are tested, as well as the interactions between object instances.</li>
-</ul>
-
-<p><strong>Importance:</strong></p>
-<ul>
-  <li>Detects bugs early, making them easier and cheaper to fix.</li>
-  <li>Ensures new changes don’t break existing code (regression).</li>
-  <li>Assures code behaves as specified, improving reliability.</li>
-</ul>
-
-<p><strong>Q4. What are software metrics? Discuss their role in evaluating the quality of software.</strong></p>
-
-<p><strong>Software metrics</strong> are quantitative measures used to assess various aspects of software development and performance.</p>
-
-<ul>
-  <li>Examples: lines of code (LOC), cyclomatic complexity, code coverage, defect density.</li>
-</ul>
-
-<p><strong>Role:</strong></p>
-<ul>
-  <li>Provide an objective way to evaluate code <strong>quality</strong>, <strong>reliability</strong>, <strong>maintainability</strong>, and <strong>complexity</strong>.</li>
-  <li>Help identify problematic areas in code that need improvement.</li>
-  <li>Aid in productivity and progress measurement on projects.</li>
-</ul>
-
-<p><strong>Q5/Q6. Explain Cyclomatic Complexity and its significance in understanding code complexity. Provide a simple code example and calculate its Cyclomatic Complexity.</strong></p>
-
-<p><strong>Cyclomatic Complexity</strong> measures the number of independent paths through a program’s source code. It reflects how complex a program is.</p>
-
-<ul>
-  <li>Calculated as:<br />
-\(M = E - N + 2P\)<br />
-where \(E\) = edges, \(N\) = nodes, \(P\) = number of connected components (usually 1 for a single program).</li>
-</ul>
-
-<p><strong>Significance:</strong></p>
-<ul>
-  <li>Higher complexity means code is harder to test and maintain.</li>
-  <li>Indicates the minimum number of test cases needed for full branch coverage.</li>
-</ul>
-
-<p><strong>Simple Example:</strong></p>
-<pre><code class="language-C">int max(int a, int b) {
-    if(a &gt; b)
-        return a;
-    else
-        return b;
-}
-</code></pre>
-<ul>
-  <li>1 decision point (if), so Cyclomatic Complexity = 2.</li>
-</ul>
-
-<p><strong>Q7. Find out the cyclomatic complexity and effort in the given program.</strong></p>
-
-<p><strong>Code:</strong></p>
-<pre><code class="language-C">#include 
-int main() {
-    int a, b, sum = 0;
-    printf("Enter two integers: ");
-    scanf("%d %d", &amp;a, &amp;b);
-    sum = a + b;
-    printf("Sum: %d", sum);
-    return 0;
-}
-</code></pre>
-
-<p><strong>Cyclomatic Complexity Calculation:</strong></p>
-<ul>
-  <li>No conditional statements (if, for, while, case, etc.)</li>
-  <li>Only one straight path through the program.</li>
-</ul>
-
-<p><strong>Cyclomatic Complexity = 1</strong></p>
-
-<p><strong>Effort:</strong></p>
-<ul>
-  <li>Since the program’s complexity is minimal, effort required for testing and maintenance is very low.</li>
-  <li>Only one test case is needed to test the program’s logic.</li>
-</ul>
-
-<div style="text-align: center">⁂</div>
-<div class="newtopic"></div>
-
-<h1 id="assignment-6">Assignment 6</h1>
-
-<p><strong>. What is Testing? Write a note on levels of testing.</strong></p>
-
-<p><strong>Testing</strong> is the process of evaluating software to determine whether it meets specified requirements and to identify defects. It helps ensure software quality, reliability, and proper functionality before deployment.</p>
-
-<p><strong>Levels of Testing:</strong></p>
-<ul>
-  <li><strong>Unit Testing:</strong> Tests individual components or functions for correctness.</li>
-  <li><strong>Integration Testing:</strong> Verifies interactions between integrated units/modules.</li>
-  <li><strong>System Testing:</strong> Validates the complete and integrated software system against its requirements.</li>
-  <li><strong>Acceptance Testing:</strong> Confirms that the system meets business needs and is ready for release, often performed by the end user.</li>
-</ul>
-
-<p><strong>2. Briefly explain Testing Plan.</strong></p>
-
-<p>A <strong>Testing Plan</strong> is a comprehensive document outlining the strategy, scope, approach, resources, and schedule for intended testing activities.</p>
-
-<ul>
-  <li>Defines objectives and scope of testing.</li>
-  <li>Lists features to be tested and not tested.</li>
-  <li>Specifies testing tasks, responsibilities, environment, resources, schedule, and deliverables.</li>
-  <li>Details risk management and criteria for test completion.</li>
-</ul>
-
-<p>A good test plan ensures systematic, efficient, and successful verification of a software product.</p>
-
-<p><strong>3. What is Black Box Testing? Write a note on black box testing and boundary value analysis of it.</strong></p>
-
-<p><strong>Black Box Testing:</strong></p>
-<ul>
-  <li>A software testing technique where the tester evaluates the functionality of an application without knowledge of its internal code structure.</li>
-  <li>Focuses on inputs and outputs: the tester supplies inputs and observes outputs to verify correct behaviour.</li>
-</ul>
-
-<p><strong>Boundary Value Analysis (BVA):</strong></p>
-<ul>
-  <li>A black box test design technique that involves creating test cases around the edge of input domains.</li>
-  <li>Since errors often occur at boundaries, BVA helps detect defects by testing at minimum, maximum, and just-inside/outside values.</li>
-</ul>
-
-<p>For example, if input is valid for 1–100, tests should include 0, 1, 100, and 101.</p>
-
-<p><strong>4. What is Software quality assurance? Explain role of SQA group.</strong></p>
-
-<p><strong>Software Quality Assurance (SQA):</strong><br />
-A set of activities for ensuring software processes and products conform to requirements, standards, and procedures.</p>
-
-<p><strong>Role of SQA Group:</strong></p>
-<ul>
-  <li>Develop, maintain, and enforce software quality standards and procedures.</li>
-  <li>Conduct audits, review processes, and monitor compliance.</li>
-  <li>Provide training and guidance on best quality practices.</li>
-  <li>Participate in process improvement initiatives.</li>
-  <li>Ensure defect prevention, not just detection.</li>
-</ul>
-
-<p><strong>5. How to control quality of product? Explain how cost of quality is calculated.</strong></p>
-
-<p><strong>Quality Control Mechanisms:</strong></p>
-<ul>
-  <li>Adhere to coding and documentation standards.</li>
-  <li>Conduct code reviews, peer reviews, and systematic inspections.</li>
-  <li>Require thorough and regular testing at multiple levels.</li>
-  <li>Ensure continuous feedback and improvement cycles.</li>
-</ul>
-
-<p><strong>Cost of Quality:</strong><br />
-It includes all costs incurred to prevent, detect, and fix software defects.</p>
-
-<ul>
-  <li><strong>Prevention Costs:</strong> Expenses to prevent defects (training, process improvement).</li>
-  <li><strong>Appraisal Costs:</strong> Costs for evaluating or inspecting (testing, auditing).</li>
-  <li><strong>Failure Costs:</strong> Result from defects found before (internal) or after (external) delivery.</li>
-</ul>
-
-<p><strong>Total Cost of Quality = Prevention + Appraisal + Failure Costs</strong><br />
-Investing more in prevention/appraisal lowers failure costs, improving overall quality and reducing total cost in the long run.</p>
-
-<div style="text-align: center">⁂</div>
-<div class="newtopic"></div>
-
-<h1 id="assignment-7">Assignment 7</h1>
-
-<p><strong>. Define CASE tools. Explain advantages and disadvantages of CASE tools.</strong></p>
-
-<p><strong>CASE (Computer-Aided Software Engineering) Tools:</strong><br />
-Software applications that automate or support software development activities, including analysis, design, coding, testing, and maintenance.</p>
-
-<p><strong>Advantages:</strong></p>
-<ul>
-  <li>Increases productivity and reduces manual effort.</li>
-  <li>Enhances accuracy by minimizing human errors.</li>
-  <li>Facilitates better documentation and standardization.</li>
-  <li>Supports project planning, tracking, and version control.</li>
-  <li>Encourages reuse of designs and code.</li>
-</ul>
-
-<p><strong>Disadvantages:</strong></p>
-<ul>
-  <li>Can be expensive to acquire and implement.</li>
-  <li>May require training for effective use.</li>
-  <li>Possible resistance from developers preferring traditional methods.</li>
-  <li>May not fully integrate with all development environments.</li>
-</ul>
-
-<p><strong>2. Explain SCRUM methodology in detail.</strong></p>
-
-<p><strong>SCRUM</strong> is an Agile framework for managing complex software development projects by promoting iterative progress, collaboration, and flexibility.</p>
-
-<ul>
-  <li><strong>Roles:</strong>
-    <ul>
-      <li><strong>Product Owner:</strong> Defines product backlog and prioritizes requirements.</li>
-      <li><strong>Scrum Master:</strong> Facilitates the process, removes impediments.</li>
-      <li><strong>Development Team:</strong> Builds the product increment.</li>
-    </ul>
-  </li>
-  <li><strong>Process:</strong>
-    <ul>
-      <li><strong>Product Backlog:</strong> List of project requirements.</li>
-      <li><strong>Sprint Planning:</strong> Team selects items for the next sprint (iteration, typically 2–4 weeks).</li>
-      <li><strong>Daily Scrum:</strong> Short, daily stand-up meetings to synchronize activities.</li>
-      <li><strong>Sprint Execution:</strong> Development and testing during the sprint.</li>
-      <li><strong>Sprint Review:</strong> Evaluate completed work with stakeholders.</li>
-      <li><strong>Sprint Retrospective:</strong> Reflect on the process and plan improvements.</li>
-    </ul>
-  </li>
-</ul>
-
-<p>SCRUM promotes rapid delivery, adaptability to change, and continuous improvement.</p>
-
-<p><strong>3. Define Dependable Systems. Write principal properties of dependable systems.</strong></p>
-
-<p><strong>Dependable Systems:</strong><br />
-Software systems that can be trusted to perform correctly, reliably, and securely even in adverse conditions.</p>
-
-<p><strong>Principal Properties:</strong></p>
-<ul>
-  <li><strong>Availability:</strong> System is accessible and operational when needed.</li>
-  <li><strong>Reliability:</strong> Continuity of correct service.</li>
-  <li><strong>Safety:</strong> No catastrophic consequences in the event of failure.</li>
-  <li><strong>Security:</strong> Protection against unauthorized access or modification.</li>
-  <li><strong>Maintainability:</strong> Easy to fix defects or modify as needed.</li>
-</ul>
-
-<p><strong>4. Write common faults, errors and failures that can occur in product. How to achieve reliability in any software product?</strong></p>
-
-<p><strong>Common Faults, Errors, and Failures:</strong></p>
-<ul>
-  <li><strong>Faults:</strong> Design flaws, logic errors, incorrect algorithms, incorrect specifications.</li>
-  <li><strong>Errors:</strong> Programming mistakes, misinterpretation of requirements, runtime exceptions.</li>
-  <li><strong>Failures:</strong> System crashes, incorrect outputs, security breaches, unresponsive behavior.</li>
-</ul>
-
-<p><strong>Achieving Reliability:</strong></p>
-<ul>
-  <li>Rigorous testing (unit, integration, and system tests)</li>
-  <li>Code reviews and inspections</li>
-  <li>Fault-tolerant design and error handling</li>
-  <li>Clear requirements and proper documentation</li>
-  <li>Regular updates and maintenance</li>
-</ul>
-
-<p><strong>5. Briefly explain Security Engineering.</strong></p>
-
-<p><strong>Security Engineering:</strong><br />
-The discipline of designing and implementing systems to remain dependable in the face of malicious attacks. Includes:</p>
-
-<ul>
-  <li>Identifying security requirements (confidentiality, integrity, availability)</li>
-  <li>Risk analysis and management</li>
-  <li>Implementing authentication, authorization, and encryption techniques</li>
-  <li>Security testing and auditing</li>
-  <li>Incident response planning</li>
-</ul>
-
-<p>Security Engineering ensures that software not only works correctly, but is also resistant to security threats.</p>
-
-<div style="text-align: center">⁂</div>
-<div class="newtopic"></div>
-
-<h1 id="assignment-8">Assignment 8</h1>
-
-<p><strong>. What is Software reuse? Explain advantages and disadvantages of software reuse.</strong></p>
-
-<p><strong>Software Reuse:</strong><br />
-The process of using existing software components, design patterns, code, or documentation in new software projects rather than developing everything from scratch.</p>
-
-<p><strong>Advantages:</strong></p>
-<ul>
-  <li><strong>Reduces Development Time:</strong> Speeds up project completion by reusing tested components.</li>
-  <li><strong>Cost Effective:</strong> Lowers overall development and maintenance costs.</li>
-  <li><strong>Improved Quality:</strong> Increases reliability as reused components are usually well-tested.</li>
-  <li><strong>Consistency:</strong> Promotes standardized solutions throughout software products.</li>
-</ul>
-
-<p><strong>Disadvantages:</strong></p>
-<ul>
-  <li><strong>Compatibility Issues:</strong> Existing components may not integrate smoothly with new systems.</li>
-  <li><strong>Lack of Documentation:</strong> Some reusable assets may not be well-documented.</li>
-  <li><strong>Maintenance:</strong> Updates or bugs in reused components can affect multiple systems.</li>
-  <li><strong>Dependency Risks:</strong> Reliance on third-party or legacy components may introduce security or support challenges.</li>
-</ul>
-
-<p><strong>2. Explain Real Time Engineering in detail.</strong></p>
-
-<p><strong>Real Time Engineering:</strong><br />
-Involves designing and implementing systems that respond to inputs or events within strict time constraints, often in industrial, automotive, or embedded environments.</p>
-
-<ul>
-  <li><strong>Types:</strong>
-    <ul>
-      <li><strong>Hard Real-Time:</strong> Missing a deadline can cause catastrophic failure (e.g., pacemakers, airbag systems).</li>
-      <li><strong>Soft Real-Time:</strong> Occasional deadline misses are tolerable but not desirable (e.g., video streaming).</li>
-    </ul>
-  </li>
-  <li><strong>Key Aspects:</strong>
-    <ul>
-      <li>Deterministic response times.</li>
-      <li>Task scheduling and prioritization.</li>
-      <li>Real-time operating systems (RTOS).</li>
-      <li>Reliability and safety considerations.</li>
-    </ul>
-  </li>
-  <li><strong>Applications:</strong>
-    <ul>
-      <li>Automotive controls, robotics, medical devices, telecommunications.</li>
-    </ul>
-  </li>
-</ul>
-
-<p><strong>3. What is Systems of System? Explain System Engineering in detail.</strong></p>
-
-<p><strong>Systems of Systems (SoS):</strong><br />
-Large, complex integrations of multiple independent systems that collaborate to achieve a higher-level objective. Each system works independently but interacts with others to deliver broader capability.</p>
-
-<p><strong>System Engineering:</strong><br />
-A multidisciplinary approach to designing, integrating, and managing complex systems throughout their life cycles.</p>
-
-<ul>
-  <li><strong>Processes Include:</strong>
-    <ul>
-      <li>Defining requirements and objectives.</li>
-      <li>Designing architecture and components.</li>
-      <li>Integration and interface management.</li>
-      <li>Testing, validation, and verification.</li>
-      <li>Maintenance and evolution planning.</li>
-    </ul>
-  </li>
-  <li><strong>Objectives:</strong>
-    <ul>
-      <li>Deliver reliable, efficient, and robust systems that meet user needs and can adapt to change.</li>
-    </ul>
-  </li>
-</ul>
-
-<p><strong>4. What is Service Oriented Software Engineering?</strong></p>
-
-<p><strong>Service Oriented Software Engineering (SOSE):</strong><br />
-A software design approach where applications are built using independent, reusable services which communicate over a network via standard protocols (such as SOAP, REST).</p>
-
-<ul>
-  <li><strong>Features:</strong>
-    <ul>
-      <li>Loose coupling of components.</li>
-      <li>Reusability and composability.</li>
-      <li>Platform and language independence.</li>
-      <li>Example: Microservices, Web services.</li>
-    </ul>
-  </li>
-  <li><strong>Benefits:</strong>
-    <ul>
-      <li>Flexibility in integrating diverse systems.</li>
-      <li>Easier maintenance and scalability.</li>
-    </ul>
-  </li>
-</ul>
-
-<p><strong>5. What is Distributed Software Engineering?</strong></p>
-
-<p><strong>Distributed Software Engineering:</strong><br />
-Focuses on developing software systems where processing and data are spread across multiple networked computers, rather than being centralized.</p>
-
-<ul>
-  <li><strong>Traits:</strong>
-    <ul>
-      <li>Components may execute on separate physical machines.</li>
-      <li>Requires robust networking, synchronization, and coordination strategies.</li>
-      <li>Examples: Cloud computing, peer-to-peer systems, distributed databases.</li>
-    </ul>
-  </li>
-  <li><strong>Advantages:</strong>
-    <ul>
-      <li>Improved reliability, scalability, and performance.</li>
-      <li>Fault tolerance and resource sharing.</li>
-    </ul>
-  </li>
-</ul>
-
-<div style="text-align: center">⁂</div>]]></content><author><name>Jinansh</name></author><category term="Resource" /><summary type="html"><![CDATA[This resource provides with the solution of questions given in assignments 1 to 8 of Software Engineering.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:63586/assets/img/covers/759dad03-6b05-4760-9e78-96860d8ce44b.webp" /><media:content medium="image" url="http://localhost:63586/assets/img/covers/759dad03-6b05-4760-9e78-96860d8ce44b.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+<hr />]]></content><author><name>Materio</name></author><category term="Resource" /><summary type="html"><![CDATA[This Resource lists important questions for end semester exams]]></summary></entry></feed>

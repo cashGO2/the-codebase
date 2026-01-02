@@ -77,7 +77,8 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById('serverTerminal'),
             document.getElementById('invertMode'),
             document.getElementById('clearSiteDataCard'),
-            document.getElementById('noiseToggleCard')
+            document.getElementById('noiseToggleCard'),
+            document.getElementById('hapticToggleCard')
 
         ];
         const notifyCards = document.querySelectorAll('#notify');
@@ -237,6 +238,11 @@ document.addEventListener("DOMContentLoaded", function () {
         pureLightModeToggle.checked = pureLightMode;
 
         pureLightModeToggle.addEventListener("change", function () {
+            // Haptic feedback
+            if (window.MaterioHaptics) {
+                window.MaterioHaptics.vibrate(this.checked ? 'toggleOn' : 'toggleOff');
+            }
+
             const enabled = this.checked;
             setCookie("pureLightMode", enabled ? "true" : "false", 30);
             applyThemeBasedOnConditions();
@@ -267,6 +273,12 @@ document.addEventListener("DOMContentLoaded", function () {
     // Theme toggle change handler
     themeToggle.addEventListener("change", function () {
         const isDark = this.checked;
+
+        // Haptic feedback for toggle
+        if (window.MaterioHaptics) {
+            window.MaterioHaptics.vibrate(isDark ? 'toggleOn' : 'toggleOff');
+        }
+
         setCookie("theme", isDark ? "dark" : "light", 30);
 
         // If turning off dark mode, clear pure light mode preference

@@ -540,6 +540,26 @@
                     return;
                 }
 
+                // Close dynamic form modal
+                const dynamicFormModal = document.getElementById('dynamicFormModal');
+                if (dynamicFormModal && dynamicFormModal.classList.contains('show')) {
+                    if (typeof window.closeDynamicForm === 'function') {
+                        window.closeDynamicForm();
+                    } else {
+                        dynamicFormModal.classList.remove('show');
+                    }
+                    return;
+                }
+
+                // Close promo modal
+                const promoModal = document.getElementById('promoModal');
+                if (promoModal && promoModal.style.display !== 'none' && promoModal.style.display !== '') {
+                    if (typeof window.closePromoModal === 'function') {
+                        window.closePromoModal();
+                    }
+                    return;
+                }
+
                 // Close #popup by clicking the close button
                 const popup = document.getElementById('popup');
                 if (popup && (popup.style.display !== 'none' && popup.style.display !== '')) {

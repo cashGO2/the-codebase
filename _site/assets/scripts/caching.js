@@ -11,25 +11,25 @@ document.addEventListener('DOMContentLoaded', function () {
         if (pdfCache.has(pdfUrl)) {
             return pdfCache.get(pdfUrl);
         }
-        
+
         // Just validate URL is accessible, don't download
         try {
             const response = await fetch(pdfUrl, { method: 'HEAD' });
             if (!response.ok) throw new Error(`PDF not accessible: ${response.status}`);
-            
+
             // Cache just the URL as "validated"
             pdfCache.set(pdfUrl, {
                 originalUrl: pdfUrl,
                 validated: true,
                 validatedAt: Date.now()
             });
-            
+
             // Limit cache size
             if (pdfCache.size > MAX_CACHE_SIZE) {
                 const firstKey = pdfCache.keys().next().value;
                 pdfCache.delete(firstKey);
             }
-            
+
             return pdfCache.get(pdfUrl);
         } catch (error) {
             console.error('Error validating PDF:', error);
@@ -50,6 +50,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Add load event listener to setup overlay modes
             pdfIframe.addEventListener('load', function () {
+                // Haptic feedback - PDF loaded
+                if (window.MaterioHaptics) {
+                    window.MaterioHaptics.loadingComplete();
+                }
+
                 // Quick setup for PDF.js viewer
                 setTimeout(() => {
                     const mainPopup = document.getElementById('popup');
@@ -81,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }, 100); // Reduced from 500ms to 100ms
             });
         }
-        
+
         // Clear any existing content (like error messages) before adding iframe
         const existingIframe = document.getElementById('pdf-iframe');
         if (!existingIframe) {
@@ -90,14 +95,14 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             // IMPORTANT: Hide iframe while clearing to prevent showing old PDF
             pdfIframe.style.visibility = 'hidden';
-            
+
             // Clear the iframe completely by setting src to about:blank
             pdfIframe.src = 'about:blank';
-            
+
             // Clear popup content and re-add iframe
-            popupContent.innerHTML = ''; 
+            popupContent.innerHTML = '';
             popupContent.appendChild(pdfIframe);
-            
+
             // Show loading indicator while clearing
             const loadingDiv = document.createElement('div');
             loadingDiv.id = 'pdf-loading-indicator';
@@ -106,11 +111,20 @@ document.addEventListener('DOMContentLoaded', function () {
             popupContent.appendChild(loadingDiv);
         }
     }
-    
+
     // Enhanced PDF loading function with error handling - optimized for speed
     async function loadPdfWithCache(pdfUrl) {
+        // Haptic feedback - start loading
+        if (window.MaterioHaptics) {
+            window.MaterioHaptics.loadingStart();
+        }
+
         // Check offline status first
         if (!navigator.onLine) {
+            // Haptic feedback - error
+            if (window.MaterioHaptics) {
+                window.MaterioHaptics.vibrate('error');
+            }
             document.getElementById('popupContent').innerHTML =
                 `<div style="padding:20px;text-align:center;">
 <i class="fa-solid fa-rotate-exclamation" style="font-size: 72px; color:#ff8400; margin-top:220px;"></i>
@@ -124,10 +138,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Initialize iframe immediately for faster display
         initializeIframe();
-        
+
         // Check if PDF is already validated in cache
         const cachedInfo = pdfCache.get(pdfUrl);
-        
+
         // If not in cache, validate it (lightweight HEAD request)
         if (!cachedInfo || !cachedInfo.validated) {
             try {
@@ -150,15 +164,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     popup.style.display = 'block';
                     return;
                 }
-                
+
                 // Cache validation result
                 pdfCache.set(pdfUrl, {
                     originalUrl: pdfUrl,
                     validated: true,
                     validatedAt: Date.now()
                 });
-                
+
             } catch (error) {
+                // Haptic feedback - error
+                if (window.MaterioHaptics) {
+                    window.MaterioHaptics.vibrate('error');
+                }
                 document.getElementById('popupContent').innerHTML =
                     `<div style="padding:20px;text-align:center;">
 <i class="fa-solid fa-rotate-exclamation" style="font-size: 72px; color:#ff8400; margin-top:220px;"></i>
@@ -173,12 +191,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Load PDF directly in viewer - let PDF.js handle streaming
         const viewerUrl = `/oread/web/viewer.html?file=${encodeURIComponent(pdfUrl)}`;
-        
+
         // Remove loading indicator and show iframe
         const loadingIndicator = document.getElementById('pdf-loading-indicator');
         if (loadingIndicator) loadingIndicator.remove();
         pdfIframe.style.visibility = 'visible';
-        
+
         // Load directly - PDF.js will stream it efficiently
         pdfIframe.src = viewerUrl;
 
@@ -195,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const topic = this.value;
         if (semester && subject && categorySelect.selectedIndex !== 0 && topic) {
             let pdfUrl;
-            
+
             // Special handling for Vault (semester 9999)
             if (semester === '9999') {
                 // Format: pdfs/9999/UUID/vault/filename.pdf
@@ -204,10 +222,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Normal format: pdfs/semester/subject/topic.pdf
                 pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/${topic}.pdf`;
             }
-            
+
             // Transform to local CDN if enabled
             pdfUrl = window.MaterioLocalCDN?.transformUrl(pdfUrl) || pdfUrl;
-            
+
             // Lightweight validation only (no heavy download)
             preloadPdf(pdfUrl);
         }
@@ -267,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ===== SHARED STATE =====
     let currentPdfUrl = null; // Shared between bookmark and download features
-    
+
     // ===== BOOKMARK FUNCTIONALITY =====
     const bookmarkCacheKey = 'bookmarkedPdfs';
     let bookmarkButton = null;
@@ -594,7 +612,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         } catch (error) {
             console.error('Error downloading PDF:', error);
-            
+
             // Show error state
             const icon = downloadButton.querySelector('i');
             icon.className = 'fa-solid fa-loader';
@@ -623,9 +641,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Wait for IndexedDB initialization to complete
             await window.pdfDownloadManager.initPromise;
-            
+
             const isDownloaded = await window.pdfDownloadManager.isDownloaded(pdfUrl);
-            
+
             if (isDownloaded) {
                 // Show loading indicator while fetching from IndexedDB
                 document.getElementById('popupContent').innerHTML = `
@@ -636,18 +654,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 `;
                 popup.classList.remove('closing');
                 popup.style.display = 'block';
-                
+
                 // Get PDF data from IndexedDB
                 const pdfData = await window.pdfDownloadManager.getPDFData(pdfUrl);
-                
+
                 if (pdfData) {
                     // Initialize iframe
                     initializeIframe();
-                    
+
                     // Load PDF.js viewer
                     const viewerUrl = `/oread/web/viewer.html?disableStream=false&disableRange=false&disableAutoFetch=false&rangeChunkSize=1048576&file=${encodeURIComponent(pdfUrl)}`;
                     pdfIframe.src = viewerUrl;
-                    
+
                     // Wait for iframe to be ready before sending data
                     const iframeLoadPromise = new Promise((resolve) => {
                         if (pdfIframe.contentWindow) {
@@ -656,9 +674,9 @@ document.addEventListener('DOMContentLoaded', function () {
                             setTimeout(resolve, 200);
                         }
                     });
-                    
+
                     await iframeLoadPromise;
-                    
+
                     // Send the downloaded PDF data to iframe
                     if (pdfIframe.contentWindow) {
                         pdfIframe.contentWindow.postMessage({
@@ -669,14 +687,14 @@ document.addEventListener('DOMContentLoaded', function () {
                             fromDownload: true
                         }, '*');
                     }
-                    
+
                     // Show popup and update download icon
                     popup.classList.remove('closing');
                     popup.style.display = 'block';
-                    
+
                     // Update download icon
                     setTimeout(updateDownloadIcon, 500);
-                    
+
                     return;
                 }
             }

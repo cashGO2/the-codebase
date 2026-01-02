@@ -26,14 +26,34 @@
         const redirectUrl = urlParams.get('redirect');
 
         if (redirectUrl) {
+          // Check for redirect loop: if referrer matches the redirect target
+          const referrer = document.referrer;
+          const targetUrl = new URL(redirectUrl, window.location.origin);
+
+          if (referrer && (referrer.includes(targetUrl.pathname) || targetUrl.href.includes(referrer))) {
+            console.warn('Redirect loop detected. Clearing invalid token.');
+            // Clear cookie and storage to break loop
+            document.cookie = 'materio_auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            localStorage.removeItem('materio_auth_token');
+            // Do not redirect, let form show
+            return;
+          }
+
           console.log('Redirecting existing user to:', redirectUrl);
-          const targetUrl = new URL(redirectUrl);
           targetUrl.searchParams.set('token', authToken);
           // Use replace to prevent back-button loops
           window.location.replace(targetUrl.toString());
           return; // Stop further execution
         } else {
           // Only redirect to profile if NOT on a redirect loop
+          // But first check if we just came from profile (logout or error)
+          if (document.referrer && document.referrer.includes('/account/profile')) {
+            console.log('Came from profile, assuming logout/expire. Clearing token.');
+            document.cookie = 'materio_auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            localStorage.removeItem('materio_auth_token');
+            return;
+          }
+
           console.log('Redirecting existing user to profile');
           window.location.replace('/account/profile');
           return;

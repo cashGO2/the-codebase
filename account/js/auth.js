@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (redirectUrl) {
       const token = getAuthToken();
-      const targetUrl = new URL(redirectUrl);
+      const targetUrl = new URL(redirectUrl, window.location.origin);
       targetUrl.searchParams.set('token', token);
       window.location.href = targetUrl.toString();
     } else {

@@ -1203,78 +1203,149 @@ window.clearDismissedPromos = function () {
   resetPromoSettings();
 };
 
-// Mobile swipe-down functionality for handle bar
+// Mobile drag-down to dismiss functionality for all bottom sheet modals
 function initMobileSwipeHandling() {
-  const modal = document.getElementById('promoModal');
-  if (!modal) return;
+  // Mobile breakpoint
+  const MOBILE_BREAKPOINT = 768;
+  const DISMISS_THRESHOLD = 100; // pixels to drag before dismiss
 
-  let startY = 0;
-  let currentY = 0;
-  let isDragging = false;
-  let initialTransform = 0;
+  // Get all modal overlays
+  const overlays = document.querySelectorAll('.promo-modal-overlay');
 
-  function handleTouchStart(e) {
-    // Only handle touches on screens 400px and below
-    if (window.innerWidth > 400) return;
+  overlays.forEach(overlay => {
+    // Skip if already initialized
+    if (overlay.dataset.swipeInitialized) return;
+    overlay.dataset.swipeInitialized = 'true';
 
-    startY = e.touches[0].clientY;
-    isDragging = true;
-    initialTransform = 0;
+    let startY = 0;
+    let currentY = 0;
+    let isDragging = false;
+    let modalElement = null;
 
-    const modalElement = modal.querySelector('.promo-modal');
-    if (modalElement) {
+    function handleTouchStart(e) {
+      // Only on mobile
+      if (window.innerWidth > MOBILE_BREAKPOINT) return;
+
+      modalElement = overlay.querySelector('.promo-modal, .dynamic-form-modal');
+      if (!modalElement) return;
+
+      // Check if touch started near the top (handle area) or if modal is at scroll top
+      const touchY = e.touches[0].clientY;
+      const modalRect = modalElement.getBoundingClientRect();
+      const handleAreaHeight = 60; // pixels from top of modal
+
+      // Only start drag if touching near top handle area OR modal is scrolled to top
+      const isNearTop = touchY < (modalRect.top + handleAreaHeight);
+      const isScrolledToTop = modalElement.scrollTop === 0;
+
+      if (!isNearTop && !isScrolledToTop) return;
+
+      startY = touchY;
+      isDragging = true;
+
       modalElement.style.transition = 'none';
     }
-  }
 
-  function handleTouchMove(e) {
-    if (!isDragging || window.innerWidth > 400) return;
+    function handleTouchMove(e) {
+      if (!isDragging || !modalElement || window.innerWidth > MOBILE_BREAKPOINT) return;
 
-    currentY = e.touches[0].clientY;
-    const deltaY = currentY - startY;
+      currentY = e.touches[0].clientY;
+      const deltaY = currentY - startY;
 
-    // Only allow downward dragging
-    if (deltaY > 0) {
-      const modalElement = modal.querySelector('.promo-modal');
-      if (modalElement) {
+      // Only allow downward dragging
+      if (deltaY > 0) {
         modalElement.style.transform = `translateY(${deltaY}px)`;
+
+        // Add opacity fade effect
+        const opacity = Math.max(0.3, 1 - (deltaY / 400));
+        overlay.style.backgroundColor = `rgba(0, 0, 0, ${0.5 * opacity})`;
+
+        // Prevent scrolling while dragging
+        e.preventDefault();
       }
     }
-  }
 
-  function handleTouchEnd(e) {
-    if (!isDragging || window.innerWidth > 400) return;
+    function handleTouchEnd(e) {
+      if (!isDragging || !modalElement || window.innerWidth > MOBILE_BREAKPOINT) return;
 
-    const deltaY = currentY - startY;
-    const modalElement = modal.querySelector('.promo-modal');
+      const deltaY = currentY - startY;
 
-    if (modalElement) {
       modalElement.style.transition = 'transform 0.3s ease';
+      overlay.style.transition = 'background-color 0.3s ease';
 
-      // If dragged down more than 100px, close the modal
-      if (deltaY > 100) {
+      // If dragged down more than threshold, close the modal
+      if (deltaY > DISMISS_THRESHOLD) {
         modalElement.style.transform = 'translateY(100%)';
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+
         setTimeout(() => {
-          closePromoModal();
+          // Determine which close function to call
+          if (overlay.id === 'promoModal') {
+            if (typeof closePromoModal === 'function') {
+              closePromoModal();
+            }
+          } else if (overlay.id === 'dynamicFormModal') {
+            if (typeof closeDynamicForm === 'function') {
+              closeDynamicForm();
+            }
+          } else {
+            // Generic close - hide overlay
+            overlay.style.display = 'none';
+            overlay.classList.remove('show');
+          }
+
+          // Reset transform
+          modalElement.style.transform = '';
+          overlay.style.backgroundColor = '';
+          overlay.style.transition = '';
         }, 300);
       } else {
         // Snap back to original position
         modalElement.style.transform = 'translateY(0)';
+        overlay.style.backgroundColor = '';
+
+        setTimeout(() => {
+          modalElement.style.transform = '';
+          overlay.style.transition = '';
+        }, 300);
       }
+
+      isDragging = false;
+      startY = 0;
+      currentY = 0;
     }
 
-    isDragging = false;
-    startY = 0;
-    currentY = 0;
-  }
-
-  // Add event listeners to the modal
-  modal.addEventListener('touchstart', handleTouchStart, { passive: true });
-  modal.addEventListener('touchmove', handleTouchMove, { passive: true });
-  modal.addEventListener('touchend', handleTouchEnd, { passive: true });
+    // Add event listeners
+    overlay.addEventListener('touchstart', handleTouchStart, { passive: true });
+    overlay.addEventListener('touchmove', handleTouchMove, { passive: false });
+    overlay.addEventListener('touchend', handleTouchEnd, { passive: true });
+  });
 }
 
-// Initialize swipe handling when DOM is loaded
+// Initialize on DOM load
 document.addEventListener('DOMContentLoaded', function () {
   initMobileSwipeHandling();
 });
+
+// Re-initialize when new modals might be added (e.g., dynamic content)
+// Use MutationObserver to detect new modals
+const swipeObserver = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    if (mutation.addedNodes.length) {
+      // Check if any new modal overlays were added
+      mutation.addedNodes.forEach(function (node) {
+        if (node.nodeType === 1 && node.classList && node.classList.contains('promo-modal-overlay')) {
+          initMobileSwipeHandling();
+        }
+      });
+    }
+  });
+});
+
+// Start observing
+if (document.body) {
+  swipeObserver.observe(document.body, { childList: true, subtree: true });
+}
+
+// Export for manual re-initialization
+window.initMobileSwipeHandling = initMobileSwipeHandling;

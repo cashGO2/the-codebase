@@ -169,6 +169,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             e.preventDefault();
 
+            // Haptic feedback for tab switch
+            if (window.MaterioHaptics) {
+                window.MaterioHaptics.vibrate('tab');
+            }
+
             // Remove active class and change icons back to regular for all tabs
             tabLinks.forEach(tab => {
                 tab.classList.remove("active");
@@ -208,6 +213,11 @@ const popup = document.getElementById('popup');
 const closePopup = document.getElementById('closePopup');
 
 submitButton.addEventListener('click', async () => {
+    // Haptic feedback for submit action
+    if (window.MaterioHaptics) {
+        window.MaterioHaptics.vibrate('strong');
+    }
+
     const semester = document.getElementById('semesterSelect').value;
     const subject = document.getElementById('subjectSelect').value;
     const categorySelect = document.getElementById('categorySelect');
@@ -1541,6 +1551,11 @@ function handleInsightroomToggle() {
 
     // Add event listener for toggle changes
     insightroomToggle.addEventListener('change', function () {
+        // Haptic feedback
+        if (window.MaterioHaptics) {
+            window.MaterioHaptics.vibrate(this.checked ? 'toggleOn' : 'toggleOff');
+        }
+
         const enabled = this.checked;
         // Read the view mode from saved settings to preserve it, not from DOM which could be stale
         const [, savedViewMode] = getInsightroomSettings();
@@ -1560,6 +1575,11 @@ function handleInsightroomToggle() {
         dropdownTrigger.addEventListener('click', function (e) {
             e.stopPropagation();
             e.preventDefault();
+            const isOpen = dropdownWrapper.classList.contains('open');
+            // Haptic feedback
+            if (window.MaterioHaptics) {
+                window.MaterioHaptics.vibrate(isOpen ? 'dropdownClose' : 'dropdownOpen');
+            }
             dropdownWrapper.classList.toggle('open');
             dropdown.classList.toggle('show');
         });
@@ -1569,6 +1589,12 @@ function handleInsightroomToggle() {
     dropdownItems.forEach(item => {
         item.addEventListener('click', function (e) {
             e.preventDefault();
+
+            // Haptic feedback
+            if (window.MaterioHaptics) {
+                window.MaterioHaptics.vibrate('select');
+            }
+
             const value = this.dataset.value;
             const label = value === 'folded' ? 'Folded' : 'Normal';
 
