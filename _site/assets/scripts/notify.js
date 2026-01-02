@@ -70,6 +70,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!container) return;
     container.innerHTML = '';
 
+    // Reset layout styles
+    container.style.display = '';
+    container.style.flexDirection = '';
+    container.style.justifyContent = '';
+    container.style.alignItems = '';
+    container.style.minHeight = '';
+
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - 10);
 
@@ -78,38 +85,54 @@ document.addEventListener('DOMContentLoaded', () => {
       .sort((a, b) => new Date(b.date) - new Date(a.date));
 
     if (validNotifications.length === 0) {
-      const card = document.createElement('div');
-      card.classList.add('card-layout');
-      card.id = 'notify';
-      
+      // Apply centering styles
+      container.style.display = 'flex';
+      container.style.flexDirection = 'column';
+      container.style.justifyContent = 'center';
+      container.style.alignItems = 'center';
+      container.style.minHeight = '60vh';
+
       // Create image element for empty state
       const emptyImg = document.createElement('img');
-      emptyImg.src = '/assets/img/empty.png';
-      emptyImg.alt = 'No notifications';
+      emptyImg.src = '/assets/img/193d8b46-eaed-423e-9673-5bed950377ba.webp';
+      emptyImg.alt = 'All Caught Up!';
       emptyImg.style.display = 'block';
       emptyImg.style.margin = '0 auto';
-      emptyImg.style.maxWidth = '150px';
+      // emptyImg.style.maxWidth = '350px';
       emptyImg.style.height = 'auto';
       emptyImg.style.opacity = '0.7';
+      emptyImg.classList.add('empty-state-img');
+
+      if (!document.getElementById('notify-empty-style')) {
+        const style = document.createElement('style');
+        style.id = 'notify-empty-style';
+        style.innerHTML = `
+          .empty-state-img {
+            max-width: 550px;
+            width: 100%;
+          }
+          @media (max-width: 768px) {
+            .empty-state-img {
+              max-width: 350px;
+            }
+          }
+        `;
+        document.head.appendChild(style);
+      }
       
-      card.appendChild(emptyImg);
+      container.appendChild(emptyImg);
       
       // Create text element below image
       const emptyText = document.createElement('p');
-      emptyText.textContent = 'No new notifications';
+      emptyText.textContent = 'All Caught Up !';
       emptyText.style.textAlign = 'center';
       emptyText.style.marginTop = '16px';
       emptyText.style.marginBottom = '0';
       emptyText.style.color = '#666';
-      emptyText.style.fontSize = '14px';
+      emptyText.style.fontSize = '18px';
+      emptyText.style.fontWeight = '900';
       
-      card.appendChild(emptyText);
-
-      if (document.body.classList.contains('dark-mode')) {
-        card.classList.add('dark-mode');
-      }
-
-      container.appendChild(card);
+      container.appendChild(emptyText);
       return;
     }
 

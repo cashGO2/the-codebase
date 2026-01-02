@@ -114,9 +114,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Enhanced PDF loading function with error handling - optimized for speed
     async function loadPdfWithCache(pdfUrl) {
-        // Haptic feedback - start loading
+        // Haptic feedback - start continuous network loading vibration (zz zz zz)
         if (window.MaterioHaptics) {
-            window.MaterioHaptics.loadingStart();
+            window.MaterioHaptics.startNetworkLoading();
         }
 
         // Check offline status first
@@ -274,6 +274,37 @@ document.addEventListener('DOMContentLoaded', function () {
                 }).catch(error => {
                     console.error('Error converting blob to ArrayBuffer:', error);
                 });
+            }
+        }
+
+        // PDF.js loading progress event
+        if (event.data.type === 'pdfProgress') {
+            // Provide haptic pulse for significant progress
+            if (window.MaterioHaptics && event.data.loaded && event.data.total) {
+                const progress = event.data.loaded / event.data.total;
+                // Pulse at 25%, 50%, 75% marks
+                if (progress >= 0.25 && progress < 0.27 ||
+                    progress >= 0.50 && progress < 0.52 ||
+                    progress >= 0.75 && progress < 0.77) {
+                    window.MaterioHaptics.progressPulse();
+                }
+            }
+        }
+
+        // PDF.js document loaded event
+        if (event.data.type === 'pdfLoaded' || event.data.type === 'documentloaded') {
+            // Stop network loading vibration and play completion
+            if (window.MaterioHaptics) {
+                window.MaterioHaptics.loadingComplete();
+            }
+        }
+
+        // PDF.js error event
+        if (event.data.type === 'pdfError') {
+            // Stop vibration and play error
+            if (window.MaterioHaptics) {
+                window.MaterioHaptics.stopNetworkLoading();
+                window.MaterioHaptics.vibrate('error');
             }
         }
     });

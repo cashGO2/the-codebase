@@ -214,7 +214,65 @@
      * Loading complete vibration
      */
     function loadingComplete() {
+        stopNetworkLoading(); // Stop any ongoing loading vibration
         vibrate('loadComplete');
+    }
+
+    // Track ongoing network loading vibration
+    let networkLoadingInterval = null;
+    let networkLoadingActive = false;
+
+    /**
+     * Start network loading vibration - creates "zz zz zz" pulses
+     * This runs continuously until stopNetworkLoading() is called
+     * @param {number} maxDuration - Maximum duration in ms (default 30 seconds)
+     */
+    function startNetworkLoading(maxDuration = 30000) {
+        // Don't start if already running or haptics disabled
+        if (networkLoadingActive) return;
+        if (!isVibrationSupported) return;
+        if (localStorage.getItem('materio_haptics_disabled') === 'true') return;
+
+        networkLoadingActive = true;
+        let elapsed = 0;
+        const pulseInterval = 250; // ms between pulses
+
+        // Initial vibration to confirm loading started
+        vibrate([40]);
+
+        networkLoadingInterval = setInterval(() => {
+            elapsed += pulseInterval;
+
+            // Check if we've exceeded max duration
+            if (elapsed >= maxDuration) {
+                stopNetworkLoading();
+                return;
+            }
+
+            // Create "zz" pulse for each network chunk
+            vibrate([30]);
+        }, pulseInterval);
+    }
+
+    /**
+     * Stop network loading vibration
+     */
+    function stopNetworkLoading() {
+        if (networkLoadingInterval) {
+            clearInterval(networkLoadingInterval);
+            networkLoadingInterval = null;
+        }
+        networkLoadingActive = false;
+        stopVibration(); // Stop any ongoing vibration
+    }
+
+    /**
+     * Trigger a single "zz" pulse (for progress updates)
+     */
+    function progressPulse() {
+        if (!isVibrationSupported) return;
+        if (localStorage.getItem('materio_haptics_disabled') === 'true') return;
+        vibrate([25]);
     }
 
     /**
@@ -340,6 +398,9 @@
         startLoadingVibration,
         loadingStart,
         loadingComplete,
+        startNetworkLoading,
+        stopNetworkLoading,
+        progressPulse,
         autoAttachHaptics,
         attachSubmitHaptic,
         setHapticsEnabled,

@@ -145,19 +145,98 @@
         if (window.PDFViewerApplication && window.PDFViewerApplication.initialized) {
             requestOverlayModes();
             initializeTheme();
+            setupPdfLoadingNotifications();
         } else {
             // Wait for PDF.js to initialize
             document.addEventListener('webviewerloaded', function () {
                 requestOverlayModes();
                 initializeTheme();
+                setupPdfLoadingNotifications();
             });
 
             // Fallback: try after a short delay
             setTimeout(function () {
                 requestOverlayModes();
                 initializeTheme();
+                setupPdfLoadingNotifications();
             }, 1000);
         }
+    }
+
+    // Notify parent window about PDF loading events for haptic feedback
+    function setupPdfLoadingNotifications() {
+        if (!window.PDFViewerApplication) return;
+
+        // Listen for PDF.js events
+        const eventBus = window.PDFViewerApplication.eventBus;
+        if (!eventBus) {
+            // Fallback: try using domcontentloaded on the document
+            waitForPdfLoad();
+            return;
+        }
+
+        // Progress event during PDF download
+        eventBus.on('progress', function (evt) {
+            if (evt.loaded && evt.total) {
+                try {
+                    window.parent.postMessage({
+                        type: 'pdfProgress',
+                        loaded: evt.loaded,
+                        total: evt.total
+                    }, '*');
+                } catch (e) { }
+            }
+        });
+
+        // Document loaded event - PDF file fully downloaded
+        eventBus.on('documentloaded', function () {
+            try {
+                window.parent.postMessage({
+                    type: 'pdfLoaded'
+                }, '*');
+            } catch (e) { }
+        });
+
+        // Pages loaded event - all pages rendered
+        eventBus.on('pagesloaded', function () {
+            try {
+                window.parent.postMessage({
+                    type: 'pdfLoaded'
+                }, '*');
+            } catch (e) { }
+        });
+
+        // Error event
+        eventBus.on('documenterror', function (evt) {
+            try {
+                window.parent.postMessage({
+                    type: 'pdfError',
+                    message: evt.message || 'Unknown error'
+                }, '*');
+            } catch (e) { }
+        });
+    }
+
+    // Fallback for when eventBus is not available
+    function waitForPdfLoad() {
+        // Check periodically if PDF is loaded
+        let checkCount = 0;
+        const maxChecks = 60; // 30 seconds max
+
+        const checkInterval = setInterval(function () {
+            checkCount++;
+
+            if (window.PDFViewerApplication && window.PDFViewerApplication.pdfDocument) {
+                clearInterval(checkInterval);
+                try {
+                    window.parent.postMessage({
+                        type: 'pdfLoaded'
+                    }, '*');
+                } catch (e) { }
+            } else if (checkCount >= maxChecks) {
+                clearInterval(checkInterval);
+            }
+        }, 500);
     }
 
     // Initialize theme based on system preference if not set by parent
