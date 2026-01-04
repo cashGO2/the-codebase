@@ -1,6 +1,6 @@
-const { 
-  supabase, 
-  verifyToken, 
+const {
+  supabase,
+  verifyToken,
   getTokenFromHeaders,
   corsHeaders
 } = require('./_utils');
@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
   // Dynamic import for ES module
   const { Octokit } = await import('@octokit/rest');
   const origin = req.headers.origin || req.headers.Origin;
-  
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     res.status(200).set(corsHeaders(origin)).send('');
@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
   try {
     // Get token from headers
     const token = getTokenFromHeaders(req.headers);
-    
+
     if (!token) {
       return res.status(401).json({ error: 'Authentication required' });
     }
@@ -49,11 +49,11 @@ module.exports = async (req, res) => {
     // Initialize GitHub client
     console.log('GitHub token available:', !!process.env.GITHUB_TOKEN);
     console.log('GitHub token length:', process.env.GITHUB_TOKEN ? process.env.GITHUB_TOKEN.length : 0);
-    
+
     if (!process.env.GITHUB_TOKEN) {
       return res.status(500).json({ error: 'GitHub token not configured' });
     }
-    
+
     const octokit = new Octokit({
       auth: process.env.GITHUB_TOKEN
     });
@@ -62,7 +62,7 @@ module.exports = async (req, res) => {
     const REPO_NAME = 'cdn-materio';
 
     const method = req.method;
-    
+
     switch (method) {
       case 'GET':
         // List files or get file info
@@ -76,9 +76,18 @@ module.exports = async (req, res) => {
         return await listGitHubFiles(octokit, REPO_OWNER, REPO_NAME, queryPath, origin, res);
 
       case 'POST':
-        // Check if this is a batch upload request
+        // Check if this is a staged upload (creates blobs without committing)
+        const isStageUpload = req.query.stage === 'true';
+        // Check if this is a commit request (commits all staged blobs)
+        const isCommitRequest = req.query.commit === 'true';
+        // Legacy batch upload (single commit per request)
         const isBatchUpload = req.query.batch === 'true';
-        if (isBatchUpload) {
+
+        if (isStageUpload) {
+          return await stageUploadFiles(req, octokit, REPO_OWNER, REPO_NAME, origin, res);
+        } else if (isCommitRequest) {
+          return await commitStagedFiles(req, octokit, REPO_OWNER, REPO_NAME, origin, res);
+        } else if (isBatchUpload) {
           return await batchUploadGitHubFiles(req, octokit, REPO_OWNER, REPO_NAME, origin, res);
         } else {
           // Regular single file upload
@@ -119,7 +128,7 @@ module.exports = async (req, res) => {
       stack: error.stack,
       name: error.name
     });
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
       details: error.message // Add error details for debugging
     });
@@ -181,11 +190,11 @@ async function listGitHubFiles(octokit, owner, repo, path, origin, res) {
 async function uploadGitHubFile(req, octokit, owner, repo, origin, res) {
   try {
     console.log('Upload request received');
-    
+
     // Use formidable to parse the request
     const form = new formidable.IncomingForm({
       multiples: false, // Single file upload
-      maxFileSize: 6 * 1024 * 1024, // 6MB
+      maxFileSize: 4 * 1024 * 1024, // 4MB - Vercel limit
       keepExtensions: true,
     });
 
@@ -208,18 +217,18 @@ async function uploadGitHubFile(req, octokit, owner, repo, origin, res) {
     if (!uploadedFile) {
       return res.status(400).json({ error: 'No file provided' });
     }
-    
+
     const file = Array.isArray(uploadedFile) ? uploadedFile[0] : uploadedFile;
     const fileName = file.originalFilename;
-    
+
     // Read file content
     const fileContent = fs.readFileSync(file.filepath);
 
     // Additional file size validation for the actual file content
     const NETLIFY_LIMIT = 6 * 1024 * 1024; // 6MB actual Netlify limit
     if (fileContent.length > NETLIFY_LIMIT) {
-      return res.status(413).json({ 
-        error: `File "${fileName}" is too large for current hosting. Maximum size is ${Math.round(NETLIFY_LIMIT / 1024 / 1024)}MB due to Netlify Functions limitations. Your file is ${Math.round(fileContent.length / 1024 / 1024)}MB.` 
+      return res.status(413).json({
+        error: `File "${fileName}" is too large for current hosting. Maximum size is ${Math.round(NETLIFY_LIMIT / 1024 / 1024)}MB due to Netlify Functions limitations. Your file is ${Math.round(fileContent.length / 1024 / 1024)}MB.`
       });
     }
 
@@ -227,11 +236,11 @@ async function uploadGitHubFile(req, octokit, owner, repo, origin, res) {
     // Allow JSON files for database updates, but restrict course materials to PDFs
     const isDataBaseFile = targetPath.includes('databases/') || fileName.toLowerCase().endsWith('.json');
     const isPdfCourseFile = targetPath.includes('pdfs/') || targetPath.startsWith('pdfs/');
-    
+
     if (isPdfCourseFile && !fileName.toLowerCase().endsWith('.pdf')) {
       return res.status(400).json({ error: 'Only PDF files are allowed for course material uploads (pdfs/ directory)' });
     }
-    
+
     // Allow JSON files for database operations
     if (isDataBaseFile && !fileName.toLowerCase().endsWith('.json') && !fileName.toLowerCase().endsWith('.pdf')) {
       return res.status(400).json({ error: 'Only JSON files are allowed for database operations' });
@@ -243,7 +252,7 @@ async function uploadGitHubFile(req, octokit, owner, repo, origin, res) {
     }
 
     const filePath = targetPath ? `${targetPath}/${fileName}` : fileName;
-    
+
     // Convert file content to base64 - fileContent is now a Buffer
     const content = fileContent.toString('base64');
 
@@ -292,11 +301,11 @@ async function uploadGitHubFile(req, octokit, owner, repo, origin, res) {
 
   } catch (error) {
     console.error('Upload error:', error);
-    
+
     // Provide more specific error messages based on error type
     let errorMessage = 'Upload failed';
     let statusCode = 500;
-    
+
     if (error.status === 413 || error.message?.includes('too large')) {
       errorMessage = 'File too large for upload';
       statusCode = 413;
@@ -312,7 +321,7 @@ async function uploadGitHubFile(req, octokit, owner, repo, origin, res) {
     } else if (error.message) {
       errorMessage = `Upload failed: ${error.message}`;
     }
-    
+
     return res.status(statusCode).json({ error: errorMessage });
   }
 }
@@ -340,7 +349,7 @@ async function deleteGitHubFileInternal(octokit, owner, repo, path, origin) {
     if (Array.isArray(data)) {
       // This is a directory - perform recursive deletion
       console.log(`Deleting directory: ${path} with ${data.length} items`);
-      
+
       // Delete all files in the directory first
       const deletePromises = data.map(async (item) => {
         if (item.type === 'file') {
@@ -372,7 +381,7 @@ async function deleteGitHubFileInternal(octokit, owner, repo, path, origin) {
       return {
         statusCode: 200,
         headers: { ...corsHeaders(origin), 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           message: `Directory '${path}' and all its contents deleted successfully`,
           deletedItems: data.length
         })
@@ -380,7 +389,7 @@ async function deleteGitHubFileInternal(octokit, owner, repo, path, origin) {
     } else {
       // This is a single file
       console.log(`Deleting file: ${path}`);
-      
+
       // Delete the file
       await octokit.rest.repos.deleteFile({
         owner,
@@ -452,7 +461,7 @@ async function renameGitHubFile(octokit, owner, repo, oldPath, newPath, origin, 
     return res.status(200).json({
       message: 'File renamed successfully',
       oldPath,
-      newPath 
+      newPath
     });
 
   } catch (error) {
@@ -468,13 +477,13 @@ async function renameGitHubFile(octokit, owner, repo, oldPath, newPath, origin, 
 async function cleanupMetadataOnDeletion(octokit, owner, repo, deletedPath, origin) {
   try {
     console.log(`Cleaning up metadata for deleted path: ${deletedPath}`);
-    
+
     // Clean up resource library
     await cleanupResourceLibrary(octokit, owner, repo, deletedPath, origin);
-    
+
     // Clean up notifications (optional - could add deletion notification)
     await createDeletionNotification(octokit, owner, repo, deletedPath, origin);
-    
+
   } catch (error) {
     console.error('Error cleaning up metadata:', error);
     // Don't fail the deletion if metadata cleanup fails
@@ -490,14 +499,14 @@ async function cleanupResourceLibrary(octokit, owner, repo, deletedPath, origin)
       repo,
       path: 'databases/beta/resource.lib.json'
     });
-    
+
     const content = Buffer.from(resourceLibData.content, 'base64').toString('utf8');
     let resourceLib = JSON.parse(content);
-    
+
     // Extract filename from path for cleanup
     const fileName = deletedPath.split('/').pop();
     let updated = false;
-    
+
     // Search through all semesters, subjects, and categories to remove the file
     for (const semester in resourceLib) {
       if (typeof resourceLib[semester] === 'object') {
@@ -517,7 +526,7 @@ async function cleanupResourceLibrary(octokit, owner, repo, deletedPath, origin)
         }
       }
     }
-    
+
     // Update the resource library file if changes were made
     if (updated) {
       const updatedContent = Buffer.from(JSON.stringify(resourceLib, null, 2)).toString('base64');
@@ -531,7 +540,7 @@ async function cleanupResourceLibrary(octokit, owner, repo, deletedPath, origin)
       });
       console.log('Resource library updated successfully');
     }
-    
+
   } catch (error) {
     if (error.status === 404) {
       console.log('Resource library file not found, skipping cleanup');
@@ -547,21 +556,21 @@ async function createDeletionNotification(octokit, owner, repo, deletedPath, ori
     // Get existing notifications
     let notifications = [];
     let notificationsSha = null;
-    
+
     try {
       const { data: notificationsData } = await octokit.rest.repos.getContent({
         owner,
         repo,
         path: 'notifications.json'
       });
-      
+
       const content = Buffer.from(notificationsData.content, 'base64').toString('utf8');
       notifications = JSON.parse(content);
       notificationsSha = notificationsData.sha;
     } catch (error) {
       console.log('No existing notifications file, creating new one');
     }
-    
+
     // Create deletion notification
     const fileName = deletedPath.split('/').pop();
     const notification = {
@@ -571,18 +580,18 @@ async function createDeletionNotification(octokit, owner, repo, deletedPath, ori
       type: "deletion",
       links: []
     };
-    
+
     // Add notification to the top
     notifications.unshift(notification);
-    
+
     // Keep only last 100 notifications
     if (notifications.length > 100) {
       notifications = notifications.slice(0, 100);
     }
-    
+
     // Update notifications file
     const updatedContent = Buffer.from(JSON.stringify(notifications, null, 2)).toString('base64');
-    
+
     if (notificationsSha) {
       await octokit.rest.repos.createOrUpdateFileContents({
         owner,
@@ -601,9 +610,9 @@ async function createDeletionNotification(octokit, owner, repo, deletedPath, ori
         content: updatedContent
       });
     }
-    
+
     console.log('Deletion notification created successfully');
-    
+
   } catch (error) {
     console.error('Error creating deletion notification:', error);
   }
@@ -613,11 +622,11 @@ async function createDeletionNotification(octokit, owner, repo, deletedPath, ori
 async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
   try {
     console.log('Upload request received');
-    
+
     // Use formidable to parse the request
     const form = new formidable.IncomingForm({
       multiples: true,
-      maxFileSize: 6 * 1024 * 1024, // 6MB
+      maxFileSize: 4 * 1024 * 1024, // 4MB - Vercel limit
       keepExtensions: true,
     });
 
@@ -648,7 +657,7 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
     if (!uploadedFilesList) {
       return res.status(400).json({ error: 'No files provided' });
     }
-    
+
     const fileList = Array.isArray(uploadedFilesList) ? uploadedFilesList : [uploadedFilesList];
 
     // Validate all files are PDFs
@@ -666,14 +675,14 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
       repo,
       ref: 'heads/main'
     });
-    
+
     const latestCommitSha = ref.object.sha;
     const { data: latestCommit } = await octokit.rest.git.getCommit({
       owner,
       repo,
       commit_sha: latestCommitSha
     });
-    
+
     const baseTreeSha = latestCommit.tree.sha;
 
     // Prepare all files and database updates for upload in a single tree
@@ -683,10 +692,10 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
     // Add course files to tree by creating blobs first
     for (const file of fileList) {
       const filePath = `${basePath}/${file.originalFilename}`;
-      
+
       // Read file content
       const content = fs.readFileSync(file.filepath);
-      
+
       // Create blob for the file content (GitHub expects base64 for blob creation)
       const { data: blob } = await octokit.rest.git.createBlob({
         owner,
@@ -694,7 +703,7 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
         content: content.toString('base64'),
         encoding: 'base64'
       });
-      
+
       treeItems.push({
         path: filePath,
         mode: '100644',
@@ -718,7 +727,7 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
         repo,
         path: 'databases/semester-subjects.json'
       });
-      
+
       const content = Buffer.from(existingFile.content, 'base64').toString('utf8');
       semesterSubjectMappings = JSON.parse(content);
     } catch (error) {
@@ -730,10 +739,10 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
     if (!semesterSubjectMappings[semester]) {
       semesterSubjectMappings[semester] = [];
     }
-    
+
     if (!semesterSubjectMappings[semester].includes(subject)) {
       semesterSubjectMappings[semester].push(subject);
-      
+
       // Add to tree - JSON content should be stored directly, not base64 encoded
       const jsonContent = JSON.stringify(semesterSubjectMappings, null, 2);
       treeItems.push({
@@ -752,7 +761,7 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
         repo,
         path: 'databases/beta/resource.lib.json'
       });
-      
+
       const content = Buffer.from(existingFile.content, 'base64').toString('utf8');
       resourceLib = JSON.parse(content);
     } catch (error) {
@@ -767,7 +776,7 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
     if (!resourceLib[semester][subject]) {
       resourceLib[semester][subject] = [];
     }
-    
+
     // Find existing category or create new one
     let categoryIndex = resourceLib[semester][subject].findIndex(item => item.type === category);
     if (categoryIndex === -1) {
@@ -777,11 +786,11 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
       });
       categoryIndex = resourceLib[semester][subject].length - 1;
     }
-    
+
     // Add uploaded file names to content
     const fileNames = uploadedFiles.map(file => file.name);
     resourceLib[semester][subject][categoryIndex].content.push(...fileNames);
-    
+
     // Add to tree - JSON content should be stored directly, not base64 encoded
     const resourceLibContent = JSON.stringify(resourceLib, null, 2);
     treeItems.push({
@@ -800,7 +809,7 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
           repo,
           path: 'notifications.json'
         });
-        
+
         const content = Buffer.from(existingFile.content, 'base64').toString('utf8');
         notifications = JSON.parse(content);
       } catch (error) {
@@ -815,9 +824,9 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
         date: new Date().toISOString(),
         links: []
       };
-      
+
       notifications.unshift(notification);
-      
+
       // Add to tree - JSON content should be stored directly, not base64 encoded
       const notificationsContent = JSON.stringify(notifications, null, 2);
       treeItems.push({
@@ -838,7 +847,7 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
 
     // Create single commit with all changes
     const commitMessage = `Uploaded: ${uploadedFiles.length} files for ${subject} - ${category}${autoPushNotify ? ' (with notification)' : ''} via Materio CMS`;
-    
+
     const { data: newCommit } = await octokit.rest.git.createCommit({
       owner,
       repo,
@@ -867,9 +876,447 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
 
   } catch (error) {
     console.error('Upload error:', error);
-    
-    return res.status(500).json({ 
+
+    return res.status(500).json({
       error: error.message || 'Failed to process upload'
+    });
+  }
+}
+
+// Stage upload function - creates blobs without committing
+// Returns blob SHAs that can be used in a later commit
+async function stageUploadFiles(req, octokit, owner, repo, origin, res) {
+  try {
+    console.log('Stage upload request received');
+
+    const form = new formidable.IncomingForm({
+      multiples: true,
+      maxFileSize: 4 * 1024 * 1024, // 4MB - Vercel limit
+      keepExtensions: true,
+    });
+
+    const [fields, files] = await new Promise((resolve, reject) => {
+      form.parse(req, (err, fields, files) => {
+        if (err) reject(err);
+        else resolve([fields, files]);
+      });
+    });
+
+    const getValue = (key) => {
+      const val = fields[key];
+      return Array.isArray(val) ? val[0] : val;
+    };
+
+    const semester = getValue('semester');
+    const subject = getValue('subject');
+    const category = getValue('category');
+    const basePath = getValue('basePath') || `pdfs/${semester}/${subject}`;
+
+    if (!semester || !subject || !category) {
+      return res.status(400).json({ error: 'Missing required fields: semester, subject, category' });
+    }
+
+    const uploadedFilesList = files.files;
+    if (!uploadedFilesList) {
+      return res.status(400).json({ error: 'No files provided' });
+    }
+
+    const fileList = Array.isArray(uploadedFilesList) ? uploadedFilesList : [uploadedFilesList];
+
+    // Validate all files are PDFs
+    for (const file of fileList) {
+      if (!file.originalFilename.toLowerCase().endsWith('.pdf')) {
+        return res.status(400).json({ error: `Only PDF files are allowed. File "${file.originalFilename}" is not a PDF.` });
+      }
+    }
+
+    console.log(`Staging ${fileList.length} files for ${subject} - ${category}`);
+
+    // Create blobs for all files
+    const stagedFiles = [];
+    for (const file of fileList) {
+      const filePath = `${basePath}/${file.originalFilename}`;
+
+      // Read file content
+      const content = fs.readFileSync(file.filepath);
+
+      // Create blob for the file content
+      const { data: blob } = await octokit.rest.git.createBlob({
+        owner,
+        repo,
+        content: content.toString('base64'),
+        encoding: 'base64'
+      });
+
+      stagedFiles.push({
+        path: filePath,
+        sha: blob.sha,
+        name: file.originalFilename.replace(/\.[^/.]+$/, ""),
+        filename: file.originalFilename,
+        size: file.size,
+        semester,
+        subject,
+        category
+      });
+    }
+
+    console.log(`Staged ${stagedFiles.length} files successfully`);
+
+    return res.status(200).json({
+      message: `Staged ${stagedFiles.length} files`,
+      stagedFiles,
+      semester,
+      subject,
+      category
+    });
+
+  } catch (error) {
+    console.error('Stage upload error:', error);
+    return res.status(500).json({
+      error: error.message || 'Failed to stage files'
+    });
+  }
+}
+
+// Commit staged files function - creates a single commit with all staged blobs
+async function commitStagedFiles(req, octokit, owner, repo, origin, res) {
+  try {
+    console.log('Commit staged files request received');
+
+    // Parse JSON body (not multipart for this request)
+    let body = req.body;
+
+    // If body wasn't parsed (e.g., when bodyParser is disabled), read it manually
+    if (!body || Object.keys(body).length === 0) {
+      body = await new Promise((resolve, reject) => {
+        let data = '';
+        req.on('data', chunk => { data += chunk; });
+        req.on('end', () => {
+          try {
+            resolve(JSON.parse(data));
+          } catch (e) {
+            reject(new Error('Invalid JSON body'));
+          }
+        });
+        req.on('error', reject);
+      });
+    }
+
+    const { stagedFiles, stagedJsonFiles, autoPushNotify } = body;
+
+    // Allow commit with just staged JSON files
+    const hasFiles = stagedFiles && Array.isArray(stagedFiles) && stagedFiles.length > 0;
+    const hasJsonEdits = stagedJsonFiles && Array.isArray(stagedJsonFiles) && stagedJsonFiles.length > 0;
+
+    if (!hasFiles && !hasJsonEdits) {
+      return res.status(400).json({ error: 'No staged files or JSON edits provided' });
+    }
+
+    const fileCount = hasFiles ? stagedFiles.length : 0;
+    const jsonCount = hasJsonEdits ? stagedJsonFiles.length : 0;
+    console.log(`Committing ${fileCount} staged files + ${jsonCount} JSON edits`);
+
+    // Get current repository state
+    const { data: ref } = await octokit.rest.git.getRef({
+      owner,
+      repo,
+      ref: 'heads/main'
+    });
+
+    const latestCommitSha = ref.object.sha;
+    const { data: latestCommit } = await octokit.rest.git.getCommit({
+      owner,
+      repo,
+      commit_sha: latestCommitSha
+    });
+
+    const baseTreeSha = latestCommit.tree.sha;
+
+    // Build tree items from staged files
+    const treeItems = [];
+
+    // Add staged PDF files
+    if (hasFiles) {
+      stagedFiles.forEach(file => {
+        treeItems.push({
+          path: file.path,
+          mode: '100644',
+          type: 'blob',
+          sha: file.sha
+        });
+      });
+    }
+
+    // Add staged JSON edits (these are content-based, not blob SHAs)
+    if (hasJsonEdits) {
+      stagedJsonFiles.forEach(jsonFile => {
+        treeItems.push({
+          path: jsonFile.path,
+          mode: '100644',
+          type: 'blob',
+          content: jsonFile.content
+        });
+      });
+    }
+
+    // Group files by semester/subject for metadata updates (only for PDF uploads)
+    const groupedFiles = {};
+    if (hasFiles) {
+      stagedFiles.forEach(file => {
+        const key = `${file.semester}|${file.subject}|${file.category}`;
+        if (!groupedFiles[key]) {
+          groupedFiles[key] = {
+            semester: file.semester,
+            subject: file.subject,
+            category: file.category,
+            files: []
+          };
+        }
+        groupedFiles[key].files.push(file);
+      });
+    }
+
+    // Load and update semester-subject mappings
+    let semesterSubjectMappings = {};
+    try {
+      const { data: existingFile } = await octokit.rest.repos.getContent({
+        owner,
+        repo,
+        path: 'databases/semester-subjects.json'
+      });
+
+      const content = Buffer.from(existingFile.content, 'base64').toString('utf8');
+      semesterSubjectMappings = JSON.parse(content);
+    } catch (error) {
+      semesterSubjectMappings = {};
+    }
+
+    // Update semester-subject mappings for all groups
+    let mappingsUpdated = false;
+    Object.values(groupedFiles).forEach(group => {
+      if (!semesterSubjectMappings[group.semester]) {
+        semesterSubjectMappings[group.semester] = [];
+      }
+      if (!semesterSubjectMappings[group.semester].includes(group.subject)) {
+        semesterSubjectMappings[group.semester].push(group.subject);
+        mappingsUpdated = true;
+      }
+    });
+
+    if (mappingsUpdated) {
+      treeItems.push({
+        path: 'databases/semester-subjects.json',
+        mode: '100644',
+        type: 'blob',
+        content: JSON.stringify(semesterSubjectMappings, null, 2)
+      });
+    }
+
+    // Load and update resource library
+    let resourceLib = {};
+    try {
+      const { data: existingFile } = await octokit.rest.repos.getContent({
+        owner,
+        repo,
+        path: 'databases/beta/resource.lib.json'
+      });
+
+      const content = Buffer.from(existingFile.content, 'base64').toString('utf8');
+      resourceLib = JSON.parse(content);
+    } catch (error) {
+      resourceLib = {};
+    }
+
+    // Update resource library for all groups
+    Object.values(groupedFiles).forEach(group => {
+      if (!resourceLib[group.semester]) {
+        resourceLib[group.semester] = {};
+      }
+      if (!resourceLib[group.semester][group.subject]) {
+        resourceLib[group.semester][group.subject] = [];
+      }
+
+      let categoryIndex = resourceLib[group.semester][group.subject].findIndex(item => item.type === group.category);
+      if (categoryIndex === -1) {
+        resourceLib[group.semester][group.subject].push({
+          type: group.category,
+          content: []
+        });
+        categoryIndex = resourceLib[group.semester][group.subject].length - 1;
+      }
+
+      const fileNames = group.files.map(file => file.name);
+      resourceLib[group.semester][group.subject][categoryIndex].content.push(...fileNames);
+    });
+
+    treeItems.push({
+      path: 'databases/beta/resource.lib.json',
+      mode: '100644',
+      type: 'blob',
+      content: JSON.stringify(resourceLib, null, 2)
+    });
+
+    // Create notification if enabled
+    if (autoPushNotify) {
+      let notifications = [];
+      try {
+        const { data: existingFile } = await octokit.rest.repos.getContent({
+          owner,
+          repo,
+          path: 'notifications.json'
+        });
+
+        const content = Buffer.from(existingFile.content, 'base64').toString('utf8');
+        notifications = JSON.parse(content);
+      } catch (error) {
+        notifications = [];
+      }
+
+      // Create notification summarizing all uploads
+      const groupCount = Object.keys(groupedFiles).length;
+      const totalFiles = hasFiles ? stagedFiles.length : 0;
+
+      // Helper function to format list with 'and' for last item
+      const formatList = (items) => {
+        if (items.length === 0) return '';
+        if (items.length === 1) return items[0];
+        if (items.length === 2) return `${items[0]} and ${items[1]}`;
+        return items.slice(0, -1).join(', ') + ' and ' + items[items.length - 1];
+      };
+
+      let message;
+      if (groupCount === 0) {
+        // Only JSON edits, no file uploads
+        message = 'Database files have been updated.';
+      } else if (groupCount === 1) {
+        const group = Object.values(groupedFiles)[0];
+        message = `${totalFiles} new materials have been added in ${group.category} category of ${group.subject}.`;
+      } else {
+        // Strategy 1: Group by Category (Best for: "Syllabus of A, B, C")
+        const categoryGroups = {};
+        Object.values(groupedFiles).forEach(g => {
+          if (!categoryGroups[g.category]) {
+            categoryGroups[g.category] = { count: 0, subjects: [] };
+          }
+          categoryGroups[g.category].count += g.files.length;
+          if (!categoryGroups[g.category].subjects.includes(g.subject)) {
+            categoryGroups[g.category].subjects.push(g.subject);
+          }
+        });
+
+        // Strategy 2: Group by Subject (Best for: "Paper 1 and Paper 2 of Math")
+        const subjectGroups = {};
+        Object.values(groupedFiles).forEach(g => {
+          if (!subjectGroups[g.subject]) {
+            subjectGroups[g.subject] = {};
+          }
+          if (!subjectGroups[g.subject][g.category]) {
+            subjectGroups[g.subject][g.category] = 0;
+          }
+          subjectGroups[g.subject][g.category] += g.files.length;
+        });
+
+        const numCategories = Object.keys(categoryGroups).length;
+        const numSubjects = Object.keys(subjectGroups).length;
+
+        // Choose the strategy with fewer top-level groups
+        if (numSubjects < numCategories) {
+          // Use Subject grouping
+          const subjectParts = Object.entries(subjectGroups).map(([subject, cats]) => {
+            const catList = Object.entries(cats).map(([cat, count]) => `${count} in ${cat}`);
+            const categoryWord = catList.length > 1 ? 'categories' : 'category';
+            return `${formatList(catList)} ${categoryWord} of ${subject}`;
+          });
+          message = `New materials uploaded: ${formatList(subjectParts)}.`;
+        } else {
+          // Use Category grouping (default)
+          const categoryParts = Object.entries(categoryGroups).map(([cat, data]) => {
+            const subjectCount = data.subjects.length;
+            const categoryWord = subjectCount > 1 ? 'categories' : 'category';
+            const subjectList = formatList(data.subjects);
+            return `${data.count} in ${cat} ${categoryWord} of ${subjectList}`;
+          });
+          message = `New materials uploaded: ${formatList(categoryParts)}.`;
+        }
+      }
+
+
+      const notification = {
+        title: "New Materials Uploaded!",
+        message,
+        date: new Date().toISOString(),
+        links: []
+      };
+
+      notifications.unshift(notification);
+
+      treeItems.push({
+        path: 'notifications.json',
+        mode: '100644',
+        type: 'blob',
+        content: JSON.stringify(notifications, null, 2)
+      });
+    }
+
+    // Create new tree with all changes
+    const { data: newTree } = await octokit.rest.git.createTree({
+      owner,
+      repo,
+      tree: treeItems,
+      base_tree: baseTreeSha
+    });
+
+    // Create single commit with all changes
+    let commitMessage = '';
+
+    if (hasFiles) {
+      const groupSummaries = Object.values(groupedFiles).map(g => `${g.files.length} in ${g.subject}/${g.category}`).join(', ');
+      commitMessage = `Uploaded ${fileCount} files: ${groupSummaries}`;
+    }
+
+    if (hasJsonEdits) {
+      const jsonFileNames = stagedJsonFiles.map(f => f.path.split('/').pop()).join(', ');
+      if (commitMessage) {
+        commitMessage += ` + Edited ${jsonCount} JSON: ${jsonFileNames}`;
+      } else {
+        commitMessage = `Edited ${jsonCount} JSON files: ${jsonFileNames}`;
+      }
+    }
+
+    commitMessage += `${autoPushNotify ? ' (with notification)' : ''} via Materio CMS`;
+
+    const { data: newCommit } = await octokit.rest.git.createCommit({
+      owner,
+      repo,
+      message: commitMessage,
+      tree: newTree.sha,
+      parents: [latestCommitSha]
+    });
+
+    // Update the reference
+    await octokit.rest.git.updateRef({
+      owner,
+      repo,
+      ref: 'heads/main',
+      sha: newCommit.sha
+    });
+
+    console.log('All files committed successfully:', newCommit.sha);
+
+    const totalItems = fileCount + jsonCount;
+    return res.status(200).json({
+      message: `Successfully committed ${totalItems} item(s) (${fileCount} files, ${jsonCount} JSON edits)`,
+      commit: newCommit.sha,
+      files: hasFiles ? stagedFiles : [],
+      jsonEdits: hasJsonEdits ? stagedJsonFiles.map(f => f.path) : [],
+      updatedDatabase: hasFiles,
+      notificationCreated: autoPushNotify
+    });
+
+  } catch (error) {
+    console.error('Commit error:', error);
+    return res.status(500).json({
+      error: error.message || 'Failed to commit staged files'
     });
   }
 }
@@ -880,5 +1327,4 @@ module.exports.config = {
     bodyParser: false,
   },
 };
-
 

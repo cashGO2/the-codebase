@@ -119,9 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         document.head.appendChild(style);
       }
-      
+
       container.appendChild(emptyImg);
-      
+
       // Create text element below image
       const emptyText = document.createElement('p');
       emptyText.textContent = 'All Caught Up !';
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
       emptyText.style.color = '#666';
       emptyText.style.fontSize = '18px';
       emptyText.style.fontWeight = '900';
-      
+
       container.appendChild(emptyText);
       return;
     }
@@ -205,11 +205,20 @@ document.addEventListener('DOMContentLoaded', () => {
       badge.style.backgroundColor = '#ff8400';
       badge.style.color = '#fff';
       badge.style.borderRadius = '50%';
-      badge.style.padding = '2px 6px';
-      badge.style.fontSize = '12px';
+      badge.style.height = '14px';
+      badge.style.width = '14px';
+      badge.style.display = 'flex';
+      badge.style.alignItems = 'center';
+      badge.style.justifyContent = 'center';
+      badge.style.fontSize = '8px';
       badge.style.position = 'absolute';
-      badge.style.top = '5px';
-      badge.style.right = '5px';
+      if (window.innerWidth < 768) {
+        badge.style.top = '18px';
+        badge.style.right = '18px';
+      } else {
+        badge.style.top = '4px';
+        badge.style.right = '16px';
+      }
       badge.style.zIndex = '1';
       bellLink.style.position = 'relative';
       bellLink.appendChild(badge);

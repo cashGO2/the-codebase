@@ -1,0 +1,128 @@
+[
+    {
+        "path": "sem1/c-programming/basics/hello_world.c",
+        "name": "Hello World",
+        "type": "c",
+        "semester": "sem1",
+        "subject": "c-programming",
+        "category": "basics",
+        "topic": "introduction"
+    },
+    {
+        "path": "sem1/c-programming/basics/data_types.c",
+        "name": "Data Types Example",
+        "type": "c",
+        "semester": "sem1",
+        "subject": "c-programming",
+        "category": "basics",
+        "topic": "data-types"
+    },
+    {
+        "path": "sem2/java/oop/inheritance.java",
+        "name": "Inheritance Demo",
+        "type": "java",
+        "semester": "sem2",
+        "subject": "java",
+        "category": "oop",
+        "topic": "inheritance"
+    },
+    {
+        "path": "sem2/java/oop/polymorphism.java",
+        "name": "Polymorphism Example",
+        "type": "java",
+        "semester": "sem2",
+        "subject": "java",
+        "category": "oop",
+        "topic": "polymorphism"
+    },
+    {
+        "path": "sem3/android/intro/android_overview.pptx",
+        "name": "Android Overview PPT",
+        "type": "pptx",
+        "semester": "sem3",
+        "subject": "android",
+        "category": "introduction",
+        "topic": "android-os"
+    },
+    {
+        "path": "sem3/android/intro/activity_lifecycle.kt",
+        "name": "Activity Lifecycle",
+        "type": "kt",
+        "semester": "sem3",
+        "subject": "android",
+        "category": "introduction",
+        "topic": "activity"
+    },
+    {
+        "path": "sem4/python/ml/linear_regression.ipynb",
+        "name": "Linear Regression",
+        "type": "ipynb",
+        "semester": "sem4",
+        "subject": "python",
+        "category": "machine-learning",
+        "topic": "regression"
+    },
+    {
+        "path": "sem4/python/ml/data_preprocessing.py",
+        "name": "Data Preprocessing",
+        "type": "py",
+        "semester": "sem4",
+        "subject": "python",
+        "category": "machine-learning",
+        "topic": "preprocessing"
+    },
+    {
+        "path": "sem5/web/html-css/responsive_layout.html",
+        "name": "Responsive Layout",
+        "type": "html",
+        "semester": "sem5",
+        "subject": "web-development",
+        "category": "html-css",
+        "topic": "responsive-design"
+    },
+    {
+        "path": "sem5/web/html-css/flexbox_grid.css",
+        "name": "Flexbox & Grid",
+        "type": "css",
+        "semester": "sem5",
+        "subject": "web-development",
+        "category": "html-css",
+        "topic": "layout"
+    },
+    {
+        "path": "sem5/web/javascript/dom_manipulation.js",
+        "name": "DOM Manipulation",
+        "type": "js",
+        "semester": "sem5",
+        "subject": "web-development",
+        "category": "javascript",
+        "topic": "dom"
+    },
+    {
+        "path": "sem6/dbms/sql/joins_examples.sql",
+        "name": "SQL Joins",
+        "type": "sql",
+        "semester": "sem6",
+        "subject": "dbms",
+        "category": "sql",
+        "topic": "joins"
+    },
+    {
+        "path": "common/notes/study_tips.txt",
+        "name": "Study Tips",
+        "type": "txt",
+        "semester": "",
+        "subject": "",
+        "category": "general",
+        "topic": "tips"
+    },
+    {
+        "path": "common/docs/syllabus_2024.docx",
+        "name": "Syllabus 2024",
+        "type": "docx",
+        "semester": "",
+        "subject": "",
+        "category": "documentation",
+        "topic": "syllabus"
+    }
+]

@@ -594,26 +594,7 @@ i span {
     overflow: hidden;
 }
 
-#closePopup {
-    position: absolute;
-    top: 5px;
-
-    right: 10px;
-    background: transparent;
-    border: none;
-    font-size: 20px;
-
-    cursor: pointer;
-    color: #ff8400;
-
-    outline: none;
-    transition: color 0.3s ease;
-}
-
-#closePopup:hover {
-    color: red;
-
-}
+/* #closePopup styles moved to .popup-controls button */
 
 @keyframes popupFadeOut {
     from {
@@ -743,7 +724,7 @@ i span {
     color: #ffffff;
     border: none;
     padding: 12px 20px;
-    border-radius: 10px;
+    border-radius: 25px;
     corner-shape: squircle;
     font-size: 16px;
     font-weight: 500;
@@ -846,7 +827,6 @@ header.dark-mode {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     color: #ffffff;
-    border-color: rgba(68, 68, 68, 0.5);
     background-image: url('/assets/img/materio_new_wh.svg');
     background-repeat: no-repeat;
     background-size: 120px 32px;
@@ -991,12 +971,12 @@ body.dark-mode #gh .contribute-button span {
     body::before {
         content: "";
         position: fixed;
-        top: 40px;
-        /* Overlap slightly with header to eliminate gap */
+        top: 0px;
+        /* Start 1px above header bottom to overlap and prevent gap */
         left: 0;
-        bottom: 0;
+        bottom: 5px;
         width: 5px;
-        background-color: rgba(231, 231, 221, 0.5);
+        background-color: rgba(231, 231, 221, 0.2);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         pointer-events: none;
@@ -1004,18 +984,19 @@ body.dark-mode #gh .contribute-button span {
         display: block !important;
         height: auto;
         right: auto;
+        will-change: transform;
     }
 
     /* Right strip - from below header to bottom */
     body::after {
         content: "";
         position: fixed;
-        top: 40px;
-        /* Overlap slightly with header to eliminate gap */
+        top: 0px;
+        /* Start 1px above header bottom to overlap and prevent gap */
         right: 0;
-        bottom: 0;
+        bottom: 5px;
         width: 5px;
-        background-color: rgba(231, 231, 221, 0.5);
+        background-color: rgba(231, 231, 221, 0.2);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         pointer-events: none;
@@ -1023,6 +1004,7 @@ body.dark-mode #gh .contribute-button span {
         display: block !important;
         height: auto;
         left: auto;
+        will-change: transform;
     }
 
     /* Bottom strip - full width */
@@ -1056,7 +1038,7 @@ body.dark-mode #gh .contribute-button span {
         left: 5px;
         width: 20px;
         height: 20px;
-        background: radial-gradient(circle at 100% 100%, transparent 20px, rgba(231, 231, 221, 0.5) 20px);
+        background: radial-gradient(circle at 100% 100%, transparent 20px, rgba(231, 231, 221, 0.58) 20px);
         pointer-events: none;
         z-index: 1000;
     }
@@ -1069,7 +1051,7 @@ body.dark-mode #gh .contribute-button span {
         right: 5px;
         width: 20px;
         height: 20px;
-        background: radial-gradient(circle at 0% 100%, transparent 20px, rgba(231, 231, 221, 0.5) 20px);
+        background: radial-gradient(circle at 0% 100%, transparent 20px, rgba(231, 231, 221, 0.58) 20px);
         pointer-events: none;
         z-index: 1000;
     }
@@ -1254,37 +1236,45 @@ body.dark-mode #gh .contribute-button span {
 
 .popup-controls {
     position: absolute;
-    top: 5px;
+    top: 2px;
     right: 10px;
-    display: flex;
-    flex-direction: row;
+    display: inline-flex;
     align-items: center;
-    gap: 20px;
+    gap: 15px;
     z-index: 10;
 }
 
 .popup-controls button {
-    background: transparent;
+    background: none;
     border: none;
-    font-size: 15px;
+    outline: none;
+    font-size: 16px;
+    font-weight: bolder;
     cursor: pointer;
     color: #ff8400;
-    outline: none;
-    transition: color 0.3s ease;
-    width: 2px;
-    height: 2px;
-    display: flex;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+    vertical-align: middle;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
+}
+
+.popup-controls button i {
+    display: block;
+    line-height: 1;
 }
 
 .popup-controls button:hover {
+    color: #e67300;
+}
+
+.popup-controls #closePopup:hover {
     color: red;
 }
 
 #fullscreenButton:hover {
     color: #ff8400;
-    /* Keep original color, no red hover */
 }
 
 #bookmark:hover {
@@ -1313,6 +1303,8 @@ body.dark-mode #gh .contribute-button span {
     border-radius: 0;
     corner-shape: squircle;
 }
+
+
 
 
 .popup-message {
@@ -4886,9 +4878,9 @@ body.dark-mode .materio-modal-btn.secondary:hover {
 
 /* Horizontal scroll container - MUST scroll horizontally, never wrap */
 .insight-cards-scroll {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     align-items: stretch;
     gap: 36px;
     overflow-x: scroll;
@@ -5178,18 +5170,46 @@ body.dark-mode .view-more-btn {
         display: flex;
         flex-wrap: nowrap;
         align-items: center;
-        gap: 8px;
+        /* keep centered for better look generally */
+        gap: 10px;
     }
 
     .blog-header-title {
-        display: inline;
+        display: block;
+        /* changed from inline for better formatting */
         margin-right: 0;
-        flex-shrink: 1;
+        flex: 1;
+        /* allow taking available space */
+        min-width: 0;
+        /* allow shrinking to prevent overflow */
+        font-size: 18px;
+        /* slightly smaller font */
+        line-height: 1.3;
+    }
+
+    /* When Smart Recommendations is active, it might wrap. 
+       This helps align the button with the first line if it wraps,
+       or centers it if it doesn't. */
+    .blog-header-container:has(i) {
+        align-items: flex-start;
+    }
+
+    .blog-header-container:has(i) .view-more-btn {
+        margin-top: 0;
+        /* adjust if needed for baseline alignment */
     }
 
     .blog-header-right {
         display: inline-flex;
         flex-shrink: 0;
+        /* prevent button from squishing */
+        align-items: center;
+    }
+
+    .view-more-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+        white-space: nowrap;
     }
 
     /* Hide chevron on mobile */
@@ -5248,6 +5268,444 @@ body.dark-mode .view-more-btn {
 /* Dark mode styles */
 body.dark-mode .blog-fold-chevron:hover {
     background-color: rgba(255, 130, 0, 0.15);
+}
+
+/* ================================================
+   ATTACHMENTS CARD - Smart Recommendations
+   Brick wall layout with file pills
+   ================================================ */
+
+/* Attachments card - blog card shaped */
+.attachments-card {
+    flex: 0 0 auto;
+    width: 260px;
+    min-height: 280px;
+    max-height: 300px;
+    background: linear-gradient(145deg,
+            rgba(255, 255, 255, 0.95) 0%,
+            rgba(248, 248, 248, 0.9) 100%);
+    border-radius: 28px;
+    corner-shape: squircle;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    scroll-snap-align: start;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.attachments-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12),
+        0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* Header */
+.attachments-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1a;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.attachments-card-header i {
+    color: #ff8200;
+    font-size: 18px;
+}
+
+/* Pills container - brick wall layout using flexbox */
+.attachments-pills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-content: flex-start;
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 4px;
+    /* Hide scrollbar but allow scroll */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 130, 0, 0.3) transparent;
+}
+
+.attachments-pills-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.attachments-pills-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.attachments-pills-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 130, 0, 0.3);
+    border-radius: 4px;
+}
+
+/* Individual attachment pill */
+.attachment-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #444;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    max-width: 100%;
+}
+
+.attachment-pill:hover {
+    background: rgba(255, 130, 0, 0.15);
+    color: #ff8200;
+    transform: translateY(-1px);
+    border-color: rgba(255, 130, 0, 0.2);
+}
+
+.attachment-pill:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.attachment-pill-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+
+.attachment-pill-icon {
+    font-size: 11px;
+    opacity: 0.8;
+    flex-shrink: 0;
+}
+
+/* File type color coding */
+.attachment-pill[data-type="java"] {
+    background: rgba(176, 114, 25, 0.12);
+    color: #b07219;
+}
+
+.attachment-pill[data-type="java"]:hover {
+    background: rgba(176, 114, 25, 0.25);
+}
+
+.attachment-pill[data-type="py"] {
+    background: rgba(53, 114, 165, 0.12);
+    color: #3572a5;
+}
+
+.attachment-pill[data-type="py"]:hover {
+    background: rgba(53, 114, 165, 0.25);
+}
+
+.attachment-pill[data-type="js"] {
+    background: rgba(241, 224, 90, 0.2);
+    color: #b39b00;
+}
+
+.attachment-pill[data-type="js"]:hover {
+    background: rgba(241, 224, 90, 0.35);
+}
+
+.attachment-pill[data-type="html"] {
+    background: rgba(227, 76, 38, 0.12);
+    color: #e34c26;
+}
+
+.attachment-pill[data-type="html"]:hover {
+    background: rgba(227, 76, 38, 0.25);
+}
+
+.attachment-pill[data-type="css"] {
+    background: rgba(86, 61, 124, 0.12);
+    color: #563d7c;
+}
+
+.attachment-pill[data-type="css"]:hover {
+    background: rgba(86, 61, 124, 0.25);
+}
+
+.attachment-pill[data-type="c"],
+.attachment-pill[data-type="cpp"],
+.attachment-pill[data-type="h"] {
+    background: rgba(85, 85, 85, 0.12);
+    color: #555555;
+}
+
+.attachment-pill[data-type="c"]:hover,
+.attachment-pill[data-type="cpp"]:hover,
+.attachment-pill[data-type="h"]:hover {
+    background: rgba(85, 85, 85, 0.25);
+}
+
+.attachment-pill[data-type="kt"] {
+    background: rgba(169, 123, 255, 0.12);
+    color: #a97bff;
+}
+
+.attachment-pill[data-type="kt"]:hover {
+    background: rgba(169, 123, 255, 0.25);
+}
+
+.attachment-pill[data-type="txt"],
+.attachment-pill[data-type="md"] {
+    background: rgba(102, 102, 102, 0.1);
+    color: #666;
+}
+
+.attachment-pill[data-type="txt"]:hover,
+.attachment-pill[data-type="md"]:hover {
+    background: rgba(102, 102, 102, 0.2);
+}
+
+.attachment-pill[data-type="docx"],
+.attachment-pill[data-type="doc"] {
+    background: rgba(41, 98, 185, 0.12);
+    color: #2962b9;
+}
+
+.attachment-pill[data-type="docx"]:hover,
+.attachment-pill[data-type="doc"]:hover {
+    background: rgba(41, 98, 185, 0.25);
+}
+
+.attachment-pill[data-type="pptx"],
+.attachment-pill[data-type="ppt"] {
+    background: rgba(209, 71, 45, 0.12);
+    color: #d1472d;
+}
+
+.attachment-pill[data-type="pptx"]:hover,
+.attachment-pill[data-type="ppt"]:hover {
+    background: rgba(209, 71, 45, 0.25);
+}
+
+.attachment-pill[data-type="xlsx"],
+.attachment-pill[data-type="xls"] {
+    background: rgba(33, 115, 70, 0.12);
+    color: #217346;
+}
+
+.attachment-pill[data-type="xlsx"]:hover,
+.attachment-pill[data-type="xls"]:hover {
+    background: rgba(33, 115, 70, 0.25);
+}
+
+.attachment-pill[data-type="ipynb"] {
+    background: rgba(243, 156, 18, 0.12);
+    color: #f39c12;
+}
+
+.attachment-pill[data-type="ipynb"]:hover {
+    background: rgba(243, 156, 18, 0.25);
+}
+
+.attachment-pill[data-type="xml"] {
+    background: rgba(0, 96, 172, 0.12);
+    color: #0060ac;
+}
+
+.attachment-pill[data-type="xml"]:hover {
+    background: rgba(0, 96, 172, 0.25);
+}
+
+.attachment-pill[data-type="json"] {
+    background: rgba(41, 128, 185, 0.12);
+    color: #2980b9;
+}
+
+.attachment-pill[data-type="json"]:hover {
+    background: rgba(41, 128, 185, 0.25);
+}
+
+.attachment-pill[data-type="sql"] {
+    background: rgba(233, 117, 0, 0.12);
+    color: #e97500;
+}
+
+.attachment-pill[data-type="sql"]:hover {
+    background: rgba(233, 117, 0, 0.25);
+}
+
+/* Empty state */
+.attachments-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex: 1;
+    color: #999;
+    font-size: 13px;
+    text-align: center;
+}
+
+.attachments-empty i {
+    font-size: 28px;
+    opacity: 0.5;
+}
+
+/* Dark mode */
+body.dark-mode .attachments-card {
+    background: linear-gradient(145deg,
+            rgba(42, 42, 42, 0.95) 0%,
+            rgba(35, 35, 35, 0.9) 100%);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+        0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .attachments-card:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4),
+        0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+body.dark-mode .attachments-card-header {
+    color: #f0f0f0;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .attachment-pill {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ccc;
+}
+
+body.dark-mode .attachment-pill:hover {
+    background: rgba(255, 130, 0, 0.2);
+    color: #ff8200;
+}
+
+/* Dark mode file type colors - slightly brighter */
+body.dark-mode .attachment-pill[data-type="java"] {
+    background: rgba(176, 114, 25, 0.2);
+    color: #d4a530;
+}
+
+body.dark-mode .attachment-pill[data-type="py"] {
+    background: rgba(53, 114, 165, 0.2);
+    color: #5a9fd4;
+}
+
+body.dark-mode .attachment-pill[data-type="js"] {
+    background: rgba(241, 224, 90, 0.15);
+    color: #f1e05a;
+}
+
+body.dark-mode .attachment-pill[data-type="html"] {
+    background: rgba(227, 76, 38, 0.2);
+    color: #f06529;
+}
+
+body.dark-mode .attachment-pill[data-type="css"] {
+    background: rgba(86, 61, 124, 0.2);
+    color: #9b7bc7;
+}
+
+body.dark-mode .attachment-pill[data-type="c"],
+body.dark-mode .attachment-pill[data-type="cpp"],
+body.dark-mode .attachment-pill[data-type="h"] {
+    background: rgba(120, 120, 120, 0.2);
+    color: #a8a8a8;
+}
+
+body.dark-mode .attachment-pill[data-type="kt"] {
+    background: rgba(169, 123, 255, 0.2);
+    color: #c4a5ff;
+}
+
+body.dark-mode .attachment-pill[data-type="docx"],
+body.dark-mode .attachment-pill[data-type="doc"] {
+    background: rgba(41, 98, 185, 0.2);
+    color: #4d8cd9;
+}
+
+body.dark-mode .attachment-pill[data-type="pptx"],
+body.dark-mode .attachment-pill[data-type="ppt"] {
+    background: rgba(209, 71, 45, 0.2);
+    color: #e8836a;
+}
+
+body.dark-mode .attachment-pill[data-type="xlsx"],
+body.dark-mode .attachment-pill[data-type="xls"] {
+    background: rgba(33, 115, 70, 0.2);
+    color: #4caf6e;
+}
+
+body.dark-mode .attachment-pill[data-type="ipynb"] {
+    background: rgba(243, 156, 18, 0.2);
+    color: #f8bc38;
+}
+
+body.dark-mode .attachments-empty {
+    color: #777;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .attachments-card {
+        width: 240px;
+        min-height: 260px;
+        max-height: 280px;
+        padding: 16px;
+        border-radius: 24px;
+    }
+
+    .attachments-card-header {
+        font-size: 15px;
+    }
+
+    .attachment-pill {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+
+    .attachment-pill-name {
+        max-width: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .attachments-card {
+        width: 240px;
+        min-height: 240px;
+        max-height: 260px;
+        padding: 14px;
+        border-radius: 20px;
+    }
+
+    .attachments-card-header {
+        font-size: 14px;
+        gap: 8px;
+    }
+
+    .attachments-card-header i {
+        font-size: 16px;
+    }
+
+    .attachments-pills-container {
+        gap: 6px;
+    }
+
+    .attachment-pill {
+        padding: 5px 9px;
+        font-size: 10px;
+        border-radius: 16px;
+    }
+
+    .attachment-pill-name {
+        max-width: 100px;
+    }
 }
 
 /* ================================================
@@ -5507,14 +5965,13 @@ body.dark-mode .paper-texture-item.selected {
 .keyboard-shortcuts-btn::after {
     content: '';
     position: absolute;
-    top: 25%;
-    left: 55%;
+    top: 55%;
+    left: 50%;
     transform: translate(4px, -12px);
     width: 8px;
     height: 8px;
     background: #ff8200;
     border-radius: 50%;
-    animation: pulse-dot 2s ease-in-out infinite;
 }
 
 /* Hide dot after user has seen it */
@@ -5580,14 +6037,41 @@ body.dark-mode .changelog-btn:hover i {
 .changelog-btn.has-update::after {
     content: '';
     position: absolute;
-    top: 25%;
-    left: 55%;
+    top: 55%;
+    left: 50%;
     transform: translate(4px, -12px);
     width: 8px;
     height: 8px;
     background: #ff8200;
     border-radius: 50%;
-    animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Notification Badge Style */
+.navbar a[data-tab="notifications"][data-count]::after {
+    content: attr(data-count);
+    position: absolute;
+    top: 25%;
+    left: 55%;
+    transform: translate(4px, -12px);
+    min-width: 14px;
+    height: 14px;
+    background: #ff8200;
+    border-radius: 10px;
+    color: white;
+    font-size: 9px;
+    line-height: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    box-sizing: border-box;
+    z-index: 10;
+}
+
+/* Hide badge if count is 0 */
+.navbar a[data-tab="notifications"][data-count="0"]::after {
+    display: none;
 }
 
 /* Modal overlay */

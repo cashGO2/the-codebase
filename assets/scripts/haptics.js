@@ -65,11 +65,14 @@
         // Selection made
         select: [18]
     };
-    // Intensity multipliers
+    // Intensity multipliers - tuned for premium haptic feel
+    // Minimal: Ultra-crisp, soft "thud" feel (like Apple's Taptic Engine)
+    // Medium: Balanced feedback for most interactions
+    // Strong: More pronounced feedback for important actions
     const IntensityMultipliers = {
-        minimal: 0.5,
-        medium: 1.0,
-        strong: 1.5
+        minimal: 0.35,  // Soft, premium thud - very short, crisp
+        medium: 1.0,    // Standard vibration
+        strong: 1.6     // More pronounced
     };
 
     /**
@@ -92,12 +95,19 @@
 
     /**
      * Scale a vibration pattern based on current intensity
+     * Creates premium, soft thud feel at minimal intensity
      * @param {number[]} pattern - Original pattern array
      * @returns {number[]} - Scaled pattern
      */
     function scalePattern(pattern) {
         const multiplier = IntensityMultipliers[getIntensity()] || 1.0;
-        return pattern.map(duration => Math.round(duration * multiplier));
+        return pattern.map(duration => {
+            // Scale the duration
+            const scaled = Math.round(duration * multiplier);
+            // Ensure minimum of 5ms for vibration pulses (not pauses)
+            // Very short pulses (5-10ms) create the premium "tap" feel
+            return Math.max(scaled, 5);
+        });
     }
 
     /**

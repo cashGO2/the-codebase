@@ -984,17 +984,24 @@ function displayFiles(files) {
     const icon = getFileIcon(file);
     const size = file.size ? formatFileSize(file.size) : '';
     const date = file.modified ? formatDate(file.modified) : '';
+    const isJson = file.name.toLowerCase().endsWith('.json');
+    const downloadUrl = file.download_url || '';
 
     return `
-      <div class="file-item" data-name="${file.name}" data-type="${file.type}">
+      <div class="file-item" data-name="${file.name}" data-type="${file.type}" data-path="${file.path || ''}" data-download-url="${escapeHtml(downloadUrl)}">
         <div class="file-icon ${icon.class}">
           <i class="${icon.icon}"></i>
         </div>
         <div class="file-details">
-          <div class="file-name">${escapeHtml(file.name)}</div>
+          <div class="file-name">${escapeHtml(file.name)}${stagedJsonChanges[file.path] ? '<span class="staged-json-badge"><i class="fas fa-layer-group"></i> Staged</span>' : ''}</div>
           <div class="file-meta">${size} ${date}</div>
         </div>
         <div class="file-actions">
+          ${isJson && file.type !== 'directory' ?
+        `<button class="edit-json-btn" onclick="openJsonEditor('${escapeHtml(file.path || currentPath + '/' + file.name)}', '${escapeHtml(downloadUrl)}')" title="Edit JSON">
+              <i class="fas fa-edit"></i> Edit
+            </button>` : ''
+      }
           ${file.type === 'directory' ?
         `<button class="file-action-btn" onclick="openDirectory('${escapeHtml(file.name)}')" title="Open">
               <i class="fas fa-folder-open"></i>
@@ -1298,9 +1305,11 @@ async function createNewFolder() {
   }
 }
 
-// Course Upload System
+// Course Upload System - Multi-Section with Queue
 let semesterSubjectMappings = {};
-let selectedFiles = [];
+let uploadSections = {}; // { sectionId: { semester, subject, category, files: [] } }
+let sectionCounter = 0;
+const BATCH_SIZE_LIMIT = 3.5 * 1024 * 1024; // 3.5MB to stay safely under Vercel's 4MB limit
 
 // Initialize course upload functionality
 function initializeCourseUpload() {
@@ -1329,64 +1338,965 @@ function initializeCourseUpload() {
     });
   });
 
-  // Semester change handler
-  const semesterSelect = document.getElementById('semester');
-  const subjectSelect = document.getElementById('subject');
-  const customSubjectInput = document.getElementById('customSubject');
+  // Initialize the first section
+  initializeSection(0);
 
-  if (semesterSelect && subjectSelect) {
+  // Add Section button
+  const addSectionBtn = document.getElementById('addSectionBtn');
+  if (addSectionBtn) {
+    addSectionBtn.addEventListener('click', addNewSection);
+  }
+
+  // Upload All button
+  const uploadAllBtn = document.getElementById('uploadAllBtn');
+  if (uploadAllBtn) {
+    uploadAllBtn.addEventListener('click', handleMultiSectionUpload);
+  }
+
+  // Clear All button
+  const clearAllBtn = document.getElementById('clearAllBtn');
+  if (clearAllBtn) {
+    clearAllBtn.addEventListener('click', clearAllSections);
+  }
+}
+
+// Initialize a section with event listeners
+function initializeSection(sectionId) {
+  uploadSections[sectionId] = { semester: '', subject: '', category: '', files: [] };
+
+  const section = document.querySelector(`[data-section-id="${sectionId}"]`);
+  if (!section) return;
+
+  const semesterSelect = section.querySelector('.section-semester');
+  const subjectSelect = section.querySelector('.section-subject');
+  const customSubjectInput = section.querySelector('.section-custom-subject');
+  const uploadArea = section.querySelector('.section-upload-area');
+  const fileInput = section.querySelector('.section-file-input');
+
+  // Semester change handler
+  if (semesterSelect) {
     semesterSelect.addEventListener('change', function () {
       const semester = this.value;
-      populateSubjects(semester);
+      uploadSections[sectionId].semester = semester;
+      populateSectionSubjects(sectionId, semester);
+      updateGlobalUploadOptions();
     });
+  }
 
+  // Subject change handler
+  if (subjectSelect) {
     subjectSelect.addEventListener('change', function () {
       if (this.value === 'custom') {
         customSubjectInput.style.display = 'block';
         customSubjectInput.required = true;
+        uploadSections[sectionId].subject = '';
       } else {
         customSubjectInput.style.display = 'none';
         customSubjectInput.required = false;
+        uploadSections[sectionId].subject = this.value;
       }
+      updateGlobalUploadOptions();
     });
   }
 
-  // Course file upload handling
-  const courseUploadArea = document.getElementById('courseUploadArea');
-  const courseFileInput = document.getElementById('courseFileInput');
+  // Custom subject input handler
+  if (customSubjectInput) {
+    customSubjectInput.addEventListener('input', function () {
+      uploadSections[sectionId].subject = this.value;
+      updateGlobalUploadOptions();
+    });
+  }
 
-  if (courseUploadArea && courseFileInput) {
-    courseUploadArea.addEventListener('click', () => courseFileInput.click());
+  // Category change handler
+  const categorySelect = section.querySelector('.section-category');
+  const customCategoryInput = section.querySelector('.section-custom-category');
 
-    courseUploadArea.addEventListener('dragover', (e) => {
+  if (categorySelect) {
+    categorySelect.addEventListener('change', function () {
+      if (this.value === 'Other') {
+        if (customCategoryInput) {
+          customCategoryInput.style.display = 'block';
+          customCategoryInput.required = true;
+        }
+        uploadSections[sectionId].category = '';
+      } else {
+        if (customCategoryInput) {
+          customCategoryInput.style.display = 'none';
+          customCategoryInput.required = false;
+        }
+        uploadSections[sectionId].category = this.value;
+      }
+      updateGlobalUploadOptions();
+    });
+  }
+
+  // Custom category input handler
+  if (customCategoryInput) {
+    customCategoryInput.addEventListener('input', function () {
+      uploadSections[sectionId].category = this.value;
+      updateGlobalUploadOptions();
+    });
+  }
+
+  // File upload handling
+  if (uploadArea && fileInput) {
+    uploadArea.addEventListener('click', () => fileInput.click());
+
+    uploadArea.addEventListener('dragover', (e) => {
       e.preventDefault();
-      courseUploadArea.classList.add('dragover');
+      uploadArea.classList.add('dragover');
     });
 
-    courseUploadArea.addEventListener('dragleave', (e) => {
+    uploadArea.addEventListener('dragleave', (e) => {
       e.preventDefault();
-      courseUploadArea.classList.remove('dragover');
+      uploadArea.classList.remove('dragover');
     });
 
-    courseUploadArea.addEventListener('drop', (e) => {
+    uploadArea.addEventListener('drop', (e) => {
       e.preventDefault();
-      courseUploadArea.classList.remove('dragover');
+      uploadArea.classList.remove('dragover');
       const files = Array.from(e.dataTransfer.files);
-      handleCourseFileSelection(files);
+      handleSectionFileSelection(sectionId, files);
     });
 
-    courseFileInput.addEventListener('change', (e) => {
+    fileInput.addEventListener('change', (e) => {
       const files = Array.from(e.target.files);
-      handleCourseFileSelection(files);
+      handleSectionFileSelection(sectionId, files);
+      fileInput.value = ''; // Reset to allow selecting same files again
     });
-  }
-
-  // Form submission
-  const courseUploadForm = document.getElementById('courseUploadForm');
-  if (courseUploadForm) {
-    courseUploadForm.addEventListener('submit', handleCourseUploadSubmit);
   }
 }
+
+// Add a new upload section
+function addNewSection() {
+  sectionCounter++;
+  const newSectionId = sectionCounter;
+  const container = document.getElementById('uploadSectionsContainer');
+  const previousSection = container.querySelector('.upload-section:last-child');
+  const previousSectionId = previousSection ? parseInt(previousSection.dataset.sectionId) : 0;
+
+  // Create new section HTML with match previous option
+  const newSection = document.createElement('div');
+  newSection.className = 'upload-section';
+  newSection.dataset.sectionId = newSectionId;
+
+  newSection.innerHTML = `
+    <div class="upload-section-header">
+      <span class="upload-section-title">
+        <i class="fas fa-layer-group"></i>
+        Section ${newSectionId + 1}
+      </span>
+      <button type="button" class="remove-section-btn" onclick="removeUploadSection(${newSectionId})">
+        <i class="fas fa-times"></i> Remove
+      </button>
+    </div>
+
+    <div class="match-previous-option">
+      <input type="checkbox" class="match-previous-checkbox" data-section="${newSectionId}" id="matchPrevious${newSectionId}">
+      <label for="matchPrevious${newSectionId}">Match previous section's semester</label>
+      <small>Uses Semester ${uploadSections[previousSectionId]?.semester || '?'}</small>
+    </div>
+
+    <!-- Collapsible form fields -->
+    <div class="section-form-fields">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Semester</label>
+          <select class="section-semester" data-section="${newSectionId}" required>
+            <option value="">Select Semester</option>
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+            <option value="3">Semester 3</option>
+            <option value="4">Semester 4</option>
+            <option value="5">Semester 5</option>
+            <option value="6">Semester 6</option>
+            <option value="7">Semester 7</option>
+            <option value="8">Semester 8</option>
+            <option value="9">Miscellaneous</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Subject</label>
+          <select class="section-subject" data-section="${newSectionId}" required disabled>
+            <option value="">Select Semester First</option>
+          </select>
+          <input type="text" class="section-custom-subject form-control" data-section="${newSectionId}"
+            placeholder="Enter new subject name" style="display: none; margin-top: 8px;">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Category</label>
+        <select class="section-category" data-section="${newSectionId}" required>
+          <option value="">Select Category</option>
+          <option value="Syllabus">Syllabus</option>
+          <option value="Chapters">Chapters</option>
+          <option value="Presentations">Presentations</option>
+          <option value="Assignments">Assignments</option>
+          <option value="Question Banks">Question Banks</option>
+          <option value="Lab">Lab</option>
+          <option value="Previous Year Papers">Previous Year Papers</option>
+          <option value="Reference Books">Reference Books</option>
+          <option value="Lecture Notes">Lecture Notes</option>
+          <option value="Handwritten Notes">Handwritten Notes</option>
+          <option value="NPTEL Book">NPTEL Book</option>
+          <option value="NPTEL Assignment with Solutions">NPTEL Assignment with Solutions</option>
+          <option value="NPTEL Weekly Materials">NPTEL Weekly Materials</option>
+          <option value="Other">Other</option>
+        </select>
+        <input type="text" class="section-custom-category form-control" data-section="${newSectionId}"
+          placeholder="Enter new category name" style="display: none; margin-top: 8px;">
+      </div>
+    </div>
+
+    <div class="upload-area section-upload-area" data-section="${newSectionId}">
+      <div class="upload-icon">
+        <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: var(--text-secondary);"></i>
+      </div>
+      <div class="upload-text">
+        <h4>Drop files here or click to upload</h4>
+        <p>Supports only PDF Format files</p>
+      </div>
+      <input type="file" class="section-file-input" data-section="${newSectionId}" multiple accept=".pdf" style="display: none;">
+    </div>
+
+    <div class="section-file-preview" data-section="${newSectionId}" style="display: none;">
+      <div class="section-collapsed-summary"></div>
+      <div class="section-file-header">
+        <h5>Selected Files</h5>
+        <button type="button" class="section-expand-btn" onclick="expandUploadSection(${newSectionId})" title="Add more files">
+          <i class="fas fa-plus"></i>
+        </button>
+      </div>
+      <div class="section-file-list"></div>
+    </div>
+  `;
+
+  container.appendChild(newSection);
+
+  // Collapse previous sections that have files
+  collapsePreviousSections();
+
+  // Initialize the new section
+  initializeSection(newSectionId);
+
+  // Set up match previous checkbox
+  const matchPreviousCheckbox = newSection.querySelector('.match-previous-checkbox');
+  if (matchPreviousCheckbox) {
+    matchPreviousCheckbox.addEventListener('change', function () {
+      const semesterSelect = newSection.querySelector('.section-semester');
+      if (this.checked && uploadSections[previousSectionId]?.semester) {
+        semesterSelect.value = uploadSections[previousSectionId].semester;
+        semesterSelect.disabled = true;
+        uploadSections[newSectionId].semester = uploadSections[previousSectionId].semester;
+        populateSectionSubjects(newSectionId, uploadSections[previousSectionId].semester);
+      } else {
+        semesterSelect.disabled = false;
+      }
+      updateGlobalUploadOptions();
+    });
+  }
+
+  // Scroll to new section
+  newSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// Remove an upload section
+function removeUploadSection(sectionId) {
+  const section = document.querySelector(`[data-section-id="${sectionId}"]`);
+  if (section) {
+    section.remove();
+    delete uploadSections[sectionId];
+    updateGlobalUploadOptions();
+    renumberSections();
+  }
+}
+
+// Renumber sections after removal
+function renumberSections() {
+  const sections = document.querySelectorAll('.upload-section');
+  sections.forEach((section, index) => {
+    const title = section.querySelector('.upload-section-title');
+    if (title) {
+      title.innerHTML = `<i class="fas fa-layer-group"></i> Section ${index + 1}`;
+    }
+  });
+}
+
+// Collapse all previous sections that have files
+function collapsePreviousSections() {
+  const sections = document.querySelectorAll('.upload-section');
+  sections.forEach((section, index) => {
+    // Collapse all sections except the last one
+    if (index < sections.length - 1) {
+      const sectionId = parseInt(section.dataset.sectionId);
+      const sectionData = uploadSections[sectionId];
+
+      // Only collapse if it has files
+      if (sectionData?.files && sectionData.files.length > 0) {
+        section.classList.add('collapsed');
+        updateCollapsedSummary(sectionId);
+      }
+    }
+  });
+}
+
+// Expand a collapsed section
+function expandUploadSection(sectionId) {
+  const section = document.querySelector(`[data-section-id="${sectionId}"]`);
+  if (section) {
+    section.classList.remove('collapsed');
+  }
+}
+
+// Update the collapsed summary text
+function updateCollapsedSummary(sectionId) {
+  const section = document.querySelector(`[data-section-id="${sectionId}"]`);
+  if (!section) return;
+
+  const summary = section.querySelector('.section-collapsed-summary');
+  if (!summary) return;
+
+  const sectionData = uploadSections[sectionId];
+  if (!sectionData) return;
+
+  const subject = sectionData.subject || 'No subject';
+  const category = sectionData.category || 'No category';
+  const fileCount = sectionData.files?.length || 0;
+
+  summary.innerHTML = `<i class="fas fa-info-circle"></i> ${subject} • ${category} • ${fileCount} file(s)`;
+}
+
+// Populate subjects for a specific section
+function populateSectionSubjects(sectionId, semester) {
+  const section = document.querySelector(`[data-section-id="${sectionId}"]`);
+  if (!section) return;
+
+  const subjectSelect = section.querySelector('.section-subject');
+  if (!subjectSelect) return;
+
+  // Clear existing options
+  subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+
+  if (semester && semesterSubjectMappings[semester]) {
+    semesterSubjectMappings[semester].forEach(subject => {
+      const option = document.createElement('option');
+      option.value = subject;
+      option.textContent = subject;
+      subjectSelect.appendChild(option);
+    });
+  }
+
+  // Add custom option
+  const customOption = document.createElement('option');
+  customOption.value = 'custom';
+  customOption.textContent = 'Add New Subject...';
+  subjectSelect.appendChild(customOption);
+
+  // Enable the subject dropdown
+  subjectSelect.disabled = false;
+}
+
+// Handle file selection for a specific section
+function handleSectionFileSelection(sectionId, files) {
+  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB limit
+  const validFiles = [];
+  const rejectedFiles = [];
+
+  // Validate each file
+  for (const file of files) {
+    if (file.size > MAX_FILE_SIZE) {
+      rejectedFiles.push({
+        name: file.name,
+        reason: `File too large (${Math.round(file.size / 1024 / 1024)}MB). Maximum size is 50MB.`
+      });
+    } else if (!file.name.toLowerCase().endsWith('.pdf')) {
+      rejectedFiles.push({
+        name: file.name,
+        reason: 'Only PDF files are allowed for course materials.'
+      });
+    } else {
+      validFiles.push(file);
+    }
+  }
+
+  // Show warnings for rejected files
+  if (rejectedFiles.length > 0) {
+    const rejectedList = rejectedFiles.map(f => `• ${f.name}: ${f.reason}`).join('\n');
+    showNotification(`Some files were rejected:\n${rejectedList}`, 'warning');
+  }
+
+  // Add valid files to section
+  if (!uploadSections[sectionId]) {
+    uploadSections[sectionId] = { semester: '', subject: '', category: '', files: [] };
+  }
+  uploadSections[sectionId].files = [...uploadSections[sectionId].files, ...validFiles];
+
+  // Update file preview
+  displaySectionFilePreview(sectionId);
+  updateGlobalUploadOptions();
+}
+
+// Display file preview for a specific section
+function displaySectionFilePreview(sectionId) {
+  const section = document.querySelector(`[data-section-id="${sectionId}"]`);
+  if (!section) return;
+
+  const previewContainer = section.querySelector('.section-file-preview');
+  const fileList = section.querySelector('.section-file-list');
+  const files = uploadSections[sectionId]?.files || [];
+
+  if (files.length === 0) {
+    previewContainer.style.display = 'none';
+    return;
+  }
+
+  previewContainer.style.display = 'block';
+  fileList.innerHTML = files.map((file, index) => {
+    const displayName = file.displayName || file.name.replace(/\.[^/.]+$/, "");
+    const priority = file.priority !== undefined ? file.priority : index + 1;
+    return `
+    <div class="section-file-chip" data-file-index="${index}" draggable="true">
+      <i class="fas fa-grip-vertical drag-handle" title="Drag to reorder"></i>
+      <i class="fas fa-file-pdf"></i>
+      <input type="text" class="file-name-input" value="${displayName}" 
+             onchange="renameSectionFile(${sectionId}, ${index}, this.value)"
+             onclick="event.stopPropagation()"
+             title="Click to rename">
+      <span class="file-extension">.pdf</span>
+      <input type="number" class="priority-input" value="${priority}" min="1"
+             onchange="setFilePriority(${sectionId}, ${index}, this.value)"
+             onclick="event.stopPropagation(); this.select()"
+             title="Priority (lower = first)">
+      <button type="button" class="remove-file" onclick="removeSectionFile(${sectionId}, ${index})">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  `;
+  }).join('');
+
+  // Add sort by priority button if more than 1 file
+  if (files.length > 1) {
+    const existingBtn = previewContainer.querySelector('.sort-by-priority-btn');
+    if (!existingBtn) {
+      const sortBtn = document.createElement('button');
+      sortBtn.type = 'button';
+      sortBtn.className = 'sort-by-priority-btn';
+      sortBtn.innerHTML = '<i class="fas fa-sort-numeric-down"></i> Sort by Priority';
+      sortBtn.onclick = () => sortFilesByPriority(sectionId);
+      previewContainer.appendChild(sortBtn);
+    }
+  }
+
+  // Set up drag-and-drop for file reordering
+  setupFileDragAndDrop(sectionId, fileList);
+
+  // Update collapsed summary in case this section gets collapsed
+  updateCollapsedSummary(sectionId);
+}
+
+// Set file priority
+function setFilePriority(sectionId, fileIndex, priority) {
+  if (uploadSections[sectionId]?.files && uploadSections[sectionId].files[fileIndex]) {
+    uploadSections[sectionId].files[fileIndex].priority = parseInt(priority) || 1;
+  }
+}
+
+// Sort files by priority number
+function sortFilesByPriority(sectionId) {
+  const files = uploadSections[sectionId]?.files;
+  if (!files || files.length < 2) return;
+
+  // Sort by priority (lower number = first)
+  files.sort((a, b) => {
+    const priorityA = a.priority !== undefined ? a.priority : Infinity;
+    const priorityB = b.priority !== undefined ? b.priority : Infinity;
+    return priorityA - priorityB;
+  });
+
+  // Re-render the file list
+  displaySectionFilePreview(sectionId);
+  showNotification('Files sorted by priority', 'info');
+}
+
+// Set up drag-and-drop for file reordering within a section
+function setupFileDragAndDrop(sectionId, fileList) {
+  const chips = fileList.querySelectorAll('.section-file-chip');
+
+  chips.forEach(chip => {
+    chip.addEventListener('dragstart', (e) => {
+      chip.classList.add('dragging');
+      fileList.classList.add('drag-active');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', chip.dataset.fileIndex);
+    });
+
+    chip.addEventListener('dragend', () => {
+      chip.classList.remove('dragging');
+      fileList.classList.remove('drag-active');
+      chips.forEach(c => c.classList.remove('drag-over'));
+    });
+
+    chip.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const dragging = fileList.querySelector('.dragging');
+      if (dragging && chip !== dragging) {
+        chip.classList.add('drag-over');
+      }
+    });
+
+    chip.addEventListener('dragleave', () => {
+      chip.classList.remove('drag-over');
+    });
+
+    chip.addEventListener('drop', (e) => {
+      e.preventDefault();
+      chip.classList.remove('drag-over');
+
+      const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+      const toIndex = parseInt(chip.dataset.fileIndex);
+
+      if (fromIndex !== toIndex) {
+        reorderSectionFiles(sectionId, fromIndex, toIndex);
+      }
+    });
+  });
+}
+
+// Reorder files within a section
+function reorderSectionFiles(sectionId, fromIndex, toIndex) {
+  const files = uploadSections[sectionId]?.files;
+  if (!files) return;
+
+  // Remove the file from its original position
+  const [movedFile] = files.splice(fromIndex, 1);
+
+  // Insert at the new position
+  files.splice(toIndex, 0, movedFile);
+
+  // Re-render the file list
+  displaySectionFilePreview(sectionId);
+}
+
+// Rename a file in a section
+function renameSectionFile(sectionId, fileIndex, newName) {
+  if (uploadSections[sectionId]?.files && uploadSections[sectionId].files[fileIndex]) {
+    const originalFile = uploadSections[sectionId].files[fileIndex];
+    const newFileName = newName + '.pdf';
+
+    // Create a new File object with the new name
+    const renamedFile = new File([originalFile], newFileName, {
+      type: originalFile.type,
+      lastModified: originalFile.lastModified
+    });
+
+    // Store the display name for UI
+    renamedFile.displayName = newName;
+
+    uploadSections[sectionId].files[fileIndex] = renamedFile;
+  }
+}
+
+
+// Remove a file from a section
+function removeSectionFile(sectionId, fileIndex) {
+  if (uploadSections[sectionId]?.files) {
+    uploadSections[sectionId].files.splice(fileIndex, 1);
+    displaySectionFilePreview(sectionId);
+    updateGlobalUploadOptions();
+  }
+}
+
+// Update global upload options visibility
+function updateGlobalUploadOptions() {
+  const globalOptions = document.getElementById('globalUploadOptions');
+  const hasFiles = Object.values(uploadSections).some(s => s.files && s.files.length > 0);
+
+  if (globalOptions) {
+    globalOptions.style.display = hasFiles ? 'block' : 'none';
+  }
+}
+
+// Clear all sections (with confirmation for user-initiated clear)
+function clearAllSections() {
+  if (!confirm('Are you sure you want to clear all sections and files?')) return;
+  clearAllSectionsInternal();
+  showNotification('All sections cleared', 'info');
+}
+
+// Internal function to clear sections without confirmation
+function clearAllSectionsInternal() {
+  // Reset all sections
+  Object.keys(uploadSections).forEach(sectionId => {
+    uploadSections[sectionId].files = [];
+    displaySectionFilePreview(sectionId);
+
+    const section = document.querySelector(`[data-section-id="${sectionId}"]`);
+    if (section) {
+      section.querySelector('.section-semester').value = '';
+      const subjectSelect = section.querySelector('.section-subject');
+      subjectSelect.innerHTML = '<option value="">Select Semester First</option>';
+      subjectSelect.disabled = true;
+      section.querySelector('.section-category').value = '';
+      const customSubject = section.querySelector('.section-custom-subject');
+      if (customSubject) {
+        customSubject.style.display = 'none';
+        customSubject.value = '';
+      }
+    }
+  });
+
+  // Remove all sections except the first one
+  const container = document.getElementById('uploadSectionsContainer');
+  const sections = container.querySelectorAll('.upload-section');
+  sections.forEach((section, index) => {
+    if (index > 0) {
+      section.remove();
+      const id = parseInt(section.dataset.sectionId);
+      delete uploadSections[id];
+    } else {
+      // Uncollapse the first section
+      section.classList.remove('collapsed');
+      // Clear valid state if any
+      section.querySelector('.section-collapsed-summary').innerHTML = '';
+    }
+  });
+
+  renumberSections();
+  updateGlobalUploadOptions();
+}
+
+// Create batches from all sections' files to stay under size limit
+function createUploadBatches() {
+  const batches = [];
+  let currentBatch = { items: [], totalSize: 0 };
+
+  // Collect all files with their metadata
+  Object.entries(uploadSections).forEach(([sectionId, section]) => {
+    if (!section.files || section.files.length === 0) return;
+
+    const subject = section.subject ||
+      document.querySelector(`[data-section-id="${sectionId}"] .section-custom-subject`)?.value;
+
+    section.files.forEach(file => {
+      const item = {
+        file,
+        sectionId,
+        semester: section.semester,
+        subject,
+        category: section.category
+      };
+
+      // Check if adding this file would exceed the batch limit
+      if (currentBatch.totalSize + file.size > BATCH_SIZE_LIMIT && currentBatch.items.length > 0) {
+        // Push current batch and start a new one
+        batches.push(currentBatch);
+        currentBatch = { items: [], totalSize: 0 };
+      }
+
+      // If single file is larger than limit, it gets its own batch (will likely fail but we try)
+      if (file.size > BATCH_SIZE_LIMIT) {
+        if (currentBatch.items.length > 0) {
+          batches.push(currentBatch);
+          currentBatch = { items: [], totalSize: 0 };
+        }
+        batches.push({ items: [item], totalSize: file.size });
+      } else {
+        currentBatch.items.push(item);
+        currentBatch.totalSize += file.size;
+      }
+    });
+  });
+
+  // Don't forget the last batch
+  if (currentBatch.items.length > 0) {
+    batches.push(currentBatch);
+  }
+
+  return batches;
+}
+
+// Handle multi-section upload with queue - uses staged uploads for single commit
+async function handleMultiSectionUpload() {
+  // Validate all sections
+  let hasValidSection = false;
+  let validationError = null;
+
+  for (const [sectionId, section] of Object.entries(uploadSections)) {
+    if (section.files && section.files.length > 0) {
+      const sectionEl = document.querySelector(`[data-section-id="${sectionId}"]`);
+      const subject = section.subject ||
+        sectionEl?.querySelector('.section-custom-subject')?.value;
+
+      if (!section.semester || !subject || !section.category) {
+        validationError = `Section ${parseInt(sectionId) + 1}: Please fill all required fields (semester, subject, category)`;
+        break;
+      }
+      hasValidSection = true;
+    }
+  }
+
+  if (validationError) {
+    showNotification(validationError, 'error');
+    return;
+  }
+
+  if (!hasValidSection) {
+    showNotification('Please select files to upload in at least one section', 'error');
+    return;
+  }
+
+  const autoPushNotify = document.getElementById('autoPushNotify')?.checked ?? true;
+
+  // Create batches
+  const batches = createUploadBatches();
+
+  if (batches.length === 0) {
+    showNotification('No files to upload', 'error');
+    return;
+  }
+
+  // Show queue progress
+  const queueProgress = document.getElementById('queueProgress');
+  const queueItems = document.getElementById('queueItems');
+  const queueStats = document.getElementById('queueStats');
+  const queueProgressBar = document.getElementById('queueProgressBar');
+  const queueProgressPercent = document.getElementById('queueProgressPercent');
+  const batchCommitInfo = document.getElementById('batchCommitInfo');
+  const commitMessage = document.getElementById('commitMessage');
+  const uploadAllBtn = document.getElementById('uploadAllBtn');
+
+  queueProgress.style.display = 'block';
+  batchCommitInfo.style.display = 'none';
+  uploadAllBtn.disabled = true;
+  uploadAllBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing files...';
+
+  // Initialize queue display with processing + upload phases
+  const totalSteps = batches.length + 1; // batches + 1 processing step
+  queueStats.textContent = `0 / ${totalSteps} steps`;
+
+  // Build queue items display
+  let queueHTML = batches.map((batch, index) => {
+    const fileCount = batch.items.length;
+    const size = (batch.totalSize / 1024 / 1024).toFixed(2);
+    return `
+      <div class="queue-item" data-batch="${index}">
+        <div class="queue-item-icon pending">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="queue-item-details">
+          <div class="queue-item-name">Process batch ${index + 1}: ${fileCount} file(s)</div>
+          <div class="queue-item-meta">${size} MB</div>
+        </div>
+        <span class="queue-item-status pending">Pending</span>
+      </div>
+    `;
+  }).join('');
+
+  // Add final upload step
+  queueHTML += `
+    <div class="queue-item" data-batch="commit">
+      <div class="queue-item-icon pending">
+        <i class="fas fa-clock"></i>
+      </div>
+      <div class="queue-item-details">
+        <div class="queue-item-name">Finalize Upload</div>
+        <div class="queue-item-meta">Saving files to server</div>
+      </div>
+      <span class="queue-item-status pending">Pending</span>
+    </div>
+  `;
+  queueItems.innerHTML = queueHTML;
+
+  // Phase 1: Process all files in batches
+  let successCount = 0;
+  let failedCount = 0;
+  const allStagedFiles = [];
+
+  for (let i = 0; i < batches.length; i++) {
+    const batch = batches[i];
+    const queueItem = queueItems.querySelector(`[data-batch="${i}"]`);
+    const icon = queueItem.querySelector('.queue-item-icon');
+    const status = queueItem.querySelector('.queue-item-status');
+
+    // Update to processing state
+    icon.className = 'queue-item-icon uploading';
+    icon.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    status.className = 'queue-item-status uploading';
+    status.textContent = 'Processing...';
+
+    try {
+      // Group files by semester/subject/category for the API
+      const groupedFiles = {};
+      batch.items.forEach(item => {
+        const key = `${item.semester}|${item.subject}|${item.category}`;
+        if (!groupedFiles[key]) {
+          groupedFiles[key] = {
+            semester: item.semester,
+            subject: item.subject,
+            category: item.category,
+            files: []
+          };
+        }
+        groupedFiles[key].files.push(item.file);
+      });
+
+      const groups = Object.values(groupedFiles);
+
+      for (const group of groups) {
+        const stageFormData = new FormData();
+        stageFormData.append('semester', group.semester);
+        stageFormData.append('subject', group.subject);
+        stageFormData.append('category', group.category);
+        stageFormData.append('basePath', `pdfs/${group.semester}/${group.subject}`);
+
+        group.files.forEach(file => {
+          stageFormData.append('files', file);
+        });
+
+        // Use the new stage endpoint
+        const response = await fetch('/api/v2/cdn?stage=true', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
+          },
+          body: stageFormData
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || result.error) {
+          throw new Error(result.error || `Processing failed: ${response.status}`);
+        }
+
+        // Collect processed files for the final upload
+        if (result.stagedFiles) {
+          allStagedFiles.push(...result.stagedFiles);
+        }
+      }
+
+      // Update to success state
+      icon.className = 'queue-item-icon success';
+      icon.innerHTML = '<i class="fas fa-check"></i>';
+      status.className = 'queue-item-status success';
+      status.textContent = 'Ready';
+      successCount++;
+
+    } catch (error) {
+      console.error(`Batch ${i + 1} processing failed:`, error);
+
+      // Update to error state
+      icon.className = 'queue-item-icon error';
+      icon.innerHTML = '<i class="fas fa-exclamation"></i>';
+      status.className = 'queue-item-status error';
+      status.textContent = 'Failed';
+      failedCount++;
+    }
+
+    // Update progress
+    const progress = Math.round(((i + 1) / totalSteps) * 100);
+    queueProgressBar.style.setProperty('--progress', `${progress}%`);
+    queueProgressPercent.textContent = `${progress}%`;
+    queueStats.textContent = `${i + 1} / ${totalSteps} steps`;
+  }
+
+  // Phase 2: Finalize upload with all files
+  const commitQueueItem = queueItems.querySelector('[data-batch="commit"]');
+  const commitIcon = commitQueueItem.querySelector('.queue-item-icon');
+  const commitStatus = commitQueueItem.querySelector('.queue-item-status');
+  const stagedJsonFiles = getStagedJsonForCommit();
+
+  if (failedCount > 0) {
+    // If processing failed, don't attempt upload
+    commitIcon.className = 'queue-item-icon error';
+    commitIcon.innerHTML = '<i class="fas fa-ban"></i>';
+    commitStatus.className = 'queue-item-status error';
+    commitStatus.textContent = 'Skipped';
+
+    showNotification(`Processing failed for ${failedCount} batch(es). Upload cancelled.`, 'error');
+  } else if (allStagedFiles.length === 0 && stagedJsonFiles.length === 0) {
+    commitIcon.className = 'queue-item-icon error';
+    commitIcon.innerHTML = '<i class="fas fa-exclamation"></i>';
+    commitStatus.className = 'queue-item-status error';
+    commitStatus.textContent = 'No items';
+
+    showNotification('No files or JSON edits were staged. Upload cancelled.', 'error');
+  } else {
+    // Update to uploading state
+    uploadAllBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Finalizing...';
+    commitIcon.className = 'queue-item-icon uploading';
+    commitIcon.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    commitStatus.className = 'queue-item-status uploading';
+    commitStatus.textContent = 'Finalizing...';
+
+    try {
+      // Get staged JSON changes
+      const stagedJsonFiles = getStagedJsonForCommit();
+
+      // Send commit request with all staged files
+      const response = await fetch('/api/v2/cdn?commit=true', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          stagedFiles: allStagedFiles,
+          stagedJsonFiles, // Include staged JSON changes
+          autoPushNotify
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || result.error) {
+        throw new Error(result.error || `Upload failed: ${response.status}`);
+      }
+
+      // Update to success state
+      commitIcon.className = 'queue-item-icon success';
+      commitIcon.innerHTML = '<i class="fas fa-check"></i>';
+      commitStatus.className = 'queue-item-status success';
+      commitStatus.textContent = 'Complete';
+
+      // Update progress to 100%
+      queueProgressBar.style.setProperty('--progress', '100%');
+      queueProgressPercent.textContent = '100%';
+      queueStats.textContent = `${totalSteps} / ${totalSteps} steps`;
+
+      // Show success
+      batchCommitInfo.style.display = 'flex';
+      const jsonCount = stagedJsonFiles.length;
+      const totalCount = allStagedFiles.length + jsonCount;
+      const jsonNote = jsonCount > 0 ? ` + ${jsonCount} JSON edit(s)` : '';
+      commitMessage.textContent = `All ${allStagedFiles.length} files${jsonNote} uploaded successfully!`;
+      showNotification(`Successfully uploaded ${totalCount} item(s)!`, 'success');
+
+      // Clear all sections and staged JSON on success
+      setTimeout(() => {
+        clearAllSectionsInternal();
+        clearStagedJson();
+        queueProgress.style.display = 'none';
+      }, 3000);
+
+    } catch (error) {
+      console.error('Upload failed:', error);
+
+      commitIcon.className = 'queue-item-icon error';
+      commitIcon.innerHTML = '<i class="fas fa-exclamation"></i>';
+      commitStatus.className = 'queue-item-status error';
+      commitStatus.textContent = 'Failed';
+
+      showNotification(`Upload failed: ${error.message}`, 'error');
+    }
+  }
+
+  // Reset button
+  uploadAllBtn.disabled = false;
+  uploadAllBtn.innerHTML = '<i class="fas fa-upload"></i> Upload All Sections';
+}
+
 
 // Load semester-subject mappings from GitHub
 async function loadSemesterSubjectMappings() {
@@ -1404,7 +2314,7 @@ async function loadSemesterSubjectMappings() {
     // File doesn't exist yet, this is expected for first-time setup
     console.log('No existing semester-subject mappings found, initializing with defaults');
   }
-  // Initialize with default subjects for each semester (matching your provided JSON)
+  // Initialize with default subjects for each semester
   semesterSubjectMappings = {
     "1": [
       "Engineering Mathematics I",
@@ -1473,286 +2383,6 @@ async function loadSemesterSubjectMappings() {
   };
 }
 
-// Populate subjects based on selected semester
-function populateSubjects(semester) {
-  const subjectSelect = document.getElementById('subject');
-  if (!subjectSelect) return;
-
-  // Clear existing options
-  subjectSelect.innerHTML = '<option value="">Select Subject</option>';
-
-  if (semester && semesterSubjectMappings[semester]) {
-    semesterSubjectMappings[semester].forEach(subject => {
-      const option = document.createElement('option');
-      option.value = subject;
-      option.textContent = subject;
-      subjectSelect.appendChild(option);
-    });
-  }
-  // Add custom option
-  const customOption = document.createElement('option');
-  customOption.value = 'custom';
-  customOption.textContent = 'Add New Subject...';
-  subjectSelect.appendChild(customOption);
-
-  // Enable the subject dropdown
-  subjectSelect.disabled = false;
-}
-
-// Handle file selection for course upload
-function handleCourseFileSelection(files) {
-  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB limit as requested
-  const NETLIFY_LIMIT = 6 * 1024 * 1024; // 6MB actual limit due to Netlify Functions
-  const validFiles = [];
-  const rejectedFiles = [];
-
-  // Validate each file
-  for (const file of files) {
-    if (file.size > MAX_FILE_SIZE) {
-      rejectedFiles.push({
-        name: file.name,
-        size: file.size,
-        reason: `File too large (${Math.round(file.size / 1024 / 1024)}MB). Maximum size is 50MB.`
-      });
-    } else if (file.size > NETLIFY_LIMIT) {
-      rejectedFiles.push({
-        name: file.name,
-        size: file.size,
-        reason: `File too large (${Math.round(file.size / 1024 / 1024)}MB) for current hosting. Due to Netlify Functions limitations, files must be under 6MB. Consider compressing or splitting the file.`
-      });
-    } else if (!file.name.toLowerCase().endsWith('.pdf')) {
-      rejectedFiles.push({
-        name: file.name,
-        size: file.size,
-        reason: 'Only PDF files are allowed for course materials.'
-      });
-    } else {
-      validFiles.push(file);
-    }
-  }
-
-  // Show warnings for rejected files
-  if (rejectedFiles.length > 0) {
-    const rejectedList = rejectedFiles.map(f => `• ${f.name}: ${f.reason}`).join('\n');
-    showNotification(`Some files were rejected:\n${rejectedList}`, 'warning');
-  }
-
-  // Add valid files to selection
-  selectedFiles = [...selectedFiles, ...validFiles];
-  displayFilePreview();
-
-  const courseUploadArea = document.getElementById('courseUploadArea');
-  const filePreviewContainer = document.getElementById('filePreviewContainer');
-  const uploadOptions = document.getElementById('uploadOptions');
-
-  if (selectedFiles.length > 0) {
-    courseUploadArea.classList.add('has-files');
-    filePreviewContainer.style.display = 'block';
-    uploadOptions.style.display = 'block';
-  }
-}
-
-// Display file preview cards
-function displayFilePreview() {
-  const filePreviewGrid = document.getElementById('filePreviewGrid');
-  if (!filePreviewGrid) return;
-
-  filePreviewGrid.innerHTML = '';
-
-  selectedFiles.forEach((file, index) => {
-    const fileCard = createFilePreviewCard(file, index);
-    filePreviewGrid.appendChild(fileCard);
-  });
-}
-
-// Create file preview card
-function createFilePreviewCard(file, index) {
-  const card = document.createElement('div');
-  card.className = 'file-preview-card';
-
-  const extension = file.name.split('.').pop().toLowerCase();
-  const fileName = file.name.replace(/\.[^/.]+$/, ""); // Remove extension
-  const iconClass = getFileIconClass(extension);
-
-  card.innerHTML = `
-    <button class="file-remove" onclick="removeFile(${index})" title="Remove file">
-      <i class="fas fa-times"></i>
-    </button>
-    <div class="file-type-icon ${extension}">
-      <i class="${iconClass}"></i>
-    </div>
-    <input type="text" class="file-name-edit" value="${fileName}" 
-           onchange="updateFileName(${index}, this.value)" 
-           title="Click to rename">
-  `;
-
-  return card;
-}
-
-// Get file icon class based on extension
-function getFileIconClass(extension) {
-  const iconMap = {
-    'pdf': 'fas fa-file-pdf',
-    'doc': 'fas fa-file-word',
-    'docx': 'fas fa-file-word',
-    'ppt': 'fas fa-file-powerpoint',
-    'pptx': 'fas fa-file-powerpoint',
-    'xls': 'fas fa-file-excel',
-    'xlsx': 'fas fa-file-excel',
-    'zip': 'fas fa-file-archive',
-    'rar': 'fas fa-file-archive',
-    'txt': 'fas fa-file-alt'
-  };
-
-  return iconMap[extension] || 'fas fa-file';
-}
-
-// Remove file from selection
-function removeFile(index) {
-  selectedFiles.splice(index, 1);
-  displayFilePreview();
-
-  if (selectedFiles.length === 0) {
-    const courseUploadArea = document.getElementById('courseUploadArea');
-    const filePreviewContainer = document.getElementById('filePreviewContainer');
-    const uploadOptions = document.getElementById('uploadOptions');
-
-    courseUploadArea.classList.remove('has-files');
-    filePreviewContainer.style.display = 'none';
-    uploadOptions.style.display = 'none';
-  }
-}
-
-// Update file name
-function updateFileName(index, newName) {
-  if (selectedFiles[index]) {
-    const extension = selectedFiles[index].name.split('.').pop();
-    const newFileName = newName + '.' + extension;
-
-    // Create a new File object with the new name
-    const originalFile = selectedFiles[index];
-    const renamedFile = new File([originalFile], newFileName, {
-      type: originalFile.type,
-      lastModified: originalFile.lastModified
-    });
-
-    selectedFiles[index] = renamedFile;
-  }
-}
-
-// Handle course upload form submission
-async function handleCourseUploadSubmit(e) {
-  e.preventDefault();
-
-  const form = e.target;
-  const formData = new FormData(form);
-  const semester = formData.get('semester');
-  const subject = formData.get('subject') === 'custom' ?
-    document.getElementById('customSubject').value : formData.get('subject');
-  const category = formData.get('category');
-  const autoPushNotify = document.getElementById('autoPushNotify').checked;
-
-  if (!semester || !subject || !category || selectedFiles.length === 0) {
-    showNotification('Please fill all fields and select files', 'error');
-    return;
-  }
-
-  try {
-    const uploadButton = document.getElementById('uploadCourseFiles');
-    const originalText = uploadButton.innerHTML;
-    uploadButton.disabled = true;
-    uploadButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
-
-    // Show progress
-    const progressDiv = document.getElementById('courseUploadProgress');
-    const progressBar = document.getElementById('courseProgressBar');
-    const progressText = document.getElementById('courseProgressText');
-    progressDiv.style.display = 'block';
-
-    // Use batch upload for all files and metadata in a single git commit
-    progressBar.style.setProperty('--progress', '50%');
-    progressText.textContent = `Preparing to upload ${selectedFiles.length} files...`;
-
-    // Create batch upload form data
-    const batchFormData = new FormData();
-    batchFormData.append('semester', semester);
-    batchFormData.append('subject', subject);
-    batchFormData.append('category', category);
-    batchFormData.append('autoPushNotify', autoPushNotify.toString());
-    batchFormData.append('basePath', `pdfs/${semester}/${subject}`);
-
-    // Add all files to the batch
-    selectedFiles.forEach((file, index) => {
-      batchFormData.append('files', file);
-    });
-
-    progressBar.style.setProperty('--progress', '75%');
-    progressText.textContent = `Uploading ${selectedFiles.length} files and updating database...`;
-
-    // Send batch upload request to cdn.js with batch=true parameter
-    const response = await fetch('/api/v2/cdn?batch=true', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
-      },
-      body: batchFormData
-    });
-
-    let result;
-    try {
-      result = await response.json();
-    } catch (parseError) {
-      throw new Error(`Server error: Failed to process the upload. ${response.status} ${response.statusText}`);
-    }
-
-    if (!response.ok || result.error) {
-      throw new Error(result.error || `Failed to upload files: ${response.status} ${response.statusText}`);
-    }
-
-    progressBar.style.setProperty('--progress', '100%');
-    progressText.textContent = 'Upload completed successfully!';
-
-    const fileCount = result.files ? result.files.length : selectedFiles.length;
-    const notificationText = autoPushNotify ? ' (notification created)' : '';
-    const databaseText = result.updatedDatabase ? ' and database updated' : '';
-
-    showNotification(`Successfully uploaded ${fileCount} files${databaseText}${notificationText}!`, 'success');
-
-    // Reset form
-    form.reset();
-    selectedFiles = [];
-    document.getElementById('filePreviewContainer').style.display = 'none';
-    document.getElementById('uploadOptions').style.display = 'none';
-    document.getElementById('courseUploadArea').classList.remove('has-files');
-    document.getElementById('subject').disabled = true;
-    document.getElementById('customSubject').style.display = 'none';
-
-  } catch (error) {
-    console.error('Upload error:', error);
-
-    let errorMessage = error.message || 'Failed to upload course materials';
-
-    // Provide more helpful error messages based on the error type
-    if (errorMessage.includes('too large') || errorMessage.includes('413')) {
-      errorMessage = 'One or more files are too large. Due to hosting limitations, total upload size must be under 6MB. Please compress your PDFs or split them into smaller batches.';
-    } else if (errorMessage.includes('403') || errorMessage.includes('Permission denied')) {
-      errorMessage = 'Permission denied. Please check your account permissions.';
-    } else if (errorMessage.includes('500') || errorMessage.includes('Server error')) {
-      errorMessage = 'Server error occurred. Please try again later or contact support if the problem persists.';
-    } else if (errorMessage.includes('timeout')) {
-      errorMessage = 'Upload timeout. Please check your internet connection and try again.';
-    } else if (errorMessage.includes('Only PDF files are allowed')) {
-      errorMessage = 'Only PDF files are allowed for course material uploads.';
-    }
-
-    showNotification(errorMessage, 'error');
-  } finally {
-    document.getElementById('courseUploadProgress').style.display = 'none';
-    const uploadButton = document.getElementById('uploadCourseFiles');
-    uploadButton.disabled = false;
-    uploadButton.innerHTML = '<i class="fas fa-upload"></i> Upload Materials';
-  }
-}
 
 // Legacy functions - now handled by batch upload
 // These functions are kept for reference but are no longer used
@@ -3255,5 +3885,246 @@ document.addEventListener('click', function (event) {
 document.addEventListener('keydown', function (event) {
   if (event.key === 'Escape') {
     closeShareModal();
+    closeJsonEditor();
   }
 });
+
+// =============================================
+// JSON Editor Functions
+// =============================================
+
+// Store for staged JSON changes
+let stagedJsonChanges = {}; // { path: { content: string, originalContent: string } }
+let currentJsonFile = null;
+let originalJsonContent = '';
+
+// Open JSON editor for a file
+async function openJsonEditor(filePath, downloadUrl) {
+  const panel = document.getElementById('jsonEditorPanel');
+  const textarea = document.getElementById('jsonEditorTextarea');
+  const fileName = document.getElementById('jsonEditorFileName');
+  const status = document.getElementById('jsonEditorStatus');
+  const statusText = document.getElementById('jsonEditorStatusText');
+
+  // Set the file name
+  fileName.textContent = filePath.split('/').pop();
+  currentJsonFile = filePath;
+
+  // Show loading state
+  textarea.value = 'Loading...';
+  textarea.disabled = true;
+  panel.classList.add('open');
+
+  try {
+    // Fetch the JSON content
+    const response = await fetch(downloadUrl);
+    if (!response.ok) throw new Error('Failed to fetch file');
+
+    const content = await response.text();
+    originalJsonContent = content;
+
+    // Check if there's already a staged version
+    if (stagedJsonChanges[filePath]) {
+      textarea.value = stagedJsonChanges[filePath].content;
+      statusText.textContent = 'Loaded (has staged changes)';
+      status.className = 'json-editor-status success';
+    } else {
+      // Try to format it
+      try {
+        const parsed = JSON.parse(content);
+        textarea.value = JSON.stringify(parsed, null, 2);
+      } catch {
+        textarea.value = content;
+      }
+      statusText.textContent = 'Ready';
+      status.className = 'json-editor-status';
+    }
+
+    textarea.disabled = false;
+  } catch (error) {
+    console.error('Error loading JSON:', error);
+    textarea.value = '// Error loading file: ' + error.message;
+    statusText.textContent = 'Error loading file';
+    status.className = 'json-editor-status error';
+  }
+
+  // Set up live validation
+  textarea.oninput = validateJsonLive;
+}
+
+// Close JSON editor
+function closeJsonEditor() {
+  const panel = document.getElementById('jsonEditorPanel');
+  panel.classList.remove('open');
+  currentJsonFile = null;
+  originalJsonContent = '';
+}
+
+// Format JSON in the editor
+function formatJson() {
+  const textarea = document.getElementById('jsonEditorTextarea');
+  const status = document.getElementById('jsonEditorStatus');
+  const statusText = document.getElementById('jsonEditorStatusText');
+
+  try {
+    const parsed = JSON.parse(textarea.value);
+    textarea.value = JSON.stringify(parsed, null, 2);
+    statusText.textContent = 'Formatted successfully';
+    status.className = 'json-editor-status success';
+  } catch (error) {
+    statusText.textContent = 'Invalid JSON: ' + error.message;
+    status.className = 'json-editor-status error';
+  }
+}
+
+// Reset JSON editor to original content
+function resetJsonEditor() {
+  const textarea = document.getElementById('jsonEditorTextarea');
+  const status = document.getElementById('jsonEditorStatus');
+  const statusText = document.getElementById('jsonEditorStatusText');
+
+  if (originalJsonContent) {
+    try {
+      const parsed = JSON.parse(originalJsonContent);
+      textarea.value = JSON.stringify(parsed, null, 2);
+    } catch {
+      textarea.value = originalJsonContent;
+    }
+    statusText.textContent = 'Reset to original';
+    status.className = 'json-editor-status';
+  }
+}
+
+// Validate JSON live as user types
+function validateJsonLive() {
+  const textarea = document.getElementById('jsonEditorTextarea');
+  const status = document.getElementById('jsonEditorStatus');
+  const statusText = document.getElementById('jsonEditorStatusText');
+  const lineInfo = document.getElementById('jsonEditorLineInfo');
+
+  // Update line info
+  const lines = textarea.value.split('\n').length;
+  const chars = textarea.value.length;
+  lineInfo.textContent = `${lines} lines, ${chars} chars`;
+
+  try {
+    JSON.parse(textarea.value);
+    statusText.textContent = 'Valid JSON';
+    status.className = 'json-editor-status success';
+    return true;
+  } catch (error) {
+    statusText.textContent = 'Invalid: ' + error.message.substring(0, 50);
+    status.className = 'json-editor-status error';
+    return false;
+  }
+}
+
+// Load staged changes from localStorage on init
+const STAGED_JSON_STORAGE_KEY = 'materio_staged_json';
+try {
+  const savedStagedJson = localStorage.getItem(STAGED_JSON_STORAGE_KEY);
+  if (savedStagedJson) {
+    stagedJsonChanges = JSON.parse(savedStagedJson);
+    setTimeout(updateStagedJsonCount, 1000); // Update UI after page load
+  }
+} catch (e) {
+  console.error('Failed to load staged JSON from storage:', e);
+}
+
+// Warn user if leaving with staged changes
+window.addEventListener('beforeunload', (e) => {
+  if (Object.keys(stagedJsonChanges).length > 0) {
+    e.preventDefault();
+    e.returnValue = 'You have staged JSON changes that have not been uploaded. Are you sure you want to leave?';
+  }
+});
+
+// Stage JSON changes for next upload
+function stageJsonChanges() {
+  const textarea = document.getElementById('jsonEditorTextarea');
+  const status = document.getElementById('jsonEditorStatus');
+  const statusText = document.getElementById('jsonEditorStatusText');
+
+  if (!currentJsonFile) {
+    showNotification('No file open', 'error');
+    return;
+  }
+
+  // Validate JSON first
+  try {
+    JSON.parse(textarea.value);
+  } catch (error) {
+    showNotification('Cannot stage invalid JSON: ' + error.message, 'error');
+    return;
+  }
+
+  // Check if content has changed
+  const currentContent = textarea.value;
+  let originalFormatted;
+  try {
+    originalFormatted = JSON.stringify(JSON.parse(originalJsonContent), null, 2);
+  } catch {
+    originalFormatted = originalJsonContent;
+  }
+
+  if (currentContent === originalFormatted) {
+    showNotification('No changes to stage', 'info');
+    return;
+  }
+
+  // Stage the changes
+  stagedJsonChanges[currentJsonFile] = {
+    content: currentContent,
+    originalContent: originalJsonContent,
+    path: currentJsonFile
+  };
+
+  // Save to localStorage
+  localStorage.setItem(STAGED_JSON_STORAGE_KEY, JSON.stringify(stagedJsonChanges));
+
+  statusText.textContent = 'Changes staged!';
+  status.className = 'json-editor-status success';
+
+  showNotification(`Staged changes to ${currentJsonFile.split('/').pop()}`, 'success');
+  updateStagedJsonCount();
+
+  // Close the editor
+  setTimeout(() => closeJsonEditor(), 500);
+}
+
+// Update the staged JSON count display
+function updateStagedJsonCount() {
+  const count = Object.keys(stagedJsonChanges).length;
+
+  // Update the global upload options to show staged count
+  const globalOptions = document.getElementById('globalUploadOptions');
+  if (globalOptions) {
+    let badge = globalOptions.querySelector('.staged-json-count');
+    if (count > 0) {
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'staged-json-count';
+        globalOptions.querySelector('.upload-all-container')?.prepend(badge);
+      }
+      badge.innerHTML = `<i class="fas fa-code"></i> ${count} JSON file(s) staged`;
+      globalOptions.style.display = 'block';
+    } else if (badge) {
+      badge.remove();
+    }
+  }
+}
+
+// Get staged JSON for the commit
+function getStagedJsonForCommit() {
+  return Object.values(stagedJsonChanges).map(item => ({
+    path: item.path,
+    content: item.content
+  }));
+}
+
+// Clear staged JSON after successful upload
+function clearStagedJson() {
+  stagedJsonChanges = {};
+  localStorage.removeItem(STAGED_JSON_STORAGE_KEY);
+  updateStagedJsonCount();
+}

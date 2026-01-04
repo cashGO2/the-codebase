@@ -176,6 +176,20 @@
 
                     <!-- Smart Recommendations (hidden by default) -->
                     <div id="recommendedPosts" class="insight-cards-scroll" style="display: none;">
+                        <!-- Attachments Card - shown first in smart recommendations -->
+                        <div id="attachmentsCard" class="attachments-card" style="display: none;">
+                            <div class="attachments-card-header">
+                                <i class="fa-solid fa-paperclip"></i>
+                                <span>Attachments</span>
+                            </div>
+                            <div id="attachmentsPillsContainer" class="attachments-pills-container">
+                                <!-- Attachment pills will be populated by JavaScript -->
+                            </div>
+                            <div id="attachmentsEmpty" class="attachments-empty" style="display: none;">
+                                <i class="fas fa-folder-open"></i>
+                                <span>No attachments found</span>
+                            </div>
+                        </div>
                         <!-- Recommended posts will be populated by JavaScript -->
                     </div>
 
@@ -200,13 +214,16 @@
 
             <div id="popup">
                 <div class="popup-controls">
-                    <button id="downloadButton" style="margin-top: 5px; transition: all 0.3s ease; cursor: pointer;"
-                        title="Download for offline reading" aria-label="Download for offline reading">
-                        <i class="fa-regular fa-bookmark-plus"></i>
+                    <button id="downloadButton" title="Download for offline reading"
+                        aria-label="Download for offline reading">
+                        <i class="far fa-bookmark"></i>
                     </button>
-                    <button id="fullscreenButton" style="margin-right: 40px; margin-top:5px;"
-                        aria-label="Enter fullscreen"><i class="fas fa-expand"></i></button>
-                    <button id="closePopup" aria-label="Close PDF viewer"><i class="fas fa-times"></i></button>
+                    <button id="fullscreenButton" aria-label="Enter fullscreen">
+                        <i class="far fa-expand"></i>
+                    </button>
+                    <button id="closePopup" aria-label="Close PDF viewer">
+                        <i class="far fa-times"></i>
+                    </button>
                 </div>
                 <div id="popupContent">
                     <!-- PDF iframe will be loaded here -->

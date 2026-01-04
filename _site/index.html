@@ -123,7 +123,7 @@
     <link rel="stylesheet" href="/assets/style/notification.css">
     <link rel="stylesheet" href="/assets/style/gestures.css">
     <link rel="stylesheet" href="/assets/style/ota-update.css">
-    <link rel="stylesheet" href="/assets/style/splash.css">
+    
     <!-- <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/all.css">
 <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/sharp-solid.css">
 <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/sharp-regular.css">
@@ -577,6 +577,20 @@
 
                     <!-- Smart Recommendations (hidden by default) -->
                     <div id="recommendedPosts" class="insight-cards-scroll" style="display: none;">
+                        <!-- Attachments Card - shown first in smart recommendations -->
+                        <div id="attachmentsCard" class="attachments-card" style="display: none;">
+                            <div class="attachments-card-header">
+                                <i class="fa-solid fa-paperclip"></i>
+                                <span>Attachments</span>
+                            </div>
+                            <div id="attachmentsPillsContainer" class="attachments-pills-container">
+                                <!-- Attachment pills will be populated by JavaScript -->
+                            </div>
+                            <div id="attachmentsEmpty" class="attachments-empty" style="display: none;">
+                                <i class="fas fa-folder-open"></i>
+                                <span>No attachments found</span>
+                            </div>
+                        </div>
                         <!-- Recommended posts will be populated by JavaScript -->
                     </div>
 
@@ -601,13 +615,16 @@
 
             <div id="popup">
                 <div class="popup-controls">
-                    <button id="downloadButton" style="margin-top: 5px; transition: all 0.3s ease; cursor: pointer;"
-                        title="Download for offline reading" aria-label="Download for offline reading">
-                        <i class="fa-regular fa-bookmark-plus"></i>
+                    <button id="downloadButton" title="Download for offline reading"
+                        aria-label="Download for offline reading">
+                        <i class="far fa-bookmark"></i>
                     </button>
-                    <button id="fullscreenButton" style="margin-right: 40px; margin-top:5px;"
-                        aria-label="Enter fullscreen"><i class="fas fa-expand"></i></button>
-                    <button id="closePopup" aria-label="Close PDF viewer"><i class="fas fa-times"></i></button>
+                    <button id="fullscreenButton" aria-label="Enter fullscreen">
+                        <i class="far fa-expand"></i>
+                    </button>
+                    <button id="closePopup" aria-label="Close PDF viewer">
+                        <i class="far fa-times"></i>
+                    </button>
                 </div>
                 <div id="popupContent">
                     <!-- PDF iframe will be loaded here -->
@@ -839,10 +856,11 @@
     .dynamic-form-group select,
     .dynamic-form-group textarea {
         width: 100%;
-        padding: 12px 16px;
+        padding: 8px 16px;
         border: 1px solid rgba(128, 128, 128, 0.2);
-        border-radius: 12px;
-        font-size: 1rem;
+        border-radius: 25px;
+        corner-shape: squircle;
+        font-size: 14px;
         font-family: inherit;
         background: #f8f9fa;
         color: #333;
@@ -872,7 +890,7 @@
     /* File Upload Area */
     .dynamic-form-file-area {
         border: 2px dashed rgba(255, 130, 0, 0.3);
-        border-radius: 16px;
+        border-radius: 25px;
         corner-shape: squircle;
         padding: 32px 16px;
         text-align: center;

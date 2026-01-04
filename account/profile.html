@@ -1003,6 +1003,802 @@
       font-weight: 500;
     }
 
+    /* Multi-Section Upload Styles */
+    .upload-sections-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .upload-section {
+      background: var(--background-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .upload-section:hover {
+      border-color: rgba(255, 130, 0, 0.3);
+    }
+
+    .upload-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .upload-section-title {
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .upload-section-title i {
+      color: #ff8200;
+    }
+
+    .remove-section-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+    }
+
+    .remove-section-btn:hover {
+      background: rgba(244, 67, 54, 0.1);
+      color: #f44336;
+    }
+
+    .upload-section:first-child .remove-section-btn {
+      display: none;
+    }
+
+    /* Match Previous Option */
+    .match-previous-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(255, 130, 0, 0.1);
+      border-radius: 6px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .match-previous-option:hover {
+      background: rgba(255, 130, 0, 0.15);
+    }
+
+    .match-previous-option input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #ff8200;
+      cursor: pointer;
+    }
+
+    .match-previous-option label {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .match-previous-option small {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      margin-left: auto;
+    }
+
+    /* Add Section Button */
+    .add-section-container {
+      margin-top: 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .add-section-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: transparent;
+      border: 2px dashed var(--border-color);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .add-section-btn:hover {
+      border-color: #ff8200;
+      color: #ff8200;
+      background: rgba(255, 130, 0, 0.05);
+    }
+
+    .add-section-btn i {
+      font-size: 1rem;
+    }
+
+    /* Section File Preview */
+    .section-file-preview {
+      background: var(--background-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    /* Collapsed Section Styles */
+    .upload-section.collapsed .section-form-fields,
+    .upload-section.collapsed .section-upload-area {
+      display: none !important;
+    }
+
+    .upload-section.collapsed .section-file-preview {
+      margin-top: 0;
+    }
+
+    .section-expand-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px dashed var(--border-color);
+      background: var(--background-secondary);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-left: 8px;
+    }
+
+    .upload-section.collapsed .section-expand-btn {
+      display: flex;
+    }
+
+    .section-expand-btn:hover {
+      border-color: #ff8200;
+      color: #ff8200;
+      background: rgba(255, 130, 0, 0.05);
+    }
+
+    .section-file-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .section-file-header h5 {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .section-collapsed-summary {
+      display: none;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .upload-section.collapsed .section-collapsed-summary {
+      display: block;
+    }
+
+    .section-file-preview h5 {
+      margin: 0 0 10px 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .section-file-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .section-file-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      background: var(--background-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      font-size: 0.8rem;
+      color: var(--text-primary);
+    }
+
+    .section-file-chip i {
+      color: #ff8200;
+    }
+
+    .section-file-chip .remove-file {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0;
+      font-size: 0.75rem;
+      margin-left: 4px;
+      transition: color 0.2s ease;
+    }
+
+    .section-file-chip .remove-file:hover {
+      color: #f44336;
+    }
+
+    .section-file-chip .file-name-input {
+      border: none;
+      background: transparent;
+      font-size: 0.8rem;
+      color: var(--text-primary);
+      font-family: inherit;
+      width: auto;
+      min-width: 80px;
+      max-width: 200px;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .section-file-chip .file-name-input:hover {
+      background: var(--background-primary);
+    }
+
+    .section-file-chip .file-name-input:focus {
+      background: var(--background-primary);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(255, 130, 0, 0.2);
+    }
+
+    .section-file-chip .file-extension {
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+    }
+
+    /* Drag handle for file reordering */
+    .section-file-chip .drag-handle {
+      cursor: grab;
+      color: var(--text-secondary);
+      padding: 0 4px;
+      opacity: 0.5;
+      transition: opacity 0.2s ease;
+    }
+
+    .section-file-chip:hover .drag-handle {
+      opacity: 1;
+    }
+
+    .section-file-chip .drag-handle:active {
+      cursor: grabbing;
+    }
+
+    /* Dragging states */
+    .section-file-chip.dragging {
+      opacity: 0.5;
+      background: rgba(255, 130, 0, 0.1);
+      border-color: #ff8200;
+    }
+
+    .section-file-chip.drag-over {
+      border-color: #ff8200;
+      box-shadow: 0 0 0 2px rgba(255, 130, 0, 0.2);
+    }
+
+    .section-file-list {
+      min-height: 40px;
+    }
+
+    .section-file-list.drag-active {
+      background: rgba(255, 130, 0, 0.05);
+      border-radius: 8px;
+      padding: 8px;
+      margin: -8px;
+    }
+
+    /* Priority number input */
+    .section-file-chip .priority-input {
+      width: 36px;
+      height: 24px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: var(--background-primary);
+      color: var(--text-primary);
+      font-size: 0.75rem;
+      font-family: inherit;
+      padding: 0;
+      margin-left: auto;
+      margin-right: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .section-file-chip .priority-input:focus {
+      outline: none;
+      border-color: #ff8200;
+      box-shadow: 0 0 0 2px rgba(255, 130, 0, 0.2);
+    }
+
+    .section-file-chip .priority-input::-webkit-inner-spin-button,
+    .section-file-chip .priority-input::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .section-file-chip .priority-input {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    /* Sort by priority button */
+    .sort-by-priority-btn {
+      background: transparent;
+      border: 1px dashed var(--border-color);
+      color: var(--text-secondary);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .sort-by-priority-btn:hover {
+      border-color: #ff8200;
+      color: #ff8200;
+      background: rgba(255, 130, 0, 0.05);
+    }
+
+    /* JSON Editor Styles */
+    .json-editor-panel {
+      display: none;
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 50%;
+      max-width: 700px;
+      height: 100vh;
+      background: #ffffff;
+      background: var(--background-primary, #ffffff);
+      border-left: 1px solid var(--border-color, #e0e0e0);
+      box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      flex-direction: column;
+    }
+
+    [data-theme="dark"] .json-editor-panel,
+    .dark-mode .json-editor-panel {
+      background: #1a1a2e;
+      background: var(--background-primary, #1a1a2e);
+      border-left-color: var(--border-color, #333);
+    }
+
+    .json-editor-panel.open {
+      display: flex;
+    }
+
+    .json-editor-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--background-secondary);
+    }
+
+    .json-editor-header h4 {
+      margin: 0;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .json-editor-header h4 i {
+      color: #ff8200;
+    }
+
+    .json-editor-close {
+      background: transparent;
+      border: none;
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .json-editor-close:hover {
+      background: var(--background-primary);
+      color: var(--text-primary);
+    }
+
+    .json-editor-toolbar {
+      display: flex;
+      gap: 8px;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--background-secondary);
+    }
+
+    .json-editor-toolbar button {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: var(--background-primary);
+      color: var(--text-primary);
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .json-editor-toolbar button:hover {
+      border-color: #ff8200;
+      color: #ff8200;
+    }
+
+    .json-editor-toolbar button.primary {
+      background: linear-gradient(135deg, #ff8200, #ff6b00);
+      border: none;
+      color: white;
+    }
+
+    .json-editor-toolbar button.primary:hover {
+      background: linear-gradient(135deg, #ff6b00, #ff5500);
+    }
+
+    .json-editor-toolbar button.primary:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .json-editor-content {
+      flex: 1;
+      padding: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .json-editor-textarea {
+      flex: 1;
+      width: 100%;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      padding: 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--background-secondary);
+      color: var(--text-primary);
+      resize: none;
+      tab-size: 2;
+    }
+
+    .json-editor-textarea:focus {
+      outline: none;
+      border-color: #ff8200;
+      box-shadow: 0 0 0 3px rgba(255, 130, 0, 0.1);
+    }
+
+    .json-editor-status {
+      padding: 12px 20px;
+      border-top: 1px solid var(--border-color);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .json-editor-status.error {
+      background: rgba(244, 67, 54, 0.1);
+      color: #f44336;
+    }
+
+    .json-editor-status.success {
+      background: rgba(76, 175, 80, 0.1);
+      color: #4caf50;
+    }
+
+    /* Staged JSON indicator */
+    .staged-json-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      background: rgba(255, 130, 0, 0.15);
+      color: #ff8200;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+
+    .staged-json-count {
+      margin-left: 10px;
+      padding: 4px 10px;
+      background: rgba(255, 130, 0, 0.15);
+      color: #ff8200;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    /* File item edit button for JSON */
+    .file-item .edit-json-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      margin-right: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .file-item .edit-json-btn:hover {
+      border-color: #ff8200;
+      color: #ff8200;
+    }
+
+    @media (max-width: 768px) {
+      .json-editor-panel {
+        width: 100%;
+        max-width: none;
+      }
+    }
+
+    /* Queue Progress Styles */
+    .queue-progress-container {
+      margin-top: 20px;
+      background: var(--background-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .queue-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .queue-header h4 {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .queue-header h4 i {
+      color: #ff8200;
+    }
+
+    .queue-stats {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .queue-items {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .queue-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      background: var(--background-primary);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .queue-item-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .queue-item-icon.pending {
+      background: rgba(255, 180, 0, 0.1);
+      color: #ffb400;
+    }
+
+    .queue-item-icon.uploading {
+      background: rgba(33, 150, 243, 0.1);
+      color: #2196f3;
+    }
+
+    .queue-item-icon.success {
+      background: rgba(76, 175, 80, 0.1);
+      color: #4caf50;
+    }
+
+    .queue-item-icon.error {
+      background: rgba(244, 67, 54, 0.1);
+      color: #f44336;
+    }
+
+    .queue-item-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .queue-item-name {
+      font-size: 0.85rem;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .queue-item-meta {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .queue-item-status {
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+
+    .queue-item-status.pending {
+      background: rgba(255, 180, 0, 0.1);
+      color: #ffb400;
+    }
+
+    .queue-item-status.uploading {
+      background: rgba(33, 150, 243, 0.1);
+      color: #2196f3;
+    }
+
+    .queue-item-status.success {
+      background: rgba(76, 175, 80, 0.1);
+      color: #4caf50;
+    }
+
+    .queue-item-status.error {
+      background: rgba(244, 67, 54, 0.1);
+      color: #f44336;
+    }
+
+    /* Overall progress bar for queue */
+    .queue-overall-progress {
+      margin-top: 16px;
+    }
+
+    .queue-overall-progress .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    /* Batch commit info */
+    .batch-commit-info {
+      margin-top: 12px;
+      padding: 10px;
+      background: rgba(76, 175, 80, 0.1);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      color: #4caf50;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .batch-commit-info i {
+      font-size: 1rem;
+    }
+
+    /* Upload All Button */
+    .upload-all-container {
+      margin-top: 20px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .upload-all-btn {
+      flex: 1;
+      min-width: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 24px;
+      font-size: 1rem;
+    }
+
+    .clear-all-btn {
+      padding: 14px 20px;
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+
+    .clear-all-btn:hover {
+      border-color: #f44336;
+      color: #f44336;
+      background: rgba(244, 67, 54, 0.05);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .upload-section {
+        padding: 16px;
+      }
+
+      .upload-section-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+      }
+
+      .match-previous-option {
+        flex-wrap: wrap;
+      }
+
+      .match-previous-option small {
+        width: 100%;
+        margin-left: 26px;
+        margin-top: 4px;
+      }
+
+      .upload-all-container {
+        flex-direction: column;
+      }
+
+      .upload-all-btn,
+      .clear-all-btn {
+        width: 100%;
+      }
+    }
+
     /* File Browser */
     .file-browser {
       border: 1px solid var(--border-color);
@@ -2266,101 +3062,156 @@
             <!-- Uploads Sub-tab -->
             <div id="uploads" class="sub-tab-pane active">
               <div class="upload-form-section">
-                <form id="courseUploadForm">
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="semester">Semester</label>
-                      <select id="semester" name="semester" required>
-                        <option value="">Select Semester</option>
-                        <option value="1">Semester 1</option>
-                        <option value="2">Semester 2</option>
-                        <option value="3">Semester 3</option>
-                        <option value="4">Semester 4</option>
-                        <option value="5">Semester 5</option>
-                        <option value="6">Semester 6</option>
-                        <option value="7">Semester 7</option>
-                        <option value="8">Semester 8</option>
-                        <option value="9">Miscelleneous</option>
-                      </select>
+                <!-- Multi-Section Upload Container -->
+                <div class="upload-sections-container" id="uploadSectionsContainer">
+                  <!-- First Upload Section (Template - will be cloned for new sections) -->
+                  <div class="upload-section" data-section-id="0">
+                    <div class="upload-section-header">
+                      <span class="upload-section-title">
+                        <i class="fas fa-layer-group"></i>
+                        Section 1
+                      </span>
+                      <button type="button" class="remove-section-btn" onclick="removeUploadSection(0)">
+                        <i class="fas fa-times"></i> Remove
+                      </button>
                     </div>
-                    <div class="form-group">
-                      <label for="subject">Subject</label>
-                      <select id="subject" name="subject" required disabled>
-                        <option value="">Select Semester First</option>
-                      </select>
-                      <input type="text" id="customSubject" placeholder="Enter new subject name"
-                        style="display: none; margin-top: 8px;" class="form-control">
+
+                    <!-- Collapsible form fields -->
+                    <div class="section-form-fields">
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label>Semester</label>
+                          <select class="section-semester" data-section="0" required>
+                            <option value="">Select Semester</option>
+                            <option value="1">Semester 1</option>
+                            <option value="2">Semester 2</option>
+                            <option value="3">Semester 3</option>
+                            <option value="4">Semester 4</option>
+                            <option value="5">Semester 5</option>
+                            <option value="6">Semester 6</option>
+                            <option value="7">Semester 7</option>
+                            <option value="8">Semester 8</option>
+                            <option value="9">Miscellaneous</option>
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <label>Subject</label>
+                          <select class="section-subject" data-section="0" required disabled>
+                            <option value="">Select Semester First</option>
+                          </select>
+                          <input type="text" class="section-custom-subject form-control" data-section="0"
+                            placeholder="Enter new subject name" style="display: none; margin-top: 8px;">
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label>Category</label>
+                        <select class="section-category" data-section="0" required>
+                          <option value="">Select Category</option>
+                          <option value="Syllabus">Syllabus</option>
+                          <option value="Chapters">Chapters</option>
+                          <option value="Presentations">Presentations</option>
+                          <option value="Assignments">Assignments</option>
+                          <option value="Question Banks">Question Banks</option>
+                          <option value="Lab">Lab</option>
+                          <option value="Previous Year Papers">Previous Year Papers</option>
+                          <option value="Reference Books">Reference Books</option>
+                          <option value="Lecture Notes">Lecture Notes</option>
+                          <option value="Handwritten Notes">Handwritten Notes</option>
+                          <option value="NPTEL Book">NPTEL Book</option>
+                          <option value="NPTEL Assignment with Solutions">NPTEL Assignment with Solutions</option>
+                          <option value="NPTEL Weekly Materials">NPTEL Weekly Materials</option>
+                          <option value="Other">Other</option>
+                        </select>
+                        <input type="text" class="section-custom-category form-control" data-section="0"
+                          placeholder="Enter new category name" style="display: none; margin-top: 8px;">
+                      </div>
+                    </div>
+
+                    <!-- File Upload Area for this section -->
+                    <div class="upload-area section-upload-area" data-section="0">
+                      <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: var(--text-secondary);"></i>
+                      </div>
+                      <div class="upload-text">
+                        <h4>Drop files here or click to upload</h4>
+                        <p>Supports only PDF Format files</p>
+                      </div>
+                      <input type="file" class="section-file-input" data-section="0" multiple accept=".pdf"
+                        style="display: none;">
+                    </div>
+
+                    <!-- File Preview for this section -->
+                    <div class="section-file-preview" data-section="0" style="display: none;">
+                      <div class="section-collapsed-summary"></div>
+                      <div class="section-file-header">
+                        <h5>Selected Files</h5>
+                        <button type="button" class="section-expand-btn" onclick="expandUploadSection(0)"
+                          title="Add more files">
+                          <i class="fas fa-plus"></i>
+                        </button>
+                      </div>
+                      <div class="section-file-list"></div>
                     </div>
                   </div>
+                </div>
 
+                <!-- Add Section Button -->
+                <div class="add-section-container">
+                  <button type="button" class="add-section-btn" id="addSectionBtn">
+                    <i class="fas fa-plus"></i> Add Another Section
+                  </button>
+                </div>
+
+                <!-- Global Upload Options -->
+                <div class="upload-options" id="globalUploadOptions" style="display: none;">
                   <div class="form-group">
-                    <label for="category">Category</label>
-                    <select id="category" name="category" required>
-                      <option value="">Select Category</option>
-                      <option value="Chapters">Chapters</option>
-                      <option value="Presentations">Presentations</option>
-                      <option value="Assignments">Assignments</option>
-                      <option value="Question Banks">Question Banks</option>
-                      <option value="Lab">Lab</option>
-                      <option value="Previous Year Papers">Previous Year Papers</option>
-                      <option value="Reference Books">Reference Books</option>
-                      <option value="Lecture Notes">Lecture Notes</option>
-                      <option value="Handwritten Notes">Handwritten Notes</option>
-                      <option value="NPTEL Book">NPTEL Book</option>
-                      <option value="NPTEL Assignment with Solutions">NPTEL Assignment with Solutions</option>
-                      <option value="NPTEL Weekly Materials">NPTEL Weekly Materials</option>
-                      <option value="Other">Other</option>
-                    </select>
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="autoPushNotify" checked>
+                      <span class="checkmark"></span>
+                      Auto Push Notification
+                    </label>
+                    <small>Automatically create a notification when materials are uploaded</small>
                   </div>
 
-                  <!-- File Upload Area -->
-                  <div class="upload-area" id="courseUploadArea">
-                    <div class="upload-icon">
-                      <!-- <i class="fas fa-cloud-upload-alt"></i> -->
-                      <img src="/assets/img/upload.png"
-                        style="width: 150px; height: 150px; pointer-events: none;user-select: none; -webkit-user-drag: none; -webkit-touch-callout: none;"
-                        draggable="false">
-                    </div>
-                    <div class="upload-text">
-                      <h4>Drop files here or click to upload</h4>
-                      <p>Supports only PDF Format files</p>
-                      <small style="color: #666; display: block; margin-top: 8px;">
-                        <i class="fas fa-info-circle"></i>Total Upload Batch Size must Not exceed 6MB due to vercel
-                        Functions Limitations.
-                      </small>
-                    </div>
-                    <input type="file" id="courseFileInput" multiple accept=".pdf">
-                  </div>
+                  <small style="color: #666; display: block; margin: 12px 0;">
+                    <i class="fas fa-info-circle"></i> Files will be automatically batched to stay under 4MB per batch
+                    due to Vercel Functions limitations. All batches will be combined into a single commit.
+                  </small>
 
-                  <!-- File Preview Cards -->
-                  <div class="file-preview-container" id="filePreviewContainer" style="display: none;">
-                    <h4>Selected Files</h4>
-                    <div class="file-preview-grid" id="filePreviewGrid">
-                      <!-- File preview cards will be inserted here -->
-                    </div>
-                  </div>
-
-                  <!-- Upload Options -->
-                  <div class="upload-options" id="uploadOptions" style="display: none;">
-                    <div class="form-group">
-                      <label class="checkbox-label">
-                        <input type="checkbox" id="autoPushNotify" checked>
-                        <span class="checkmark"></span>
-                        Auto Push Notification
-                      </label>
-                      <small>Automatically create a notification when materials are uploaded</small>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary" id="uploadCourseFiles">
-                      <i class="fas fa-upload"></i> Upload Materials
+                  <div class="upload-all-container">
+                    <button type="button" class="btn btn-primary upload-all-btn" id="uploadAllBtn">
+                      <i class="fas fa-upload"></i> Upload All Sections
+                    </button>
+                    <button type="button" class="btn clear-all-btn" id="clearAllBtn">
+                      <i class="fas fa-trash"></i> Clear All
                     </button>
                   </div>
-                </form>
+                </div>
 
-                <!-- Upload Progress -->
-                <div class="upload-progress" id="courseUploadProgress" style="display: none;">
-                  <div class="progress-bar" id="courseProgressBar"></div>
-                  <span class="progress-text" id="courseProgressText">0%</span>
+                <!-- Queue Progress Display -->
+                <div class="queue-progress-container" id="queueProgress" style="display: none;">
+                  <div class="queue-header">
+                    <h4><i class="fas fa-tasks"></i> Upload Queue</h4>
+                    <span class="queue-stats" id="queueStats">0 / 0 batches</span>
+                  </div>
+
+                  <div class="queue-items" id="queueItems">
+                    <!-- Queue items will be dynamically added here -->
+                  </div>
+
+                  <div class="queue-overall-progress">
+                    <div class="progress-label">
+                      <span>Overall Progress</span>
+                      <span id="queueProgressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar" id="queueProgressBar"></div>
+                  </div>
+
+                  <div class="batch-commit-info" id="batchCommitInfo" style="display: none;">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="commitMessage">All files uploaded in a single commit!</span>
+                  </div>
                 </div>
               </div>
             </div> <!-- File Management Sub-tab -->
@@ -3043,6 +3894,35 @@
       </div>
     </div>
   </div>
+
+  <!-- JSON Editor Panel -->
+  <div class="json-editor-panel" id="jsonEditorPanel">
+    <div class="json-editor-header">
+      <h4><i class="fas fa-code"></i> <span id="jsonEditorFileName">file.json</span></h4>
+      <button class="json-editor-close" onclick="closeJsonEditor()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="json-editor-toolbar">
+      <button onclick="formatJson()">
+        <i class="fas fa-indent"></i> Format
+      </button>
+      <button onclick="resetJsonEditor()">
+        <i class="fas fa-undo"></i> Reset
+      </button>
+      <button class="primary" id="stageJsonBtn" onclick="stageJsonChanges()">
+        <i class="fas fa-layer-group"></i> Stage Changes
+      </button>
+    </div>
+    <div class="json-editor-content">
+      <textarea class="json-editor-textarea" id="jsonEditorTextarea" spellcheck="false"></textarea>
+    </div>
+    <div class="json-editor-status" id="jsonEditorStatus">
+      <span id="jsonEditorStatusText">Ready</span>
+      <span id="jsonEditorLineInfo"></span>
+    </div>
+  </div>
+
 </body>
 
 </html>

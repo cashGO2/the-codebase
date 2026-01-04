@@ -1153,15 +1153,92 @@ document.addEventListener('DOMContentLoaded', loadInsightroomPosts);
 // SMART RECOMMENDATION SYSTEM
 // ================================================
 
+// CDN URL for attachments database
+const ATTACHMENTS_CDN_URL = 'https://cdn-materioa.vercel.app/attachments.json';
+
+// Cache for attachments data
+let allAttachments = [];
+let attachmentsLoaded = false;
+
+// Function to load attachments from CDN
+async function loadAttachmentsData() {
+    if (attachmentsLoaded) return allAttachments;
+
+    try {
+        const response = await fetch(ATTACHMENTS_CDN_URL);
+        if (!response.ok) throw new Error('Failed to fetch attachments');
+        allAttachments = await response.json();
+        attachmentsLoaded = true;
+        console.log('Attachments loaded:', allAttachments.length);
+        return allAttachments;
+    } catch (error) {
+        console.warn('Could not load attachments:', error.message);
+        return [];
+    }
+}
+
+// Function to get icon for file type
+function getFileTypeIcon(extension) {
+    const iconMap = {
+        // Programming languages
+        'java': 'fa-brands fa-java',
+        'py': 'fa-brands fa-python',
+        'js': 'fa-brands fa-js',
+        'html': 'fa-brands fa-html5',
+        'css': 'fa-brands fa-css3-alt',
+        'c': 'fa-solid fa-c',
+        'cpp': 'fa-solid fa-c',
+        'h': 'fa-solid fa-c',
+        'kt': 'fa-solid fa-k',
+        'ts': 'fa-brands fa-js',
+
+        // Documents
+        'txt': 'fa-solid fa-file-lines',
+        'md': 'fa-brands fa-markdown',
+        'docx': 'fa-solid fa-file-word',
+        'doc': 'fa-solid fa-file-word',
+        'pptx': 'fa-solid fa-file-powerpoint',
+        'ppt': 'fa-solid fa-file-powerpoint',
+        'xlsx': 'fa-solid fa-file-excel',
+        'xls': 'fa-solid fa-file-excel',
+        'pdf': 'fa-solid fa-file-pdf',
+
+        // Data formats
+        'json': 'fa-solid fa-brackets-curly',
+        'xml': 'fa-solid fa-code',
+        'sql': 'fa-solid fa-database',
+        'ipynb': 'fa-solid fa-notebook',
+
+        // Default
+        'default': 'fa-solid fa-file-code'
+    };
+
+    return iconMap[extension.toLowerCase()] || iconMap['default'];
+}
+
 // Smart Recommendation System
 document.addEventListener('DOMContentLoaded', function () {
     const semesterSelect = document.getElementById('semesterSelect');
     const subjectSelect = document.getElementById('subjectSelect');
+    const categorySelect = document.getElementById('categorySelect');
+    const topicSelect = document.getElementById('topicSelect');
     const blogCardHeading = document.getElementById('blogCardHeading');
     const defaultPosts = document.getElementById('defaultPosts');
     const recommendedPosts = document.getElementById('recommendedPosts');
     const noPostsMessage = document.getElementById('noPostsMessage');
     const allPostsDataElement = document.getElementById('allPostsData');
+    const attachmentsCard = document.getElementById('attachmentsCard');
+    const attachmentsPillsContainer = document.getElementById('attachmentsPillsContainer');
+    const attachmentsEmpty = document.getElementById('attachmentsEmpty');
+
+    // IMMEDIATE CHECK: Fix flicker by setting heading immediately if selection exists
+    // (e.g. browser restored selection or pre-selected option)
+    const initialSem = semesterSelect?.value;
+    const initialSub = subjectSelect?.value;
+    if ((initialSem && initialSem.trim() !== "") || (initialSub && initialSub.trim() !== "")) {
+        if (blogCardHeading) blogCardHeading.innerHTML = '<i class="fa-solid fa-book-sparkles"></i> Smart Recommendations';
+        if (defaultPosts) defaultPosts.style.setProperty('display', 'none', 'important');
+    }
 
     // Parse all posts data - will be populated by loadInsightroomPosts
     let allPosts = [];
@@ -1181,7 +1258,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // Re-parse when InsightRoom posts are loaded
     window.addEventListener('insightroomPostsLoaded', function (e) {
         parsePostsData();
+        // Trigger update in case selections are already made
+        updateSmartRecommendations();
     });
+
+    // Load attachments data proactively
+    loadAttachmentsData();
 
     // Check authentication and hide private posts if not authenticated
     checkAuthAndFilterPosts();
@@ -1316,17 +1398,128 @@ document.addEventListener('DOMContentLoaded', function () {
         `;
     }
 
-    // Function to update blog recommendations
-    function updateBlogRecommendations() {
-        const selectedSemester = semesterSelect.value;
-        const selectedSubject = subjectSelect.value;
+    // Function to create attachment pill HTML
+    function createAttachmentPillHTML(attachment) {
+        const extension = attachment.type || attachment.path?.split('.').pop() || 'file';
+        const displayName = attachment.name || attachment.path?.split('/').pop() || 'Unknown';
+        const iconClass = getFileTypeIcon(extension);
+        const fileUrl = `https://cdn-materioa.vercel.app/${attachment.path}`;
+
+        return `
+            <a href="${fileUrl}" 
+               class="attachment-pill" 
+               data-type="${extension.toLowerCase()}"
+               target="_blank"
+               title="${displayName}"
+               rel="noopener noreferrer">
+                <i class="${iconClass} attachment-pill-icon"></i>
+                <span class="attachment-pill-name">${displayName}</span>
+            </a>
+        `;
+    }
+
+    // Function to filter attachments based on current selection
+    function filterAttachments(attachments, semester, subject, category, topic) {
+        if (!attachments || attachments.length === 0) return [];
+
+        return attachments.filter(att => {
+            // Normalize all values for comparison
+            const normalize = (val) => val ? String(val).toLowerCase().trim() : '';
+
+            const attSemester = normalize(att.semester);
+            const attSubject = normalize(att.subject);
+            const attCategory = normalize(att.category);
+            const attTopic = normalize(att.topic);
+
+            const selSemester = normalize(semester);
+            const selSubject = normalize(subject);
+            const selCategory = normalize(category);
+            const selTopic = normalize(topic);
+
+            // Match logic: attachment matches if it matches ANY of the selected criteria
+            // Priority: topic > category > subject > semester
+            // If more specific selection is made, use that; otherwise fall back to broader match
+
+            // If topic is selected, match on topic (most specific)
+            if (selTopic && attTopic === selTopic) return true;
+
+            // If category is selected, match on category
+            if (selCategory && attCategory === selCategory) return true;
+
+            // If subject is selected, match on subject
+            if (selSubject && attSubject === selSubject) return true;
+
+            // If only semester selected, match on semester
+            if (selSemester && attSemester === selSemester) return true;
+
+            return false;
+        });
+    }
+
+    // Function to update attachments card
+    async function updateAttachmentsCard() {
+        if (!attachmentsCard || !attachmentsPillsContainer) return;
+
+        const selectedSemester = semesterSelect?.value || '';
+        const selectedSubject = subjectSelect?.value || '';
+        const selectedCategory = categorySelect?.value || '';
+        const selectedTopic = topicSelect?.value || '';
+
+        // Only show if at least semester or subject is selected
+        if (!selectedSemester && !selectedSubject) {
+            attachmentsCard.style.display = 'none';
+            return;
+        }
+
+        // Load attachments if not already loaded
+        const attachments = await loadAttachmentsData();
+
+        // Filter attachments based on current selection
+        const filteredAttachments = filterAttachments(
+            attachments,
+            selectedSemester,
+            selectedSubject,
+            selectedCategory,
+            selectedTopic
+        );
+
+        if (filteredAttachments.length > 0) {
+            attachmentsCard.style.display = 'flex';
+            attachmentsPillsContainer.style.display = 'flex';
+            if (attachmentsEmpty) attachmentsEmpty.style.display = 'none';
+
+            // Render pills
+            attachmentsPillsContainer.innerHTML = filteredAttachments
+                .slice(0, 15) // Limit to 15 attachments to prevent overflow
+                .map(att => createAttachmentPillHTML(att))
+                .join('');
+        } else {
+            // Hide card entirely if no attachments found
+            attachmentsCard.style.display = 'none';
+        }
+    }
+
+    // Main function to update smart recommendations (posts + attachments)
+    async function updateSmartRecommendations() {
+        const selectedSemester = semesterSelect?.value || '';
+        const selectedSubject = subjectSelect?.value || '';
+        const selectedCategory = categorySelect?.value || '';
+        const selectedTopic = topicSelect?.value || '';
+
+        // Check if any selection is made
+        const hasSelection = (selectedSemester && selectedSemester.trim() !== "") ||
+            (selectedSubject && selectedSubject.trim() !== "");
 
         // If no semester or subject selected, show default posts
-        if (!selectedSemester || !selectedSubject) {
-            blogCardHeading.textContent = 'Latest from the Insightroom';
-            defaultPosts.style.removeProperty('display');
-            recommendedPosts.style.setProperty('display', 'none', 'important');
-            noPostsMessage.style.display = 'none';
+        if (!hasSelection) {
+            if (blogCardHeading) {
+                // Restore original heading with icon
+                blogCardHeading.innerHTML = '<i class="fa-solid fa-sparkles" style="color: #ff8200; margin-right: 8px;"></i> Latest from the Insightroom';
+            }
+            if (defaultPosts) defaultPosts.style.removeProperty('display');
+            if (recommendedPosts) recommendedPosts.style.setProperty('display', 'none', 'important');
+            if (noPostsMessage) noPostsMessage.style.display = 'none';
+            if (attachmentsCard) attachmentsCard.style.display = 'none';
             return;
         }
 
@@ -1342,60 +1535,129 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Handle semester matching (can be string or array)
             let semesterMatch = false;
-            if (Array.isArray(post.semester)) {
-                semesterMatch = post.semester.some(sem => String(sem).toLowerCase().trim() === selectedSem);
-            } else if (post.semester) {
-                semesterMatch = String(post.semester).toLowerCase().trim() === selectedSem;
+            if (selectedSem) {
+                if (Array.isArray(post.semester)) {
+                    semesterMatch = post.semester.some(sem => String(sem).toLowerCase().trim() === selectedSem);
+                } else if (post.semester) {
+                    semesterMatch = String(post.semester).toLowerCase().trim() === selectedSem;
+                }
             }
 
             // Handle subject matching (can be string or array)
             let subjectMatch = false;
-            if (Array.isArray(post.subject)) {
-                subjectMatch = post.subject.some(sub => String(sub).toLowerCase().trim() === selectedSub);
-            } else if (post.subject) {
-                subjectMatch = String(post.subject).toLowerCase().trim() === selectedSub;
+            if (selectedSub) {
+                if (Array.isArray(post.subject)) {
+                    subjectMatch = post.subject.some(sub => String(sub).toLowerCase().trim() === selectedSub);
+                } else if (post.subject) {
+                    subjectMatch = String(post.subject).toLowerCase().trim() === selectedSub;
+                }
             }
 
-            return semesterMatch && subjectMatch;
+            // Match if either both match, or if only one is selected and it matches
+            if (selectedSem && selectedSub) {
+                return semesterMatch && subjectMatch;
+            } else if (selectedSem) {
+                return semesterMatch;
+            } else if (selectedSub) {
+                return subjectMatch;
+            }
+            return false;
         });
 
-        // Update heading and content
-        if (filteredPosts.length > 0) {
-            blogCardHeading.innerHTML = '<i class="fa-solid fa-book-sparkles"></i> Smart Recommendations';
-            defaultPosts.style.setProperty('display', 'none', 'important');
-            noPostsMessage.style.display = 'none';
-            recommendedPosts.style.removeProperty('display');
+        // Update attachments card
+        await updateAttachmentsCard();
 
-            // Limit to 5 posts and create HTML
-            const postsToShow = filteredPosts.slice(0, 5);
-            recommendedPosts.innerHTML = postsToShow
-                .map((post, index) => createPostHTML(post, index + 1))
-                .join('');
+        // Get reference to attachments card to preserve it
+        const attachmentsCardHTML = attachmentsCard ? attachmentsCard.outerHTML : '';
 
-            // Apply current theme to newly created recommended posts
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            postsToShow.forEach((post, index) => {
-                const postElement = document.getElementById(`recommendedPost${index + 1}`);
-                if (postElement) {
-                    if (isDarkMode) {
-                        postElement.classList.add('dark-mode');
-                    } else {
-                        postElement.classList.remove('dark-mode');
-                    }
+        if (filteredPosts.length > 0 || (attachmentsCard && attachmentsCard.style.display !== 'none')) {
+            if (blogCardHeading) blogCardHeading.innerHTML = '<i class="fa-solid fa-book-sparkles"></i> Smart Recommendations';
+
+            // Hide default posts
+            if (defaultPosts) {
+                defaultPosts.style.setProperty('display', 'none', 'important');
+            }
+            if (noPostsMessage) noPostsMessage.style.display = 'none';
+
+            // Show recommended posts with flex layout
+            if (recommendedPosts) {
+                recommendedPosts.style.removeProperty('display');
+                if (getComputedStyle(recommendedPosts).display === 'none') {
+                    recommendedPosts.style.display = 'flex';
                 }
-            });
+
+                // Limit to 5 posts and create HTML
+                const postsToShow = filteredPosts.slice(0, 5);
+                const postsHTML = postsToShow
+                    .map((post, index) => createPostHTML(post, index + 1))
+                    .join('');
+
+                // NON-DESTRUCTIVE UPDATE:
+                // 1. Remove existing post links (but keep Attachments Card)
+                const existingPostLinks = recommendedPosts.querySelectorAll('.insight-card-link');
+                existingPostLinks.forEach(el => el.remove());
+
+                // 2. Insert new posts after attachments card (at the end of container)
+                recommendedPosts.insertAdjacentHTML('beforeend', postsHTML);
+
+                // Apply current theme to newly created recommended posts
+                const isDarkMode = document.body.classList.contains('dark-mode');
+                postsToShow.forEach((post, index) => {
+                    const postElement = document.getElementById(`recommendedPost${index + 1}`);
+                    if (postElement) {
+                        if (isDarkMode) {
+                            postElement.classList.add('dark-mode');
+                        } else {
+                            postElement.classList.remove('dark-mode');
+                        }
+                    }
+                });
+            }
         } else {
-            // No posts found for selected criteria
-            blogCardHeading.innerHTML = '<i class="fa-solid fa-book-sparkles"></i> Smart Recommendations';
-            defaultPosts.style.setProperty('display', 'none', 'important');
-            recommendedPosts.style.setProperty('display', 'none', 'important');
-            noPostsMessage.style.display = 'block';
+            // No posts found for selected criteria - but show attachments if available
+            if (blogCardHeading) blogCardHeading.innerHTML = '<i class="fa-solid fa-book-sparkles"></i> Smart Recommendations';
+
+            // Hide default posts
+            if (defaultPosts) {
+                defaultPosts.style.setProperty('display', 'none', 'important');
+            }
+
+            if (attachmentsCard && attachmentsCard.style.display !== 'none') {
+                // Show only attachments card
+                if (recommendedPosts) {
+                    recommendedPosts.style.removeProperty('display');
+                    if (getComputedStyle(recommendedPosts).display === 'none') {
+                        recommendedPosts.style.display = 'flex';
+                    }
+                    // Clear posts
+                    const existingPostLinks = recommendedPosts.querySelectorAll('.insight-card-link');
+                    existingPostLinks.forEach(el => el.remove());
+                }
+                if (noPostsMessage) noPostsMessage.style.display = 'none';
+            } else {
+                // No posts and no attachments
+                if (recommendedPosts) recommendedPosts.style.setProperty('display', 'none', 'important');
+                if (noPostsMessage) noPostsMessage.style.display = 'block';
+            }
         }
     }
 
-    // Add event listeners to dropdowns
-    semesterSelect.addEventListener('change', updateBlogRecommendations);
-    subjectSelect.addEventListener('change', updateBlogRecommendations);
+    // Add event listeners to all dropdowns for consistent triggering
+    if (semesterSelect) {
+        semesterSelect.addEventListener('change', updateSmartRecommendations);
+    }
+    if (subjectSelect) {
+        subjectSelect.addEventListener('change', updateSmartRecommendations);
+    }
+    if (categorySelect) {
+        categorySelect.addEventListener('change', updateSmartRecommendations);
+    }
+    if (topicSelect) {
+        topicSelect.addEventListener('change', updateSmartRecommendations);
+    }
+
+    // Expose function globally for external triggers
+    window.updateSmartRecommendations = updateSmartRecommendations;
 });
 
 // ================================================

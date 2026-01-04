@@ -50,10 +50,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Add load event listener to setup overlay modes
             pdfIframe.addEventListener('load', function () {
-                // Haptic feedback - PDF loaded
-                if (window.MaterioHaptics) {
-                    window.MaterioHaptics.loadingComplete();
-                }
+                // Note: Haptic feedback for PDF loaded is handled via pdfLoaded message event
+                // to ensure it syncs with actual PDF document loading, not just iframe load
 
                 // Quick setup for PDF.js viewer
                 setTimeout(() => {
@@ -112,11 +110,19 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Track progress for haptic feedback
+    let lastProgressPercent = 0;
+    let pdfLoadingActive = false;
+
     // Enhanced PDF loading function with error handling - optimized for speed
     async function loadPdfWithCache(pdfUrl) {
-        // Haptic feedback - start continuous network loading vibration (zz zz zz)
+        // Reset progress tracking for new PDF load
+        lastProgressPercent = 0;
+        pdfLoadingActive = true;
+
+        // Haptic feedback - initial tap to confirm action started
         if (window.MaterioHaptics) {
-            window.MaterioHaptics.startNetworkLoading();
+            window.MaterioHaptics.vibrate('medium');
         }
 
         // Check offline status first
@@ -126,10 +132,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 window.MaterioHaptics.vibrate('error');
             }
             document.getElementById('popupContent').innerHTML =
-                `<div style="padding:20px;text-align:center;">
-<i class="fa-solid fa-rotate-exclamation" style="font-size: 72px; color:#ff8400; margin-top:220px;"></i>
-<p class="popup-message">Error checking file!</p>
-<p class="popup-errcode">Error: OFFLINE</p>
+                `<div style="display: flex; align-items: center; justify-content: center; height: 87vh; text-align: center; flex-direction: column; padding: 20px;">
+<i class="fa-solid fa-wifi-slash" style="font-size: 72px; color:#ff8400;"></i>
+<p class="popup-message" style="font-weight:600;">You're offline</p>
+<p class="popup-errcode">status: no internet connection</p>
 </div>`;
             popup.classList.remove('closing');
             popup.style.display = 'block';
@@ -147,19 +153,57 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 const headResponse = await fetch(pdfUrl, { method: 'HEAD' });
                 if (!headResponse.ok) {
-                    document.getElementById('popupContent').innerHTML =
-                        `<div style="display: flex; align-items: center; justify-content: center; height: 87vh; text-align: center; flex-direction: column; padding: 20px;">
-    <i class="fa-solid fa-triangle-exclamation" style="font-size: 72px; color:#ff8400;"></i>
-    <p class="popup-message" style="font-weight:600;">Requested resource could not be found!</p>
-    <p class="popup-errcode">status: ${headResponse.status}</p>
-    <a class="btn primary-btn" target="_blank" rel="noreferrer"
-        href="https://github.com/Materioa/materio/issues/new?template=contribute.yml">
-        <i class="fa-regular fa-circle-plus" style="margin-right:10px;"></i>Contribute
-    </a>
+                    // Get human-readable status text
+                    const getStatusText = (status) => {
+                        const statusCodes = {
+                            400: 'something went off track',
+                            401: 'you need to sign in',
+                            403: 'this area is restricted',
+                            404: 'we could not find that',
+                            405: 'that does not work here',
+                            408: 'this took too long',
+                            410: 'this has been removed',
+                            429: 'slow down a bit',
+                            500: 'we hit an internal issue',
+                            502: 'upstream had a hiccup',
+                            503: 'service is resting briefly',
+                            504: 'the server did not respond in time'
+                        };
+                        return statusCodes[status] || 'something went wrong';
+                    };
+
+                    // Server/temporary errors - show refresh button
+                    const serverErrors = [400, 408, 429, 500, 502, 503, 504];
+                    const isServerError = serverErrors.includes(headResponse.status);
+
+                    if (isServerError) {
+                        document.getElementById('popupContent').innerHTML =
+                            `<div style="display: flex; align-items: center; justify-content: center; height: 87vh; text-align: center; flex-direction: column; padding: 20px;">
+    <i class="fa-solid fa-server" style="font-size: 72px; color:#ff8400;"></i>
+    <p class="popup-message" style="font-weight:600;">Something went wrong</p>
+    <p class="popup-errcode">status: ${getStatusText(headResponse.status)}</p>
+    <button class="btn primary-btn" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right" style="margin-right:10px;"></i>Refresh
+    </button>
     <p style="font-size:12px; font-weight:600; max-width: 400px; word-wrap: break-word;">
-        If you can't find the material here and you have the appropriate resource, then you can contribute by clicking the button above.
+       or try again later
     </p>
 </div>`;
+                    } else {
+                        // Content errors (401, 403, 404, 410) - show contribute button
+                        document.getElementById('popupContent').innerHTML =
+                            `<div style="display: flex; align-items: center; justify-content: center; height: 87vh; text-align: center; flex-direction: column; padding: 20px;">
+    <i class="fa-solid fa-triangle-exclamation" style="font-size: 72px; color:#ff8400;"></i>
+    <p class="popup-message" style="font-weight:600;">Looks like this one's missing</p>
+    <p class="popup-errcode">status: ${getStatusText(headResponse.status)}</p>
+    <button class="btn primary-btn" onclick="openDynamicForm('contribution', true)">
+        <i class="fa-regular fa-circle-plus" style="margin-right:10px;"></i>Contribute
+    </button>
+    <p style="font-size:12px; font-weight:600; max-width: 400px; word-wrap: break-word;">
+       Contributions help make this space more useful for everyone.\n Lend a hand by contributing it to the library.
+    </p>
+</div>`;
+                    }
                     popup.classList.remove('closing');
                     popup.style.display = 'block';
                     return;
@@ -178,10 +222,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     window.MaterioHaptics.vibrate('error');
                 }
                 document.getElementById('popupContent').innerHTML =
-                    `<div style="padding:20px;text-align:center;">
-<i class="fa-solid fa-rotate-exclamation" style="font-size: 72px; color:#ff8400; margin-top:220px;"></i>
-<p class="popup-message">Error checking file!</p>
-<p class="popup-errcode">Error: ${error.message || 'NETWORK_ERROR'}</p>
+                    `<div style="display: flex; align-items: center; justify-content: center; height: 87vh; text-align: center; flex-direction: column; padding: 20px;">
+<i class="fa-solid fa-cloud-xmark" style="font-size: 72px; color:#ff8400;"></i>
+<p class="popup-message" style="font-weight:600;">Connection failed</p>
+<p class="popup-errcode">status: could not reach the server</p>
 </div>`;
                 popup.classList.remove('closing');
                 popup.style.display = 'block';
@@ -277,33 +321,46 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // PDF.js loading progress event
+        // PDF.js loading progress event - sync haptic with actual network chunks
         if (event.data.type === 'pdfProgress') {
-            // Provide haptic pulse for significant progress
-            if (window.MaterioHaptics && event.data.loaded && event.data.total) {
+            if (window.MaterioHaptics && event.data.loaded && event.data.total && pdfLoadingActive) {
                 const progress = event.data.loaded / event.data.total;
-                // Pulse at 25%, 50%, 75% marks
-                if (progress >= 0.25 && progress < 0.27 ||
-                    progress >= 0.50 && progress < 0.52 ||
-                    progress >= 0.75 && progress < 0.77) {
-                    window.MaterioHaptics.progressPulse();
+                const progressPercent = Math.floor(progress * 100);
+
+                // Vibrate every ~10% progress to simulate "chunks" of data
+                // This creates the "zz zz zz" pattern synced with actual network activity
+                if (progressPercent >= lastProgressPercent + 10) {
+                    // Vary vibration intensity based on progress
+                    // Earlier chunks: shorter zz, later chunks: slightly longer
+                    const vibrationDuration = Math.min(25 + Math.floor(progress * 20), 45);
+                    window.MaterioHaptics.vibrate([vibrationDuration]);
+                    lastProgressPercent = progressPercent;
                 }
             }
         }
 
         // PDF.js document loaded event
         if (event.data.type === 'pdfLoaded' || event.data.type === 'documentloaded') {
-            // Stop network loading vibration and play completion
-            if (window.MaterioHaptics) {
-                window.MaterioHaptics.loadingComplete();
+            // Only trigger completion if we were actively loading
+            if (pdfLoadingActive) {
+                pdfLoadingActive = false;
+                lastProgressPercent = 0;
+
+                // Immediate completion vibration - no delay
+                if (window.MaterioHaptics) {
+                    window.MaterioHaptics.vibrate('loadComplete');
+                }
             }
         }
 
         // PDF.js error event
         if (event.data.type === 'pdfError') {
-            // Stop vibration and play error
+            pdfLoadingActive = false;
+            lastProgressPercent = 0;
+
+            // Stop any ongoing vibration and play error pattern
             if (window.MaterioHaptics) {
-                window.MaterioHaptics.stopNetworkLoading();
+                window.MaterioHaptics.stopVibration();
                 window.MaterioHaptics.vibrate('error');
             }
         }
@@ -531,10 +588,10 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 // PDF not cached and offline - show error
                 document.getElementById('popupContent').innerHTML =
-                    `<div style="padding:20px;text-align:center;">
-<i class="fa-solid fa-wifi-slash" style="font-size: 72px; color:#ff8400; margin-top:220px;"></i>
-<p class="popup-message">This PDF is not available offline</p>
-<p class="popup-errcode">Please connect to internet or bookmark PDFs for offline access</p>
+                    `<div style="display: flex; align-items: center; justify-content: center; height: 87vh; text-align: center; flex-direction: column; padding: 20px;">
+<i class="fa-solid fa-bookmark-slash" style="font-size: 72px; color:#ff8400;"></i>
+<p class="popup-message" style="font-weight:600;">Not saved for offline</p>
+<p class="popup-errcode">status: bookmark PDFs to access them offline</p>
 </div>`;
                 popup.classList.remove('closing');
                 popup.style.display = 'block';

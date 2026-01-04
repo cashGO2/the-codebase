@@ -1209,7 +1209,7 @@ function initMobileSwipeHandling() {
   const MOBILE_BREAKPOINT = 768;
   const DISMISS_THRESHOLD = 100; // pixels to drag before dismiss
 
-  // Get all modal overlays
+  // Get all modal overlays - both existing and new ones
   const overlays = document.querySelectorAll('.promo-modal-overlay');
 
   overlays.forEach(overlay => {
@@ -1221,6 +1221,7 @@ function initMobileSwipeHandling() {
     let currentY = 0;
     let isDragging = false;
     let modalElement = null;
+    let canDismiss = false;
 
     function handleTouchStart(e) {
       // Only on mobile
@@ -1236,11 +1237,15 @@ function initMobileSwipeHandling() {
 
       // Only start drag if touching near top handle area OR modal is scrolled to top
       const isNearTop = touchY < (modalRect.top + handleAreaHeight);
-      const isScrolledToTop = modalElement.scrollTop === 0;
+      const isScrolledToTop = modalElement.scrollTop <= 0;
 
-      if (!isNearTop && !isScrolledToTop) return;
+      // Allow dismissing if near handle area OR scrolled to top
+      canDismiss = isNearTop || isScrolledToTop;
+
+      if (!canDismiss) return;
 
       startY = touchY;
+      currentY = touchY;
       isDragging = true;
 
       modalElement.style.transition = 'none';
@@ -1252,21 +1257,31 @@ function initMobileSwipeHandling() {
       currentY = e.touches[0].clientY;
       const deltaY = currentY - startY;
 
-      // Only allow downward dragging
-      if (deltaY > 0) {
+      // Only allow downward dragging when we can dismiss
+      if (deltaY > 0 && canDismiss) {
         modalElement.style.transform = `translateY(${deltaY}px)`;
 
         // Add opacity fade effect
         const opacity = Math.max(0.3, 1 - (deltaY / 400));
         overlay.style.backgroundColor = `rgba(0, 0, 0, ${0.5 * opacity})`;
 
-        // Prevent scrolling while dragging
+        // Prevent scrolling while dragging down
         e.preventDefault();
+      } else if (deltaY < 0) {
+        // User is scrolling up, cancel the dismiss gesture
+        isDragging = false;
+        canDismiss = false;
+        modalElement.style.transform = '';
       }
     }
 
     function handleTouchEnd(e) {
-      if (!isDragging || !modalElement || window.innerWidth > MOBILE_BREAKPOINT) return;
+      if (!isDragging || !modalElement || window.innerWidth > MOBILE_BREAKPOINT) {
+        // Reset state
+        isDragging = false;
+        canDismiss = false;
+        return;
+      }
 
       const deltaY = currentY - startY;
 
@@ -1274,24 +1289,25 @@ function initMobileSwipeHandling() {
       overlay.style.transition = 'background-color 0.3s ease';
 
       // If dragged down more than threshold, close the modal
-      if (deltaY > DISMISS_THRESHOLD) {
+      if (deltaY > DISMISS_THRESHOLD && canDismiss) {
         modalElement.style.transform = 'translateY(100%)';
         overlay.style.backgroundColor = 'rgba(0, 0, 0, 0)';
 
         setTimeout(() => {
-          // Determine which close function to call
+          // Determine which close function to call - use window scope for production compatibility
           if (overlay.id === 'promoModal') {
-            if (typeof closePromoModal === 'function') {
-              closePromoModal();
+            if (typeof window.closePromoModal === 'function') {
+              window.closePromoModal();
             }
           } else if (overlay.id === 'dynamicFormModal') {
-            if (typeof closeDynamicForm === 'function') {
-              closeDynamicForm();
+            if (typeof window.closeDynamicForm === 'function') {
+              window.closeDynamicForm();
             }
           } else {
             // Generic close - hide overlay
             overlay.style.display = 'none';
             overlay.classList.remove('show');
+            document.body.classList.remove('modal-open');
           }
 
           // Reset transform
@@ -1311,14 +1327,16 @@ function initMobileSwipeHandling() {
       }
 
       isDragging = false;
+      canDismiss = false;
       startY = 0;
       currentY = 0;
     }
 
-    // Add event listeners
+    // Add event listeners with proper passive handling
     overlay.addEventListener('touchstart', handleTouchStart, { passive: true });
     overlay.addEventListener('touchmove', handleTouchMove, { passive: false });
     overlay.addEventListener('touchend', handleTouchEnd, { passive: true });
+    overlay.addEventListener('touchcancel', handleTouchEnd, { passive: true });
   });
 }
 
