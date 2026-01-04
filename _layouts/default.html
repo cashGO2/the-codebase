@@ -6,10 +6,7 @@
     <link rel="stylesheet" href="{{ '/assets/style/notification.css' | relative_url }}">
     <link rel="stylesheet" href="{{ '/assets/style/gestures.css' | relative_url }}">
     <link rel="stylesheet" href="{{ '/assets/style/ota-update.css' | relative_url }}">
-    
-    <!-- {% include fa-icons.html %} -->
 
-    <!-- Inline critical theme detection to prevent FOUC -->
     <script>
         (function () {
             function getCookie(name) {
@@ -45,9 +42,6 @@
         {% include main.html %}
     </main>
 
-
-    <!-- PERFORMANCE OPTIMIZED SCRIPT LOADING -->
-    <!-- Critical scripts loaded immediately -->
     <script src="{{ '/assets/scripts/main.js' | relative_url }}" defer></script>
     <script src="{{ '/assets/scripts/keyboard-shortcuts.js' | relative_url }}" defer></script>
     <script src="{{ '/assets/scripts/theme.js' | relative_url }}" defer></script>
@@ -70,15 +64,7 @@
     <!-- Lazy loader for non-critical scripts -->
     <script src="{{ '/assets/scripts/lazy-loader.js' | relative_url }}" defer></script>
 
-    <!-- Non-critical scripts now loaded lazily via lazy-loader.js:
-         - ga.js (analytics)
-         - gestures.js (mobile only)
-         - promotions.js (delayed)
-         - ux-enhancers.js (delayed)
-         - ota-hugeicons.js (delayed)
-         - local-cdn.js (super users only)
-    -->
-
+    <!-- Additional feature scripts are loaded lazily via lazy-loader.js:-->
     <!-- Webapp - essential for PWA -->
     {% unless site.disable_service_worker %}
     <script src="{{ '/assets/scripts/webapp/pwa.js' | relative_url }}" defer></script>

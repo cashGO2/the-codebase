@@ -155,6 +155,11 @@
       "source": "/status",
       "destination": "https://statuspage.incident.io/materio",
       "permanent": true
+    },
+    {
+      "source": "/room",
+      "destination": "https://insightroom.vercel.app",
+      "permanent": true
     }
   ]
 }

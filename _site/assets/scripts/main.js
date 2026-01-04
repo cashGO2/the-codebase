@@ -1154,7 +1154,8 @@ document.addEventListener('DOMContentLoaded', loadInsightroomPosts);
 // ================================================
 
 // CDN URL for attachments database
-const ATTACHMENTS_CDN_URL = 'https://cdn-materioa.vercel.app/attachments.json';
+const ATTACHMENTS_CDN_URL = 'https://static-materio.vercel.app/attachments.json';
+const ATTACHMENTS_BASE_URL = 'https://static-materio.vercel.app/';
 
 // Cache for attachments data
 let allAttachments = [];
@@ -1231,8 +1232,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const attachmentsPillsContainer = document.getElementById('attachmentsPillsContainer');
     const attachmentsEmpty = document.getElementById('attachmentsEmpty');
 
-    // IMMEDIATE CHECK: Fix flicker by setting heading immediately if selection exists
-    // (e.g. browser restored selection or pre-selected option)
+    // FORCE RESET: Ensure we start with "Latest from Insightroom" on every load
+    // The user requested that it should be "latest... initially".
+    const readingForm = document.getElementById('readingSelectionForm');
+    if (readingForm) {
+        readingForm.reset();
+        // Also manually reset selects to be sure (browser might persist values)
+        if (semesterSelect) semesterSelect.value = "";
+        if (subjectSelect) subjectSelect.value = "";
+        if (categorySelect) categorySelect.value = "";
+        if (topicSelect) topicSelect.value = "";
+    }
+
+    // IMMEDIATE CHECK: Now this will likely be false, but kept for robustness
     const initialSem = semesterSelect?.value;
     const initialSub = subjectSelect?.value;
     if ((initialSem && initialSem.trim() !== "") || (initialSub && initialSub.trim() !== "")) {
@@ -1403,7 +1415,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const extension = attachment.type || attachment.path?.split('.').pop() || 'file';
         const displayName = attachment.name || attachment.path?.split('/').pop() || 'Unknown';
         const iconClass = getFileTypeIcon(extension);
-        const fileUrl = `https://cdn-materioa.vercel.app/${attachment.path}`;
+        const fileUrl = `https://static-materio.vercel.app/${attachment.path}`;
 
         return `
             <a href="${fileUrl}" 
