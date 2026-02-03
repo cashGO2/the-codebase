@@ -44,12 +44,12 @@ document.addEventListener('DOMContentLoaded', function () {
           setTimeout(() => {
             // Check for redirect param in URL
             const urlParams = new URLSearchParams(window.location.search);
-            const redirectUrl = urlParams.get('redirect');
+            const redirectUrl = urlParams.get('callback');
 
             if (redirectUrl) {
               // Append token to redirect URL
               const targetUrl = new URL(redirectUrl);
-              targetUrl.searchParams.set('token', response.token);
+              targetUrl.searchParams.set('handoff', response.handoffCode);
               window.location.href = targetUrl.toString();
             } else {
               redirectToProfile();

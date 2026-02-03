@@ -52,6 +52,75 @@ const generateRecoveryKey = () => {
   return uuidv4().replace(/-/g, '').substring(0, 16).toUpperCase();
 };
 
+// Generate a cryptographically random handoff code
+const generateHandoffCode = () => {
+  const crypto = require('crypto');
+  return crypto.randomBytes(16).toString('hex'); // 32-char hex string
+};
+
+// Store handoff code with JWT and metadata (expires in 60 seconds)
+const storeHandoffCode = async (code, token, userId, userAgent, ip) => {
+  const expiresAt = new Date(Date.now() + 60 * 1000).toISOString(); // 60 seconds
+
+  const { error } = await supabaseAdmin
+    .from('handoff_codes')
+    .insert({
+      code,
+      token,
+      user_id: userId,
+      user_agent: userAgent || null,
+      ip_address: ip || null,
+      expires_at: expiresAt,
+      used: false
+    });
+
+  if (error) {
+    console.error('Failed to store handoff code:', error);
+    return false;
+  }
+  return true;
+};
+
+// Consume (validate and delete) a handoff code - returns the JWT if valid
+const consumeHandoffCode = async (code, userAgent, ip) => {
+  // First, find the code
+  const { data: handoff, error: findError } = await supabaseAdmin
+    .from('handoff_codes')
+    .select('*')
+    .eq('code', code)
+    .eq('used', false)
+    .single();
+
+  if (findError || !handoff) {
+    return { valid: false, error: 'Invalid or expired handoff code' };
+  }
+
+  // Check expiry
+  if (new Date(handoff.expires_at) < new Date()) {
+    // Delete expired code
+    await supabaseAdmin.from('handoff_codes').delete().eq('code', code);
+    return { valid: false, error: 'Handoff code has expired' };
+  }
+
+  // Optional: Validate IP/User-Agent match (can be disabled if too strict)
+  // if (handoff.ip_address && handoff.ip_address !== ip) {
+  //   return { valid: false, error: 'IP address mismatch' };
+  // }
+
+  // Mark as used (or delete it)
+  const { error: updateError } = await supabaseAdmin
+    .from('handoff_codes')
+    .delete()
+    .eq('code', code);
+
+  if (updateError) {
+    console.error('Failed to consume handoff code:', updateError);
+    return { valid: false, error: 'Failed to process handoff' };
+  }
+
+  return { valid: true, token: handoff.token, userId: handoff.user_id };
+};
+
 // Extract token from request headers
 const getTokenFromHeaders = (headers) => {
   const authHeader = headers.authorization || '';
@@ -119,6 +188,9 @@ module.exports = {
   generateToken,
   verifyToken,
   generateRecoveryKey,
+  generateHandoffCode,
+  storeHandoffCode,
+  consumeHandoffCode,
   getTokenFromHeaders,
   corsHeaders,
   handleCorsPreflightRequest,

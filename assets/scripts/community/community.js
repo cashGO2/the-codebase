@@ -1434,7 +1434,7 @@
 
         promptLogin() {
             // Redirect to Materio login
-            window.location.href = '/account?redirect=' + encodeURIComponent(window.location.href);
+            window.location.href = '/account?callback=' + encodeURIComponent(window.location.href);
         },
 
         // Initialize with config

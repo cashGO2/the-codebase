@@ -23,7 +23,7 @@
         const authToken = tokenRow.split('=')[1];
         // Parse URL params specifically for this immediate check
         const urlParams = new URLSearchParams(window.location.search);
-        const redirectUrl = urlParams.get('redirect');
+        const redirectUrl = urlParams.get('callback');
 
         if (redirectUrl) {
           // Check for redirect loop: if referrer matches the redirect target
@@ -39,10 +39,33 @@
             return;
           }
 
-          console.log('Redirecting existing user to:', redirectUrl);
-          targetUrl.searchParams.set('token', authToken);
-          // Use replace to prevent back-button loops
-          window.location.replace(targetUrl.toString());
+          console.log('Creating handoff for existing user...');
+          // For already logged-in users, create a handoff code via API
+          fetch('/api/v2/create-handoff', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${authToken}`
+            }
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (data.handoffCode) {
+                // Redirect with the handoff code
+                targetUrl.searchParams.set('handoff', data.handoffCode);
+                console.log('Redirecting with handoff code to:', targetUrl.toString());
+                window.location.replace(targetUrl.toString());
+              } else {
+                // Fallback: redirect without code (receiving site should check localStorage)
+                console.warn('Could not create handoff code, redirecting anyway');
+                window.location.replace(redirectUrl);
+              }
+            })
+            .catch(error => {
+              console.error('Handoff creation failed:', error);
+              // Fallback redirect
+              window.location.replace(redirectUrl);
+            });
           return; // Stop further execution
         } else {
           // Only redirect to profile if NOT on a redirect loop

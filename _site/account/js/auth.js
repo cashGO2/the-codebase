@@ -94,7 +94,25 @@ async function makeApiRequest(endpoint, method = 'GET', data = null, requiresAut
 
 // Auth Functions
 function isAuthenticated() {
-  return !!localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
+  const localStorageToken = localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
+  const cookieToken = document.cookie.split('; ').find(row => row.startsWith('materio_auth_token='));
+
+  // If localStorage has token but cookie doesn't, clear localStorage (session expired)
+  if (localStorageToken && !cookieToken) {
+    console.log('Cookie missing but localStorage has token - clearing stale token');
+    localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
+    localStorage.removeItem('materio_user');
+    return false;
+  }
+
+  // If cookie has token but localStorage doesn't, sync them
+  if (cookieToken && !localStorageToken) {
+    const token = cookieToken.split('=')[1];
+    localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, token);
+  }
+
+  // Both must have token for user to be authenticated
+  return !!(localStorageToken && cookieToken);
 }
 
 function getAuthToken() {
@@ -166,13 +184,33 @@ document.addEventListener('DOMContentLoaded', function () {
   } else if (nonAuthPages.includes(currentPage) && isAuthenticated()) {
     // Check if there is a redirect param before sending to profile
     const urlParams = new URLSearchParams(window.location.search);
-    const redirectUrl = urlParams.get('redirect');
+    const redirectUrl = urlParams.get('callback');
 
     if (redirectUrl) {
+      // Already logged in - create a handoff code via API
       const token = getAuthToken();
-      const targetUrl = new URL(redirectUrl, window.location.origin);
-      targetUrl.searchParams.set('token', token);
-      window.location.href = targetUrl.toString();
+      fetch('/api/v2/create-handoff', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.handoffCode) {
+            const targetUrl = new URL(redirectUrl, window.location.origin);
+            targetUrl.searchParams.set('handoff', data.handoffCode);
+            window.location.href = targetUrl.toString();
+          } else {
+            // Fallback redirect
+            window.location.href = redirectUrl;
+          }
+        })
+        .catch(() => {
+          // Fallback redirect
+          window.location.href = redirectUrl;
+        });
     } else {
       // Redirect to profile if already logged in but trying to access login pages
       redirectToProfile();
