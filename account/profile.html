@@ -68,6 +68,25 @@
       color: #f44336;
     }
 
+    /* Plus link in profile */
+    .upgrade-link {
+      display: inline-block;
+      margin-left: 10px;
+      padding: 4px 12px;
+      background: rgba(255, 215, 0, 0.15);
+      corner-shape: squircle;
+      border-radius: 20px;
+      color: #FFD700 !important;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none !important;
+      transition: background 0.2s ease;
+    }
+
+    .upgrade-link:hover {
+      background: rgba(255, 215, 0, 0.25);
+    }
+
     /* Action buttons container */
     .action-buttons {
       display: flex;
@@ -113,6 +132,35 @@
       100% {
         transform: rotate(360deg);
       }
+    }
+
+    /* Verified Badges */
+    .verified-badge {
+      margin-left: 8px;
+      font-size: 1.1rem;
+      vertical-align: middle;
+      display: inline-block;
+    }
+
+    .verified-badge.admin {
+      color: #16b1ff;
+    }
+
+    .verified-badge.pro {
+      color: #FFD700;
+      /* Gold */
+      filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.4));
+    }
+
+    .verified-badge.plus {
+      color: #C0C0C0;
+      /* Silver */
+      filter: drop-shadow(0 0 3px rgba(192, 192, 192, 0.3));
+    }
+
+    .expiry-text {
+      font-family: 'Space Mono', monospace;
+      letter-spacing: -0.5px;
     }
 
     /* Google Drive card hover effects */
@@ -2723,7 +2771,8 @@
               <img id="dashboard-profile-image" src="/assets/img/default-avatar.svg" alt="Profile">
             </div>
             <div class="profile-details">
-              <h3 id="dashboard-display-name">User</h3>
+              <h3 id="dashboard-display-name">User <span id="upgrade-plus-container"><a href="/account/upgrade.html"
+                    class="upgrade-link">Upgrade →</a></span></h3>
               <p id="dashboard-username">@username</p>
             </div>
           </div>

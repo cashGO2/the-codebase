@@ -9,26 +9,33 @@
   <link rel="icon" type="image/x-icon" href="/assets/img/room-icon-x.svg" sizes="256x256">
 
   <meta property="og:title" content="About">
-  <meta property="og:description" content="For minds that want more - a lil more than academics. Discover perspectives, originals, and knowledge that outgrows the classroom. Fuel for curious minds.">
-  <meta property="og:image" itemprop="image" content="https://materioa.vercel.app/assets/img/covers/ec8782df-d1bd-4fbe-af79-12954b6dcae0.webp">
-  <meta property="og:image:secure_url" itemprop="image" content="https://materioa.vercel.app/assets/img/covers/ec8782df-d1bd-4fbe-af79-12954b6dcae0.webp">
+  <meta property="og:description"
+    content="For minds that want more - a lil more than academics. Discover perspectives, originals, and knowledge that outgrows the classroom. Fuel for curious minds.">
+  <meta property="og:image" itemprop="image"
+    content="https://materioa.vercel.app/assets/img/covers/ec8782df-d1bd-4fbe-af79-12954b6dcae0.webp">
+  <meta property="og:image:secure_url" itemprop="image"
+    content="https://materioa.vercel.app/assets/img/covers/ec8782df-d1bd-4fbe-af79-12954b6dcae0.webp">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:url" content="https://materioa.vercel.app/whatisthis">
   <meta property="og:type" content="website">
 
   <!-- Standard SEO -->
-  <meta name="description" content="For minds that want more - a lil more than academics. Discover perspectives, originals, and knowledge that outgrows the classroom. Fuel for curious minds.">
+  <meta name="description"
+    content="For minds that want more - a lil more than academics. Discover perspectives, originals, and knowledge that outgrows the classroom. Fuel for curious minds.">
   <link rel="canonical" href="https://materioa.vercel.app/whatisthis">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="About">
-  <meta name="twitter:description" content="For minds that want more - a lil more than academics. Discover perspectives, originals, and knowledge that outgrows the classroom. Fuel for curious minds.">
-  <meta name="twitter:image" content="https://materioa.vercel.app/assets/img/covers/ec8782df-d1bd-4fbe-af79-12954b6dcae0.webp">
+  <meta name="twitter:description"
+    content="For minds that want more - a lil more than academics. Discover perspectives, originals, and knowledge that outgrows the classroom. Fuel for curious minds.">
+  <meta name="twitter:image"
+    content="https://materioa.vercel.app/assets/img/covers/ec8782df-d1bd-4fbe-af79-12954b6dcae0.webp">
 
   <title>About</title>
   <link rel="stylesheet" href="/assets/style/style.css" />
+  <link rel="stylesheet" href="/assets/style/notebook.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
@@ -40,7 +47,8 @@
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap"
+    rel="stylesheet">
   <!-- <script src="https://cdn.jsdelivr.net/npm/@r3dz0n3/fontawesome-pro@6.3.0/js/fontawesome.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@r3dz0n3/fontawesome-pro@6.3.0/css/all.css"> -->
@@ -50,10 +58,10 @@
 <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/sharp-light.css">
 <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/duotone.css">
 <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/brands.css">
-  
+
   <!-- Load Hugeicons CSS if enabled -->
   <script>
-    (function() {
+    (function () {
       if (localStorage.getItem('materio_ota_hugeicons') === 'true') {
         const link = document.createElement('link');
         link.rel = 'stylesheet';
@@ -62,7 +70,7 @@
       }
     })();
   </script>
-  
+
   <script>
     window.addEventListener('load', function () {
       if (typeof QRCode !== 'undefined') {
@@ -71,7 +79,10 @@
   </script>
   <style>
     /* Default link color for light mode */
-    body { --link: #000000; }
+    body {
+      --link: #000000;
+    }
+
     body.dark {
       --bg: #121212;
       --text: #eeeeee;
@@ -79,31 +90,43 @@
       --card-bg: #1e1e1e;
       --border: #333;
     }
+
     .dark .site-header {
       background-color: rgba(33, 33, 33, 0.5);
       background-image: url('/assets/img/materio_new_wh.svg');
     }
+
     body.blog-layout .site-header {
       background-image: url('/assets/img/banner.svg');
       width: 575px;
     }
+
     body.blog-layout.dark .site-header {
       background-image: url('/assets/img/banner.svg');
     }
+
     /* Mobile: ensure header is full width and properly sized */
     @media (max-width: 768px) {
+
       body.blog-layout .site-header,
       body.blog-layout.dark .site-header {
         width: 100% !important;
         max-width: 100% !important;
       }
     }
+
     /* Use Libre Baskerville for emphasized/italic text in posts */
-    article em, article i, .post-content em, .post-content i, .changelog-excerpt em, .changelog-excerpt i {
+    article em,
+    article i,
+    .post-content em,
+    .post-content i,
+    .changelog-excerpt em,
+    .changelog-excerpt i {
       font-family: 'Libre Baskerville', serif;
       font-style: italic;
       font-weight: 400;
     }
+
     /* Link pill styling for in-post links */
     .post-body a.link-pill,
     .post-content a.link-pill {
@@ -112,20 +135,22 @@
       gap: 0.5rem;
       padding: 0.35rem 0.7rem;
       border-radius: 999px;
-      background: rgba(0,0,0,0.04);
+      background: rgba(0, 0, 0, 0.04);
       color: var(--link, #0b66c3);
       text-decoration: none;
       font-weight: 600;
       font-size: 0.95rem;
       line-height: 1;
-      border: 1px solid rgba(0,0,0,0.04);
+      border: 1px solid rgba(0, 0, 0, 0.04);
     }
+
     .post-body a.link-pill i.fa-regular,
     .post-content a.link-pill i.fa-regular {
       opacity: 0.9;
       font-size: 0.9rem;
       margin-left: 0.1rem;
     }
+
     /* Label inside the pill; truncates with ellipsis when long */
     .post-body a.link-pill .pill-label,
     .post-content a.link-pill .pill-label {
@@ -135,12 +160,14 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
     body.dark .post-body a.link-pill,
     body.dark .post-content a.link-pill {
-      background: rgba(255,255,255,0.04);
-      border-color: rgba(255,255,255,0.04);
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.04);
       color: var(--text);
     }
+
     /* (previously used ::after for domain) */
     /* Skip pill styling for images inside anchors */
     .post-body a.link-pill img,
@@ -148,15 +175,29 @@
       display: inline-block;
       max-height: 1.2rem;
     }
+
     /* Ensure the icon sits at the very end of the pill */
     .post-body a.link-pill i.fa-regular,
-    .post-content a.link-pill i.fa-regular { order: 2; }
+    .post-content a.link-pill i.fa-regular {
+      order: 2;
+    }
+
     .post-body a.link-pill .pill-label,
-    .post-content a.link-pill .pill-label { order: 1; }
+    .post-content a.link-pill .pill-label {
+      order: 1;
+    }
+
     @media (max-width: 640px) {
+
       .post-body a.link-pill::after,
-      .post-content a.link-pill::after { display: none; }
-      .post-body a.link-pill, .post-content a.link-pill { font-size: 0.92rem; }
+      .post-content a.link-pill::after {
+        display: none;
+      }
+
+      .post-body a.link-pill,
+      .post-content a.link-pill {
+        font-size: 0.92rem;
+      }
     }
   </style>
 </head>
@@ -536,6 +577,6 @@
   </script>
   <script src="/assets/scripts/post-base.js"></script>
   </body>
-  
+
 
 </html>

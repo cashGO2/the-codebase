@@ -49,13 +49,20 @@ async function handleGetProfile(req, res) {
     const userId = decoded.id;
 
     // Get user data from database
+    // Note: is_plus_user = Pro tier (₹299 lifetime) - old Plus rebranded
+    //       is_lite_user = Plus tier (₹59/3mo subscription) - new tier
     const { data: user, error } = await supabase
       .from('users')
-      .select('id, username, display_name, email, profile_picture, created_at, updated_at, recovery_key, has_admin_privileges, is_plus_user')
+      .select('id, username, display_name, email, profile_picture, created_at, updated_at, recovery_key, has_admin_privileges, is_plus_user, is_lite_user, lite_expiry')
       .eq('id', userId)
       .single();
 
-    if (error || !user) {
+    if (error) {
+      console.error('Profile fetch error:', error);
+      return res.status(500).json({ error: 'Database error', details: error.message });
+    }
+
+    if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
@@ -69,7 +76,9 @@ async function handleGetProfile(req, res) {
         profilePicture: user.profile_picture,
         recoveryKey: user.recovery_key,
         hasAdminPrivileges: user.has_admin_privileges,
-        isPlusUser: user.is_plus_user,
+        isProUser: user.is_plus_user,      // Pro tier (₹299 lifetime) - old is_plus_user
+        isPlusUser: user.is_lite_user,     // Plus tier (₹59/3mo) - new is_lite_user
+        plusExpiry: user.lite_expiry,      // Expiry for Plus subscription
         createdAt: user.created_at,
         updatedAt: user.updated_at
       }
@@ -222,7 +231,7 @@ async function handleUpdateProfile(req, res) {
     }    // Return updated profile data
     const { data: updatedUser, error: fetchError } = await supabase
       .from('users')
-      .select('id, username, display_name, email, profile_picture, created_at, updated_at, recovery_key, has_admin_privileges, is_plus_user')
+      .select('id, username, display_name, email, profile_picture, created_at, updated_at, recovery_key, has_admin_privileges, is_plus_user, is_lite_user, lite_expiry')
       .eq('id', decoded.id)
       .single();
 
@@ -238,7 +247,9 @@ async function handleUpdateProfile(req, res) {
         profilePicture: updatedUser.profile_picture,
         recoveryKey: updatedUser.recovery_key,
         hasAdminPrivileges: updatedUser.has_admin_privileges,
-        isPlusUser: updatedUser.is_plus_user,
+        isProUser: updatedUser.is_plus_user,    // Pro tier (₹299 lifetime)
+        isPlusUser: updatedUser.is_lite_user,   // Plus tier (₹59/3mo)
+        plusExpiry: updatedUser.lite_expiry,
         createdAt: updatedUser.created_at,
         updatedAt: updatedUser.updated_at
       },

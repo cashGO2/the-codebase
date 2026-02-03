@@ -955,10 +955,23 @@ function closePromoModal() {
       audio.currentTime = 0;
     });
 
-    // Hide modal and restore body scroll
-    modal.style.display = 'none';
-    modal.classList.remove('show');
-    document.body.classList.remove('modal-open');
+    // Add closing animation on mobile
+    const promoModalElement = modal.querySelector('.promo-modal');
+    if (promoModalElement) {
+      promoModalElement.classList.add('closing');
+      // Wait for animation to finish before hiding
+      setTimeout(() => {
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+        promoModalElement.classList.remove('closing');
+        document.body.classList.remove('modal-open');
+      }, 300); // Match the animation duration
+    } else {
+      // Fallback if .promo-modal doesn't exist
+      modal.style.display = 'none';
+      modal.classList.remove('show');
+      document.body.classList.remove('modal-open');
+    }
 
     // console.log('Promotion modal closed');
   }

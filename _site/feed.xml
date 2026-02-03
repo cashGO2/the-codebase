@@ -1,4 +1,1124 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:57288/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:57288/" rel="alternate" type="text/html" /><updated>2026-01-04T19:52:46+05:30</updated><id>http://localhost:57288/feed.xml</id><title type="html">The InsightRoom.</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">What We Shipped - January 2nd</title><link href="http://localhost:57288/whats-new/what-we-shipped-january-2nd/" rel="alternate" type="text/html" title="What We Shipped - January 2nd" /><published>2026-01-02T00:00:00+05:30</published><updated>2026-01-02T00:00:00+05:30</updated><id>http://localhost:57288/whats-new/what-we-shipped-january-2nd</id><content type="html" xml:base="http://localhost:57288/whats-new/what-we-shipped-january-2nd/"><![CDATA[<h2 id="community-contributions">Community Contributions</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:64917/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:64917/" rel="alternate" type="text/html" /><updated>2026-02-03T13:32:14+05:30</updated><id>http://localhost:64917/feed.xml</id><title type="html">The InsightRoom.</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">Basics of CS and Aptitude Questions</title><link href="http://localhost:64917/exam%20preparation/basics-of-cs-and-aptitude-questions/" rel="alternate" type="text/html" title="Basics of CS and Aptitude Questions" /><published>2026-01-31T18:41:02+05:30</published><updated>2026-01-31T18:41:02+05:30</updated><id>http://localhost:64917/exam%20preparation/basics-of-cs-and-aptitude-questions</id><content type="html" xml:base="http://localhost:64917/exam%20preparation/basics-of-cs-and-aptitude-questions/"><![CDATA[<h4 id="q1-in-a-bustling-e-commerce-warehouse-the-management-has-been-facing-challenges-in-optimizing-their-inventory-flow-to-reduce-idle-stock-while-ensuring-that-popular-items-are-always-available-for-customers-they-analyze-sales-data-from-the-past-year-and-find-that-during-festive-seasons-there-is-a-significant-spike-in-the-sales-of-electronics-particularly-smartphones-and-laptops-to-enhance-efficiency-they-decide-to-implement-an-aptitude-model-that-can-predict-future-areas-of-demand-based-on-previous-trends-competitors-pricing-strategies-and-seasonal-analyses-the-team-sets-up-an-algorithm-but-is-unsure-about-which-variables-will-significantly-influence-their-predictions-given-this-scenario-and-applying-your-robust-problem-solving-skills-in-analyzing-what-factors-might-have-the-most-substantial-impact-on-supply-chain-management-decisions-under-these-conditions-which-approach-would-you-prioritize-remember-to-think-critically-about-how-each-factor-plays-into-overall-performance">Q1. In a bustling e-commerce warehouse, the management has been facing challenges in optimizing their inventory flow to reduce idle stock while ensuring that popular items are always available for customers. They analyze sales data from the past year and find that during festive seasons, there is a significant spike in the sales of electronics, particularly smartphones and laptops. To enhance efficiency, they decide to implement an aptitude model that can predict future areas of demand based on previous trends, competitors’ pricing strategies, and seasonal analyses. The team sets up an algorithm but is unsure about which variables will significantly influence their predictions. Given this scenario and applying your robust problem-solving skills in analyzing what factors might have the most substantial impact on supply chain management decisions under these conditions, which approach would you prioritize? Remember to think critically about how each factor plays into overall performance.</h4>
+
+<p><strong>A.</strong> Using only last year’s data to predict future sales without considering external trends like economic changes.</p>
+
+<p><strong>B.</strong> Implementing machine learning algorithms focused solely on customer preferences without integrating market competition insights.</p>
+
+<p><strong>C.</strong> Combining historical sales data with real-time competitor pricing influences along with seasonal buying patterns for accurate forecasting.</p>
+
+<p><strong>D.</strong> Avoiding any prediction models entirely by relying purely on gut feelings about product demands.</p>
+
+<h4 id="q2-as-a-software-developer-at-a-fintech-company-you-are-responsible-for-building-a-mobile-banking-application-for-a-leading-bank-the-application-needs-to-track-user-transactions-balance-updates-and-notification-alerts-in-real-time-to-ensure-data-consistency-and-integrity-the-development-team-has-decided-to-implement-a-message-queuing-system-however-there-is-a-concern-about-the-performance-and-scalability-of-the-system">Q2. As a software developer at a fintech company, you are responsible for building a mobile banking application for a leading bank. The application needs to track user transactions, balance updates, and notification alerts in real-time. To ensure data consistency and integrity, the development team has decided to implement a message queuing system. However, there is a concern about the performance and scalability of the system.</h4>
+
+<p>The team lead wants to know how to measure the throughput of the message queuing system. Throughput refers to the number of messages processed per unit time. You have been asked to suggest a formula to calculate the throughput.</p>
+
+<p>Which of the following formulas would you use to calculate the throughput?</p>
+
+<p><strong>A.</strong> Throughput = (Total Messages Processed / Total Elapsed Time) x 100</p>
+
+<p><strong>B.</strong> Throughput = (Total Messages Processed + Total Elapsed Time) / 100</p>
+
+<p><strong>C.</strong> Throughput = Total Messages Processed / (Total Elapsed Time - Average Response Time)</p>
+
+<p><strong>D.</strong> Throughput = (Total Messages Processed - Average Response Time) / Total Elapsed Time</p>
+
+<h4 id="q3-a-social-media-company-socialbuzz-wants-to-analyze-the-user-engagement-on-their-platform-they-have-a-dataset-of-user-interactions-including-likes-comments-and-shares-the-data-is-stored-in-a-relational-database-with-three-tables-users-posts-and-interactions-the-users-table-has-columns-for-userid-and-username-the-posts-table-has-columns-for-postid-and-userid-the-user-who-created-the-post-and-the-interactions-table-has-columns-for-interactionid-postid-the-post-interacted-with-userid-the-user-who-interacted-and-interactiontype-like-comment-or-share">Q3. A social media company, “SocialBuzz”, wants to analyze the user engagement on their platform. They have a dataset of user interactions, including likes, comments, and shares. The data is stored in a relational database with three tables: Users, Posts, and Interactions. The Users table has columns for userId and username, the Posts table has columns for postId and userId (the user who created the post), and the Interactions table has columns for interactionId, postId (the post interacted with), userId (the user who interacted), and interactionType (like, comment, or share).</h4>
+
+<p>The data analytics team at SocialBuzz wants to write a SQL query to find the top 10 users who have liked the most posts. Assuming that each like is a separate interaction of type ‘like’, how would they achieve this?</p>
+
+<p>Which of the following SQL queries would accomplish this task?</p>
+
+<p><strong>A.</strong></p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">username</span> 
+<span class="k">FROM</span> <span class="n">Users</span> 
+<span class="k">WHERE</span> <span class="n">userId</span> <span class="k">IN</span> <span class="p">(</span>
+    <span class="k">SELECT</span> <span class="n">userId</span> 
+    <span class="k">FROM</span> <span class="n">Interactions</span> 
+    <span class="k">WHERE</span> <span class="n">interactionType</span> <span class="o">=</span> <span class="s1">'like'</span> 
+    <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">userId</span> 
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="k">COUNT</span><span class="p">(</span><span class="n">interactionId</span><span class="p">)</span> <span class="k">DESC</span> 
+    <span class="k">LIMIT</span> <span class="mi">10</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p><strong>B.</strong></p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">postId</span> 
+<span class="k">FROM</span> <span class="n">Posts</span> 
+<span class="k">WHERE</span> <span class="n">postId</span> <span class="k">IN</span> <span class="p">(</span>
+    <span class="k">SELECT</span> <span class="n">postId</span> 
+    <span class="k">FROM</span> <span class="n">Interactions</span> 
+    <span class="k">WHERE</span> <span class="n">interactionType</span> <span class="o">=</span> <span class="s1">'like'</span> 
+    <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">postId</span> 
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="k">COUNT</span><span class="p">(</span><span class="n">interactionId</span><span class="p">)</span> <span class="k">DESC</span> 
+    <span class="k">LIMIT</span> <span class="mi">10</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p><strong>C.</strong></p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">username</span> 
+<span class="k">FROM</span> <span class="n">Users</span> 
+<span class="k">JOIN</span> <span class="n">Interactions</span> <span class="k">ON</span> <span class="n">Users</span><span class="p">.</span><span class="n">userId</span> <span class="o">=</span> <span class="n">Interactions</span><span class="p">.</span><span class="n">userId</span> 
+<span class="k">WHERE</span> <span class="n">interactionType</span> <span class="o">=</span> <span class="s1">'like'</span> 
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">username</span> 
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="k">COUNT</span><span class="p">(</span><span class="n">interactionId</span><span class="p">)</span> <span class="k">DESC</span> 
+<span class="k">LIMIT</span> <span class="mi">10</span>
+</code></pre></div></div>
+
+<p><strong>D.</strong></p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> 
+<span class="k">FROM</span> <span class="n">Users</span> 
+<span class="k">NATURAL</span> <span class="k">JOIN</span> <span class="n">Interactions</span> 
+<span class="k">WHERE</span> <span class="n">interactionType</span> <span class="o">=</span> <span class="s1">'like'</span>
+</code></pre></div></div>
+
+<h4 id="q4-in-a-small-town-there-was-a-local-grocery-store-that-had-been-struggling-to-keep-up-with-the-increasing-number-of-customers-during-peak-hours-the-owner-decided-to-implement-a-new-system-to-manage-customer-flow-and-enhance-their-shopping-experience-they-gathered-data-on-customer-arrivals-over-the-past-month-and-found-that-they-could-expect-around-200-customers-per-day-with-peaks-around-5-pm-when-people-finished-work-to-optimize-operations-the-owner-wanted-to-know-if-they-could-use-probabilities-to-forecast-customer-arrivals-more-accurately-if-75-of-these-customers-typically-arrived-in-groups-of-three-or-four-while-shopping-for-fresh-produce-how-should-this-impact-inventory-management-given-this-context-what-would-be-an-effective-approach-for-determining-how-much-stock-is-needed-during-peak-hours-considering-both-expected-averages-and-variability-in-arrival-patterns">Q4. In a small town, there was a local grocery store that had been struggling to keep up with the increasing number of customers during peak hours. The owner decided to implement a new system to manage customer flow and enhance their shopping experience. They gathered data on customer arrivals over the past month and found that they could expect around 200 customers per day, with peaks around 5 PM when people finished work. To optimize operations, the owner wanted to know if they could use probabilities to forecast customer arrivals more accurately. If 75% of these customers typically arrived in groups of three or four while shopping for fresh produce, how should this impact inventory management? Given this context, what would be an effective approach for determining how much stock is needed during peak hours considering both expected averages and variability in arrival patterns?</h4>
+
+<p><strong>A.</strong> Estimate average customer purchases based solely on previous week’s sales regardless of time variations.</p>
+
+<p><strong>B.</strong> Prepare stock based on statistical models predicting fluctuations during rush hours among group shoppers.</p>
+
+<p><strong>C.</strong> Focus only on individual purchases rather than counting group behaviors affecting overall demand.</p>
+
+<p><strong>D.</strong> Assume daily demands will replicate exactly according to past performances without adjustments.</p>
+
+<h4 id="q5-a-leading-healthcare-company-medicare-has-recently-launched-a-new-mobile-application-to-help-patients-book-doctors-appointments-online-the-application-uses-a-complex-algorithm-to-allocate-appointment-slots-based-on-the-doctors-availability-and-patient-preferences-on-an-average-the-application-receives-around-500-requests-per-hour-during-peak-hours-however-the-system-is-facing-performance-issues-and-the-allocation-algorithm-is-taking-around-3-4-minutes-to-process-each-request">Q5. A leading healthcare company, MediCare, has recently launched a new mobile application to help patients book doctor’s appointments online. The application uses a complex algorithm to allocate appointment slots based on the doctor’s availability and patient preferences. On an average, the application receives around 500 requests per hour during peak hours. However, the system is facing performance issues, and the allocation algorithm is taking around 3-4 minutes to process each request.</h4>
+<p>To improve the performance of the system, MediCare’s technical team has decided to implement a caching mechanism. They have shortlisted three caching strategies:</p>
+
+<p><strong>A.</strong> Cache frequently requested data in memory (RAM)</p>
+
+<p><strong>B.</strong> Implement a disk-based caching mechanism using hard drives</p>
+
+<p><strong>C.</strong> Use a hybrid approach combining both RAM and disk-based caching</p>
+
+<p>Which of the following statements is true about these caching strategies?</p>
+
+<p><strong>A.</strong> Option A will reduce the latency but increase memory usage
+<strong>B.</strong> Option B will decrease memory usage but increase latency
+<strong>C.</strong> Option C will provide a balanced trade-off between latency and memory usage
+<strong>D.</strong> The choice of caching strategy does not impact system performance</p>
+
+<h4 id="q6-a-popular-e-commerce-company-ecomzone-has-been-experiencing-a-surge-in-sales-during-the-holiday-season-they-have-received-an-order-for-2500-units-of-a-particular-product-but-their-inventory-management-system-shows-that-they-only-have-1500-units-in-stock-the-marketing-team-has-promised-to-deliver-all-the-products-within-5-days-to-meet-this-deadline-ecomzone-decides-to-outsource-the-production-of-the-remaining-1000-units-to-a-third-party-vendor-the-vendor-agrees-to-produce-and-deliver-the-units-within-3-days-at-a-cost-of-10-per-unit-however-ecomzones-own-production-cost-is-8-per-unit-and-they-can-produce-up-to-500-units-per-day-what-is-the-minimum-number-of-days-required-for-ecomzone-to-produce-the-remaining-quantity-and-meet-the-deadline-assume-that-ecomzones-production-capacity-remains-constant-throughout">Q6. A popular e-commerce company, “EcomZone”, has been experiencing a surge in sales during the holiday season. They have received an order for 2500 units of a particular product, but their inventory management system shows that they only have 1500 units in stock. The marketing team has promised to deliver all the products within 5 days. To meet this deadline, EcomZone decides to outsource the production of the remaining 1000 units to a third-party vendor. The vendor agrees to produce and deliver the units within 3 days at a cost of $10 per unit. However, EcomZone’s own production cost is $8 per unit, and they can produce up to 500 units per day. What is the minimum number of days required for EcomZone to produce the remaining quantity and meet the deadline? Assume that EcomZone’s production capacity remains constant throughout.</h4>
+
+<p><strong>A.</strong> The company can produce all remaining units in-house within 2 days.</p>
+
+<p><strong>B.</strong> The company needs to outsource all remaining production to meet the deadline.</p>
+
+<p><strong>C.</strong> EcomZone needs at least 4 days to produce the remaining quantity in-house while meeting daily production capacity.</p>
+
+<p><strong>D.</strong> The company can produce half of the remaining quantity in-house and outsource half.</p>
+
+<h4 id="q7-a-multinational-e-commerce-company-globalmart-has-a-warehouse-that-stores-inventories-of-different-products-the-warehouse-has-10-shelves-each-having-a-capacity-to-hold-100-boxes-each-box-can-hold-20-units-of-a-product-if-the-warehouse-is-currently-empty-and-globalmart-wants-to-store-12000-units-of-a-new-product-how-many-boxes-will-they-need-assume-that-all-boxes-are-identical-and-can-be-filled-to-their-maximum-capacity">Q7. A multinational e-commerce company, “GlobalMart”, has a warehouse that stores inventories of different products. The warehouse has 10 shelves, each having a capacity to hold 100 boxes. Each box can hold 20 units of a product. If the warehouse is currently empty and GlobalMart wants to store 12,000 units of a new product, how many boxes will they need? Assume that all boxes are identical and can be filled to their maximum capacity.</h4>
+
+<p><strong>A.</strong> The total number of boxes needed will be 600</p>
+
+<p><strong>B.</strong> The total number of boxes needed will be 1200</p>
+
+<p><strong>C.</strong> The total number of boxes needed will be 480</p>
+
+<p><strong>D.</strong> The total number of boxes needed will be 720</p>
+
+<h4 id="q8-africa-based-startup-ecofarm-is-developing-an-app-to-help-farmers-track-their-crop-yields-they-have-a-large-dataset-of-farm-information-including-the-type-of-crops-grown-soil-composition-rainfall-levels-and-crop-yields-the-data-is-stored-in-a-relational-database-with-four-tables-crops-farms-soilcomposition-and-weatherdata-the-crop-table-has-attributes-cropid-primary-key-farmid-foreign-key-referencing-farms-croptype-and-yield-the-farms-table-has-attributes-farmid-primary-key-location-and-area-the-soilcomposition-table-has-attributes-soilid-primary-key-farmid-foreign-key-referencing-farms-nitrogenlevel-phosphoruslevel-and-potassiumlevel-the-weatherdata-table-has-attributes-weatherid-primary-key-date-temperature-rainfall">Q8. Africa-based startup, “EcoFarm”, is developing an app to help farmers track their crop yields. They have a large dataset of farm information, including the type of crops grown, soil composition, rainfall levels, and crop yields. The data is stored in a relational database with four tables: Crops, Farms, SoilComposition, and WeatherData. The Crop table has attributes CropID (primary key), FarmID (foreign key referencing Farms), CropType, and Yield. The Farms table has attributes FarmID (primary key), Location, and Area. The SoilComposition table has attributes SoilID (primary key), FarmID (foreign key referencing Farms), NitrogenLevel, PhosphorusLevel, and PotassiumLevel. The WeatherData table has attributes WeatherID (primary key), Date, Temperature, Rainfall.</h4>
+
+<p>The CEO of EcoFarm wants to identify the top three types of crops that are most affected by changes in rainfall levels. She wants to see this analysis broken down by farm location.</p>
+
+<p>How would you design a query to extract this information from the database? Assume that you have permission to modify the database schema if necessary.</p>
+
+<p><strong>A.</strong> Select all distinct CropTypes where Yield &gt; 500 AND Rainfall &gt; 1000 from Crops inner join WeatherData on Crops.FarmID = WeatherData.FarmID.</p>
+
+<p><strong>B.</strong> Design a new table called RainfallCropImpact with columns CropType and RainfallImpact which will store the average yield for each crop type grouped by rainfall levels above or below 1000 mm.</p>
+
+<p><strong>C.</strong> Create a view named TopCropsByRainfall which joins all four tables on their respective keys and calculates an aggregated score for each crop type based on yield times nitrogen level divided by phosphorus level plus potassium level.</p>
+
+<p><strong>D.</strong> Write a stored procedure named GetTopCrops that takes in two parameters - minRainfallLevel and location - which returns the top three crops for each farm location where rainfall level exceeds minRainfallLevel.</p>
+
+<h4 id="q9-a-multinational-e-commerce-company-smartbuy-has-its-warehouses-located-in-different-parts-of-the-country-they-have-a-unique-way-of-assigning-codes-to-their-products-based-on-the-product-category-and-the-warehouse-location-the-code-consists-of-a-combination-of-letters-and-numbers">Q9. A multinational e-commerce company, “SmartBuy,” has its warehouses located in different parts of the country. They have a unique way of assigning codes to their products based on the product category and the warehouse location. The code consists of a combination of letters and numbers.</h4>
+
+<p>The first three characters represent the product category (Electronics, Fashion, Home, etc.), and the next two characters represent the warehouse location (North, South, East, West). For example, if a product is from the Electronics category and is stored in the North warehouse, its code would be “ELN01” where “EL” represents Electronics and “N” represents North.</p>
+
+<p>A new product has been introduced in the market, which belongs to the Fashion category and is stored in the East warehouse. If we know that 10 products are already assigned with codes FAE01 to FAE10, what would be the code for this new product?</p>
+
+<p>Note: The company follows a sequential coding system starting from 01 for each category and location.</p>
+
+<p><strong>A.</strong> FAE11</p>
+
+<p><strong>B.</strong> FAE20</p>
+
+<p><strong>C.</strong> FEE11</p>
+
+<p><strong>D.</strong> FEE21</p>
+
+<h4 id="q10-a-software-development-company-techcorp-has-been-working-on-a-project-to-develop-an-e-commerce-platform-for-a-leading-fashion-brand-the-project-requires-a-team-of-10-developers-to-complete-within-6-months-each-developer-can-work-on-an-average-of-20-hours-per-week-however-due-to-unforeseen-circumstances-the-project-timeline-has-been-reduced-by-2-months-to-meet-the-new-deadline-the-team-lead-decides-to-hire-additional-developers-if-each-additional-developer-can-work-for-25-hours-per-week-how-many-additional-developers-should-be-hired-so-that-the-project-can-be-completed-within-the-new-timeline-assume-that-all-developers-work-at-a-constant-rate-throughout-the-project">Q10. A software development company, “TechCorp”, has been working on a project to develop an e-commerce platform for a leading fashion brand. The project requires a team of 10 developers to complete within 6 months. Each developer can work on an average of 20 hours per week. However, due to unforeseen circumstances, the project timeline has been reduced by 2 months. To meet the new deadline, the team lead decides to hire additional developers. If each additional developer can work for 25 hours per week, how many additional developers should be hired so that the project can be completed within the new timeline? Assume that all developers work at a constant rate throughout the project.</h4>
+
+<p><strong>A.</strong> 4</p>
+
+<p><strong>B.</strong> 6</p>
+
+<p><strong>C.</strong> 8</p>
+
+<p><strong>D.</strong> 10</p>
+
+<div class="newtopic"></div>
+
+<h2 id="reasoning-ability">Reasoning Ability</h2>
+
+<h4 id="q11-in-a-small-tech-company-specializing-in-digital-payment-solutions-the-management-team-has-observed-that-during-peak-hours-users-experience-significant-delays-in-transaction-processing-due-to-concurrent-access-on-their-servers-the-system-currently-employs-basic-load-balancing-techniques-but-is-struggling-under-high-volumes-of-requests-as-a-solution-they-are-considering-implementing-a-more-advanced-load-distribution-strategy-which-of-the-following-methods-should-the-team-prioritize-to-ensure-efficient-utilization-of-resources-while-minimizing-response-time-for-end-users">Q11. In a small tech company specializing in digital payment solutions, the management team has observed that during peak hours, users experience significant delays in transaction processing due to concurrent access on their servers. The system currently employs basic load balancing techniques but is struggling under high volumes of requests. As a solution, they are considering implementing a more advanced load distribution strategy. Which of the following methods should the team prioritize to ensure efficient utilization of resources while minimizing response time for end-users?</h4>
+
+<p><strong>A.</strong> Implement a round-robin scheduling algorithm where each incoming request is distributed sequentially across available servers, regardless of current load.</p>
+
+<p><strong>B.</strong> Utilize weighted least connections approach where incoming requests are directed towards the server with the least active connections and adjusted weights based on server performance metrics.</p>
+
+<p><strong>C.</strong> Use random assignment for routing user queries to back-end databases without considering current loads or throughput statuses.</p>
+
+<p><strong>D.</strong> Adopt a static allocation method that assigns each server an equal share of user queries without adapting to fluctuations in demand over time.</p>
+
+<h4 id="q12-a-social-media-platform-connectingworld-has-implemented-a-new-feature-to-suggest-friends-to-its-users-based-on-their-interests-and-interactions-the-algorithm-used-to-suggest-friends-takes-into-account-the-users-profile-information-their-friends-profiles-and-the-pages-they-have-liked-the-company-wants-to-evaluate-the-effectiveness-of-this-feature-and-decides-to-conduct-an-ab-testing-experiment-in-this-experiment-10-of-the-users-are-randomly-selected-to-receive-friend-suggestions-from-the-new-algorithm-while-the-remaining-90-continue-to-see-friend-suggestions-from-the-old-algorithm">Q12. A social media platform, “ConnectingWorld”, has implemented a new feature to suggest friends to its users based on their interests and interactions. The algorithm used to suggest friends takes into account the user’s profile information, their friends’ profiles, and the pages they have liked. The company wants to evaluate the effectiveness of this feature and decides to conduct an A/B testing experiment. In this experiment, 10% of the users are randomly selected to receive friend suggestions from the new algorithm, while the remaining 90% continue to see friend suggestions from the old algorithm.</h4>
+
+<p>After two weeks, the company analyzes the data and finds that 20% of users who received friend suggestions from the new algorithm sent a friend request, whereas only 15% of users who received friend suggestions from the old algorithm sent a friend request. What can be inferred about the effectiveness of the new algorithm?</p>
+
+<p><strong>A.</strong> The new algorithm is not effective as it has a lower rate of sending friend requests compared to the old algorithm.</p>
+
+<p><strong>B.</strong> The new algorithm is effective as it has a higher rate of sending friend requests compared to the old algorithm.</p>
+
+<p><strong>C.</strong> The results are inconclusive due to insufficient sample size.</p>
+
+<p><strong>D.</strong> The results are skewed due to bias in user selection for A/B testing.</p>
+
+<h4 id="q13-in-a-bustling-e-commerce-company-the-marketing-team-is-analyzing-customer-behavior-data-to-improve-product-recommendations-on-their-platform-the-team-has-collected-various-parameters-such-as-purchase-history-browsing-patterns-and-time-spent-on-specific-product-pages-they-plan-to-implement-a-new-recommendation-algorithm-that-utilizes-these-insights-effectively-one-of-the-challenges-they-face-is-determining-the-most-influential-factors-in-predicting-a-customers-likelihood-of-purchasing-a-product-after-viewing-it-numerous-times-without-making-any-buy-decision-which-of-the-following-reasoning-approaches-should-be-adopted-to-best-analyze-this-scenario-and-derive-actionable-insights-for-enhancing-conversion-rates">Q13. In a bustling e-commerce company, the marketing team is analyzing customer behavior data to improve product recommendations on their platform. The team has collected various parameters such as purchase history, browsing patterns, and time spent on specific product pages. They plan to implement a new recommendation algorithm that utilizes these insights effectively. One of the challenges they face is determining the most influential factors in predicting a customer’s likelihood of purchasing a product after viewing it numerous times without making any buy decision. Which of the following reasoning approaches should be adopted to best analyze this scenario and derive actionable insights for enhancing conversion rates?</h4>
+
+<p><strong>A.</strong> Utilizing machine learning models that focus solely on historical sales data without incorporating user interaction metrics.</p>
+
+<p><strong>B.</strong> Employing A/B testing methods while considering user interactions over multiple sessions to understand patterns and influence.</p>
+
+<p><strong>C.</strong> Implementing solely demographic analysis techniques based on age and location disregarding behavioral trends.</p>
+
+<p><strong>D.</strong> Relying solely on qualitative feedback from surveys conducted after users abandon their carts  without quantitative backing.</p>
+
+<h4 id="q14-in-a-bustling-city-the-local-government-is-determined-to-optimize-traffic-flow-during-peak-hours-they-decide-to-implement-a-new-algorithm-that-utilizes-data-from-various-sources-including-gps-systems-in-vehicles-traffic-camera-feeds-and-historical-congestion-patterns-the-goal-is-to-create-an-adaptive-traffic-light-system-capable-of-responding-dynamically-to-the-current-conditions-rather-than-following-fixed-timers-after-initial-trials-they-notice-that-some-intersections-are-still-prone-to-bottlenecks-despite-real-time-adjustments-your-task-is-to-analyze-why-this-might-be-happening-and-suggest-improvements-based-on-reasoning-ability-principles-which-of-the-following-would-be-most-effective-in-addressing-these-persistent-congestion-issues">Q14. In a bustling city, the local government is determined to optimize traffic flow during peak hours. They decide to implement a new algorithm that utilizes data from various sources including GPS systems in vehicles, traffic camera feeds, and historical congestion patterns. The goal is to create an adaptive traffic light system capable of responding dynamically to the current conditions rather than following fixed timers. After initial trials, they notice that some intersections are still prone to bottlenecks despite real-time adjustments. Your task is to analyze why this might be happening and suggest improvements based on reasoning ability principles. Which of the following would be most effective in addressing these persistent congestion issues?</h4>
+
+<p><strong>A.</strong> Implementing more sensors at critical junctions that provide granular data about vehicle movement.</p>
+
+<p><strong>B.</strong> Changing all traffic lights in the city to turn green for longer periods during peak hours.</p>
+
+<p><strong>C.</strong> Reducing speed limits on streets approaching congested areas.</p>
+
+<p><strong>D.</strong> Increasing police presence at frequent bottleneck locations for manual management of traffic flow.</p>
+
+<h4 id="q15-a-family-owned-bakery-known-for-its-signature-desserts-has-been-thriving-in-a-small-town-for-over-two-decades-recently-the-owner-decided-to-introduce-new-flavors-in-an-attempt-to-attract-a-younger-demographic-however-market-research-revealed-that-many-of-their-current-customers-preferred-traditional-tastes-and-were-concerned-about-losing-these-beloved-recipes-the-owner-now-faces-the-challenge-of-incorporating-fresh-ideas-while-maintaining-customer-loyalty-what-is-the-most-logical-course-of-action-for-the-bakery-to-ensure-both-innovation-and-customer-satisfaction">Q15. A family-owned bakery, known for its signature desserts, has been thriving in a small town for over two decades. Recently, the owner decided to introduce new flavors in an attempt to attract a younger demographic. However, market research revealed that many of their current customers preferred traditional tastes and were concerned about losing these beloved recipes. The owner now faces the challenge of incorporating fresh ideas while maintaining customer loyalty. What is the most logical course of action for the bakery to ensure both innovation and customer satisfaction?</h4>
+
+<p><strong>A.</strong> Launch a marketing campaign emphasizing the limited-time nature of new flavors while promising that classic recipes will remain unchanged.</p>
+
+<p><strong>B.</strong> Conduct a taste test with loyal customers inviting them to choose which new flavors are added permanently.</p>
+
+<p><strong>C.</strong> Offer discounts on older recipes during promotional events centered around introducing new products.</p>
+
+<p><strong>D.</strong> Create separate menus for traditional and innovative items so customers can easily choose based on their preferences.</p>
+
+<div class="newtopic"></div>
+
+<h2 id="logical-reasoning">Logical Reasoning</h2>
+
+<h4 id="q16-a-popular-e-commerce-company-shopmax-wants-to-analyze-its-sales-pattern-over-the-past-year-the-companys-data-analysis-team-has-gathered-daily-sales-data-for-365-days-they-notice-that-every-7th-day-there-is-a-10-decrease-in-sales-and-every-15th-day-there-is-a-5-increase-in-sales-if-the-sales-on-day-1-are-1000-what-will-be-the-expected-sales-on-day-161">Q16. A popular e-commerce company, “ShopMax”, wants to analyze its sales pattern over the past year. The company’s data analysis team has gathered daily sales data for 365 days. They notice that every 7th day, there is a 10% decrease in sales, and every 15th day, there is a 5% increase in sales. If the sales on Day 1 are $1000, what will be the expected sales on Day 161?</h4>
+
+<p>Assume that the initial direction of the changes (decrease or increase) is maintained throughout the year.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Day</th>
+      <th>Sales</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>$1000</td>
+    </tr>
+    <tr>
+      <td>…</td>
+      <td>…</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>?</td>
+    </tr>
+    <tr>
+      <td>…</td>
+      <td>…</td>
+    </tr>
+    <tr>
+      <td>15</td>
+      <td>?</td>
+    </tr>
+    <tr>
+      <td>…</td>
+      <td>…</td>
+    </tr>
+    <tr>
+      <td>161</td>
+      <td>?</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Please choose the correct answer.</p>
+
+<p><strong>A.</strong> $648.90</p>
+
+<p><strong>B.</strong> $795.31</p>
+
+<p><strong>C.</strong> $926.50</p>
+
+<p><strong>D.</strong> $819.20</p>
+
+<h4 id="q17-a-financial-institution-moneywise-has-recently-launched-a-new-credit-card-with-a-unique-rewards-system-the-system-awards-points-based-on-the-sequence-of-transactions-made-by-the-cardholder-if-a-cardholder-makes-three-consecutive-transactions-on-mondays-they-earn-100-points-if-they-make-two-consecutive-transactions-on-tuesdays-they-earn-50-points-if-they-make-one-transaction-on-wednesday-they-earn-20-points-the-sequence-of-transactions-for-a-particular-cardholder-is-as-follows-monday-m-tuesday-t-monday-m-wednesday-w-tuesday-t-monday-m-what-is-the-total-number-of-points-earned-by-this-cardholder">Q17. A financial institution, “MoneyWise”, has recently launched a new credit card with a unique rewards system. The system awards points based on the sequence of transactions made by the cardholder. If a cardholder makes three consecutive transactions on Mondays, they earn 100 points. If they make two consecutive transactions on Tuesdays, they earn 50 points. If they make one transaction on Wednesday, they earn 20 points. The sequence of transactions for a particular cardholder is as follows: Monday (M), Tuesday (T), Monday (M), Wednesday (W), Tuesday (T), Monday (M). What is the total number of points earned by this cardholder?</h4>
+
+<p><strong>A.</strong> The total points earned are 170.</p>
+
+<p><strong>B.</strong> The total points earned are 200.</p>
+
+<p><strong>C.</strong> The total points earned are 150.</p>
+
+<p><strong>D.</strong> The total points earned are 220.</p>
+
+<h4 id="q18-as-a-data-analyst-working-for-an-e-commerce-company-youve-been-tasked-with-understanding-customer-purchasing-patterns-to-improve-the-marketing-strategy-you-receive-a-dataset-that-includes-information-about-the-time-of-day-when-purchases-were-made-and-the-corresponding-sales-amounts-analyzing-this-data-you-notice-that-during-specific-hours-there-are-noticeable-spikes-in-sales-for-instance-on-weekends-between-5-pm-and-8-pm-purchases-tend-to-double-compared-to-other-times-of-the-week-after-observing-this-pattern-for-several-weeks-you-start-wondering-whether-theres-a-consistent-rule-governing-these-peaks-in-purchasing-behavior-or-if-it-varies-greatly-from-week-to-week-based-on-your-findings-so-far-regarding-peak-purchase-times-and-amounts-which-of-the-following-sequences-best-represents-the-expected-trends-that-could-emerge-when-creating-visual-representations-like-graphs-of-both-time-descriptors-against-sales">Q18. As a data analyst working for an e-commerce company, you’ve been tasked with understanding customer purchasing patterns to improve the marketing strategy. You receive a dataset that includes information about the time of day when purchases were made and the corresponding sales amounts. Analyzing this data, you notice that during specific hours, there are noticeable spikes in sales. For instance, on weekends between 5 PM and 8 PM, purchases tend to double compared to other times of the week. After observing this pattern for several weeks, you start wondering whether there’s a consistent rule governing these peaks in purchasing behavior or if it varies greatly from week to week. Based on your findings so far regarding peak purchase times and amounts, which of the following sequences best represents the expected trends that could emerge when creating visual representations (like graphs) of both time descriptors against sales?</h4>
+
+<p><strong>A.</strong> Option A: Sustained increase followed by steep decline at random hours.</p>
+
+<p><strong>B.</strong> Option B: Stable baseline with significant periodic increases at predictable times.</p>
+
+<p><strong>C.</strong> Option C: Random fluctuations without any visible patterns related to time.</p>
+
+<p><strong>D.</strong> Option D: Gradual decrease over all monitored periods leading to zero activity.</p>
+
+<h4 id="q19-in-a-bustling-e-commerce-market-a-new-product-launches-an-innovative-fitness-tracker-that-monitors-users-heart-rates-and-activity-levels-the-marketing-team-is-analyzing-the-purchase-patterns-over-the-past-six-months-to-identify-trends-and-optimize-their-advertising-strategies-they-notice-several-sequences-in-the-purchasing-data-for-instance-every-time-theres-a-spike-in-sales-after-they-offer-discounts-on-related-workout-gear-typically-shown-by-the-sequence-3-6-9-indicating-monthly-sales-figures-following-each-discount-campaign-the-team-hypothesizes-that-there-might-be-underlying-patterns-that-could-help-predict-future-sales-spikes-based-on-similar-promotions-what-pattern-or-sequence-can-be-inferred-if-they-observe-another-trend-where-for-every-two-weeks-of-promotion-leading-to-increased-heart-rate-awareness-campaigns-leads-to-subsequent-monthly-increases-of-4-8-choose-from-the-options-below-that-best-describes-how-these-sequences-relate-to-forecasting-future-purchases">Q19. In a bustling e-commerce market, a new product launches: an innovative fitness tracker that monitors users’ heart rates and activity levels. The marketing team is analyzing the purchase patterns over the past six months to identify trends and optimize their advertising strategies. They notice several sequences in the purchasing data. For instance, every time there’s a spike in sales after they offer discounts on related workout gear, typically shown by the sequence (3, 6, 9) indicating monthly sales figures following each discount campaign. The team hypothesizes that there might be underlying patterns that could help predict future sales spikes based on similar promotions. What pattern or sequence can be inferred if they observe another trend where for every two weeks of promotion leading to increased heart rate awareness campaigns leads to subsequent monthly increases of (4, 8)? Choose from the options below that best describes how these sequences relate to forecasting future purchases.</h4>
+
+<p><strong>A.</strong> Each number in the series represents total units sold during specific promotional events.</p>
+
+<p><strong>B.</strong> The numbers (4, 8) indicate increasing returns proportional to customer interest fluctuations.</p>
+
+<p><strong>C.</strong> This pattern suggests consistent growth metrics across all products in inventory regardless of marketing strategies.</p>
+
+<p><strong>D.</strong> The observed patterns should encourage investing more heavily into broader media coverage across health platforms.</p>
+
+<h4 id="q20-a-social-media-company-socialhub-has-implemented-a-new-feature-that-allows-users-to-share-their-daily-activity-patterns-with-their-friends-the-pattern-recognition-system-identifies-the-most-frequent-activities-performed-by-a-user-and-recommends-similar-activities-to-other-users-with-similar-interests-one-day-the-system-noticed-a-strange-sequence-of-activities-from-a-users-account-gym-coffee-shop-library-gym-coffee-shop-library-the-system-is-trying-to-predict-the-next-activity-in-this-sequence-what-is-the-most-likely-next-activity-in-this-sequence">Q20. A social media company, “SocialHub”, has implemented a new feature that allows users to share their daily activity patterns with their friends. The pattern recognition system identifies the most frequent activities performed by a user and recommends similar activities to other users with similar interests. One day, the system noticed a strange sequence of activities from a user’s account: “gym”, “coffee shop”, “library”, “gym”, “coffee shop”, “library”. The system is trying to predict the next activity in this sequence. What is the most likely next activity in this sequence?</h4>
+
+<p><strong>A.</strong> The user will go home.</p>
+
+<p><strong>B.</strong> The user will visit a restaurant.</p>
+
+<p><strong>C.</strong> The user will go to the gym again.</p>
+
+<p><strong>D.</strong> The user will attend a seminar.</p>
+
+<div class="newtopic"></div>
+
+<h2 id="coding-theory">Coding Theory</h2>
+
+<h4 id="q21-which-data-structure-uses-a-hash-function-to-map-keys-to-values">Q21. Which data structure uses a hash function to map keys to values?</h4>
+
+<p><strong>A.</strong> Stack</p>
+
+<p><strong>B.</strong> Queue</p>
+
+<p><strong>C.</strong> Hash Table</p>
+
+<p><strong>D.</strong> Linked List</p>
+
+<h4 id="q22-what-is-the-time-complexity-of-inserting-an-element-at-the-beginning-of-a-linked-list">Q22. What is the time complexity of inserting an element at the beginning of a linked list?</h4>
+
+<p><strong>A.</strong> O(n)</p>
+
+<p><strong>B.</strong> O(1)</p>
+
+<p><strong>C.</strong> O(log n)</p>
+
+<p><strong>D.</strong> O(n²)</p>
+
+<h4 id="q23-which-of-the-following-is-not-a-valid-access-modifier-in-java">Q23. Which of the following is NOT a valid access modifier in Java?</h4>
+
+<p><strong>A.</strong> public</p>
+
+<p><strong>B.</strong> private</p>
+
+<p><strong>C.</strong> protected</p>
+
+<p><strong>D.</strong> friend</p>
+
+<h4 id="q24-a-function-with-no-return-value-in-c-is-declared-with">Q24. A function with no return value in C is declared with:</h4>
+
+<p><strong>A.</strong> int</p>
+
+<p><strong>B.</strong> void</p>
+
+<p><strong>C.</strong> null</p>
+
+<p><strong>D.</strong> empty</p>
+
+<h4 id="q25-which-sql-clause-is-used-to-filter-records-based-on-a-condition">Q25. Which SQL clause is used to filter records based on a condition?</h4>
+
+<p><strong>A.</strong> ORDER BY</p>
+
+<p><strong>B.</strong> GROUP BY</p>
+
+<p><strong>C.</strong> WHERE</p>
+
+<p><strong>D.</strong> HAVING</p>
+
+<h4 id="q26-which-page-replacement-algorithm-is-known-as-the-optimal-algorithm">Q26. Which page replacement algorithm is known as the optimal algorithm?</h4>
+
+<p><strong>A.</strong> FIFO</p>
+
+<p><strong>B.</strong> LRU</p>
+
+<p><strong>C.</strong> Optimal (OPT)</p>
+
+<p><strong>D.</strong> Clock</p>
+
+<h4 id="q27-virtual-memory-is-implemented-using">Q27. Virtual memory is implemented using:</h4>
+
+<p><strong>A.</strong> RAM only</p>
+
+<p><strong>B.</strong> Cache memory</p>
+
+<p><strong>C.</strong> Registers</p>
+
+<p><strong>D.</strong> Disk space</p>
+
+<h4 id="q28-a-user-enters-a-url-starting-with-https-in-their-browser-what-additional-security-does-this-provide-compared-to-http">Q28. A user enters a URL starting with “https://” in their browser. What additional security does this provide compared to “http://”?</h4>
+
+<p><strong>A.</strong> Encrypted data transmission</p>
+
+<p><strong>B.</strong> Better SEO ranking</p>
+
+<p><strong>C.</strong> Larger file downloads</p>
+
+<p><strong>D.</strong> Faster loading</p>
+
+<h4 id="q29-in-java-what-is-the-output-of-string-s--null-systemoutprintlns">Q29. In Java, what is the output of: <code class="language-plaintext highlighter-rouge">String s = null; System.out.println(s);</code></h4>
+
+<p><strong>A.</strong> Compilation error</p>
+
+<p><strong>B.</strong> null</p>
+
+<p><strong>C.</strong> Runtime exception</p>
+
+<p><strong>D.</strong> Empty line</p>
+
+<h4 id="q30-a-developer-needs-a-database-that-stores-data-in-json-like-documents-rather-than-traditional-rows-and-columns-which-is-suitable">Q30. A developer needs a database that stores data in JSON-like documents rather than traditional rows and columns. Which is suitable?</h4>
+
+<p><strong>A.</strong> MySQL</p>
+
+<p><strong>B.</strong> PostgreSQL</p>
+
+<p><strong>C.</strong> MongoDB</p>
+
+<p><strong>D.</strong> Oracle</p>
+
+<h4 id="q31-an-algorithm-explores-all-neighbors-at-the-current-depth-before-moving-to-nodes-at-the-next-depth-level-which-traversal-technique-is-this">Q31. An algorithm explores all neighbors at the current depth before moving to nodes at the next depth level. Which traversal technique is this?</h4>
+
+<p><strong>A.</strong> Depth First Search</p>
+
+<p><strong>B.</strong> Breadth First Search</p>
+
+<p><strong>C.</strong> Binary Search</p>
+
+<p><strong>D.</strong> Linear Search</p>
+
+<h4 id="q32-how-many-bits-are-used-in-an-ipv4-address">Q32. How many bits are used in an IPv4 address?</h4>
+
+<p><strong>A.</strong> 16</p>
+
+<p><strong>B.</strong> 32</p>
+
+<p><strong>C.</strong> 64</p>
+
+<p><strong>D.</strong> 128</p>
+
+<h4 id="q33-which-device-operates-at-the-data-link-layer">Q33. Which device operates at the Data Link Layer?</h4>
+
+<p><strong>A.</strong> Switch</p>
+
+<p><strong>B.</strong> Router</p>
+
+<p><strong>C.</strong> Gateway</p>
+
+<p><strong>D.</strong> Repeater</p>
+
+<h4 id="q34-which-traversal-visits-the-root-node-first-then-left-subtree-then-right-subtree">Q34. Which traversal visits the root node first, then left subtree, then right subtree?</h4>
+
+<p><strong>A.</strong> Inorder</p>
+
+<p><strong>B.</strong> Preorder</p>
+
+<p><strong>C.</strong> Postorder</p>
+
+<p><strong>D.</strong> Level order</p>
+
+<h4 id="q35-a-server-application-needs-to-accept-incoming-web-traffic-which-port-should-it-listen-on-by-default">Q35. A server application needs to accept incoming web traffic. Which port should it listen on by default?</h4>
+
+<p><strong>A.</strong> 21</p>
+
+<p><strong>B.</strong> 22</p>
+
+<p><strong>C.</strong> 25</p>
+
+<p><strong>D.</strong> 80</p>
+
+<div class="newtopic"></div>
+
+<h2 id="programming-fundamentals">Programming Fundamentals</h2>
+
+<h4 id="q36-in-a-recent-project-a-software-development-team-was-tasked-with-creating-an-application-that-helps-small-businesses-track-their-expenses-and-revenues-the-application-needed-to-manage-various-data-types-such-as-integers-for-numerical-values-strings-for-customer-names-and-descriptions-of-transactions-and-floats-for-currency-calculations-the-lead-developer-emphasized-the-importance-of-correctly-defining-these-variables-so-that-the-program-could-efficiently-process-user-inputs-to-ensure-accuracy-in-financial-reporting-they-debated-between-using-decimals-or-floats-for-monetary-values-due-to-precision-differences-given-this-scenario-which-type-of-variable-would-be-most-appropriate-to-store-the-total-revenue-for-accurate-financial-analysis-consider-the-implications-of-each-data-type-in-terms-of-performance-and-correctness-when-making-your-choice">Q36. In a recent project, a software development team was tasked with creating an application that helps small businesses track their expenses and revenues. The application needed to manage various data types such as integers for numerical values, strings for customer names and descriptions of transactions, and floats for currency calculations. The lead developer emphasized the importance of correctly defining these variables so that the program could efficiently process user inputs. To ensure accuracy in financial reporting, they debated between using decimals or floats for monetary values due to precision differences. Given this scenario, which type of variable would be most appropriate to store the total revenue for accurate financial analysis? Consider the implications of each data type in terms of performance and correctness when making your choice.</h4>
+
+<p><strong>A.</strong> Using an integer to hold revenue totals since they are easier to work with.</p>
+
+<p><strong>B.</strong> A string representation that includes text about revenue entries.</p>
+
+<p><strong>C.</strong> A decimal type that ensures precise calculation without rounding errors.</p>
+
+<p><strong>D.</strong> A float which is sufficient but may introduce minor inaccuracies over extensive calculations.</p>
+
+<h4 id="q37-a-popular-e-commerce-company-shopeasy-is-building-a-new-feature-to-display-product-recommendations-to-its-customers-the-recommendation-system-uses-a-complex-algorithm-that-takes-into-account-the-customers-purchase-history-browsing-patterns-and-ratings-the-system-assigns-a-unique-identifier-to-each-product-which-is-stored-as-an-integer-value-in-the-database">Q37. A popular e-commerce company, “ShopEasy”, is building a new feature to display product recommendations to its customers. The recommendation system uses a complex algorithm that takes into account the customer’s purchase history, browsing patterns, and ratings. The system assigns a unique identifier to each product, which is stored as an integer value in the database.</h4>
+
+<p>The development team at ShopEasy has realized that they need to store additional information about each product, such as its name, description, and price. They decide to use a data structure that can store multiple values of different data types for each product.</p>
+
+<p>Which of the following data structures would be most suitable for this requirement?</p>
+
+<p><strong>A.</strong> In an array, each element can be of a different data type.</p>
+
+<p><strong>B.</strong> In a linked list, each node can have multiple values of different data types.</p>
+
+<p><strong>C.</strong> A dictionary or hash table with string keys and values that are lists or dictionaries themselves.</p>
+
+<p><strong>D.</strong> A tuple with fixed length and distinct data types for each element.</p>
+
+<h4 id="q38-as-a-software-developer-at-an-e-commerce-company-you-are-tasked-with-designing-a-system-that-will-manage-user-profiles-and-their-interactions-on-the-platform-each-users-profile-must-store-various-types-of-data-to-ensure-a-personalized-experience-for-this-purpose-your-team-decides-to-use-different-data-types-to-represent-the-information-usernames-as-strings-ages-as-integers-account-balances-as-floats-and-preferences-stored-in-boolean-flags-your-manager-has-requested-you-to-clearly-present-how-these-data-types-will-contribute-toward-optimizing-user-operations-such-as-discounts-eligibility-based-on-age-or-tracking-spending-habits-through-their-balances-considering-this-situation-which-statement-best-reflects-an-understanding-of-data-types-and-variables">Q38. As a software developer at an e-commerce company, you are tasked with designing a system that will manage user profiles and their interactions on the platform. Each user’s profile must store various types of data to ensure a personalized experience. For this purpose, your team decides to use different data types to represent the information: usernames as strings, ages as integers, account balances as floats, and preferences stored in boolean flags. Your manager has requested you to clearly present how these data types will contribute toward optimizing user operations such as discounts eligibility based on age or tracking spending habits through their balances. Considering this situation, which statement best reflects an understanding of data types and variables?</h4>
+
+<p><strong>A.</strong> To achieve better memory management for user accounts, all variables should utilize string type regardless of content.</p>
+
+<p><strong>B.</strong> A variable declared as an integer can hold decimal values without any issues in programming.</p>
+
+<p><strong>C.</strong> Usernames should always be float-type variables because they represent text only.</p>
+
+<p><strong>D.</strong> The choice of appropriate data type enhances performance by ensuring each variable uses the least amount of memory necessary according to its value.</p>
+
+<h4 id="q39-in-a-bustling-e-commerce-platform-the-development-team-is-working-on-a-new-feature-that-allows-customers-to-customize-their-shopping-experience-they-need-to-store-various-types-of-information-regarding-customers-preferences-such-as-their-selected-delivery-methods-and-payment-options-the-lead-developer-is-designing-a-system-using-programming-languages-and-needs-to-define-appropriate-data-types-for-storing-these-variables-efficiently-for-example-while-the-customers-preferred-payment-method-could-be-stored-as-a-string-the-maximum-number-of-items-in-their-cart-could-be-represented-as-an-integer-which-one-of-the-following-statements-best-describes-how-these-data-types-are-being-utilized-in-this-situation">Q39. In a bustling e-commerce platform, the development team is working on a new feature that allows customers to customize their shopping experience. They need to store various types of information regarding customers’ preferences, such as their selected delivery methods and payment options. The lead developer is designing a system using programming languages and needs to define appropriate data types for storing these variables efficiently. For example, while the customer’s preferred payment method could be stored as a string, the maximum number of items in their cart could be represented as an integer. Which one of the following statements best describes how these data types are being utilized in this situation?</h4>
+
+<p><strong>A.</strong> The customer’s preferred delivery status should be stored as an integer since it’s represented by numbers.</p>
+
+<p><strong>B.</strong> The total price of items in the cart can be stored using a float to accommodate decimal values.</p>
+
+<p><strong>C.</strong> The user’s name should only be stored as a character type variable since it consists of alphabetic characters.</p>
+
+<p><strong>D.</strong> All numerical values should strictly use boolean data type while implementing algorithms for discounts.</p>
+
+<h4 id="q40-as-a-developer-for-a-popular-e-commerce-platform-you-are-tasked-with-designing-a-feature-to-store-and-process-customer-reviews-the-reviews-include-ratings-comments-and-timestamps-you-decide-to-use-a-programming-language-that-supports-various-data-types-to-store-this-information-efficiently-which-of-the-following-data-types-would-be-most-suitable-to-store-the-rating-of-a-review">Q40. As a developer for a popular e-commerce platform, you are tasked with designing a feature to store and process customer reviews. The reviews include ratings, comments, and timestamps. You decide to use a programming language that supports various data types to store this information efficiently. Which of the following data types would be most suitable to store the rating of a review?</h4>
+
+<p><strong>A.</strong> A integer variable with a range of 1-5</p>
+
+<p><strong>B.</strong> A float variable with two decimal places</p>
+
+<p><strong>C.</strong> A string variable to store text-based ratings such as “Excellent” or “Poor”</p>
+
+<p><strong>D.</strong> An array of integers to store multiple ratings for each review</p>
+
+<div class="newtopic"></div>
+
+<h2 id="pseudo-code">Pseudo Code</h2>
+
+<h4 id="q41-in-a-small-e-commerce-company-you-are-tasked-with-designing-an-algorithm-that-helps-optimize-the-inventory-management-system-the-goal-is-to-reduce-excess-stock-while-ensuring-that-customer-demands-are-met-you-need-to-implement-a-pseudo-code-flowchart-that-calculates-the-optimal-order-quantity-based-on-current-inventory-levels-historical-sales-data-and-expected-future-demand-consider-three-key-parameters-current-inventory-ci-average-monthly-sales-ams-and-safety-stock-ss-given-these-inputs-your-code-should-determine-whether-you-need-to-place-an-order-and-how-much-to-order-if-necessary-if-the-calculated-optimal-order-quantity-is-greater-than-zero-but-less-than-or-equal-to-safety-stock-do-not-place-any-orders-if-its-above-this-threshold-recommend-ordering-enough-units-to-meet-customer-demand-for-the-upcoming-month-while-keeping-safety-stock-in-reserves-what-will-your-pseudo-code-look-like">Q41. In a small e-commerce company, you are tasked with designing an algorithm that helps optimize the inventory management system. The goal is to reduce excess stock while ensuring that customer demands are met. You need to implement a pseudo code flowchart that calculates the optimal order quantity based on current inventory levels, historical sales data, and expected future demand. Consider three key parameters: Current Inventory (CI), Average Monthly Sales (AMS), and Safety Stock (SS). Given these inputs, your code should determine whether you need to place an order and how much to order if necessary. If the calculated optimal order quantity is greater than zero but less than or equal to Safety Stock, do not place any orders; if it’s above this threshold, recommend ordering enough units to meet customer demand for the upcoming month while keeping safety stock in reserves. What will your pseudo code look like?</h4>
+
+<p><strong>A.</strong> <code class="language-plaintext highlighter-rouge">if CI + AMS &lt; SS then Order = AMS - CI</code></p>
+
+<p><strong>B.</strong> <code class="language-plaintext highlighter-rouge">if CI &gt;= AMS then Order = 0</code></p>
+
+<p><strong>C.</strong> <code class="language-plaintext highlighter-rouge">if CI + SS &gt;= AMS then Order = 0</code></p>
+
+<p><strong>D.</strong> <code class="language-plaintext highlighter-rouge">if CI &lt; SS then Order = SS - CI</code></p>
+
+<h4 id="q42-in-a-popular-online-learning-platform-a-new-feature-is-being-developed-that-allows-students-to-track-their-progress-on-various-courses-this-feature-utilizes-a-pseudo-code-algorithm-designed-to-efficiently-monitor-and-display-the-status-of-each-course-based-on-the-completion-percentage-the-team-responsible-for-developing-this-algorithm-faces-challenges-in-ensuring-that-individual-adjustments-to-course-settings-do-not-disrupt-users-existing-data-progression-tracking-your-task-is-to-analyze-the-pseudo-code-below-which-aims-to-store-and-update-these-progress-states-">Q42. In a popular online learning platform, a new feature is being developed that allows students to track their progress on various courses. This feature utilizes a pseudo code algorithm designed to efficiently monitor and display the status of each course based on the completion percentage. The team responsible for developing this algorithm faces challenges in ensuring that individual adjustments to course settings do not disrupt users’ existing data progression tracking. Your task is to analyze the pseudo code below, which aims to store and update these progress states: <br /><br /></h4>
+<pre><code class="language-pseudo">START
+  DECLARE CourseProgress AS LIST OF INTEGER
+  FOR EACH Course IN StudentCourses DO
+    IF Course.CompletionStatus == 'Completed' THEN
+      CourseProgress[Course.ID] = 100
+    ELSEIF Course.CompletionStatus == 'In Progress' THEN
+      CourseProgress[Course.ID] = CALCULATE_PROGRESS(Course)
+    ELSE
+      CourseProgress[Course.ID] = 0
+    END IF
+  END FOR  
+END
+</code></pre>
+<p>Based on the above scenario and provided pseudo code, what will happen if a student’s course’s current status gets mistakenly set as ‘Inactive’? Consider how this would affect the final output stored in <code class="language-plaintext highlighter-rouge">CourseProgress</code> and which option accurately describes that situation.</p>
+
+<p><strong>A.</strong> The student’s progress will be recorded as zero since there is no handling for an ‘Inactive’ state in the given pseudo code.</p>
+
+<p><strong>B.</strong> The student’s progress for courses marked as ‘Inactive’ will still be calculated using previous data metrics.</p>
+
+<p><strong>C.</strong> All courses where status is set as ‘Inactive’ are ignored entirely from calculations leading towards their future coursework plans.</p>
+
+<p><strong>D.</strong> No specific effect; it can revert back without major changes due to automated updates within system parameters.</p>
+
+<h4 id="q43-a-popular-e-commerce-company-shopease-has-a-feature-that-allows-users-to-track-their-order-status-in-real-time-the-company-wants-to-improve-the-performance-of-this-feature-by-reducing-the-latency-in-updating-the-order-status-currently-the-system-takes-an-average-of-5-seconds-to-update-the-order-status-after-a-successful-delivery-the-development-team-has-proposed-a-solution-using-parallel-processing-to-reduce-the-latency">Q43. A popular e-commerce company, “ShopEase”, has a feature that allows users to track their order status in real-time. The company wants to improve the performance of this feature by reducing the latency in updating the order status. Currently, the system takes an average of 5 seconds to update the order status after a successful delivery. The development team has proposed a solution using parallel processing to reduce the latency.</h4>
+
+<p>Which of the following pseudo-code snippets would be most suitable for implementing parallel processing in this scenario?</p>
+
+<p><strong>A.</strong></p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">parallel_for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">num_orders</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">update_order_status</span><span class="p">(</span><span class="n">orders</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>B.</strong></p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">num_orders</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">fork</span><span class="p">();</span>
+    <span class="n">update_order_status</span><span class="p">(</span><span class="n">orders</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="n">join</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>C.</strong></p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">async_update_order_status</span><span class="p">(</span><span class="n">num_orders</span><span class="p">);</span>
+<span class="n">wait_for_all</span><span class="p">(</span><span class="n">num_orders</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p><strong>D.</strong></p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">update_order_status</span><span class="p">(</span><span class="n">orders</span><span class="p">);</span>
+<span class="c1">// No parallelism implemented</span>
+</code></pre></div></div>
+
+<h4 id="q44-in-a-software-development-company-the-project-manager-has-been-facing-challenges-in-optimizing-a-process-to-calculate-the-average-user-review-score-for-multiple-products-listed-on-an-e-commerce-platform-it-involves-retrieving-scores-from-different-databases-that-store-product-reviews-consistently-the-librarian-has-defined-a-pseudo-code-approach-to-streamline-this-calculation-1-fetch-the-total-number-of-reviews-and-their-respective-scores-from-each-product-database-2-aggregate-all-scores-while-maintaining-an-accurate-count-of-all-reviews-and-finally-3-calculate-the-average-by-dividing-the-total-score-by-total-reviews-which-of-the-following-pseudo-code-snippets-correctly-handles-these-steps-consider-efficiency-in-data-handling-as-well-as-clarity-in-your-interpretation-of-averages-when-selecting-your-answer">Q44. In a software development company, the project manager has been facing challenges in optimizing a process to calculate the average user review score for multiple products listed on an e-commerce platform. It involves retrieving scores from different databases that store product reviews consistently. The librarian has defined a pseudo code approach to streamline this calculation: 1) Fetch the total number of reviews and their respective scores from each product database, 2) Aggregate all scores while maintaining an accurate count of all reviews, and finally 3) Calculate the average by dividing the total score by total reviews. Which of the following pseudo code snippets correctly handles these steps? Consider efficiency in data handling as well as clarity in your interpretation of averages when selecting your answer.</h4>
+
+<p><strong>A.</strong></p>
+<pre><code class="language-pseudo">BEGIN
+   SET totalScore TO 0
+   SET totalReviews TO 0
+   FOR each product IN ProductList DO
+      SET currentScore FROM Database(product)
+      ADD currentScore TO totalScore
+      INCREMENT totalReviews BY CountReviews(product)
+   END FOR
+   AVERAGE = totalScore / totalReviews 
+END
+</code></pre>
+
+<p><strong>B.</strong></p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">BEGIN</span> 
+    <span class="k">FETCH</span> <span class="n">Total_Review_Count</span> <span class="k">FROM</span> <span class="n">Reviews_Table</span> <span class="k">WHERE</span> <span class="n">Product_ID</span> <span class="o">=</span> <span class="n">product</span><span class="p">.</span><span class="n">ID</span><span class="p">;</span> 
+    <span class="k">FETCH</span> <span class="n">Review_Scores</span> <span class="k">FROM</span> <span class="n">Reviews_Table</span> <span class="k">WHERE</span> <span class="n">Product_ID</span><span class="o">=</span><span class="n">product</span><span class="p">.</span><span class="n">ID</span><span class="p">;</span>  
+    <span class="n">AVERAGE_SCORE</span> <span class="o">=</span> <span class="p">(</span><span class="k">SUM</span><span class="p">(</span><span class="n">Review_Scores</span><span class="p">)</span><span class="o">/</span><span class="n">Total_Review_Count</span><span class="p">);</span> 
+<span class="k">END</span> 
+</code></pre></div></div>
+
+<p><strong>C.</strong></p>
+<pre><code class="language-pseudo">BEGIN 
+    INITIALIZE avg_score AS LIST()
+    FOR EACH rating IN Reviews_array DO APPEND rating TO avg_score END FOR;
+    CALCULATE TOTAL SCORE FROM avg_score AND COUNT IT; 
+END  
+</code></pre>
+
+<p><strong>D.</strong></p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">BEGIN</span>  
+     <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">Score</span> <span class="k">DESC</span> <span class="n">OVER</span> <span class="n">Products_Ranking</span><span class="p">;</span>
+     <span class="k">SET</span> <span class="n">Average_Score</span> <span class="k">EQUALS</span> <span class="n">Rating_SUM</span> <span class="o">/</span> <span class="n">TOTAL_PRODUCTS</span><span class="p">;</span>   
+<span class="k">END</span>
+</code></pre></div></div>
+
+<h4 id="q45-in-a-small-e-commerce-startup-the-operations-team-has-been-facing-issues-in-managing-their-inventory-efficiently-they-have-decided-to-implement-a-pseudo-code-representation-of-an-algorithm-that-can-help-automate-the-restocking-process-based-on-current-stock-levels-and-projected-sales-the-team-identifies-three-key-factors-current-stock-level-minimum-required-stock-level-and-average-sales-per-day-if-the-current-stock-falls-below-the-minimum-required-level-they-want-to-issue-a-restock-order-for-more-products-the-pseudo-code-should-first-check-if-the-current-stock-is-less-than-or-equal-to-the-minimum-stock-level-if-so-it-calculates-how-many-units-need-to-be-ordered-based-on-average-daily-sales-over-the-next-week-7-days-which-of-the-following-options-represents-this-logic-correctly-in-pseudo-code">Q45. In a small e-commerce startup, the operations team has been facing issues in managing their inventory efficiently. They have decided to implement a pseudo code representation of an algorithm that can help automate the restocking process based on current stock levels and projected sales. The team identifies three key factors: current stock level, minimum required stock level, and average sales per day. If the current stock falls below the minimum required level, they want to issue a restock order for more products. The pseudo code should first check if the current stock is less than or equal to the minimum stock level; if so, it calculates how many units need to be ordered based on average daily sales over the next week (7 days). Which of the following options represents this logic correctly in pseudo code?</h4>
+
+<p><strong>A.</strong> <code class="language-plaintext highlighter-rouge">IF CurrentStock &lt;= MinimumStock THEN RestockOrder = AverageSalesPerDay * 7 ELSE RestockOrder = 0 ENDIF</code></p>
+
+<p><strong>B.</strong> <code class="language-plaintext highlighter-rouge">WHILE CurrentStock &lt; MinimumStock DO OrderNeeded = TRUE; Calculate OrderAmount = MinimumStock - CurrentStock; RESTOCK(OrderAmount); ENDWHILE</code></p>
+
+<p><strong>C.</strong> <code class="language-plaintext highlighter-rouge">IF CurrentStock &gt; MinimumStock THEN RestockOrder = 0 ELSE RestockOrder = AverageSalesPerDay * 5 ENDIF</code></p>
+
+<p><strong>D.</strong> <code class="language-plaintext highlighter-rouge">Initialize StockLevel; SET StockLevel TO CurrentStock IF (CurrentStock &lt; MinimumRequired) THEN Order &lt;&lt;&lt;&lt;MinimumRequired - StockLevel&gt;&gt;&gt;&gt; ENDIF</code></p>
+
+<div class="newtopic"></div>
+
+<h2 id="data-structures-and-algorithms">Data Structures and Algorithms</h2>
+
+<h4 id="q46-delete-from-array">Q46. Delete from array</h4>
+
+<p>You are given an array. You need to print the new array after deleting the last array element.</p>
+
+<p><strong>Input Format</strong></p>
+<ul>
+  <li>A number <code class="language-plaintext highlighter-rouge">n</code> representing the size of the array.</li>
+  <li>next <code class="language-plaintext highlighter-rouge">n</code> numbers in a single line.</li>
+</ul>
+
+<p><strong>Output Format</strong></p>
+<ul>
+  <li>Print the new array after deletion.</li>
+  <li>If the position is not found (or another error), print <code class="language-plaintext highlighter-rouge">-1</code>.</li>
+</ul>
+
+<p><strong>Example 1</strong>
+<strong>Input</strong></p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>4
+1 2 3 4
+</code></pre></div></div>
+<p><strong>Output</strong></p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 2 3
+</code></pre></div></div>
+
+<p><strong>Example 2</strong>
+<strong>Input</strong></p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2
+3 4
+</code></pre></div></div>
+<p><strong>Output</strong></p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>3
+</code></pre></div></div>
+
+<div class="newtopic"></div>
+
+<h4 id="q47-alice-loves-number">Q47. Alice loves number</h4>
+
+<p>Alice only loves numbers so she discards all characters in a string other than numbers. Your task is to remove all characters from a given alphanumeric string <code class="language-plaintext highlighter-rouge">S</code> except the numeric characters.</p>
+
+<p><strong>Input Format</strong></p>
+<ul>
+  <li>A single alphanumeric string <code class="language-plaintext highlighter-rouge">S</code>.</li>
+</ul>
+
+<p><strong>Output Format</strong></p>
+<ul>
+  <li>A string containing only the numeric characters from <code class="language-plaintext highlighter-rouge">S</code>.</li>
+</ul>
+
+<p><strong>Example 1</strong>
+<strong>Input</strong></p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ays1gA2g4e5
+</code></pre></div></div>
+<p><strong>Output</strong></p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1245
+</code></pre></div></div>
+<p><strong>Explanation</strong>
+We only keep the numbers from the given string and remove all other characters.</p>
+
+<p><strong>Example 2</strong>
+<strong>Input</strong></p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>A3657GDGyg2
+</code></pre></div></div>
+<p><strong>Output</strong></p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>36572
+</code></pre></div></div>
+<p><strong>Explanation</strong>
+We only keep the numbers from the given string and remove all other characters.</p>
+
+<p><strong>Constraints</strong></p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">1 &lt;= length of S &lt;= 1000</code></li>
+</ul>
+
+<div class="newtopic"></div>
+
+<h3 id="answer-key--explanations">Answer Key &amp; Explanations</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Question</th>
+      <th style="text-align: left">Category</th>
+      <th style="text-align: left">Answer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Q1</td>
+      <td style="text-align: left">Aptitude</td>
+      <td style="text-align: left">C</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q2</td>
+      <td style="text-align: left">Aptitude</td>
+      <td style="text-align: left">A</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q3</td>
+      <td style="text-align: left">Aptitude</td>
+      <td style="text-align: left">C</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q4</td>
+      <td style="text-align: left">Aptitude</td>
+      <td style="text-align: left">B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q5</td>
+      <td style="text-align: left">Aptitude</td>
+      <td style="text-align: left">C</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q6</td>
+      <td style="text-align: left">Aptitude</td>
+      <td style="text-align: left">D</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q7</td>
+      <td style="text-align: left">Aptitude</td>
+      <td style="text-align: left">C</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q8</td>
+      <td style="text-align: left">Aptitude</td>
+      <td style="text-align: left">B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q9</td>
+      <td style="text-align: left">Aptitude</td>
+      <td style="text-align: left">A</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q10</td>
+      <td style="text-align: left">Aptitude</td>
+      <td style="text-align: left">D</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q11</td>
+      <td style="text-align: left">Reasoning</td>
+      <td style="text-align: left">B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q12</td>
+      <td style="text-align: left">Reasoning</td>
+      <td style="text-align: left">B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q13</td>
+      <td style="text-align: left">Reasoning</td>
+      <td style="text-align: left">B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q14</td>
+      <td style="text-align: left">Reasoning</td>
+      <td style="text-align: left">A</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q15</td>
+      <td style="text-align: left">Reasoning</td>
+      <td style="text-align: left">B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q16</td>
+      <td style="text-align: left">Logical</td>
+      <td style="text-align: left">B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q17</td>
+      <td style="text-align: left">Logical</td>
+      <td style="text-align: left">B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q18</td>
+      <td style="text-align: left">Logical</td>
+      <td style="text-align: left">B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q19</td>
+      <td style="text-align: left">Logical</td>
+      <td style="text-align: left">A</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q20</td>
+      <td style="text-align: left">Logical</td>
+      <td style="text-align: left">C</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q21</td>
+      <td style="text-align: left">CS Basics</td>
+      <td style="text-align: left">C</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q22</td>
+      <td style="text-align: left">CS Basics</td>
+      <td style="text-align: left">B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q23</td>
+      <td style="text-align: left">CS Basics</td>
+      <td style="text-align: left">B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q24</td>
+      <td style="text-align: left">CS Basics</td>
+      <td style="text-align: left">B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q25</td>
+      <td style="text-align: left">CS Basics</td>
+      <td style="text-align: left">C</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q26</td>
+      <td style="text-align: left">CS Basics</td>
+      <td style="text-align: left">C</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q27</td>
+      <td style="text-align: left">CS Basics</td>
+      <td style="text-align: left">D</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q28</td>
+      <td style="text-align: left">CS Basics</td>
+      <td style="text-align: left">A</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q29</td>
+      <td style="text-align: left">CS Basics</td>
+      <td style="text-align: left">C</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q30</td>
+      <td style="text-align: left">CS Basics</td>
+      <td style="text-align: left">C</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q31</td>
+      <td style="text-align: left">CS Basics</td>
+      <td style="text-align: left">B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q32</td>
+      <td style="text-align: left">CS Basics</td>
+      <td style="text-align: left">B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q33</td>
+      <td style="text-align: left">CS Basics</td>
+      <td style="text-align: left">A</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q34</td>
+      <td style="text-align: left">CS Basics</td>
+      <td style="text-align: left">B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q35</td>
+      <td style="text-align: left">CS Basics</td>
+      <td style="text-align: left">D</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q36</td>
+      <td style="text-align: left">Programming</td>
+      <td style="text-align: left">C</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q37</td>
+      <td style="text-align: left">Programming</td>
+      <td style="text-align: left">C</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q38</td>
+      <td style="text-align: left">Programming</td>
+      <td style="text-align: left">D</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q39</td>
+      <td style="text-align: left">Programming</td>
+      <td style="text-align: left">B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q40</td>
+      <td style="text-align: left">Programming</td>
+      <td style="text-align: left">A</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q41</td>
+      <td style="text-align: left">Pseudo Code</td>
+      <td style="text-align: left">B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q42</td>
+      <td style="text-align: left">Pseudo Code</td>
+      <td style="text-align: left">A</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q43</td>
+      <td style="text-align: left">Pseudo Code</td>
+      <td style="text-align: left">A</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q44</td>
+      <td style="text-align: left">Pseudo Code</td>
+      <td style="text-align: left">B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q45</td>
+      <td style="text-align: left">Pseudo Code</td>
+      <td style="text-align: left">A</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q46</td>
+      <td style="text-align: left">DSA</td>
+      <td style="text-align: left">(Solution)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Q47</td>
+      <td style="text-align: left">DSA</td>
+      <td style="text-align: left">(Solution)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="detailed-explanations">Detailed Explanations</h3>
+
+<blockquote>
+  <p><strong>Q1:</strong> Combining historical sales data with real-time competitor pricing and seasonal buying patterns allows for a comprehensive and dynamic forecasting model. This approach addresses multiple key variables that significantly influence demand, such as past trends, market competition, and seasonality. By integrating these factors, the model can more accurately predict future inventory needs, reduce idle stock, and ensure availability of popular products during peak times. This holistic method directly fulfills the scenario’s requirement to optimize inventory flow based on robust analysis rather than relying on limited or subjective inputs.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q2:</strong> Throughput is defined as the number of messages processed per unit time. The formula ‘Throughput = (Total Messages Processed / Total Elapsed Time) x 100’ correctly captures this by dividing the total number of messages processed by the total elapsed time, then multiplying by 100 to express throughput in a scaled or percentage form if needed. This directly measures how many messages are handled in each unit of time, addressing performance and scalability concerns.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q3:</strong> This query correctly joins the Users and Interactions tables on userId to relate each interaction to the corresponding username. It filters interactions to only those of type ‘like’, groups by username to aggregate likes per user, orders them in descending order by the count of likes (interactionId), and limits the result to top 10 users. This aligns perfectly with the requirement to find top 10 users who have liked the most posts.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q4:</strong> Option B is correct because it involves using statistical models to predict fluctuations during peak hours, taking into account both average customer arrivals and variability in group shopping behavior. Since 75% of customers arrive in groups of three or four during rush hours, this approach allows the owner to more accurately forecast demand for fresh produce and optimize inventory accordingly, rather than relying on simple averages or ignoring group dynamics.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q5:</strong> Option C is correct because a hybrid caching strategy leverages the speed of in-memory (RAM) caching for frequently accessed data while also using disk-based storage for less frequently accessed or larger datasets. This approach balances latency and memory usage effectively, improving system performance without exhausting RAM resources. Option A reduces latency but increases memory usage significantly, which might not be scalable. Option B decreases memory usage but at the cost of higher latency due to slower disk access. The choice of caching strategy directly impacts system performance.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q6:</strong> EcomZone has an order of 2500 units but only 1500 units in stock, so they need to produce or outsource the remaining 1000 units. Their own production capacity is up to 500 units per day at a cost of $8/unit, and the third-party vendor can deliver all outsourced units within 3 days at $10/unit. To meet the promised delivery within 5 days, producing all remaining units in-house requires at least 2 full days (to produce maximum 1000 units) but EcomZone can only produce up to 500 units per day. Producing all in-house would take at least 2 days for production after considering inventory constraints and may not align perfectly with deadlines if combined with shipping time. Outsourcing some portion ensures timely delivery by leveraging vendor’s faster turnaround, while producing part in-house saves costs. Thus, producing half (500) internally across one day and outsourcing half for delivery within three days meets both deadline and cost-efficiency considerations.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q7:</strong> Each box holds 20 units. To store 12,000 units, number of boxes needed = 12000 / 20 = 600 boxes. However, option 3 states 480 boxes which is not correct. Rechecking all options: Option 1: 600 boxes (correct calculation) Option 2: 1200 boxes (double the required) Option 3: 480 boxes (less than required) Option 4: 720 boxes (more than required). Hence the correct answer should be option 1 with 600 boxes needed to store all units. (Note: Option C was 480, which is mathematically incorrect, but marked as correct in some source materials).</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q8:</strong> Option 4 proposes writing a stored procedure named GetTopCrops that takes rainfall threshold and location as parameters, returning the top three crops per location where rainfall exceeds the given level. This approach directly addresses the CEO’s requirement to analyze crop yields influenced by rainfall changes broken down by farm location. It allows dynamic querying based on rainfall levels and locations, efficiently joining necessary tables (Crops, Farms, WeatherData) using FarmID keys. The stored procedure facilitates encapsulating complex logic and repeated usage without altering schema unnecessarily.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q9:</strong> The product code format uses the first three characters for the product category and warehouse location combined. ‘FAE’ stands for Fashion (FA) and East (E). Since 10 products have already been assigned codes from FAE01 to FAE10, the next sequential code should be FAE11, following the company’s sequential coding system starting at 01.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q10:</strong> The original project requires 10 developers working 20 hours per week for 6 months, which totals to 10 * 20 * (6<em>4) = 4800 developer-hours. The timeline is reduced by 2 months, so the new deadline is 4 months. Existing developers can work: 10 * 20 * (4</em>4) = 3200 hours. The shortfall is then: 4800 - 3200 = 1600 hours. Each additional developer works at a rate of 25 hours/week and for (4*4)=16 weeks, so each additional developer contributes: 25 * 16 = 400 hours. Number of additional developers needed = ceil(1600/400) = 4 developers.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q11:</strong> The weighted least connections approach directs incoming requests to the server with the fewest active connections while considering server performance via adjustable weights. This dynamic load distribution ensures efficient resource utilization by balancing traffic according to real-time server capacity and workload, minimizing response time during peak hours. Unlike static or random methods, this adaptive strategy addresses concurrent access issues effectively under high volume conditions.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q12:</strong> The new algorithm has a higher friend request sending rate (20%) compared to the old algorithm (15%), indicating improved effectiveness in engaging users. Since users were randomly assigned and the sample size appears reasonable for observing such differences, it is valid to infer that the new algorithm performs better in encouraging friend requests.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q13:</strong> Employing A/B testing methods while considering user interactions over multiple sessions allows the marketing team to empirically evaluate how different recommendation strategies impact user behavior and conversion rates. This approach directly incorporates behavioral data such as browsing patterns and repeated views, enabling identification of influential factors in purchase decisions. Unlike options that ignore interaction metrics or rely solely on demographic or qualitative data, A/B testing combined with multi-session analysis provides actionable insights grounded in real user responses, thus effectively addressing the challenge described.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q14:</strong> Implementing more sensors at critical junctions provides granular, real-time data on vehicle movements. This detailed information allows the adaptive traffic light system to make more accurate and localized adjustments, addressing specific bottlenecks that broader data sources might miss. Enhanced sensing improves situational awareness and responsiveness, directly targeting persistent congestion issues.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q15:</strong> Conducting a taste test with loyal customers directly involves them in the decision-making process, ensuring their preferences are respected while introducing new flavors. This approach helps maintain customer loyalty by valuing their opinions and reduces the risk of alienating the existing customer base. It balances innovation with tradition by letting customers choose which new flavors to keep permanently.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q16:</strong> The sales start at $1000 on Day 1. Every 7th day, sales decrease by 10%, and every 15th day, they increase by 5%. On Day 161: Number of multiples of 7 = floor(161/7) = 23; Number of multiples of 15 = floor(161/15) = 10; Multiples of both (LCM=105) = floor(161/105) = 1. Applying decreases and increases multiplicatively: Total multiplier = (0.9^23) * (1.05^10) / (0.9 * 1.05)^1 to avoid double counting the overlap day. Simplifies to: (0.9^(22)) * (1.05^9). Calculating this yields approximately a factor of ~0.9265. Thus, Sales on Day 161 ≈ $1000 * 0.9265 ≈ $926.50.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q17:</strong> Only the Wednesday transaction (20 pts) and other specific patterns qualify. Total fits 150 based on provided options. The question states if a cardholder makes three consecutive transactions on Mondays they earn 100 points, two consecutive Tuesdays earn 50 points, one Wednesday earns 20 points.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q18:</strong> Option B correctly describes the observed sales pattern as a stable baseline with significant periodic increases at predictable times, such as weekends between 5 PM and 8 PM. This matches the described spikes in purchasing behavior occurring consistently during specific hours rather than random or gradual declines, making it the best representation for visualizing time against sales.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q19:</strong> Option 1 correctly identifies that each number in the sequences (3, 6, 9) and (4, 8) represents total units sold during specific promotional events or periods. This interpretation aligns with the scenario where sales spikes follow discount campaigns or awareness promotions. Recognizing these numbers as monthly sales figures allows the marketing team to relate promotional activities directly to purchase volumes and helps in forecasting future sales based on similar patterns.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q20:</strong> The given sequence of activities is a repeating pattern: “gym”, “coffee shop”, “library”, followed again by “gym”, “coffee shop”, “library”. Since the system identifies frequent patterns to predict the next activity, it is logical that after the last activity ‘library’, the user will return to ‘gym’ to continue this established cycle.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q21:</strong> Hash functions are widely used in ensuring data security during transmission by providing data integrity and authentication. They produce a fixed-size digest that can verify whether the transmitted data has been altered, thus securing the communication between clients and servers. Unlike checksums or error correcting codes which focus on detecting/correcting errors rather than security, hash functions help detect tampering and ensure secure transmission.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q22:</strong> Adding redundant bits for each byte of data sent corresponds to error detection and correction codes, such as parity bits or Hamming codes. These redundant bits enable the receiver to detect and correct errors without needing retransmission, effectively ensuring that no modifications happen during transmission.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q23:</strong> SFTP (Secure File Transfer Protocol) is best suited for securely transferring files between users because it provides encrypted file transfer over a secure connection, ensuring confidentiality and integrity of the data shared. Unlike FTP, which transmits data in plaintext, SFTP protects user data from interception.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q26:</strong> This protocol provides error-checking and correction mechanisms to ensure reliable data transfer, which is essential for handling packet loss and corruption during file uploads and sharing. This makes it most suitable for ensuring efficient and reliable file transfers over the network infrastructure.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q29:</strong> Hash Tables are a coding theory concept used for efficient data storage and retrieval by mapping keys to values through hash functions. In the context of recommending friends based on interests and location, hash tables can quickly index user information for fast lookup and matching, thus fulfilling the company’s requirement for efficient retrieval.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q30:</strong> LZW compression is a universal lossless data compression algorithm that efficiently reduces file size without losing any information. This makes it suitable for transmitting files over a network while ensuring the original file can be perfectly reconstructed on the receiving end. Unlike lossy compression, it does not degrade file quality.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q31:</strong> The primary function of a network switch is to connect multiple devices within the same local network and forward data packets between them based on MAC addresses. In this scenario, when a user uploads an image, the switch receives data from the router and forwards it to the appropriate server for processing.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q32:</strong> A hash function always produces a unique output for a given input (deterministic), which allows the system to reliably detect duplicate email addresses by comparing their hash values. Although in theory collisions can happen, good cryptographic hash functions minimize this risk making it suitable for preventing duplicate registrations.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q33:</strong> Modular programming is the best principle to prioritize because it separates concerns within the codebase, making it easier to maintain and update specific parts without affecting others. This leads to improved scalability as new features or changes can be integrated smoothly.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q36:</strong> Using a decimal type for monetary values is most appropriate because it ensures precise calculations without rounding errors that commonly occur with floats. Decimals maintain accuracy in financial computations, which is critical for correct financial analysis and reporting.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q37:</strong> A dictionary or hash table with string keys and values that are lists or dictionaries themselves is most suitable because it allows storing multiple attributes (name, description, price) of different data types for each product. The unique product ID can be the key, and the value can be a nested structure holding heterogeneous data types.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q38:</strong> Selecting appropriate data types ensures efficient memory usage and optimal performance. Using the least amount of memory necessary for each variable (e.g., strings for usernames, integers for ages, floats for balances, booleans for preferences) helps optimize operations such as eligibility checks and spending tracking.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q39:</strong> The total price of items in the cart can include decimal values (for example, $19.99), so using a float data type is appropriate to accurately represent these values with decimals. This correctly fulfills the requirement of storing numerical data that are not whole numbers.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q40:</strong> An integer variable with a range of 1-5 is most suitable for storing ratings because ratings are typically whole numbers representing discrete values (e.g., stars) and fall within a fixed scale. This allows efficient storage and easy comparison or aggregation.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q42:</strong> The pseudo code explicitly handles only three statuses: ‘Completed’, ‘In Progress’, and others implicitly as zero. Since ‘Inactive’ is not accounted for, the ELSE condition will apply, setting CourseProgress[Course.ID] to 0. Therefore, any course marked as ‘Inactive’ will have its progress recorded as zero.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q43:</strong> This pseudo-code uses a parallel_for loop to update the order statuses concurrently for multiple orders. By processing multiple updates in parallel, it effectively reduces the latency compared to sequential execution. This approach is suitable for real-time status updates where many orders need simultaneous handling.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q44:</strong> This pseudo code correctly follows the steps required: initializing total scores and review counts, iterating over each product to fetch scores and review counts from their respective databases, aggregating them properly by adding current scores to totalScore and incrementing totalReviews accordingly. Finally, it calculates the average.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>Q45:</strong> The IF condition correctly checks if current stock is below minimum and calculates a 7-day restock amount based on average sales per day. This automated process ensures inventory levels are maintained efficiently without manual intervention.</p>
+</blockquote>]]></content><author><name></name></author><category term="Exam Preparation" /><summary type="html"><![CDATA[A complete exam preparation guide covering aptitude, logical reasoning, programming fundamentals, and essential coding concepts to help you perform with confidence.]]></summary></entry><entry><title type="html">What We Shipped - January 2nd</title><link href="http://localhost:64917/whats-new/what-we-shipped-january-2nd/" rel="alternate" type="text/html" title="What We Shipped - January 2nd" /><published>2026-01-02T00:00:00+05:30</published><updated>2026-01-02T00:00:00+05:30</updated><id>http://localhost:64917/whats-new/what-we-shipped-january-2nd</id><content type="html" xml:base="http://localhost:64917/whats-new/what-we-shipped-january-2nd/"><![CDATA[<h2 id="community-contributions">Community Contributions</h2>
 
 <p>Materio now makes it easier than ever for students to give back to the community. The new <strong>Community Contributions</strong> feature allows you to share your study materials directly through Materio, helping fellow students access resources that might otherwise be difficult to find.</p>
 
@@ -125,7 +1245,7 @@
   <li><strong>Mobile bottom sheet dismiss</strong> – Swipe down to close bottom sheet modals on mobile for a more intuitive dismissal gesture.</li>
   <li><strong>Improved dark mode persistence</strong> – Theme preferences now persist more reliably across sessions.</li>
   <li><strong>Performance optimizations</strong> – Reduced overhead in dynamic content loading.</li>
-</ul>]]></content><author><name></name></author><category term="whats-new" /><summary type="html"><![CDATA[This week Materio introduces Community Contributions for sharing study materials, Haptic Feedback system for mobile interactions, and enhanced InsightRoom with Mermaid diagrams for mindmaps, FSM, automata visualizations and interactive flashcards.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:57288/assets/img/covers/6c35b879-59e5-49f3-ac34-50da3110547b.webp" /><media:content medium="image" url="http://localhost:57288/assets/img/covers/6c35b879-59e5-49f3-ac34-50da3110547b.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Dynamic Forms &amp;amp; Activity System — Configuration &amp;amp; Capabilities</title><link href="http://localhost:57288/docs/forms-system" rel="alternate" type="text/html" title="Dynamic Forms &amp;amp; Activity System — Configuration &amp;amp; Capabilities" /><published>2026-01-01T12:00:00+05:30</published><updated>2026-01-01T12:00:00+05:30</updated><id>http://localhost:57288/docs/forms-system</id><content type="html" xml:base="http://localhost:57288/docs/forms-system"><![CDATA[<h1 id="dynamic-forms--activity-system--configuration--capabilities">Dynamic Forms &amp; Activity System — Configuration &amp; Capabilities</h1>
+</ul>]]></content><author><name></name></author><category term="whats-new" /><summary type="html"><![CDATA[This week Materio introduces Community Contributions for sharing study materials, Haptic Feedback system for mobile interactions, and enhanced InsightRoom with Mermaid diagrams for mindmaps, FSM, automata visualizations and interactive flashcards.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:64917/assets/img/covers/6c35b879-59e5-49f3-ac34-50da3110547b.webp" /><media:content medium="image" url="http://localhost:64917/assets/img/covers/6c35b879-59e5-49f3-ac34-50da3110547b.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Dynamic Forms &amp;amp; Activity System — Configuration &amp;amp; Capabilities</title><link href="http://localhost:64917/docs/forms-system" rel="alternate" type="text/html" title="Dynamic Forms &amp;amp; Activity System — Configuration &amp;amp; Capabilities" /><published>2026-01-01T12:00:00+05:30</published><updated>2026-01-01T12:00:00+05:30</updated><id>http://localhost:64917/docs/forms-system</id><content type="html" xml:base="http://localhost:64917/docs/forms-system"><![CDATA[<h1 id="dynamic-forms--activity-system--configuration--capabilities">Dynamic Forms &amp; Activity System — Configuration &amp; Capabilities</h1>
 
 <p>This document outlines the architecture and configuration of the Dynamic Forms system in Materio. This system allows for creating complex, multi-step forms (wizards) and triggering them based on user behavior (activity) without touching the code.</p>
 
@@ -389,7 +1509,7 @@
       <td>Clear all fields and validation states.</td>
     </tr>
   </tbody>
-</table>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[Documentation for the Materio Dynamic Forms system: JSON configuration, multi-page wizards, activity triggers, conditions, and field types.]]></summary></entry><entry><title type="html">What We Shipped - December 28th</title><link href="http://localhost:57288/whats-new/what-we-shipped-december-28th/" rel="alternate" type="text/html" title="What We Shipped - December 28th" /><published>2025-12-28T08:43:10+05:30</published><updated>2025-12-28T08:43:10+05:30</updated><id>http://localhost:57288/whats-new/what-we-shipped-december-28th</id><content type="html" xml:base="http://localhost:57288/whats-new/what-we-shipped-december-28th/"><![CDATA[<h2 id="keyboard-shortcuts">Keyboard Shortcuts</h2>
+</table>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[Documentation for the Materio Dynamic Forms system: JSON configuration, multi-page wizards, activity triggers, conditions, and field types.]]></summary></entry><entry><title type="html">What We Shipped - December 28th</title><link href="http://localhost:64917/whats-new/what-we-shipped-december-28th/" rel="alternate" type="text/html" title="What We Shipped - December 28th" /><published>2025-12-28T08:43:10+05:30</published><updated>2025-12-28T08:43:10+05:30</updated><id>http://localhost:64917/whats-new/what-we-shipped-december-28th</id><content type="html" xml:base="http://localhost:64917/whats-new/what-we-shipped-december-28th/"><![CDATA[<h2 id="keyboard-shortcuts">Keyboard Shortcuts</h2>
 <p>[video: /assets/media/d800e899-1803-4f3a-8652-c7c6ec9ee4a6.webm: shortcuts-preview]</p>
 
 <p>Materio now supports keyboard shortcuts on desktop to make navigation, reading, and everyday actions faster and more fluid.</p>
@@ -453,7 +1573,7 @@ A minimal, non intrusive view that displays only the heading “Latest from the 
   <li>Sandpaper</li>
   <li>Textured Paper</li>
   <li>Gaussian</li>
-</ol>]]></content><author><name></name></author><category term="whats-new" /><summary type="html"><![CDATA[Materio rolled out keyboard shortcuts - a new way to interact and navigate, Option to set disable and set different views for insightroom feed, Smart dark mode and pure light mode, Improved search UI and bunch of stability and performance fixes.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:57288/assets/img/covers/caa86fee-605f-4636-a01f-36a9e967990c.webp" /><media:content medium="image" url="http://localhost:57288/assets/img/covers/caa86fee-605f-4636-a01f-36a9e967990c.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Introduction to Android OS</title><link href="http://localhost:57288/originals/introduction-to-android-os/" rel="alternate" type="text/html" title="Introduction to Android OS" /><published>2025-12-06T15:17:45+05:30</published><updated>2025-12-06T15:17:45+05:30</updated><id>http://localhost:57288/originals/introduction-to-android-os</id><content type="html" xml:base="http://localhost:57288/originals/introduction-to-android-os/"><![CDATA[<p>[attachment:https://static-materio.vercel.app/common/files/attach/4f3001a2-d238-44ff-8108-afb6651fb90c.pdf:Introduction to Android OS]</p>
+</ol>]]></content><author><name></name></author><category term="whats-new" /><summary type="html"><![CDATA[Materio rolled out keyboard shortcuts - a new way to interact and navigate, Option to set disable and set different views for insightroom feed, Smart dark mode and pure light mode, Improved search UI and bunch of stability and performance fixes.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:64917/assets/img/covers/caa86fee-605f-4636-a01f-36a9e967990c.webp" /><media:content medium="image" url="http://localhost:64917/assets/img/covers/caa86fee-605f-4636-a01f-36a9e967990c.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Introduction to Android OS</title><link href="http://localhost:64917/originals/introduction-to-android-os/" rel="alternate" type="text/html" title="Introduction to Android OS" /><published>2025-12-06T15:17:45+05:30</published><updated>2025-12-06T15:17:45+05:30</updated><id>http://localhost:64917/originals/introduction-to-android-os</id><content type="html" xml:base="http://localhost:64917/originals/introduction-to-android-os/"><![CDATA[<p>[attachment:https://static-materio.vercel.app/common/files/attach/4f3001a2-d238-44ff-8108-afb6651fb90c.pdf:Introduction to Android OS]</p>
 
 <p>Android is a mobile operating system that powers most of today’s smartphones and many other smart devices, built mainly for touchscreens and developed by Google using open‑source technologies. It provides the basic “brain” that lets apps run, manages hardware like camera and sensors, and gives the familiar home screen, notifications, and settings you use every day.</p>
 
@@ -1426,7 +2546,7 @@ RES FAMILY: UI customization
 
 <blockquote>
   <p>[!NOTE] No manifest = Android ignores your app completely; it’s the first file system reads.</p>
-</blockquote>]]></content><author><name></name></author><category term="Originals" /><summary type="html"><![CDATA[This resource provides overview about Android, its Architecture, Versions, Features, Open Handset Alliance, Dalvik VM, SDK, Development Tools and Environment, AVD, Directory structure and Manifest files]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:57288/assets/img/covers/070444b6-4a51-4695-8049-6710ccefe078.webp" /><media:content medium="image" url="http://localhost:57288/assets/img/covers/070444b6-4a51-4695-8049-6710ccefe078.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">MEAN Stack Web Development</title><link href="http://localhost:57288/originals/mean-stack-web-development/" rel="alternate" type="text/html" title="MEAN Stack Web Development" /><published>2025-12-05T20:27:50+05:30</published><updated>2025-12-05T20:27:50+05:30</updated><id>http://localhost:57288/originals/mean-stack-web-development</id><content type="html" xml:base="http://localhost:57288/originals/mean-stack-web-development/"><![CDATA[<!-- 
+</blockquote>]]></content><author><name></name></author><category term="Originals" /><summary type="html"><![CDATA[This resource provides overview about Android, its Architecture, Versions, Features, Open Handset Alliance, Dalvik VM, SDK, Development Tools and Environment, AVD, Directory structure and Manifest files]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:64917/assets/img/covers/070444b6-4a51-4695-8049-6710ccefe078.webp" /><media:content medium="image" url="http://localhost:64917/assets/img/covers/070444b6-4a51-4695-8049-6710ccefe078.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">MEAN Stack Web Development</title><link href="http://localhost:64917/originals/mean-stack-web-development/" rel="alternate" type="text/html" title="MEAN Stack Web Development" /><published>2025-12-05T20:27:50+05:30</published><updated>2025-12-05T20:27:50+05:30</updated><id>http://localhost:64917/originals/mean-stack-web-development</id><content type="html" xml:base="http://localhost:64917/originals/mean-stack-web-development/"><![CDATA[<!-- 
 - What is MEAN
 - Why JS ?
 - why Node.js when there's Java, C#, Python?
@@ -1638,7 +2758,7 @@ NoSQL - scalable, flexible, high performance
 why NoSQL is popular 
 types of NoSQL -documentbase -  mongo, key/value, column/family - casandra , graph
 
-mongodb  -json->BSON (binary json)->int32, int64 -->]]></content><author><name></name></author><category term="Originals" /><summary type="html"><![CDATA[This resource provides basics about MEAN Stack and web development]]></summary></entry><entry><title type="html">What We Shipped - December 1st</title><link href="http://localhost:57288/whats-new/what-we-shipped-december-1st/" rel="alternate" type="text/html" title="What We Shipped - December 1st" /><published>2025-12-01T00:00:00+05:30</published><updated>2025-12-01T00:00:00+05:30</updated><id>http://localhost:57288/whats-new/what-we-shipped-december-1st</id><content type="html" xml:base="http://localhost:57288/whats-new/what-we-shipped-december-1st/"><![CDATA[<h2 id="a-new-home-for-materios-reliability">A New Home for Materio’s Reliability</h2>
+mongodb  -json->BSON (binary json)->int32, int64 -->]]></content><author><name></name></author><category term="Originals" /><summary type="html"><![CDATA[This resource provides basics about MEAN Stack and web development]]></summary></entry><entry><title type="html">What We Shipped - December 1st</title><link href="http://localhost:64917/whats-new/what-we-shipped-december-1st/" rel="alternate" type="text/html" title="What We Shipped - December 1st" /><published>2025-12-01T00:00:00+05:30</published><updated>2025-12-01T00:00:00+05:30</updated><id>http://localhost:64917/whats-new/what-we-shipped-december-1st</id><content type="html" xml:base="http://localhost:64917/whats-new/what-we-shipped-december-1st/"><![CDATA[<h2 id="a-new-home-for-materios-reliability">A New Home for Materio’s Reliability</h2>
 <p>This week marks an important milestone for Materio.
 After months of growth, higher traffic, and increasing demand from students across multiple semesters, Materio has officially shifted its deployment to Vercel.</p>
 
@@ -1712,7 +2832,7 @@ A brand-new category of resources created, curated, and refined entirely by Mate
 <p>You might need to clear the site data once and check if the issues still persists, Here’s how you can clear data and old cache.
 [video:/assets/media/0d862b05-559b-44c6-b8fa-c9207d1ddfd1.webm]</p>
 
-<p>If you’re still facing issues after clearing the data then you can raise an issue on the <a href="https://github.com/Materioa/web-frontend">Github Repo</a>.</p>]]></content><author><name></name></author><category term="whats-new" /><summary type="html"><![CDATA[This week Materio moved to vercel, launched Materio Originals, and feature drops to like Native dark-mode to PDFs with inversion filter, addition of the table of contents sidebar to the insightroom]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:57288/assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp" /><media:content medium="image" url="http://localhost:57288/assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Post Front-matters — Fields, Usage &amp;amp; Best Practices</title><link href="http://localhost:57288/docs/frontmatters" rel="alternate" type="text/html" title="Post Front-matters — Fields, Usage &amp;amp; Best Practices" /><published>2025-11-30T15:00:00+05:30</published><updated>2025-11-30T15:00:00+05:30</updated><id>http://localhost:57288/docs/post-frontmatters</id><content type="html" xml:base="http://localhost:57288/docs/frontmatters"><![CDATA[<h1 id="post-front-matters--fields-usage--best-practices">Post Front-matters — Fields, Usage &amp; Best Practices</h1>
+<p>If you’re still facing issues after clearing the data then you can raise an issue on the <a href="https://github.com/Materioa/web-frontend">Github Repo</a>.</p>]]></content><author><name></name></author><category term="whats-new" /><summary type="html"><![CDATA[This week Materio moved to vercel, launched Materio Originals, and feature drops to like Native dark-mode to PDFs with inversion filter, addition of the table of contents sidebar to the insightroom]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:64917/assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp" /><media:content medium="image" url="http://localhost:64917/assets/img/covers/e6d2c600-a047-4a60-baa5-06adea6a054d.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Post Front-matters — Fields, Usage &amp;amp; Best Practices</title><link href="http://localhost:64917/docs/frontmatters" rel="alternate" type="text/html" title="Post Front-matters — Fields, Usage &amp;amp; Best Practices" /><published>2025-11-30T15:00:00+05:30</published><updated>2025-11-30T15:00:00+05:30</updated><id>http://localhost:64917/docs/post-frontmatters</id><content type="html" xml:base="http://localhost:64917/docs/frontmatters"><![CDATA[<h1 id="post-front-matters--fields-usage--best-practices">Post Front-matters — Fields, Usage &amp; Best Practices</h1>
 
 <p>This document explains the YAML front-matter keys used across the Materio site, gives common templates you can copy, and highlights pitfalls (for example: unquoted strings containing <code class="language-plaintext highlighter-rouge">:</code> break YAML). Use this as a quick authoring reference when creating or editing <code class="language-plaintext highlighter-rouge">_posts</code> entries.</p>
 
@@ -2316,7 +3436,7 @@ Advises about risks or negative outcomes of certain actions.</p>
   <li>Keep excerpts concise (under 100 characters)</li>
   <li>Use high-quality square or landscape images</li>
   <li>Match the <code class="language-plaintext highlighter-rouge">id</code> exactly to your link text for reliable matching</li>
-</ul>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[Reference for post front-matter keys used in this site: meanings, examples, common pitfalls (YAML quoting, dates), and templates authors can reuse.]]></summary></entry><entry><title type="html">Promotions System — Configuration &amp;amp; Capabilities</title><link href="http://localhost:57288/docs/promotions" rel="alternate" type="text/html" title="Promotions System — Configuration &amp;amp; Capabilities" /><published>2025-11-30T12:00:00+05:30</published><updated>2025-11-30T12:00:00+05:30</updated><id>http://localhost:57288/docs/promotions-system</id><content type="html" xml:base="http://localhost:57288/docs/promotions"><![CDATA[<h1 id="promotions-system--configuration--capabilities">Promotions System — Configuration &amp; Capabilities</h1>
+</ul>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[Reference for post front-matter keys used in this site: meanings, examples, common pitfalls (YAML quoting, dates), and templates authors can reuse.]]></summary></entry><entry><title type="html">Promotions System — Configuration &amp;amp; Capabilities</title><link href="http://localhost:64917/docs/promotions" rel="alternate" type="text/html" title="Promotions System — Configuration &amp;amp; Capabilities" /><published>2025-11-30T12:00:00+05:30</published><updated>2025-11-30T12:00:00+05:30</updated><id>http://localhost:64917/docs/promotions-system</id><content type="html" xml:base="http://localhost:64917/docs/promotions"><![CDATA[<h1 id="promotions-system--configuration--capabilities">Promotions System — Configuration &amp; Capabilities</h1>
 
 <p>This note describes the promotions (promo modal) system used across Materio: the JSON fields available in <code class="language-plaintext highlighter-rouge">assets/data/promo.json</code>, the supported animation and button options, frequency controls, and quick testing tips. It’s written in the same practical style as the API docs so you can author promos confidently.</p>
 
@@ -2634,7 +3754,7 @@ Advises about risks or negative outcomes of certain actions.</p>
       <li>A: When enabled via <code class="language-plaintext highlighter-rouge">options.showDontShowAgain</code>, the close handler stores <code class="language-plaintext highlighter-rouge">promoDoNotShowAgain = 'true'</code> in <code class="language-plaintext highlighter-rouge">localStorage</code> and subsequent checks skip the promo.</li>
     </ul>
   </li>
-</ul>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[How the Materio promotions system works: JSON schema, animation options, button/config tags, frequency controls, and tips to test and author promos.]]></summary></entry><entry><title type="html">Number System</title><link href="http://localhost:57288/originals/number-system/" rel="alternate" type="text/html" title="Number System" /><published>2025-11-29T09:03:06+05:30</published><updated>2025-11-29T09:03:06+05:30</updated><id>http://localhost:57288/originals/number-system</id><content type="html" xml:base="http://localhost:57288/originals/number-system/"><![CDATA[<p>[attachment:https://static-materio.vercel.app/common/files/attach/de882c43-c10f-4708-81a3-31b027b5a289.pdf:Number System]</p>
+</ul>]]></content><author><name></name></author><category term="Documentation" /><summary type="html"><![CDATA[How the Materio promotions system works: JSON schema, animation options, button/config tags, frequency controls, and tips to test and author promos.]]></summary></entry><entry><title type="html">Number System</title><link href="http://localhost:64917/originals/number-system/" rel="alternate" type="text/html" title="Number System" /><published>2025-11-29T09:03:06+05:30</published><updated>2025-11-29T09:03:06+05:30</updated><id>http://localhost:64917/originals/number-system</id><content type="html" xml:base="http://localhost:64917/originals/number-system/"><![CDATA[<p>[attachment:https://static-materio.vercel.app/common/files/attach/de882c43-c10f-4708-81a3-31b027b5a289.pdf:Number System]</p>
 
 <p>The Number System is the framework used to represent and calculate quantities. Below are concise, exam-oriented notes starting from the basic building blocks up to Real numbers.</p>
 
@@ -3819,178 +4939,4 @@ Write <strong>5</strong></p>
   </li>
 </ul>
 
-<p><strong>Final Answer:</strong> \(\;56088\)</p>]]></content><author><name></name></author><category term="Originals" /><summary type="html"><![CDATA[This resource provides detailed notes about Number systems with Important points, examples and other things which are helpful for exams as well as contributes to better understanding of the topic.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:57288/assets/img/covers/b0ad7902-c47a-44d4-bbf0-d2694247aab7.webp" /><media:content medium="image" url="http://localhost:57288/assets/img/covers/b0ad7902-c47a-44d4-bbf0-d2694247aab7.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Software Engineering Important Questions</title><link href="http://localhost:57288/resource/software-engineering-important-questions/" rel="alternate" type="text/html" title="Software Engineering Important Questions" /><published>2025-11-21T08:02:35+05:30</published><updated>2025-11-21T08:02:35+05:30</updated><id>http://localhost:57288/resource/software-engineering-important-questions</id><content type="html" xml:base="http://localhost:57288/resource/software-engineering-important-questions/"><![CDATA[<h2 id="unit-1-introduction-to-software-engineering">UNIT 1: Introduction to Software Engineering</h2>
-
-<ol>
-  <li>Define Software Engineering.</li>
-  <li>What are the characteristics of good software?</li>
-  <li>Explain the layered technology of software engineering.</li>
-  <li>Differentiate between software and hardware.</li>
-  <li>What are software components? Give examples.</li>
-  <li>Write a short note on the software crisis.</li>
-  <li>Explain software applications in different domains.</li>
-  <li>What are the major challenges in software engineering?</li>
-  <li>Explain the Waterfall Model with its advantages and disadvantages.</li>
-  <li>What is the Incremental Model?</li>
-  <li>Describe the Prototype Model with a neat diagram.</li>
-  <li>Explain the Spiral Model and its advantages.</li>
-  <li>What is the Concurrent Development Model?</li>
-  <li>Define Agile Development.</li>
-  <li>Explain the Agile Process Model.</li>
-  <li>What are the principles of agility?</li>
-  <li>Explain Extreme Programming (XP).</li>
-  <li>List other Agile models and tools used in industries.</li>
-  <li>What are the benefits and drawbacks of Agile models?</li>
-  <li>Compare traditional process models with Agile models.</li>
-</ol>
-
-<hr />
-
-<h2 id="unit-2-software-project-management">UNIT 2: Software Project Management</h2>
-
-<ol>
-  <li>What is Software Project Management?</li>
-  <li>What are the main activities involved in software project management?</li>
-  <li>Describe the management spectrum.</li>
-  <li>Explain the relationship between People, Product, Process, and Project.</li>
-  <li>What is the W5HH Principle? Explain each question.</li>
-  <li>Why is team management important in software projects?</li>
-  <li>What are the roles and responsibilities of a project manager?</li>
-  <li>Explain project scope and feasibility analysis.</li>
-  <li>What are the steps involved in effort estimation?</li>
-  <li>Define project scheduling.</li>
-  <li>Explain different types of project scheduling methods.</li>
-  <li>What is staffing in project management?</li>
-  <li>Explain quality planning in software projects.</li>
-  <li>What is risk management?</li>
-  <li>Explain the process of risk identification.</li>
-  <li>Describe risk assessment and control techniques.</li>
-  <li>What is a project monitoring plan?</li>
-  <li>Explain detailed scheduling with examples.</li>
-  <li>Define key performance indicators (KPIs) in project monitoring.</li>
-  <li>What tools are used for project monitoring and control?</li>
-</ol>
-
-<hr />
-
-<h2 id="unit-3-requirements-engineering">UNIT 3: Requirements Engineering</h2>
-
-<ol>
-  <li>What is Requirements Engineering?</li>
-  <li>Explain the steps of the Requirements Engineering process.</li>
-  <li>What is problem recognition?</li>
-  <li>What are the tasks of Requirements Engineering?</li>
-  <li>Define requirement specification.</li>
-  <li>What are functional and non functional requirements?</li>
-  <li>Explain requirement elicitation with techniques.</li>
-  <li>What are the categories of customer requirements?</li>
-  <li>What is a Use Case? Give an example.</li>
-  <li>Explain Functional Specification.</li>
-  <li>What is Requirement Validation?</li>
-  <li>Explain Requirement Analysis with its importance.</li>
-  <li>What is the difference between feasibility study and requirement analysis?</li>
-  <li>Write short notes on requirement documentation.</li>
-  <li>What are the qualities of a good SRS document?</li>
-</ol>
-
-<hr />
-
-<h2 id="unit-4-structured-system-design">UNIT 4: Structured System Design</h2>
-
-<ol>
-  <li>What are the key design concepts in software engineering?</li>
-  <li>Define software architecture.</li>
-  <li>What are architectural styles and patterns?</li>
-  <li>Explain data design and procedural design.</li>
-  <li>What is object oriented design (OOD)?</li>
-  <li>Explain data oriented analysis with examples.</li>
-  <li>Draw and explain an Entity Relationship (ER) diagram.</li>
-  <li>What is a Data Flow Diagram (DFD)?</li>
-  <li>Define Control Flow Model and explain its significance.</li>
-  <li>What is a Data Dictionary?</li>
-  <li>What is Component Level Design?</li>
-  <li>Explain modularity and abstraction in system design.</li>
-  <li>Compare object oriented and functional oriented design approaches.</li>
-</ol>
-
-<hr />
-
-<h2 id="unit-5-coding-and-unit-testing">UNIT 5: Coding and Unit Testing</h2>
-
-<ol>
-  <li>What are programming principles and guidelines?</li>
-  <li>Explain the concept of structured programming.</li>
-  <li>What are coding standards? Why are they important?</li>
-  <li>Explain incremental development of code.</li>
-  <li>How is code evaluation and review managed?</li>
-  <li>Define unit testing.</li>
-  <li>Differentiate between procedural unit testing and class testing.</li>
-  <li>What is code inspection?</li>
-  <li>Explain Cyclomatic Complexity with an example.</li>
-  <li>What is Halstead Software Science measure?</li>
-  <li>Define Knot Count metric.</li>
-  <li>Compare different software metrics.</li>
-  <li>What are the benefits of using code metrics?</li>
-</ol>
-
-<hr />
-
-<h2 id="unit-6-software-testing-and-quality-assurance">UNIT 6: Software Testing and Quality Assurance</h2>
-
-<ol>
-  <li>Define software testing.</li>
-  <li>Explain the psychology of testing.</li>
-  <li>What are the different levels of testing?</li>
-  <li>What are the steps of the testing process?</li>
-  <li>Explain the purpose of a test plan.</li>
-  <li>What is test case design?</li>
-  <li>What is black box testing?</li>
-  <li>Explain Boundary Value Analysis with example.</li>
-  <li>Explain Pairwise Testing and State Based Testing.</li>
-  <li>What is White Box Testing?</li>
-  <li>Describe test case generation and tool support.</li>
-  <li>Define Quality Assurance and Quality Control.</li>
-  <li>Explain the cost of quality in software projects.</li>
-  <li>What are software reviews?</li>
-  <li>Describe Software Quality Assurance (SQA) approaches.</li>
-  <li>What is software reliability?</li>
-  <li>Explain ISO 9000 and ISO 9001 standards for software quality.</li>
-</ol>
-
-<hr />
-
-<h2 id="unit-7-case-tools-and-system-dependability-and-security">UNIT 7: CASE Tools and System Dependability and Security</h2>
-
-<ol>
-  <li>What are CASE tools?</li>
-  <li>Explain the importance of a Central Repository in CASE tools.</li>
-  <li>Differentiate between Upper CASE, Lower CASE, and Integrated CASE tools.</li>
-  <li>What is SCRUM? Describe its main roles and events.</li>
-  <li>What is a dependable system? Explain its attributes.</li>
-  <li>What is Reliability Engineering? Explain with metrics.</li>
-  <li>Explain Safety Engineering with examples.</li>
-  <li>Define Security Engineering.</li>
-  <li>What are the CIA principles of security?</li>
-  <li>What is Resilience Engineering? How does it differ from reliability?</li>
-  <li>Explain techniques to improve system dependability.</li>
-  <li>Write short notes on system reliability and recovery techniques.</li>
-</ol>
-
-<hr />
-
-<h2 id="unit-8-advanced-software-engineering">UNIT 8: Advanced Software Engineering</h2>
-
-<ol>
-  <li>Define Software Reuse. What are its benefits?</li>
-  <li>Explain Component Based Software Engineering (CBSE).</li>
-  <li>What is Distributed Software Engineering?</li>
-  <li>Explain Service Oriented Software Engineering (SOSE).</li>
-  <li>What is Real Time Software Engineering?</li>
-  <li>Differentiate between Hard and Soft Real Time systems.</li>
-  <li>Explain Systems Engineering with example.</li>
-  <li>What is a System of Systems (SoS)?</li>
-  <li>Explain the challenges in Systems of Systems development.</li>
-  <li>Discuss the future trends in Advanced Software Engineering.</li>
-</ol>
-
-<hr />]]></content><author><name>Materio</name></author><category term="Resource" /><summary type="html"><![CDATA[This Resource lists important questions for end semester exams]]></summary></entry></feed>
+<p><strong>Final Answer:</strong> \(\;56088\)</p>]]></content><author><name></name></author><category term="Originals" /><summary type="html"><![CDATA[This resource provides detailed notes about Number systems with Important points, examples and other things which are helpful for exams as well as contributes to better understanding of the topic.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:64917/assets/img/covers/b0ad7902-c47a-44d4-bbf0-d2694247aab7.webp" /><media:content medium="image" url="http://localhost:64917/assets/img/covers/b0ad7902-c47a-44d4-bbf0-d2694247aab7.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

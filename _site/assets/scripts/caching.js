@@ -37,26 +37,81 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // ===== IFRAME PREWARMING STRATEGY =====
+    // Prewarm the PDF.js viewer in a hidden iframe at page load
+    // When user opens a PDF, we reuse the prewarmed viewer and just send the PDF URL
+    let isViewerPrewarmed = false;
+    let prewarmPromise = null;
+    let prewarmIframe = null; // Separate reference for prewarmed iframe (not attached to DOM)
+
+    function prewarmViewer() {
+        if (prewarmPromise) return prewarmPromise;
+
+        prewarmPromise = new Promise((resolve) => {
+            // Create a detached iframe for prewarming (not added to DOM yet)
+            prewarmIframe = document.createElement('iframe');
+            prewarmIframe.id = 'pdf-iframe-prewarm';
+            prewarmIframe.style.border = 'none';
+            prewarmIframe.style.width = '100%';
+            prewarmIframe.style.height = 'calc(100% - 17px)';
+            prewarmIframe.style.borderRadius = '10px';
+            prewarmIframe.style.marginTop = '22px';
+            prewarmIframe.style.visibility = 'hidden';
+            prewarmIframe.style.position = 'absolute';
+            prewarmIframe.style.left = '-9999px'; // Off-screen
+
+            // Prewarm handler - resolve when viewer is ready
+            const onPrewarmLoad = () => {
+                isViewerPrewarmed = true;
+                prewarmIframe.removeEventListener('load', onPrewarmLoad);
+                resolve();
+            };
+            prewarmIframe.addEventListener('load', onPrewarmLoad);
+
+            // Load viewer without PDF to prewarm it
+            prewarmIframe.src = '/oread/web/viewer.html';
+
+            // Add to body temporarily (hidden and off-screen) for loading
+            document.body.appendChild(prewarmIframe);
+        });
+
+        return prewarmPromise;
+    }
+
+    // Start prewarming after main content loads (with slight delay to not block critical path)
+    if (document.readyState === 'complete') {
+        setTimeout(prewarmViewer, 1000);
+    } else {
+        window.addEventListener('load', () => setTimeout(prewarmViewer, 1000));
+    }
+
     function initializeIframe() {
-        if (!pdfIframe) {
+        // Use prewarmed iframe if available, otherwise create new
+        if (isViewerPrewarmed && prewarmIframe && !pdfIframe) {
+            // Move prewarmed iframe from body to popupContent
+            pdfIframe = prewarmIframe;
+            pdfIframe.id = 'pdf-iframe';
+            pdfIframe.style.left = ''; // Remove off-screen positioning
+            prewarmIframe = null; // Clear reference since we're using it now
+        } else if (!pdfIframe) {
             pdfIframe = document.createElement('iframe');
             pdfIframe.id = 'pdf-iframe';
-            pdfIframe.src = 'about:blank'; // Initialize with blank to prevent loading current page
+            pdfIframe.src = 'about:blank';
             pdfIframe.style.border = 'none';
             pdfIframe.style.width = '100%';
             pdfIframe.style.height = 'calc(100% - 17px)';
             pdfIframe.style.borderRadius = '10px';
             pdfIframe.style.marginTop = '22px';
+        }
 
-            // Add load event listener to setup overlay modes
+        // Add load event listener to setup overlay modes (if not already added)
+        if (!pdfIframe._hasOverlayListener) {
+            pdfIframe._hasOverlayListener = true;
             pdfIframe.addEventListener('load', function () {
-                // Note: Haptic feedback for PDF loaded is handled via pdfLoaded message event
-                // to ensure it syncs with actual PDF document loading, not just iframe load
-
                 // Quick setup for PDF.js viewer
                 setTimeout(() => {
                     const mainPopup = document.getElementById('popup');
-                    if (mainPopup && pdfIframe.contentWindow) {
+                    if (mainPopup && pdfIframe && pdfIframe.contentWindow) {
                         // Send current overlay states to iframe
                         if (mainPopup.classList.contains('paper-mode')) {
                             pdfIframe.contentWindow.postMessage({
@@ -81,33 +136,24 @@ document.addEventListener('DOMContentLoaded', function () {
                             isDark: isDarkMode
                         }, '*');
                     }
-                }, 100); // Reduced from 500ms to 100ms
+                }, 50);
             });
         }
 
-        // Clear any existing content (like error messages) before adding iframe
-        const existingIframe = document.getElementById('pdf-iframe');
-        if (!existingIframe) {
-            popupContent.innerHTML = ''; // Clear existing content
-            popupContent.appendChild(pdfIframe);
-        } else {
-            // IMPORTANT: Hide iframe while clearing to prevent showing old PDF
-            pdfIframe.style.visibility = 'hidden';
+        // Make iframe visible and properly positioned
+        pdfIframe.style.visibility = 'visible';
+        pdfIframe.style.position = 'relative';
 
-            // Clear the iframe completely by setting src to about:blank
-            pdfIframe.src = 'about:blank';
+        // Clear any existing content and add iframe to popupContent
+        popupContent.innerHTML = '';
+        popupContent.appendChild(pdfIframe);
 
-            // Clear popup content and re-add iframe
-            popupContent.innerHTML = '';
-            popupContent.appendChild(pdfIframe);
-
-            // Show loading indicator while clearing
-            const loadingDiv = document.createElement('div');
-            loadingDiv.id = 'pdf-loading-indicator';
-            loadingDiv.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;';
-            loadingDiv.innerHTML = '<i class="far fa-spinner-third fa-spin" style="font-size: 48px; color: #ff8400;"></i><p style="margin-top: 20px; color: var(--text-color);">Loading PDF...</p>';
-            popupContent.appendChild(loadingDiv);
-        }
+        // Show loading indicator
+        const loadingDiv = document.createElement('div');
+        loadingDiv.id = 'pdf-loading-indicator';
+        loadingDiv.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 10;';
+        loadingDiv.innerHTML = '<i class="far fa-spinner-third fa-spin" style="font-size: 48px; color: #ff8400;"></i><p style="margin-top: 20px; color: var(--text-color);">Loading PDF...</p>';
+        popupContent.appendChild(loadingDiv);
     }
 
     // Track progress for haptic feedback
@@ -241,8 +287,18 @@ document.addEventListener('DOMContentLoaded', function () {
         if (loadingIndicator) loadingIndicator.remove();
         pdfIframe.style.visibility = 'visible';
 
-        // Load directly - PDF.js will stream it efficiently
-        pdfIframe.src = viewerUrl;
+        // If viewer is prewarmed, use postMessage for instant PDF change
+        // Otherwise, load the full viewer URL
+        if (isViewerPrewarmed && pdfIframe.contentWindow) {
+            // Use postMessage to load PDF in prewarmed viewer (FAST PATH)
+            pdfIframe.contentWindow.postMessage({
+                type: 'loadFile',
+                url: pdfUrl
+            }, window.location.origin);
+        } else {
+            // Fallback: Load viewer with PDF URL (first time or not prewarmed)
+            pdfIframe.src = viewerUrl;
+        }
 
         // Show popup
         popup.classList.remove('closing');
@@ -370,6 +426,8 @@ document.addEventListener('DOMContentLoaded', function () {
     window.preloadPdf = preloadPdf;
     window.pdfCache = pdfCache;
     window.loadPdfWithCache = loadPdfWithCache;
+    window.prewarmViewer = prewarmViewer;
+    window.isViewerPrewarmed = () => isViewerPrewarmed;
 
     // ===== SHARED STATE =====
     let currentPdfUrl = null; // Shared between bookmark and download features

@@ -138,3 +138,12 @@
         console.log('Enjoy un-interrupted reading.');
     }
 </script>
+
+<!-- PDF.js Viewer Preloading - Eliminates cold-start delay -->
+<link rel="preload" href="/oread/build/pdf.mjs" as="script" crossorigin>
+<link rel="preload" href="/oread/web/viewer.mjs" as="script" crossorigin>
+<link rel="preload" href="/oread/web/viewer.css" as="style">
+<link rel="modulepreload" href="/oread/build/pdf.mjs">
+<link rel="modulepreload" href="/oread/web/viewer.mjs">
+<link rel="prefetch" href="/oread/build/pdf.worker.mjs">
+<link rel="prefetch" href="/oread/web/viewer.html">

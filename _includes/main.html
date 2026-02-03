@@ -17,12 +17,17 @@
             <a href="#2" class="tab-link" data-tab="chat">
                 <i class="far fa-comments"></i>
             </a>
+            <a href="#community" class="tab-link" data-tab="community" title="Community Boards" style="display: none;">
+                <i class="far fa-messages-question"></i>
+            </a>
             <a href="#3" class="tab-link" data-tab="notifications">
                 <i class="far fa-bell"></i>
             </a>
+
             <!-- <a href="#4" class="tab-link" data-tab="ai-chat">
                 <i class="far fa-robot"></i>
             </a> -->
+
 
             <a href="https://insightroom.vercel.app" target="_blank">
                 <i class="far fa-lightbulb-on"></i>
@@ -62,6 +67,11 @@
                     <a href="#4" class="dropdown-item" data-action="settings" role="menuitem" tabindex="-1">
                         <i class="fas fa-cog" aria-hidden="true"></i>
                         <span>Settings</span>
+                    </a>
+                    <a href="#" class="dropdown-item" onclick="createNewNotebook(); return false;" role="menuitem"
+                        tabindex="-1">
+                        <i class="fas fa-edit" aria-hidden="true"></i>
+                        <span>Create Note</span>
                     </a>
                 </div>
             </div>
@@ -132,7 +142,7 @@
                     <div class="icon-buttons-container"
                         style="display: flex; align-items: center; gap: 10px; flex-shrink: 0; margin-left: auto;">
                         <button onclick="openDynamicForm('contribution', true)" class="icon-button"
-                            style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 45px; height: 45px; min-width: 45px; background: rgba(255, 130, 0, 0.1); border: 1px solid rgba(255, 130, 0, 0.3); border-radius: 25px; corner-shape:squircle; color: #ff8200; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(4px);"
+                            style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 45px; height: 45px; min-width: 45px; background: rgba(255, 130, 0, 0.1); border: 1px solid rgba(255, 130, 0, 0.3); border-radius: 25px; color: #ff8200; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(4px);"
                             onmouseover="this.style.background='rgba(255, 130, 0, 0.2)'; this.style.transform='translateY(-2px)'"
                             onmouseout="this.style.background='rgba(255, 130, 0, 0.1)'; this.style.transform='translateY(0)'">
                             <i class="far fa-circle-plus" style="font-size: 18px;"></i>
@@ -150,7 +160,8 @@
             <div class="card-one" id="blogs" style="display: none;">
                 <!-- Header row - always visible, clickable in folded mode -->
                 <div class="blog-header-container" id="blogHeaderContainer">
-                    <h2 id="blogCardHeading" class="blog-header-title">Latest from the Insightroom</h2>
+                    <h2 id="blogCardHeading" class="blog-header-title"><i class="fa-solid fa-lightbulb-on"
+                            style="color: #ff8200; margin-right: 8px;"></i>Latest from the Insightroom</h2>
                     <div class="blog-header-right">
                         <a href="https://insightroom.vercel.app" class="view-more-btn">
                             View More
@@ -214,6 +225,10 @@
 
             <div id="popup">
                 <div class="popup-controls">
+                    <button id="createNoteButton" title="Create Note" aria-label="Create Note"
+                        onclick="createNewNotebook()">
+                        <i class="far fa-edit"></i>
+                    </button>
                     <button id="downloadButton" title="Download for offline reading"
                         aria-label="Download for offline reading">
                         <i class="far fa-bookmark"></i>
@@ -293,6 +308,9 @@
 
         <!-- Dynamic Forms Modal -->
         {% include dynamic-forms.html %}
+
+        <!-- Notebook Modal -->
+        {% include notebook.html %}
 
         <div id="local" class="tab-content">
             <h1>
@@ -418,6 +436,56 @@
             </div>
         </div>
 
+        <!-- Community Boards Tab -->
+        <div id="community" class="tab-content" style="display: none;">
+            <h1>
+                Community Boards
+                <i class="fas fa-circle-info info-icon">
+                    <span class="tooltip" style="font-weight: normal;">
+                        Discuss topics, ask questions, and share knowledge with other Materio users.
+                        Faculty-verified and student-consensus community notes add context to discussions.
+                    </span>
+                </i>
+            </h1>
+            <!-- Injectable Community Module -->
+            <div id="materio-community" data-api-url="http://localhost:3001" data-theme="auto"
+                data-enable-anonymous="true" data-enable-notes="true" data-enable-attachments="true">
+            </div>
+        </div>
+
+        <div id="notebooks" class="tab-content">
+            <div class="notebooks-tab-header">
+                <h1>My Notebooks</h1>
+                <div class="notebooks-tab-actions">
+                    <button class="site-button" onclick="createNewNotebook()">
+                        <i class="fas fa-plus"></i> New Note
+                    </button>
+                    <button class="site-button secondary" onclick="syncNotebooks()" id="syncBtnInTab"
+                        style="display: none;">
+                        <i class="fas fa-sync"></i> Sync
+                    </button>
+                </div>
+            </div>
+
+            <!-- Notebooks Grid -->
+            <div id="notebooksGridInTab" class="notebooks-grid">
+                <!-- Notebook cards will be populated here -->
+                <div class="notebook-loading">
+                    <i class="fas fa-spinner fa-spin"></i> Loading notebooks...
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyStateInTab" class="notebooks-empty" style="display: none;">
+                <div class="empty-icon">
+                    <i class="far fa-notebook"></i>
+                </div>
+                <h3>No notebooks yet</h3>
+                <p>Create your first note to get started.</p>
+                <button class="site-button" onclick="createNewNotebook()">Create Note</button>
+            </div>
+        </div>
+
         <div id="ai-chat" class="tab-content" disabled>
             <h1>AI Chat</h1>
             {% include ai-chat.html %}
@@ -440,7 +508,7 @@
                         <p id="storageStats" style="margin: 5px 0; color: #666; font-size: 14px;">Loading...</p>
                     </div>
                     <button id="clearAllDownloadsBtn" class="btn"
-                        style="background: #dc3545; color: white; padding: 8px 16px; border-radius: 25px; corner-shape:squircle; border: none; cursor: pointer; font-size: 14px;">
+                        style="background: #dc3545; color: white; padding: 8px 16px; border-radius: 25px; border: none; cursor: pointer; font-size: 14px;">
                         <i class="fas fa-trash"></i> Clear All
                     </button>
                 </div>
@@ -714,6 +782,7 @@
                         </div>
                         <label class="switch">
                             <input type="checkbox" id="enableNoiseToggle" checked>
+                            <span class="slider"></span>
                         </label>
                     </div>
                 </div>
@@ -800,6 +869,34 @@
                                         <span class="wallpaper-name">A Blissful Night</span>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="wallpaper-preview-card" data-wallpaper="christmas-dynamic"
+                                data-bg-image="christmas-dynamic">
+                                <div class="wallpaper-preview christmas-preview" id="christmasPreview"
+                                    style="background-image: url('/assets/img/events/dynamic/christmas/part_2.webp'); background-size: cover; background-position: center;">
+                                    <div class="wallpaper-overlay">
+                                        <span class="wallpaper-name">Christmas</span>
+                                        <span class="dynamic-time" id="christmasTime"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Custom Upload Wallpaper Card -->
+                            <div class="wallpaper-preview-card wallpaper-upload-card" data-wallpaper="custom"
+                                id="customWallpaperCard">
+                                <div class="wallpaper-preview custom-preview" id="customPreview">
+                                    <div class="wallpaper-upload-content">
+                                        <i class="fa-solid fa-plus"></i>
+                                        <span class="wallpaper-upload-text">Upload</span>
+                                    </div>
+                                    <div class="wallpaper-overlay custom-wallpaper-overlay" style="display: none;">
+                                        <span class="wallpaper-name">Custom</span>
+                                        <button class="custom-wallpaper-remove" id="removeCustomWallpaper"
+                                            title="Remove custom wallpaper">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <input type="file" id="customWallpaperInput" accept="image/*" style="display: none;">
                             </div>
                         </div>
                     </div>

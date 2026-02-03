@@ -4,9 +4,11 @@ const fs = require('fs');
 const path = require('path');
 const formidable = require('formidable');
 const { verifyToken, corsHeaders, getTokenFromHeaders, supabase } = require('./_utils');
-const { getFormsCollection } = require('../_config_shared/mongodb');
+const { getFormsCollection, getMongoDb } = require('../_config_shared/mongodb');
 const { ObjectId } = require('mongodb');
 require('dotenv').config();
+const Razorpay = require('razorpay');
+const crypto = require('crypto');
 
 // ==========================================
 // Google Drive Configuration
@@ -29,6 +31,17 @@ const drive = google.drive({ version: 'v3', auth: oauth2Client });
 const base64Key = process.env.GA_SERVICE_ACCOUNT_KEY_BASE64;
 const credentials = base64Key ? JSON.parse(Buffer.from(base64Key, 'base64').toString()) : null;
 const analyticsDataClient = credentials ? new BetaAnalyticsDataClient({ credentials }) : null;
+
+// ==========================================
+// Razorpay Configuration
+// ==========================================
+const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
+const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
+
+const razorpay = RAZORPAY_KEY_ID ? new Razorpay({
+  key_id: RAZORPAY_KEY_ID,
+  key_secret: RAZORPAY_KEY_SECRET
+}) : null;
 
 // ==========================================
 // Main Handler
@@ -60,8 +73,11 @@ module.exports = async (req, res) => {
     const isSavePromo = url.pathname.includes('/save-promo');
     const isGoogleDrive = url.pathname.includes('/google-drive');
     const isSharelink = url.pathname.includes('/sharelink');
+
     const isForms = url.pathname.includes('/forms');
     const isContribute = url.pathname.includes('/contribute');
+    const isNotebooks = url.pathname.includes('/notebooks');
+    const isSubscription = url.pathname.includes('/subscription');
 
     // Check query param action
     const action = queryParams.action || req.query?.action;
@@ -92,12 +108,20 @@ module.exports = async (req, res) => {
       return await handleContribute(req, res);
     }
 
+    if (isNotebooks || action === 'notebooks') {
+      return await handleNotebooks(req, res, url);
+    }
+
+    if (isSubscription || action === 'subscription') {
+      return await handleSubscription(req, res, url);
+    }
+
     return res.status(404).json({
       error: 'Feature not found',
       debug: {
         pathname: url.pathname,
         action: action,
-        availableFeatures: ['insights', 'save-promo', 'google-drive', 'sharelink', 'forms', 'contribute']
+        availableFeatures: ['insights', 'save-promo', 'google-drive', 'sharelink', 'forms', 'contribute', 'notebooks']
       }
     });
 
@@ -794,6 +818,98 @@ async function handleForms(req, res, url) {
   }
 }
 
+// ==========================================
+// Notebooks Handler
+// ==========================================
+async function handleNotebooks(req, res, url) {
+  const origin = req.headers.origin || req.headers.Origin;
+  const headers = corsHeaders(origin);
+  Object.entries(headers).forEach(([key, value]) => {
+    res.setHeader(key, value);
+  });
+
+  const method = req.method;
+  const token = getTokenFromHeaders(req.headers) || req.query.token;
+
+  if (!token) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+
+  const user = verifyToken(token);
+  if (!user) {
+    return res.status(401).json({ error: 'Invalid token' });
+  }
+
+  // Get full user profile to check privileges
+  let privileges = { isPlusUser: false, hasAdminPrivileges: false };
+  try {
+    const { data: userData, error } = await supabase
+      .from('users')
+      .select('is_plus_user, has_admin_privileges')
+      .eq('id', user.id)
+      .single();
+
+    if (!error && userData) {
+      privileges.isPlusUser = userData.is_plus_user;
+      privileges.hasAdminPrivileges = userData.has_admin_privileges;
+    }
+  } catch (e) {
+    console.error('Error fetching user privileges:', e);
+  }
+
+  // Enforce Plus/Super requirement
+  if (!privileges.isPlusUser && !privileges.hasAdminPrivileges) {
+    return res.status(403).json({ error: 'This feature requires Plus or Admin privileges' });
+  }
+
+  const queryParams = {};
+  url.searchParams.forEach((value, key) => queryParams[key] = value);
+  const subAction = queryParams.subAction || req.body?.subAction;
+
+  try {
+    const db = await getMongoDb();
+    const collection = db.collection('notebooks');
+
+    // SYNC (Upsert)
+    if (method === 'POST' && subAction === 'sync') {
+      const notebook = req.body.notebook;
+      if (!notebook || !notebook.id) {
+        return res.status(400).json({ error: 'Invalid notebook data' });
+      }
+
+      await collection.updateOne(
+        { id: notebook.id, userId: user.id },
+        {
+          $set: {
+            ...notebook,
+            userId: user.id,
+            syncedAt: new Date().toISOString()
+          }
+        },
+        { upsert: true }
+      );
+
+      return res.status(200).json({ success: true, message: 'Notebook synced' });
+    }
+
+    // LIST (Load)
+    if (method === 'GET' || (method === 'POST' && subAction === 'list')) {
+      const notebooks = await collection.find({ userId: user.id }).toArray();
+      // Remove internal _id before sending
+      const cleanNotebooks = notebooks.map(({ _id, ...n }) => n);
+
+      return res.status(200).json({ notebooks: cleanNotebooks });
+    }
+
+    return res.status(400).json({ error: 'Invalid action' });
+  } catch (error) {
+    console.error('Notebooks API error:', error);
+    return res.status(500).json({ error: 'Database error' });
+  }
+}
+
+// End of file
+
 async function submitForm(req, res) {
   const { formType, user, data, confirmations } = req.body;
 
@@ -1106,71 +1222,124 @@ async function handleContribute(req, res) {
 }
 
 // ==========================================
-// Forms Handler - Saves form submissions to MongoDB
+// Subscription Handler
 // ==========================================
-async function handleForms(req, res, url) {
-  const origin = req.headers.origin || req.headers.Origin || '*';
+async function handleSubscription(req, res, url) {
+  const subAction = url.searchParams.get('subAction') || req.query?.subAction;
 
-  // Set CORS headers
-  Object.entries(corsHeaders(origin)).forEach(([key, value]) => {
-    res.setHeader(key, value);
-  });
+  // Auth check
+  const token = getTokenFromHeaders(req.headers);
+  if (!token) return res.status(401).json({ error: 'Authentication required' });
+  const decoded = verifyToken(token);
+  if (!decoded) return res.status(401).json({ error: 'Invalid token' });
+  const userId = decoded.id;
 
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  // Only allow POST for submissions
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed. Use POST to submit forms.' });
-  }
-
-  try {
-    // Parse JSON body - Vercel already parses it for us
-    const body = req.body || {};
-
-    console.log('Forms handler received body:', JSON.stringify(body));
-
-    const { formType, user, data, confirmations } = body;
-
-    if (!formType) {
-      return res.status(400).json({ error: 'Missing formType' });
+  if (subAction === 'create-order') {
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+    if (!razorpay) {
+      console.error('Razorpay not configured. Missing RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET in .env');
+      return res.status(500).json({
+        error: 'Razorpay not configured',
+        details: 'RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET is missing from server environment.'
+      });
     }
 
-    // Get the forms collection
-    const collection = await getFormsCollection();
+    try {
+      // SECURITY: Price is determined server-side only, never trust frontend price
+      const { plan } = req.body;
 
-    // Create submission document
-    const submission = {
-      formType,
-      submittedAt: new Date(),
-      user: user || { type: 'anonymous' },
-      data: data || {},
-      confirmations: confirmations || {},
-      meta: {
-        ip: req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown',
-        userAgent: req.headers['user-agent'] || 'unknown'
-      },
-      status: 'submitted'
-    };
+      // Validate plan and set price server-side
+      const PLAN_PRICES = {
+        'plus_subscription': 5900,  // ₹59 (3-month subscription)
+        'pro_lifetime': 29900       // ₹299 (lifetime)
+      };
 
-    // Insert into MongoDB
-    const result = await collection.insertOne(submission);
+      const amount = PLAN_PRICES[plan];
+      if (!amount) {
+        return res.status(400).json({ error: 'Invalid plan selected' });
+      }
 
-    console.log('Form submission saved:', result.insertedId);
+      const options = {
+        amount: amount,
+        currency: "INR",
+        receipt: `receipt_${plan}_${userId.substring(0, 8)}_${Date.now()}`,
+        notes: {
+          userId,
+          plan: plan
+        }
+      };
 
-    return res.status(200).json({
-      success: true,
-      message: 'Form submitted successfully',
-      submissionId: result.insertedId
-    });
-
-  } catch (error) {
-    console.error('Form submission error:', error);
-    return res.status(500).json({
-      error: 'Failed to submit form',
-      details: error.message
-    });
+      const order = await razorpay.orders.create(options);
+      return res.status(200).json({
+        orderId: order.id,
+        amount: order.amount,
+        currency: order.currency,
+        razorpayKey: RAZORPAY_KEY_ID
+      });
+    } catch (error) {
+      console.error('Razorpay order creation error:', error);
+      return res.status(500).json({
+        error: 'Failed to create order',
+        details: error.message || error.toString() || 'Unknown Razorpay error'
+      });
+    }
   }
+
+  if (subAction === 'verify-payment') {
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature, plan } = req.body;
+
+    if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {
+      return res.status(400).json({ error: 'Missing payment verification details' });
+    }
+
+    // Verify signature
+    try {
+      const hmac = crypto.createHmac('sha256', RAZORPAY_KEY_SECRET);
+      hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
+      const generatedSignature = hmac.digest('hex');
+
+      if (generatedSignature !== razorpay_signature) {
+        console.error('Invalid signature detected');
+        return res.status(400).json({ error: 'Invalid payment signature' });
+      }
+
+      console.log(`Payment verified for order ${razorpay_order_id}, upgrading user ${userId} to ${plan}`);
+
+      // Update user tier in Supabase
+      // Note: is_plus_user = Pro tier (₹299 lifetime) - old Plus rebranded
+      //       is_lite_user = Plus tier (₹59/3mo subscription) - new tier
+      const updateData = {};
+      if (plan === 'pro_lifetime') {
+        updateData.is_plus_user = true; // Pro tier uses is_plus_user column
+      } else if (plan === 'plus_subscription') {
+        updateData.is_lite_user = true; // Plus tier uses is_lite_user column
+        // Set expiry to 3 months from now
+        const expiryDate = new Date();
+        expiryDate.setMonth(expiryDate.getMonth() + 3);
+        updateData.lite_expiry = expiryDate.toISOString();
+      }
+
+      const { error: updateError } = await supabase
+        .from('users')
+        .update(updateData)
+        .eq('id', userId);
+
+      if (updateError) throw updateError;
+
+      const tierName = plan === 'pro_lifetime' ? 'Pro' : 'Plus';
+      return res.status(200).json({
+        success: true,
+        message: `Payment verified and account upgraded to ${tierName}`
+      });
+    } catch (error) {
+      console.error('Payment verification/Upgrade error:', error);
+      return res.status(500).json({ error: 'Failed to verify payment or upgrade user' });
+    }
+  }
+
+  return res.status(404).json({ error: 'Subscription action not found' });
 }
+
+

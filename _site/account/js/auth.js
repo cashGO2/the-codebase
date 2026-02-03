@@ -58,23 +58,18 @@ async function makeApiRequest(endpoint, method = 'GET', data = null, requiresAut
     }
     // Make fetch request
     console.log(`Making ${method} request to ${API_URL}/${endpoint}`, options);
-    const response = await fetch(`${API_URL}/${endpoint}`, options);    // Parse response
+    const response = await fetch(`${API_URL}/${endpoint}`, options);
+
+    // Parse response
     let result;
     try {
-      // Clone the response so we can read it multiple times if needed
-      const responseClone = response.clone();
-
+      // Try to parse as JSON first
+      const text = await response.text();
       try {
-        // Try to parse as JSON first
-        result = await response.json();
+        result = text ? JSON.parse(text) : {};
       } catch (jsonError) {
-        // If JSON parsing fails, try to get as text from the cloned response
-        try {
-          const textResponse = await responseClone.text();
-          result = { error: textResponse || 'Unknown server error' };
-        } catch (textError) {
-          result = { error: 'Unable to parse server response' };
-        }
+        // If JSON parsing fails, use text or unknown error
+        result = { error: text || 'Unknown server error' };
       }
     } catch (parseError) {
       console.error('Error parsing response:', parseError);
@@ -84,7 +79,10 @@ async function makeApiRequest(endpoint, method = 'GET', data = null, requiresAut
     // Handle API errors
     if (!response.ok) {
       console.error('API Error Response:', result);
-      throw new Error(result.error || result.message || 'Something went wrong');
+      const error = new Error(result.error || result.message || 'API request failed');
+      error.details = result.details;
+      error.status = response.status;
+      throw error;
     }
 
     return result;

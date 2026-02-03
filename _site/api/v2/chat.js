@@ -26,7 +26,7 @@ const MODELS = {
         'qwen/qwen3-coder:free',
         'meta-llama/llama-3.3-70b-instruct:free',
         'google/gemma-3-27b-it:free',
-        'openai/gpt-oss-20b:free',
+        'openai/gpt-oss-120b:free',
         'mistralai/mistral-small-3.1-24b-instruct:free'
     ],
 
@@ -118,28 +118,17 @@ module.exports = async (req, res) => {
     }
 
     // In Vercel, req.url contains the full path including query params
-    // We need to parse it to get the path relative to the function
-    // But since this is a single function file, we might need to check how Vercel handles routing for this file.
-    // If this file is at api/v2/chat.js, then req.url will be /api/v2/chat (or with query params).
-    // The original code used event.path.replace('/api/v1/chat', '') to get sub-paths.
-    // We should check req.query or req.url.
-
-    // Assuming Vercel rewrites or direct access:
-    // If accessed as /api/v2/chat, path is empty or /
-    // If accessed as /api/v2/chat/models, path is /models
-
-    // Let's try to extract the path suffix.
-    // We can use a simple heuristic: check if the URL ends with /models or /health
-
+    // Extract the path without query parameters
     const url = req.url || '';
-    let path = '';
+    const urlPath = url.split('?')[0]; // Remove query string
+    let path = '/';
 
-    if (url.includes('/models')) {
+    // Detect endpoint based on URL path
+    // Handle both /api/v2/chat/models and /models formats
+    if (urlPath.includes('/models') || urlPath.endsWith('/models')) {
         path = '/models';
-    } else if (url.includes('/health')) {
+    } else if (urlPath.includes('/health') || urlPath.endsWith('/health')) {
         path = '/health';
-    } else {
-        path = '/';
     }
 
     try {

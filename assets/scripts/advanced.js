@@ -32,6 +32,12 @@ document.addEventListener('DOMContentLoaded', function () {
             if (wallpaperType === 'dynamic') {
                 // Apply dynamic wallpaper
                 applyDynamicWallpaper();
+            } else if (wallpaperType === 'christmas-dynamic') {
+                // Apply Christmas dynamic wallpaper
+                applyChristmasDynamicWallpaper();
+            } else if (wallpaperType === 'custom') {
+                // Apply custom uploaded wallpaper
+                applyCustomWallpaper();
             } else if (bgImage && bgImage !== '') {
                 homeElem.style.setProperty("--bg-img", bgImage);
             } else {
@@ -210,6 +216,263 @@ document.addEventListener('DOMContentLoaded', function () {
             dynamicWallpaperInterval = null;
         }
     }
+
+    // Christmas Dynamic Wallpaper Functions
+    function getChristmasImageUrl() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const totalMinutes = hours * 60 + minutes;
+
+        // Christmas dynamic wallpaper time mappings
+        // part_2: 6:45 AM - 5:45 PM (daytime)
+        if (totalMinutes >= 405 && totalMinutes < 1065) {
+            return `url('/assets/img/events/dynamic/christmas/part_2.webp')`;
+        }
+        // part_3: 5:45 PM - 6:00 PM (sunset start)
+        else if (totalMinutes >= 1065 && totalMinutes < 1080) {
+            return `url('/assets/img/events/dynamic/christmas/part_3.webp')`;
+        }
+        // part_4: 6:00 PM - 7:00 PM (sunset)
+        else if (totalMinutes >= 1080 && totalMinutes < 1140) {
+            return `url('/assets/img/events/dynamic/christmas/part_4.webp')`;
+        }
+        // part_5: 7:00 PM - 9:20 PM (evening)
+        else if (totalMinutes >= 1140 && totalMinutes < 1280) {
+            return `url('/assets/img/events/dynamic/christmas/part_5.webp')`;
+        }
+        // part_6: 9:20 PM - 11:50 PM (night)
+        else if (totalMinutes >= 1280 && totalMinutes < 1430) {
+            return `url('/assets/img/events/dynamic/christmas/part_6.webp')`;
+        }
+        // part_8: 11:50 PM - 5:45 AM (late night)
+        else if (totalMinutes >= 1430 || totalMinutes < 345) {
+            return `url('/assets/img/events/dynamic/christmas/part_8.webp')`;
+        }
+        // Fallback to daytime
+        return `url('/assets/img/events/dynamic/christmas/part_2.webp')`;
+    }
+
+    function applyChristmasDynamicWallpaper() {
+        const imageUrl = getChristmasImageUrl();
+        homeElem.style.setProperty("--bg-img", imageUrl);
+
+        // Update Christmas preview card
+        updateChristmasPreview();
+    }
+
+    function updateChristmasPreview() {
+        const christmasPreview = document.getElementById('christmasPreview');
+        const christmasTime = document.getElementById('christmasTime');
+
+        if (christmasPreview) {
+            const bgStyle = getChristmasImageUrl();
+            // Remove url('') wrapper
+            const imageUrl = bgStyle.slice(5, -2);
+            christmasPreview.style.backgroundImage = `url('${imageUrl}')`;
+            christmasPreview.style.backgroundSize = 'cover';
+            christmasPreview.style.backgroundPosition = 'center';
+        }
+
+        if (christmasTime) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            christmasTime.textContent = timeString;
+        }
+    }
+
+    // Christmas wallpaper timer
+    let christmasWallpaperInterval = null;
+
+    function startChristmasWallpaperTimer() {
+        if (christmasWallpaperInterval) {
+            clearInterval(christmasWallpaperInterval);
+        }
+
+        christmasWallpaperInterval = setInterval(() => {
+            const selectedWallpaper = getCookie("selectedWallpaper");
+            if (selectedWallpaper === 'christmas-dynamic') {
+                applyChristmasDynamicWallpaper();
+            }
+        }, 60000);
+    }
+
+    function stopChristmasWallpaperTimer() {
+        if (christmasWallpaperInterval) {
+            clearInterval(christmasWallpaperInterval);
+            christmasWallpaperInterval = null;
+        }
+    }
+
+    // Custom Upload Wallpaper Functions
+    function applyCustomWallpaper() {
+        const customWallpaperData = localStorage.getItem('materio_custom_wallpaper');
+        if (customWallpaperData) {
+            homeElem.style.setProperty("--bg-img", `url('${customWallpaperData}')`);
+        } else {
+            // No custom wallpaper set, fall back to default
+            if (cachedEventToApply) {
+                updateBgFromEvent(cachedEventToApply);
+            }
+        }
+    }
+
+    function initializeCustomWallpaper() {
+        const customWallpaperCard = document.getElementById('customWallpaperCard');
+        const customWallpaperInput = document.getElementById('customWallpaperInput');
+        const customPreview = document.getElementById('customPreview');
+        const removeCustomWallpaper = document.getElementById('removeCustomWallpaper');
+        const customWallpaperOverlay = customPreview?.querySelector('.custom-wallpaper-overlay');
+        const uploadContent = customPreview?.querySelector('.wallpaper-upload-content');
+
+        // Check if a custom wallpaper is already saved
+        const savedCustomWallpaper = localStorage.getItem('materio_custom_wallpaper');
+        if (savedCustomWallpaper && customWallpaperCard) {
+            updateCustomWallpaperUI(savedCustomWallpaper);
+        }
+
+        // Handle click on custom wallpaper card
+        if (customWallpaperCard && customWallpaperInput) {
+            customWallpaperCard.addEventListener('click', function (e) {
+                // Don't trigger file input if clicking on remove button
+                if (e.target.closest('.custom-wallpaper-remove')) {
+                    return;
+                }
+
+                const hasCustomImage = localStorage.getItem('materio_custom_wallpaper');
+                if (hasCustomImage) {
+                    // If already has custom image, just apply it
+                    setWallpaperAsBackground('custom');
+
+                    // Update selection UI
+                    wallpaperCards.forEach(c => c.classList.remove('selected'));
+                    customWallpaperCard.classList.add('selected');
+                    setCookie("selectedWallpaper", 'custom', 30);
+                } else {
+                    // Open file picker
+                    customWallpaperInput.click();
+                }
+            });
+        }
+
+        // Handle file selection
+        if (customWallpaperInput) {
+            customWallpaperInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Check file size (max 5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        if (window.materioAlert) {
+                            materioAlert('Image size should be less than 5MB.', {
+                                title: 'File Too Large',
+                                type: 'warning',
+                                buttonText: 'Got it'
+                            });
+                        } else {
+                            alert('Image size should be less than 5MB.');
+                        }
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        const dataUrl = event.target.result;
+
+                        // Save to localStorage
+                        try {
+                            localStorage.setItem('materio_custom_wallpaper', dataUrl);
+
+                            // Update UI
+                            updateCustomWallpaperUI(dataUrl);
+
+                            // Apply wallpaper
+                            setWallpaperAsBackground('custom');
+
+                            // Update selection
+                            wallpaperCards.forEach(c => c.classList.remove('selected'));
+                            customWallpaperCard.classList.add('selected');
+                            setCookie("selectedWallpaper", 'custom', 30);
+
+                            // Haptic feedback
+                            if (window.MaterioHaptics) {
+                                window.MaterioHaptics.vibrate('success');
+                            }
+                        } catch (e) {
+                            console.error('Error saving custom wallpaper:', e);
+                            if (window.materioAlert) {
+                                materioAlert('Could not save wallpaper. The image may be too large.', {
+                                    title: 'Storage Error',
+                                    type: 'error',
+                                    buttonText: 'OK'
+                                });
+                            }
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+
+                // Reset input to allow selecting same file again
+                this.value = '';
+            });
+        }
+
+        // Handle remove custom wallpaper
+        if (removeCustomWallpaper) {
+            removeCustomWallpaper.addEventListener('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+
+                // Remove from localStorage
+                localStorage.removeItem('materio_custom_wallpaper');
+
+                // Reset UI
+                if (customPreview) {
+                    customPreview.style.backgroundImage = '';
+                    if (customWallpaperOverlay) customWallpaperOverlay.style.display = 'none';
+                    if (uploadContent) uploadContent.style.display = 'flex';
+                }
+                if (customWallpaperCard) {
+                    customWallpaperCard.classList.remove('has-image', 'selected');
+                }
+
+                // Switch to default/dynamic wallpaper
+                const defaultCard = document.querySelector('[data-wallpaper="dynamic"]');
+                if (defaultCard) {
+                    defaultCard.classList.add('selected');
+                }
+                setCookie("selectedWallpaper", 'dynamic', 30);
+                setWallpaperAsBackground('dynamic');
+
+                // Haptic feedback
+                if (window.MaterioHaptics) {
+                    window.MaterioHaptics.vibrate('tap');
+                }
+            });
+        }
+    }
+
+    function updateCustomWallpaperUI(imageData) {
+        const customWallpaperCard = document.getElementById('customWallpaperCard');
+        const customPreview = document.getElementById('customPreview');
+        const customWallpaperOverlay = customPreview?.querySelector('.custom-wallpaper-overlay');
+        const uploadContent = customPreview?.querySelector('.wallpaper-upload-content');
+
+        if (customPreview && imageData) {
+            customPreview.style.backgroundImage = `url('${imageData}')`;
+            customPreview.style.backgroundSize = 'cover';
+            customPreview.style.backgroundPosition = 'center';
+
+            if (customWallpaperOverlay) customWallpaperOverlay.style.display = 'flex';
+            if (uploadContent) uploadContent.style.display = 'none';
+        }
+
+        if (customWallpaperCard) {
+            customWallpaperCard.classList.add('has-image');
+        }
+    }
+
+    // Initialize Christmas preview on load
+    updateChristmasPreview();
 
     function initEventData() {
         fetch('/assets/data/events.json')
@@ -424,9 +687,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Start timer if dynamic wallpaper is selected
+        // Start timer if dynamic or christmas-dynamic wallpaper is selected
         if (savedWallpaper === 'dynamic') {
             startDynamicWallpaperTimer();
+        } else if (savedWallpaper === 'christmas-dynamic') {
+            startChristmasWallpaperTimer();
         }
     }
 
@@ -435,6 +700,11 @@ document.addEventListener('DOMContentLoaded', function () {
         card.addEventListener('click', function () {
             // Check user access before allowing wallpaper selection
             if (!canAccessWallpaperSelection()) {
+                return;
+            }
+
+            // Skip custom wallpaper card - it has its own special handler
+            if (this.dataset.wallpaper === 'custom') {
                 return;
             }
 
@@ -448,11 +718,16 @@ document.addEventListener('DOMContentLoaded', function () {
             const wallpaperType = this.dataset.wallpaper;
             setWallpaperAsBackground(wallpaperType);
 
-            // Handle dynamic wallpaper timer
+            // Handle dynamic wallpaper timers
             if (wallpaperType === 'dynamic') {
                 startDynamicWallpaperTimer();
+                stopChristmasWallpaperTimer();
+            } else if (wallpaperType === 'christmas-dynamic') {
+                startChristmasWallpaperTimer();
+                stopDynamicWallpaperTimer();
             } else {
                 stopDynamicWallpaperTimer();
+                stopChristmasWallpaperTimer();
             }
 
             // Save the selection
@@ -462,6 +737,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize wallpaper selection on page load
     initializeWallpaperSelection();
+
+    // Initialize custom wallpaper functionality
+    initializeCustomWallpaper();
 
     // Paper Mode functionality
     const paperModeToggle = document.getElementById("paperModeToggle");

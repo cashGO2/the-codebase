@@ -102,6 +102,10 @@
       "destination": "/api/v2/invites.js"
     },
     {
+      "source": "/api/v2/chat/:path*",
+      "destination": "/api/v2/chat.js"
+    },
+    {
       "source": "/sharelink-info",
       "destination": "/api/v2/invites.js"
     },

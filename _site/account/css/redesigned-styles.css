@@ -24,6 +24,10 @@ body {
     display: none !important; /* Base rule to ensure it's hidden by default */
 }
 
+.hidden {
+    display: none !important;
+}
+
 .container {
     width: 100%;
     max-width: 500px;

@@ -77,10 +77,18 @@ async function handleForgotPassword(req, res) {
         return res.status(500).json({ error: 'Failed to update password' });
       }
 
-      return res.status(200).json({ message: 'Password updated successfully' });
+      // Generate a token for the user so they can be logged in immediately
+      const token = generateToken(user);
+      return res.status(200).json({
+        message: 'Password updated successfully',
+        token: token
+      });
     } else {
       // Just verifying the key
-      return res.status(200).json({ message: 'Recovery key valid' });
+      return res.status(200).json({
+        verified: true,
+        message: 'Recovery key valid'
+      });
     }
 
   } catch (error) {

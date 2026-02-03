@@ -21,15 +21,15 @@ echo Invalid selection
 goto end
 
 :full
-netlify dev
+vercel dev --listen 1000
 goto end
 
 :jekyll
 bundle exec jekyll serve
 goto end
 
-:deploy
-netlify deploy --prod
+:jekyll-build
+jekyll build
 goto end
 
 :end

@@ -139,14 +139,43 @@ document.addEventListener('DOMContentLoaded', function () {
         // Update dashboard profile info
         if (dashboardDisplayName) {
           const displayName = user.displayName || user.username;
-          dashboardDisplayName.innerHTML = displayName;
+          const upgradeContainer = document.getElementById('upgrade-plus-container');
 
-          // Add verified badges
+          // Build the display name HTML
+          let nameHtml = displayName;
+
+          // Add verified badges and hide/update upgrade link
           if (user.hasAdminPrivileges) {
-            dashboardDisplayName.innerHTML += '<i class="fas fa-badge-check verified-badge admin" title="Admin"></i>';
+            nameHtml += ' <i class="fas fa-badge-check verified-badge admin" title="Admin"></i>';
+            if (upgradeContainer) upgradeContainer.style.display = 'none';
+          } else if (user.isProUser) {
+            nameHtml += ' <i class="fas fa-badge-check verified-badge pro" title="Pro User"></i>'; // Gold Badge
+            if (upgradeContainer) upgradeContainer.style.display = 'none';
           } else if (user.isPlusUser) {
-            dashboardDisplayName.innerHTML += '<i class="fas fa-badge-check verified-badge plus" title="Plus User"></i>';
+            nameHtml += ' <i class="fas fa-badge-check verified-badge plus" title="Plus User"></i>'; // Silver Badge
+
+            // Add expiry info if available
+            if (user.plusExpiry) {
+              const expiryDate = new Date(user.plusExpiry).toLocaleDateString();
+              nameHtml += ` <span class="expiry-text" style="font-size: 0.7rem; color: #666; margin-left: 5px;">(Expires: ${expiryDate})</span>`;
+            }
+
+            // If they are Plus, keep upgrade link but change text to "Upgrade to Pro"
+            if (upgradeContainer) {
+              const upgradeLink = upgradeContainer.querySelector('.upgrade-link');
+              if (upgradeLink) {
+                upgradeLink.textContent = 'Upgrade to Pro →';
+              }
+            }
           }
+
+          // Add upgrade container back at the end if it exists and is visible
+          if (upgradeContainer && upgradeContainer.style.display !== 'none') {
+            nameHtml += ' ' + upgradeContainer.outerHTML;
+            upgradeContainer.remove(); // Remove original to avoid duplicate
+          }
+
+          dashboardDisplayName.innerHTML = nameHtml;
         }
         if (dashboardUsername) {
           dashboardUsername.textContent = '@' + user.username;

@@ -1,3 +1,8 @@
+/**
+ * Materio Core 
+ * © 2024-2026, Materio by JTC.
+ */
+
 function closePromoModal() {
     const modal = document.getElementById('promoModal');
     modal.style.display = 'none';
@@ -167,6 +172,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 return; // Don't execute tab switching for profile dropdown
             }
 
+            // Check if this is a modal trigger (like create note)
+            if (this.classList.contains('modal-trigger')) {
+                return;
+            }
+
             e.preventDefault();
 
             // Haptic feedback for tab switch
@@ -197,6 +207,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const tab = this.getAttribute("data-tab");
             document.getElementById(tab)?.classList.add("active");
             setCookie("activeTab", tab, 7);
+
+            // Dispatch event for other scripts to respond to tab change
+            document.dispatchEvent(new CustomEvent('tabOpened', { detail: { tab: tab } }));
 
             // Hide search dropdown when switching away from home tab
             const searchResults = document.getElementById('quickSearchResults');
@@ -1248,7 +1261,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const initialSem = semesterSelect?.value;
     const initialSub = subjectSelect?.value;
     if ((initialSem && initialSem.trim() !== "") || (initialSub && initialSub.trim() !== "")) {
-        if (blogCardHeading) blogCardHeading.innerHTML = '<i class="fa-solid fa-book-sparkles"></i> Smart Recommendations';
+        if (blogCardHeading) blogCardHeading.innerHTML = 'Smart Recommendations';
         if (defaultPosts) defaultPosts.style.setProperty('display', 'none', 'important');
     }
 
@@ -1525,8 +1538,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // If no semester or subject selected, show default posts
         if (!hasSelection) {
             if (blogCardHeading) {
-                // Restore original heading with icon
-                blogCardHeading.innerHTML = '<i class="fa-solid fa-sparkles" style="color: #ff8200; margin-right: 8px;"></i> Latest from the Insightroom';
+                blogCardHeading.innerHTML = 'Latest from the Insightroom';
             }
             if (defaultPosts) defaultPosts.style.removeProperty('display');
             if (recommendedPosts) recommendedPosts.style.setProperty('display', 'none', 'important');
@@ -1583,7 +1595,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const attachmentsCardHTML = attachmentsCard ? attachmentsCard.outerHTML : '';
 
         if (filteredPosts.length > 0 || (attachmentsCard && attachmentsCard.style.display !== 'none')) {
-            if (blogCardHeading) blogCardHeading.innerHTML = '<i class="fa-solid fa-book-sparkles"></i> Smart Recommendations';
+            if (blogCardHeading) blogCardHeading.innerHTML = 'Smart Recommendations';
 
             // Hide default posts
             if (defaultPosts) {
@@ -1627,7 +1639,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         } else {
             // No posts found for selected criteria - but show attachments if available
-            if (blogCardHeading) blogCardHeading.innerHTML = '<i class="fa-solid fa-book-sparkles"></i> Smart Recommendations';
+            if (blogCardHeading) blogCardHeading.innerHTML = 'Smart Recommendations';
 
             // Hide default posts
             if (defaultPosts) {

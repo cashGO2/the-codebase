@@ -1,8 +1,319 @@
-document.addEventListener('DOMContentLoaded', function () {
-  // Constants for authentication storage
-  const LOCAL_STORAGE_TOKEN_KEY = 'materio_auth_token';
-  const LOCAL_STORAGE_USER_KEY = 'materio_user';
-  // Get the profile image elements
+/**
+ * Profile Image Module (ESM)
+ * Handles user profile image display, dropdown functionality, and account card updates.
+ * 
+ * @module profile-image
+ */
+
+import { setCookie } from './utils.js';
+
+// Constants for authentication storage
+const LOCAL_STORAGE_TOKEN_KEY = 'materio_auth_token';
+const LOCAL_STORAGE_USER_KEY = 'materio_user';
+
+/**
+ * Check if user is logged in
+ * @returns {boolean}
+ */
+function isUserLoggedIn() {
+  return !!localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
+}
+
+/**
+ * Get current user data from localStorage
+ * @returns {Object|null}
+ */
+function getUserData() {
+  const userData = localStorage.getItem(LOCAL_STORAGE_USER_KEY);
+  if (!userData) return null;
+
+  try {
+    return JSON.parse(userData);
+  } catch (error) {
+    console.error('Error parsing user data:', error);
+    return null;
+  }
+}
+
+/**
+ * Update profile image element with user's image
+ * @param {HTMLImageElement} imgElement
+ */
+function updateProfileImage(imgElement) {
+  const user = getUserData();
+  if (user?.profilePicture) {
+    imgElement.src = user.profilePicture;
+  }
+}
+
+/**
+ * Update account card in settings tab
+ * @param {HTMLImageElement} accountProfileImage
+ * @param {HTMLElement} accountName
+ * @param {HTMLElement} accountUsername
+ */
+function updateAccountCard(accountProfileImage, accountName, accountUsername) {
+  const user = getUserData();
+  if (!user) return;
+
+  // Update profile picture
+  if (user.profilePicture && accountProfileImage) {
+    accountProfileImage.src = user.profilePicture;
+  }
+
+  // Update display name and username
+  if (accountName) {
+    accountName.innerHTML = user.displayName || user.username || '';
+
+    // Add verified badges
+    if (user.hasAdminPrivileges) {
+      accountName.innerHTML += '<i class="fas fa-badge-check verified-badge admin" title="Admin"></i>';
+    } else if (user.isPlusUser) {
+      accountName.innerHTML += '<i class="fas fa-badge-check verified-badge plus" title="Plus User"></i>';
+    }
+  }
+
+  if (accountUsername && user.username) {
+    accountUsername.textContent = '@' + user.username;
+  }
+}
+
+/**
+ * Show settings tab
+ */
+function showSettingsTab() {
+  const tabLinks = document.querySelectorAll('.tab-link');
+  const tabContents = document.querySelectorAll('.tab-content');
+  const settingsContent = document.getElementById('settings');
+
+  if (!settingsContent) return;
+
+  // Remove active class from all tabs and contents
+  tabLinks.forEach(tab => {
+    tab.classList.remove('active');
+    const icon = tab.querySelector('i');
+    if (icon && !tab.querySelector('img')) {
+      icon.classList.remove('fas');
+      icon.classList.add('far');
+    }
+  });
+  tabContents.forEach(content => content.classList.remove('active'));
+
+  // Add active class to profile icon
+  const profileIcon = document.querySelector('.profile-icon');
+  if (profileIcon) {
+    profileIcon.classList.add('active');
+    const icon = profileIcon.querySelector('i');
+    if (icon && !profileIcon.querySelector('img')) {
+      icon.classList.remove('far');
+      icon.classList.add('fas');
+    }
+  }
+
+  // Show settings content
+  settingsContent.classList.add('active');
+
+  // Hide search dropdown
+  const searchResults = document.getElementById('quickSearchResults');
+  if (searchResults) {
+    searchResults.style.display = 'none';
+  }
+
+  // Update cookie
+  setCookie('activeTab', 'settings', 7);
+}
+
+/**
+ * Show downloads tab
+ */
+function showDownloadsTab() {
+  const tabLinks = document.querySelectorAll('.tab-link');
+  const tabContents = document.querySelectorAll('.tab-content');
+  const downloadsContent = document.getElementById('downloads');
+
+  if (!downloadsContent) return;
+
+  // Remove active class from all tabs and contents
+  tabLinks.forEach(tab => tab.classList.remove('active'));
+  tabContents.forEach(content => content.classList.remove('active'));
+
+  // Add active class to profile icon
+  const profileIcon = document.querySelector('.profile-icon');
+  if (profileIcon) {
+    profileIcon.classList.add('active');
+  }
+
+  // Show downloads content
+  downloadsContent.classList.add('active');
+
+  // Hide search dropdown
+  const searchResults = document.getElementById('quickSearchResults');
+  if (searchResults) {
+    searchResults.style.display = 'none';
+  }
+
+  // Update cookie
+  setCookie('activeTab', 'downloads', 7);
+
+  // Trigger downloads load
+  setTimeout(() => {
+    document.dispatchEvent(new Event('downloadsTabOpened'));
+  }, 100);
+}
+
+/**
+ * Handle clicks outside dropdown to close it
+ * @param {Event} e
+ */
+function handleOutsideClick(e) {
+  const profileIconLink = document.querySelector('.profile-icon');
+  const profileDropdown = document.getElementById('profile-dropdown');
+
+  if (profileDropdown &&
+    !profileIconLink?.contains(e.target) &&
+    !profileDropdown.contains(e.target)) {
+    profileDropdown.classList.remove('show');
+    profileDropdown.setAttribute('aria-hidden', 'true');
+    profileDropdown.querySelectorAll('.dropdown-item').forEach(
+      item => item.setAttribute('tabindex', '-1')
+    );
+  }
+}
+
+/**
+ * Handle keyboard navigation in dropdown
+ * @param {KeyboardEvent} e
+ */
+function handleDropdownKeydown(e) {
+  const profileDropdown = document.getElementById('profile-dropdown');
+  const profileIconLink = document.querySelector('.profile-icon');
+
+  if (!profileDropdown?.classList.contains('show')) return;
+
+  const items = profileDropdown.querySelectorAll('.dropdown-item');
+  const currentIndex = Array.from(items).indexOf(document.activeElement);
+
+  switch (e.key) {
+    case 'Escape':
+      e.preventDefault();
+      profileDropdown.classList.remove('show');
+      profileDropdown.setAttribute('aria-hidden', 'true');
+      items.forEach(item => item.setAttribute('tabindex', '-1'));
+      profileIconLink?.focus();
+      break;
+    case 'ArrowDown':
+      e.preventDefault();
+      items[(currentIndex + 1) % items.length]?.focus();
+      break;
+    case 'ArrowUp':
+      e.preventDefault();
+      items[(currentIndex - 1 + items.length) % items.length]?.focus();
+      break;
+    case 'Enter':
+    case ' ':
+      e.preventDefault();
+      if (document.activeElement?.classList.contains('dropdown-item')) {
+        document.activeElement.click();
+      }
+      break;
+  }
+}
+
+/**
+ * Set up profile dropdown functionality
+ * @param {HTMLElement} profileIconLink
+ * @param {HTMLElement} profileDropdown
+ */
+function setupProfileDropdown(profileIconLink, profileDropdown) {
+  if (!profileIconLink || !profileDropdown) return;
+
+  // Mark as having dropdown functionality
+  profileIconLink.classList.add('has-dropdown');
+
+  // Profile icon click handler
+  profileIconLink.addEventListener('click', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
+    if (!e.target.closest('.profile-dropdown')) {
+      const isShowing = profileDropdown.classList.contains('show');
+
+      // Haptic feedback
+      if (window.MaterioHaptics) {
+        window.MaterioHaptics.vibrate(isShowing ? 'dropdownClose' : 'dropdownOpen');
+      }
+
+      profileDropdown.classList.toggle('show');
+      profileDropdown.setAttribute('aria-hidden', isShowing ? 'true' : 'false');
+
+      // Update tabindex for focusable items
+      const dropdownItems = profileDropdown.querySelectorAll('.dropdown-item');
+      dropdownItems.forEach(item => {
+        item.setAttribute('tabindex', isShowing ? '-1' : '0');
+      });
+
+      // Focus first item when opening
+      if (!isShowing) {
+        dropdownItems[0]?.focus();
+      }
+    }
+  }, true);
+
+  // Settings dropdown item click
+  const settingsItem = profileDropdown.querySelector('.dropdown-item[data-action="settings"]');
+  if (settingsItem) {
+    settingsItem.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (window.MaterioHaptics) {
+        window.MaterioHaptics.vibrate('select');
+      }
+
+      profileDropdown.classList.remove('show');
+      profileDropdown.setAttribute('aria-hidden', 'true');
+      profileDropdown.querySelectorAll('.dropdown-item').forEach(
+        item => item.setAttribute('tabindex', '-1')
+      );
+
+      showSettingsTab();
+    });
+  }
+
+  // Downloads dropdown item click
+  const downloadsItem = profileDropdown.querySelector('.dropdown-item[data-action="downloads"]');
+  if (downloadsItem) {
+    downloadsItem.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (window.MaterioHaptics) {
+        window.MaterioHaptics.vibrate('select');
+      }
+
+      profileDropdown.classList.remove('show');
+      profileDropdown.setAttribute('aria-hidden', 'true');
+      profileDropdown.querySelectorAll('.dropdown-item').forEach(
+        item => item.setAttribute('tabindex', '-1')
+      );
+
+      showDownloadsTab();
+    });
+  }
+
+  // Event listeners for closing dropdown
+  document.addEventListener('click', handleOutsideClick);
+  document.addEventListener('keydown', handleDropdownKeydown);
+
+  // Initial aria state
+  profileDropdown.setAttribute('aria-hidden', 'true');
+}
+
+/**
+ * Initialize profile image module
+ */
+function init() {
   const profileImage = document.getElementById('profile-image');
   const settingsIcon = document.getElementById('settings-icon');
   const accountProfileImage = document.getElementById('account-profile-image');
@@ -11,355 +322,51 @@ document.addEventListener('DOMContentLoaded', function () {
   const profileDropdown = document.getElementById('profile-dropdown');
   const profileIconLink = document.querySelector('.profile-icon');
 
-  // Check if user is logged in
-  const isLoggedIn = localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
+  const isLoggedIn = isUserLoggedIn();
 
-  // Update navbar elements - always show profile icon with dropdown for everyone
+  // Update navbar elements
   if (profileImage && settingsIcon) {
     if (isLoggedIn) {
-      // User is logged in: Show their profile image
       updateProfileImage(profileImage);
       profileImage.style.display = 'block';
       settingsIcon.style.display = 'none';
     } else {
-      // User is not logged in: Show default profile icon (not settings icon)
       profileImage.style.display = 'block';
       profileImage.src = '/assets/img/default-avatar.svg';
       settingsIcon.style.display = 'none';
     }
 
-    // Always set up profile dropdown functionality (for both logged in and logged out users)
-    setupProfileDropdown();
+    setupProfileDropdown(profileIconLink, profileDropdown);
   }
 
   // Update account card in settings tab
   if (accountProfileImage && accountName) {
     if (isLoggedIn) {
-      updateAccountCard();
+      updateAccountCard(accountProfileImage, accountName, accountUsername);
     } else {
-      // Set default state for not logged in
       accountProfileImage.src = '/assets/img/default-avatar.svg';
       accountName.textContent = 'Log in to Materio Account';
-      accountUsername.textContent = '';
-    }
-  }
-
-  // Function to set up profile dropdown functionality
-  function setupProfileDropdown() {
-    if (!profileIconLink || !profileDropdown) return;
-
-    // Add a special class to mark this as having dropdown functionality
-    profileIconLink.classList.add('has-dropdown');
-
-    // Add click event listener to profile icon
-    profileIconLink.addEventListener('click', function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-
-      // Only toggle dropdown if clicking on the image or icon itself, not the dropdown
-      if (!e.target.closest('.profile-dropdown')) {
-        const currentDropdown = document.getElementById('profile-dropdown');
-        if (currentDropdown) {
-          const isShowing = currentDropdown.classList.contains('show');
-
-          // Haptic feedback for dropdown toggle
-          if (window.MaterioHaptics) {
-            window.MaterioHaptics.vibrate(isShowing ? 'dropdownClose' : 'dropdownOpen');
-          }
-
-          currentDropdown.classList.toggle('show');
-
-          // Update aria-hidden for accessibility
-          currentDropdown.setAttribute('aria-hidden', isShowing ? 'true' : 'false');
-
-          // Update tabindex for focusable items
-          const dropdownItems = currentDropdown.querySelectorAll('.dropdown-item');
-          dropdownItems.forEach(item => {
-            item.setAttribute('tabindex', isShowing ? '-1' : '0');
-          });
-
-          // Focus management for accessibility
-          if (!isShowing) {
-            // Dropdown is now open, focus first item
-            const firstItem = currentDropdown.querySelector('.dropdown-item');
-            if (firstItem) {
-              firstItem.focus();
-            }
-          }
-        }
-      }
-    }, true);
-
-    // Handle settings dropdown item click (prevent default and trigger tab switch)
-    const settingsDropdownItem = profileDropdown.querySelector('.dropdown-item[data-action="settings"]');
-    if (settingsDropdownItem) {
-      settingsDropdownItem.addEventListener('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        // Haptic feedback for selection
-        if (window.MaterioHaptics) {
-          window.MaterioHaptics.vibrate('select');
-        }
-
-        // Close dropdown
-        profileDropdown.classList.remove('show');
-        profileDropdown.setAttribute('aria-hidden', 'true');
-        profileDropdown.querySelectorAll('.dropdown-item').forEach(item => item.setAttribute('tabindex', '-1'));
-
-        // Trigger settings tab switch
-        showSettingsTab();
-      });
-    }
-
-    // Handle downloads dropdown item click (prevent default and trigger tab switch)
-    const downloadsDropdownItem = profileDropdown.querySelector('.dropdown-item[data-action="downloads"]');
-    if (downloadsDropdownItem) {
-      downloadsDropdownItem.addEventListener('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        // Haptic feedback for selection
-        if (window.MaterioHaptics) {
-          window.MaterioHaptics.vibrate('select');
-        }
-
-        // Close dropdown
-        profileDropdown.classList.remove('show');
-        profileDropdown.setAttribute('aria-hidden', 'true');
-        profileDropdown.querySelectorAll('.dropdown-item').forEach(item => item.setAttribute('tabindex', '-1'));
-
-        // Trigger downloads tab switch
-        showDownloadsTab();
-      });
-    }
-
-    // The profile dropdown item will work naturally as an anchor link to /account/profile
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', handleOutsideClick);
-
-    // Handle keyboard navigation
-    document.addEventListener('keydown', handleDropdownKeydown);
-
-    // Set initial aria state
-    profileDropdown.setAttribute('aria-hidden', 'true');
-  }
-
-  // Function to set up settings click for non-logged users
-  function setupSettingsClick() {
-    if (!profileIconLink) return;
-
-    // Remove existing event listeners
-    profileIconLink.removeEventListener('click', handleProfileClick);
-
-    // Add click event listener for settings
-    profileIconLink.addEventListener('click', function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      showSettingsTab();
-    });
-  }
-
-  // Handle profile icon click
-  // Handle clicks outside dropdown
-  function handleOutsideClick(e) {
-    const currentProfileIconLink = document.querySelector('.profile-icon');
-    const currentProfileDropdown = document.getElementById('profile-dropdown');
-
-    if (currentProfileDropdown &&
-      !currentProfileIconLink.contains(e.target) &&
-      !currentProfileDropdown.contains(e.target)) {
-      currentProfileDropdown.classList.remove('show');
-      currentProfileDropdown.setAttribute('aria-hidden', 'true');
-      currentProfileDropdown.querySelectorAll('.dropdown-item').forEach(item => item.setAttribute('tabindex', '-1'));
-    }
-  }
-
-  // Handle dropdown item clicks
-  // Handle keyboard navigation
-  function handleDropdownKeydown(e) {
-    const currentProfileDropdown = document.getElementById('profile-dropdown');
-    const currentProfileIconLink = document.querySelector('.profile-icon');
-
-    if (!currentProfileDropdown.classList.contains('show')) return;
-
-    const items = currentProfileDropdown.querySelectorAll('.dropdown-item');
-    const currentIndex = Array.from(items).indexOf(document.activeElement);
-
-    switch (e.key) {
-      case 'Escape':
-        e.preventDefault();
-        currentProfileDropdown.classList.remove('show');
-        currentProfileDropdown.setAttribute('aria-hidden', 'true');
-        currentProfileDropdown.querySelectorAll('.dropdown-item').forEach(item => item.setAttribute('tabindex', '-1'));
-        currentProfileIconLink.focus();
-        break;
-      case 'ArrowDown':
-        e.preventDefault();
-        const nextIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
-        items[nextIndex].focus();
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        const prevIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
-        items[prevIndex].focus();
-        break;
-      case 'Enter':
-      case ' ':
-        e.preventDefault();
-        if (document.activeElement.classList.contains('dropdown-item')) {
-          document.activeElement.click();
-        }
-        break;
-    }
-  }
-
-  // Function to show settings tab
-  function showSettingsTab() {
-    // Use the same logic as main.js for tab switching
-    const tabLinks = document.querySelectorAll('.tab-link');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const settingsContent = document.getElementById('settings');
-
-    if (settingsContent) {
-      // Remove active class from all tabs and contents, change icons to regular
-      tabLinks.forEach(tab => {
-        tab.classList.remove('active');
-        const icon = tab.querySelector('i');
-        if (icon && !tab.querySelector('img')) {
-          icon.classList.remove('fas');
-          icon.classList.add('far');
-        }
-      });
-      tabContents.forEach(content => content.classList.remove('active'));
-
-      // Add active class to profile icon (since it represents settings when logged in)
-      const profileIcon = document.querySelector('.profile-icon');
-      if (profileIcon) {
-        profileIcon.classList.add('active');
-        const icon = profileIcon.querySelector('i');
-        if (icon && !profileIcon.querySelector('img')) {
-          icon.classList.remove('far');
-          icon.classList.add('fas');
-        }
-      }
-
-      // Show settings content
-      settingsContent.classList.add('active');
-
-      // Hide search dropdown (settings tab is not home)
-      const searchResults = document.getElementById('quickSearchResults');
-      if (searchResults) {
-        searchResults.style.display = 'none';
-      }
-
-      // Update cookie
-      if (typeof setCookie === 'function') {
-        setCookie('activeTab', 'settings', 7);
+      if (accountUsername) {
+        accountUsername.textContent = '';
       }
     }
   }
+}
 
-  // Function to show downloads tab
-  function showDownloadsTab() {
-    const tabLinks = document.querySelectorAll('.tab-link');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const downloadsContent = document.getElementById('downloads');
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 
-    if (downloadsContent) {
-      // Remove active class from all tabs and contents
-      tabLinks.forEach(tab => tab.classList.remove('active'));
-      tabContents.forEach(content => content.classList.remove('active'));
-
-      // Add active class to profile icon
-      const profileIcon = document.querySelector('.profile-icon');
-      if (profileIcon) {
-        profileIcon.classList.add('active');
-      }
-
-      // Show downloads content
-      downloadsContent.classList.add('active');
-
-      // Hide search dropdown (downloads tab is not home)
-      const searchResults = document.getElementById('quickSearchResults');
-      if (searchResults) {
-        searchResults.style.display = 'none';
-      }
-
-      // Update cookie
-      if (typeof setCookie === 'function') {
-        setCookie('activeTab', 'downloads', 7);
-      }
-
-      // Trigger downloads load
-      if (typeof window.loadDownloads !== 'undefined') {
-        // Small delay to ensure DOM is ready
-        setTimeout(() => {
-          const event = new Event('downloadsTabOpened');
-          document.dispatchEvent(event);
-        }, 100);
-      }
-    }
-  }
-
-  // Helper function to set cookie (copied from main.js for consistency)
-  function setCookie(name, value, days) {
-    const expires = new Date();
-    expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
-    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
-  }
-
-  // Function to update profile image
-  function updateProfileImage(imgElement) {
-    if (isLoggedIn) {
-      const userData = localStorage.getItem(LOCAL_STORAGE_USER_KEY);
-      if (userData) {
-        try {
-          const user = JSON.parse(userData);
-          if (user.profilePicture) {
-            imgElement.src = user.profilePicture;
-            // console.log('Profile image updated');
-          }
-        } catch (error) {
-          console.error('Error parsing user data:', error);
-        }
-      }
-    }
-  }
-
-  // Function to update account card in settings tab
-  function updateAccountCard() {
-    const userData = localStorage.getItem(LOCAL_STORAGE_USER_KEY);
-    if (userData) {
-      try {
-        const user = JSON.parse(userData);
-        // Update profile picture
-        if (user.profilePicture) {
-          accountProfileImage.src = user.profilePicture;
-        }
-
-        // Update display name and username
-        if (user.displayName) {
-          accountName.innerHTML = user.displayName;
-        } else {
-          accountName.innerHTML = user.username;
-        }
-
-        // Add verified badges
-        if (user.hasAdminPrivileges) {
-          accountName.innerHTML += '<i class="fas fa-badge-check verified-badge admin" title="Admin"></i>';
-        } else if (user.isPlusUser) {
-          accountName.innerHTML += '<i class="fas fa-badge-check verified-badge plus" title="Plus User"></i>';
-        }
-
-        if (user.username) {
-          accountUsername.textContent = '@' + user.username;
-        }
-      } catch (error) {
-        console.error('Error updating account card:', error);
-      }
-    }
-  }
-});
+// Export for potential future use
+export {
+  init,
+  isUserLoggedIn,
+  getUserData,
+  updateProfileImage,
+  updateAccountCard,
+  showSettingsTab,
+  showDownloadsTab
+};
