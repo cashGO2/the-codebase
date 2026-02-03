@@ -35,7 +35,7 @@ When users authenticate through Materio and are redirected to your site, they re
                         ▼
                 ┌─────────────────┐
                 │  POST /api/v2/  │
-                │ exchange-handoff│
+                │     login       │
                 └─────────────────┘
                         │
                         ▼
@@ -88,7 +88,7 @@ async function handleAuthHandoff() {
   
   try {
     // Exchange the handoff code for a JWT token
-    const response = await fetch('https://materioa.vercel.app/api/v2/exchange-handoff', {
+    const response = await fetch('https://materioa.vercel.app/api/v2/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 ### Endpoint
 
 ```
-POST https://materioa.vercel.app/api/v2/exchange-handoff
+POST https://materioa.vercel.app/api/v2/login
 ```
 
 ### Request
@@ -293,7 +293,7 @@ export const auth = {
     if (!code) return null;
     
     try {
-      const res = await fetch(`${AUTH_BASE_URL}/api/v2/exchange-handoff`, {
+      const res = await fetch(`${AUTH_BASE_URL}/api/v2/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code })

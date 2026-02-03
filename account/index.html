@@ -41,7 +41,7 @@
 
           console.log('Creating handoff for existing user...');
           // For already logged-in users, create a handoff code via API
-          fetch('/api/v2/create-handoff', {
+          fetch('/api/v2/login', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

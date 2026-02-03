@@ -86,6 +86,10 @@
   ],
   "rewrites": [
     {
+      "source": "/api/v2/login",
+      "destination": "/api/v2/login.js"
+    },
+    {
       "source": "/api/v2/search",
       "destination": "/api/v2/search.js"
     },

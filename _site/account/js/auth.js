@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (redirectUrl) {
       // Already logged in - create a handoff code via API
       const token = getAuthToken();
-      fetch('/api/v2/create-handoff', {
+      fetch('/api/v2/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
