@@ -1,16 +1,15 @@
 {
   "enabled": true,
   "category": "whats-new",
-  "frequency": "every-12hr",
-  "customFrequencyHours": "null",
+  "frequency": "custom",
+  "customFrequencyHours": "96",
   "title": "What's New",
   "link": "/changelog",
-  "description": "The all new Materio experience.\n Materio now has keyboard shortcuts enabling easy navigation and actions, Click on the `?` icon or press `Shift + ?` or `⇧ + ?` to open the keyboard shortcuts reference.\n The search UI has also been updated with better experience.",
+  "description": "**Faster PDF Loading**\n Experience quicker document opening and page rendering with new optimizations made for modern browsers to give you the best performance.",
   "media": [
-    "/assets/media/d800e899-1803-4f3a-8652-c7c6ec9ee4a6.webm"
+    "/assets/img/covers/28e11b0b-e8c4-42c5-b141-fff79b446555.webp"
   ],
   "mediaFit": "scale-down",
-  "showOn": "desktop",
   "showImageOnMaintenance": false,
   "imageRotationInterval": 5000,
   "imageAnimation": {
@@ -19,13 +18,13 @@
     "direction": "left"
   },
   "isLimitedOffer": true,
-  "startDate": "2025-12-25T00:00",
-  "endDate": "2025-12-31T00:00",
+  "startDate": "2026-02-05T17:00",
+  "endDate": "2026-02-21T00:00",
   "showDateInfo": false,
-  "lastUpdated": "2025-12-25T13:14:22",
+  "lastUpdated": "2026-02-05T20:14:22",
   "buttons": {
     "primary": {
-      "show": true,
+      "show": false,
       "text": "Show Changes",
       "icon": "&#8206;"
     },

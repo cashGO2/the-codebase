@@ -623,8 +623,8 @@ body.dark-mode .health-status-text {
 }
 
 .health-status-indicator.ok {
-    background-color: #047857;
-    box-shadow: 0 0 8px rgba(4, 120, 87, 0.5);
+    background-color: var(--color-success);
+    box-shadow: 0 0 8px var(--color-success-glow);
 }
 
 .health-status-indicator.degraded {
