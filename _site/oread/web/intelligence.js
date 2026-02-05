@@ -3,7 +3,7 @@
 
     let blobCache = new Map();
     let pendingRequests = new Map();
-    const DEBUG = false; // Set to true only for debugging
+    const DEBUG = true; // Set to true only for debugging
 
     if (DEBUG) console.log('🚀 PDF.js blob cache optimizer initializing...');
 

@@ -127,38 +127,54 @@ async function handleAdminRecovery(req, res) {
     const { email, username } = req.body;
 
     // Validate required fields
-    if (!email && !username) {
-      return res.status(400).json({ error: 'Email or username is required' });
+    if (!email || !username) {
+      return res.status(400).json({ error: 'Both email and username are required for account recovery' });
     }
 
-    // Find target user
-    let query = supabase.from('users').select('id, email, username, recovery_key');
+    // Find target user by email AND username for security
+    const { data: targetUser, error: userError } = await supabase
+      .from('users')
+      .select('id, username, display_name, email, profile_picture, created_at, updated_at, recovery_key, has_admin_privileges, is_plus_user')
+      .eq('email', email)
+      .eq('username', username)
+      .single();
 
-    if (email) {
-      query = query.eq('email', email);
-    } else {
-      query = query.eq('username', username);
+    if (userError || !targetUser) {
+      return res.status(404).json({
+        error: 'User not found with the provided email and username combination',
+        details: 'Both email and username must match exactly for security purposes'
+      });
     }
 
-    const { data: targetUser, error: targetError } = await query.single();
+    // Log the recovery attempt for audit purposes
+    console.log(`Admin recovery attempted by ${adminUser.id} for user ${targetUser.id} (${targetUser.email})`);
 
-    if (targetError || !targetUser) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    // Return the recovery key
+    // Return the recovery key and all user data
     return res.status(200).json({
-      success: true,
-      user: {
+      message: 'Account recovery data retrieved successfully',
+      recoveryService: 'Premium Admin Account Recovery',
+      adminId: adminUser.id,
+      targetUser: {
         id: targetUser.id,
+        username: targetUser.username,
+        displayName: targetUser.display_name,
         email: targetUser.email,
-        username: targetUser.username
+        profilePicture: targetUser.profile_picture,
+        recoveryKey: targetUser.recovery_key,
+        hasAdminPrivileges: targetUser.has_admin_privileges,
+        isPlusUser: targetUser.is_plus_user,
+        createdAt: targetUser.created_at,
+        updatedAt: targetUser.updated_at
       },
-      recovery_key: targetUser.recovery_key
+      securityNote: 'This recovery includes the user\'s recovery key for password reset purposes',
+      timestamp: new Date().toISOString()
     });
 
   } catch (error) {
     console.error('Admin recovery error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({
+      error: 'Internal server error during account recovery',
+      details: error.message
+    });
   }
 }

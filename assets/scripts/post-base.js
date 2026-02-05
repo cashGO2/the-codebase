@@ -138,6 +138,49 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     pre.appendChild(copyBtn);
+
+    // Apply syntax highlighting if highlight.js is available
+    if (typeof hljs !== 'undefined') {
+      hljs.highlightElement(codeBlock);
+    }
+  });
+
+  // Handle Code Tabs
+  document.querySelectorAll('.code-tabs').forEach(function (tabGroup) {
+    const panes = tabGroup.querySelectorAll('.code-tab-pane');
+    const buttons = tabGroup.querySelectorAll('.code-tab-btn');
+
+    // Initialization: Ensure active tab is showing
+    const activeBtn = tabGroup.querySelector('.code-tab-btn.active');
+    if (activeBtn) {
+      const targetId = activeBtn.getAttribute('data-tab');
+      panes.forEach(pane => {
+        if (pane.getAttribute('data-pane') === targetId) {
+          pane.classList.add('active');
+        } else {
+          pane.classList.remove('active');
+        }
+      });
+    }
+
+    buttons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const targetId = btn.getAttribute('data-tab');
+
+        // Update buttons
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Update panes
+        panes.forEach(pane => {
+          if (pane.getAttribute('data-pane') === targetId) {
+            pane.classList.add('active');
+          } else {
+            pane.classList.remove('active');
+          }
+        });
+      });
+    });
   });
 });
 

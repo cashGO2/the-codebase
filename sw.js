@@ -102,7 +102,6 @@ function getOreadFiles() {
     '/oread/web/intelligence.js',
     '/oread/web/debugger.mjs',
     '/oread/web/debugger.css',
-    '/oread/web/compressed.tracemonkey-pldi-09.pdf',
     // Images
     '/oread/web/images/annotation-key.svg',
     '/oread/web/images/annotation-paragraph.svg',

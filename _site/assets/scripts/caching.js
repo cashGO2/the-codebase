@@ -14,7 +14,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Just validate URL is accessible, don't download
         try {
-            const response = await fetch(pdfUrl, { method: 'HEAD' });
+            const response = await fetch(pdfUrl, { 
+                method: 'HEAD',
+                mode: 'cors',
+                credentials: 'omit'  // Don't send cookies for cross-origin
+            });
             if (!response.ok) throw new Error(`PDF not accessible: ${response.status}`);
 
             // Cache just the URL as "validated"
@@ -32,7 +36,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             return pdfCache.get(pdfUrl);
         } catch (error) {
-            console.error('Error validating PDF:', error);
+            // CORS errors are common for cross-origin CDN requests, don't log as error
+            console.warn('[PDF Preload] Validation skipped (CORS or network):', pdfUrl);
             return null;
         }
     }
@@ -93,6 +98,9 @@ document.addEventListener('DOMContentLoaded', function () {
             pdfIframe.id = 'pdf-iframe';
             pdfIframe.style.left = ''; // Remove off-screen positioning
             prewarmIframe = null; // Clear reference since we're using it now
+            // NOTE: Moving iframe will cause it to reload, so we need to wait for it
+            // Mark as needing to wait for load
+            pdfIframe._needsLoadWait = true;
         } else if (!pdfIframe) {
             pdfIframe = document.createElement('iframe');
             pdfIframe.id = 'pdf-iframe';
@@ -197,7 +205,12 @@ document.addEventListener('DOMContentLoaded', function () {
         // If not in cache, validate it (lightweight HEAD request)
         if (!cachedInfo || !cachedInfo.validated) {
             try {
-                const headResponse = await fetch(pdfUrl, { method: 'HEAD' });
+                // Use cors mode and handle CORS errors gracefully
+                const headResponse = await fetch(pdfUrl, { 
+                    method: 'HEAD',
+                    mode: 'cors',
+                    credentials: 'omit'  // Don't send cookies for cross-origin
+                });
                 if (!headResponse.ok) {
                     // Get human-readable status text
                     const getStatusText = (status) => {
@@ -263,19 +276,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
 
             } catch (error) {
-                // Haptic feedback - error
-                if (window.MaterioHaptics) {
-                    window.MaterioHaptics.vibrate('error');
-                }
-                document.getElementById('popupContent').innerHTML =
-                    `<div style="display: flex; align-items: center; justify-content: center; height: 87vh; text-align: center; flex-direction: column; padding: 20px;">
+                // CORS errors or network issues - don't block, let PDF.js try to load
+                // PDF.js handles its own error display if the file doesn't exist
+                console.warn('[PDF Cache] HEAD validation failed, proceeding to load:', error.message);
+                
+                // Only show error for definite offline state
+                if (!navigator.onLine) {
+                    if (window.MaterioHaptics) {
+                        window.MaterioHaptics.vibrate('error');
+                    }
+                    document.getElementById('popupContent').innerHTML =
+                        `<div style="display: flex; align-items: center; justify-content: center; height: 87vh; text-align: center; flex-direction: column; padding: 20px;">
 <i class="fa-solid fa-cloud-xmark" style="font-size: 72px; color:#ff8400;"></i>
 <p class="popup-message" style="font-weight:600;">Connection failed</p>
 <p class="popup-errcode">status: could not reach the server</p>
 </div>`;
-                popup.classList.remove('closing');
-                popup.style.display = 'block';
-                return;
+                    popup.classList.remove('closing');
+                    popup.style.display = 'block';
+                    return;
+                }
+                // Otherwise, proceed to try loading the PDF anyway
             }
         }
 
@@ -287,16 +307,41 @@ document.addEventListener('DOMContentLoaded', function () {
         if (loadingIndicator) loadingIndicator.remove();
         pdfIframe.style.visibility = 'visible';
 
-        // If viewer is prewarmed, use postMessage for instant PDF change
-        // Otherwise, load the full viewer URL
-        if (isViewerPrewarmed && pdfIframe.contentWindow) {
-            // Use postMessage to load PDF in prewarmed viewer (FAST PATH)
+        // Helper function to send the loadFile message
+        const sendLoadMessage = () => {
+            console.log('[PDF Loader] Sending postMessage to iframe:', pdfUrl);
             pdfIframe.contentWindow.postMessage({
                 type: 'loadFile',
                 url: pdfUrl
-            }, window.location.origin);
+            }, '*');
+        };
+
+        // If viewer is prewarmed, use postMessage for instant PDF change
+        // Otherwise, load the full viewer URL
+        console.log('[PDF Loader] isViewerPrewarmed:', isViewerPrewarmed, 'hasContentWindow:', !!pdfIframe?.contentWindow, 'needsLoadWait:', !!pdfIframe?._needsLoadWait);
+        
+        if (isViewerPrewarmed && pdfIframe.contentWindow) {
+            // Check if iframe was just moved (causes reload) - need to wait for load
+            if (pdfIframe._needsLoadWait) {
+                console.log('[PDF Loader] Iframe was moved, waiting for reload...');
+                pdfIframe._needsLoadWait = false;
+                // Wait for iframe to reload after being moved to new parent
+                const onLoad = () => {
+                    pdfIframe.removeEventListener('load', onLoad);
+                    // Small delay to ensure PDF.js is fully initialized
+                    setTimeout(() => {
+                        console.log('[PDF Loader] Iframe reloaded, now sending message');
+                        sendLoadMessage();
+                    }, 100);
+                };
+                pdfIframe.addEventListener('load', onLoad);
+            } else {
+                // Iframe already in place, send message immediately
+                sendLoadMessage();
+            }
         } else {
             // Fallback: Load viewer with PDF URL (first time or not prewarmed)
+            console.log('[PDF Loader] Loading via iframe src:', viewerUrl);
             pdfIframe.src = viewerUrl;
         }
 
