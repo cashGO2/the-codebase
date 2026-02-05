@@ -3,16 +3,10 @@
 
     let blobCache = new Map();
     let pendingRequests = new Map();
-    const DEBUG = true; // Set to true only for debugging
-
-    if (DEBUG) console.log('🚀 PDF.js blob cache optimizer initializing...');
+    const DEBUG = false; // Set to true only for debugging
 
     // OPTIMIZED: Faster URL matching with early returns
     function findCachedDataForUrl(targetUrl) {
-        if (DEBUG) {
-            console.log('🔍 Searching cache for URL:', targetUrl);
-            console.log('📋 Available cache keys:', Array.from(blobCache.keys()));
-        }
 
         // Direct match first (fastest)
         if (blobCache.has(targetUrl)) {
@@ -33,7 +27,6 @@
             if (targetFilename && originalFilename &&
                 targetFilename === originalFilename &&
                 targetFilename.includes('.pdf')) {
-                if (DEBUG) console.log('✅ Filename match found:', targetFilename);
                 return cachedData;
             }
 
@@ -41,7 +34,6 @@
             if (targetPath3 && originalParts.length >= 3) {
                 const originalPath3 = originalParts.slice(-3).join('/');
                 if (targetPath3 === originalPath3) {
-                    if (DEBUG) console.log('✅ Path match found:', targetPath3);
                     return cachedData;
                 }
             }
@@ -51,14 +43,12 @@
         try {
             const decodedTarget = decodeURIComponent(targetUrl);
             if (decodedTarget !== targetUrl && blobCache.has(decodedTarget)) {
-                if (DEBUG) console.log('✅ Decoded URL match found');
                 return blobCache.get(decodedTarget);
             }
         } catch (e) {
             // URL decode failed, skip
         }
 
-        if (DEBUG) console.log('❌ No cache match found for:', targetUrl);
         return null;
     }
 
@@ -141,7 +131,6 @@
         // This allows the parent to load a new PDF without reloading the viewer
         if (event.data.type === 'loadFile' && event.data.url) {
             const pdfUrl = event.data.url;
-            if (DEBUG) console.log('📄 Loading PDF via postMessage:', pdfUrl);
 
             // Use PDF.js PDFViewerApplication to load the new document
             // This is much faster than reloading the entire iframe
@@ -151,7 +140,6 @@
                     if (PDFViewerApplication.initializedPromise) {
                         PDFViewerApplication.initializedPromise.then(() => {
                             PDFViewerApplication.open({ url: pdfUrl }).then(() => {
-                                if (DEBUG) console.log('✅ PDF loaded successfully via postMessage');
                                 // Notify parent that PDF is loaded
                                 window.parent.postMessage({ type: 'pdfLoaded', url: pdfUrl }, '*');
                             }).catch(error => {
@@ -289,12 +277,10 @@
 
         // Only intercept GET requests for PDFs
         if (method.toLowerCase() !== 'get' || !url || !url.includes('.pdf')) {
-            console.log('   ⏭️ Skipping non-PDF XHR');
             return originalXHRSend.call(this, data);
         }
 
         // console.log('🎯 PDF XHR INTERCEPTED:', url);
-        console.log('Current cache has', blobCache.size, 'items');
 
         // Check if we have cached data for this URL
         const cachedData = findCachedDataForUrl(url);

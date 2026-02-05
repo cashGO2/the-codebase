@@ -15075,9 +15075,6 @@ const PDFViewerApplication = {
     const queryString = document.location.search.substring(1);
     const params = parseQueryString(queryString);
     file = params.get("file") ?? AppOptions.get("defaultUrl");
-    console.log('[PDF.js Viewer] Query string:', queryString);
-    console.log('[PDF.js Viewer] Parsed file param:', file);
-    console.log('[PDF.js Viewer] defaultUrl:', AppOptions.get("defaultUrl"));
     validateFileURL(file);
     const fileInput = this._openFileInput = document.createElement("input");
     fileInput.id = "fileInput";
@@ -15133,12 +15130,10 @@ const PDFViewerApplication = {
       appConfig.findBar?.toggleButton?.classList.add("hidden");
     }
     if (file) {
-      console.log('[PDF.js Viewer] Opening file:', file);
       this.open({
         url: file
       });
     } else {
-      console.log('[PDF.js Viewer] No file to open, hiding bookmark');
       this._hideViewBookmark();
     }
   },

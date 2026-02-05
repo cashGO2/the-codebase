@@ -5,6 +5,9 @@ const { logError, getErrorsLastHour } = require('../_utils_shared/error-tracker'
 const fs = require('fs');
 const path = require('path');
 
+// --- Incident.io Public Widgets API ---
+const INCIDENT_IO_SUMMARY_URL = 'https://statuspage.incident.io/materio/api/v1/summary';
+
 // --- Read version from releases.json ---
 let VERSION = '4.6.0.1'; 
 try {
@@ -109,6 +112,56 @@ async function checkCdnAPI() {
   }
 }
 
+// --- Helper: Check incident.io for active incidents (public widgets API) ---
+async function checkIncidentIO() {
+  try {
+    const res = await fetch(INCIDENT_IO_SUMMARY_URL, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (!res.ok) {
+      return { hasIncident: false, incident: null };
+    }
+
+    const data = await res.json();
+    const ongoingIncidents = data.ongoing_incidents || [];
+    const inProgressMaintenances = data.in_progress_maintenances || [];
+
+    if (ongoingIncidents.length > 0) {
+      const incident = ongoingIncidents[0];
+      return {
+        hasIncident: true,
+        incident: {
+          id: incident.id,
+          name: incident.name,
+          impact: incident.current_worst_impact || 'partial_outage',
+          status: incident.status,
+          url: incident.url
+        }
+      };
+    }
+
+    if (inProgressMaintenances.length > 0) {
+      const maintenance = inProgressMaintenances[0];
+      return {
+        hasIncident: true,
+        incident: {
+          id: maintenance.id,
+          name: maintenance.name,
+          impact: 'maintenance',
+          status: 'in_progress',
+          url: maintenance.url
+        }
+      };
+    }
+
+    return { hasIncident: false, incident: null };
+  } catch (err) {
+    return { hasIncident: false, incident: null };
+  }
+}
+
 // --- Main Handler ---
 module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') {
@@ -134,9 +187,10 @@ module.exports = async (req, res) => {
     const uptime = process.uptime();
 
     // --- Dependency checks ---
-    const [supabaseStatus, cdnStatus] = await Promise.all([
+    const [supabaseStatus, cdnStatus, incidentStatus] = await Promise.all([
       checkSupabase(),
       checkCdnAPI(),
+      checkIncidentIO(),
     ]);
 
     // --- Build info ---
@@ -200,11 +254,14 @@ module.exports = async (req, res) => {
       timestamp: new Date().toISOString(),
       service: 'materio-core',
       responseTimeMs: responseTime,
+      // Include active incident info if any (for health indicator)
+      incident: incidentStatus.incident,
       summary: {
         uptime: `${Math.floor(uptime)}s`,
         dependenciesHealthy: healthy,
         errorsLastHour: getErrorsLastHour(),
-        latency: overallLatency
+        latency: overallLatency,
+        hasActiveIncident: incidentStatus.hasIncident
       },
       build,
       system,

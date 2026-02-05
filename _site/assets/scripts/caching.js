@@ -37,7 +37,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return pdfCache.get(pdfUrl);
         } catch (error) {
             // CORS errors are common for cross-origin CDN requests, don't log as error
-            console.warn('[PDF Preload] Validation skipped (CORS or network):', pdfUrl);
             return null;
         }
     }
@@ -152,9 +151,14 @@ document.addEventListener('DOMContentLoaded', function () {
         pdfIframe.style.visibility = 'visible';
         pdfIframe.style.position = 'relative';
 
-        // Clear any existing content and add iframe to popupContent
-        popupContent.innerHTML = '';
-        popupContent.appendChild(pdfIframe);
+        // Only clear and re-add iframe if it's not already in popupContent
+        // Using innerHTML = '' removes and re-adds the iframe, causing it to reload
+        if (pdfIframe.parentNode !== popupContent) {
+            popupContent.innerHTML = '';
+            popupContent.appendChild(pdfIframe);
+            // Mark that we need to wait for iframe reload
+            pdfIframe._needsLoadWait = true;
+        }
 
         // Show loading indicator
         const loadingDiv = document.createElement('div');
@@ -278,7 +282,6 @@ document.addEventListener('DOMContentLoaded', function () {
             } catch (error) {
                 // CORS errors or network issues - don't block, let PDF.js try to load
                 // PDF.js handles its own error display if the file doesn't exist
-                console.warn('[PDF Cache] HEAD validation failed, proceeding to load:', error.message);
                 
                 // Only show error for definite offline state
                 if (!navigator.onLine) {
@@ -309,7 +312,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Helper function to send the loadFile message
         const sendLoadMessage = () => {
-            console.log('[PDF Loader] Sending postMessage to iframe:', pdfUrl);
             pdfIframe.contentWindow.postMessage({
                 type: 'loadFile',
                 url: pdfUrl
@@ -318,19 +320,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // If viewer is prewarmed, use postMessage for instant PDF change
         // Otherwise, load the full viewer URL
-        console.log('[PDF Loader] isViewerPrewarmed:', isViewerPrewarmed, 'hasContentWindow:', !!pdfIframe?.contentWindow, 'needsLoadWait:', !!pdfIframe?._needsLoadWait);
-        
         if (isViewerPrewarmed && pdfIframe.contentWindow) {
             // Check if iframe was just moved (causes reload) - need to wait for load
             if (pdfIframe._needsLoadWait) {
-                console.log('[PDF Loader] Iframe was moved, waiting for reload...');
                 pdfIframe._needsLoadWait = false;
                 // Wait for iframe to reload after being moved to new parent
                 const onLoad = () => {
                     pdfIframe.removeEventListener('load', onLoad);
                     // Small delay to ensure PDF.js is fully initialized
                     setTimeout(() => {
-                        console.log('[PDF Loader] Iframe reloaded, now sending message');
                         sendLoadMessage();
                     }, 100);
                 };
@@ -341,7 +339,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         } else {
             // Fallback: Load viewer with PDF URL (first time or not prewarmed)
-            console.log('[PDF Loader] Loading via iframe src:', viewerUrl);
             pdfIframe.src = viewerUrl;
         }
 
