@@ -9,13 +9,13 @@ const path = require('path');
 const INCIDENT_IO_SUMMARY_URL = 'https://statuspage.incident.io/materio/api/v1/summary';
 
 // --- Read version from releases.json ---
-let VERSION = '4.6.0.1'; 
+let VERSION = '4.6.0.1';
 try {
   const possiblePaths = [
     path.join(__dirname, '../../assets/data/releases.json'),
     path.join(__dirname, '../../../assets/data/releases.json'),
   ];
-  
+
   for (const releasesPath of possiblePaths) {
     if (fs.existsSync(releasesPath)) {
       const releases = JSON.parse(fs.readFileSync(releasesPath, 'utf8'));
@@ -84,18 +84,18 @@ async function checkSupabase() {
 async function checkCdnAPI() {
   const startTime = Date.now();
   try {
-    const res = await fetch('https://cdn-materioa.vercel.app/api/health', { 
+    const res = await fetch('https://cdn-materioa.vercel.app/api/health', {
       method: 'GET',
       headers: { 'User-Agent': 'Materio-Health-Check' }
     });
     const latency = Date.now() - startTime;
-    
+
     if (!res.ok) throw new Error(`Status ${res.status}`);
-    
+
     // Try to parse response to ensure it's valid
     const data = await res.json();
-    
-    return { 
+
+    return {
       status: 'ok',
       message: 'CDN is healthy',
       responseStatus: res.status,
@@ -104,8 +104,8 @@ async function checkCdnAPI() {
   } catch (err) {
     const latency = Date.now() - startTime;
     logError('cdn_api', err.message);
-    return { 
-      status: 'error', 
+    return {
+      status: 'error',
       message: err.message,
       latencyMs: latency
     };
@@ -180,7 +180,7 @@ module.exports = async (req, res) => {
 
   try {
     const requestStartTime = Date.now();
-    
+
     // --- System metrics ---
     const memoryUsage = process.memoryUsage();
     const cpuLoad = os.loadavg();
@@ -230,9 +230,9 @@ module.exports = async (req, res) => {
       supabaseStatus.latencyMs,
       cdnStatus.latencyMs
     ].filter(lat => lat !== undefined);
-    
+
     const overallLatency = {
-      averageMs: dependencyLatencies.length > 0 
+      averageMs: dependencyLatencies.length > 0
         ? Math.round(dependencyLatencies.reduce((a, b) => a + b, 0) / dependencyLatencies.length)
         : 0,
       maxMs: dependencyLatencies.length > 0 ? Math.max(...dependencyLatencies) : 0,
@@ -242,7 +242,8 @@ module.exports = async (req, res) => {
     // --- Final response ---
     const healthy =
       supabaseStatus.status === 'connected' &&
-      cdnStatus.status === 'ok';
+      cdnStatus.status === 'ok' &&
+      !incidentStatus.hasIncident;
 
     const responseTime = Date.now() - requestStartTime;
 
@@ -250,7 +251,7 @@ module.exports = async (req, res) => {
       status: healthy ? 'ok' : 'degraded',
       message: healthy
         ? 'All systems operational'
-        : 'Some dependencies are unavailable',
+        : (incidentStatus.hasIncident ? (incidentStatus.incident.name || 'System incident reported') : 'Some dependencies are unavailable'),
       timestamp: new Date().toISOString(),
       service: 'materio-core',
       responseTimeMs: responseTime,

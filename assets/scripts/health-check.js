@@ -6,11 +6,11 @@
  * @module health-check
  */
 
-const INCIDENT_IO_SUMMARY_URL = 'https://statuspage.incident.io/materio/api/v1/summary';
+const HEALTH_API_URL = '/api/v2/health';
 
 /**
  * Check system health and update indicator
- * Fetches status from incident.io public widgets API
+ * Fetches status from our internal health API (which proxies incident.io)
  * @returns {Promise<void>}
  */
 async function checkHealth() {
@@ -18,28 +18,24 @@ async function checkHealth() {
     if (!healthIndicator) return;
 
     try {
-        const response = await fetch(INCIDENT_IO_SUMMARY_URL);
+        const response = await fetch(HEALTH_API_URL);
         const data = await response.json();
 
         healthIndicator.classList.remove('ok', 'degraded', 'partial-outage', 'error');
 
-        // Check for ongoing incidents
-        const ongoingIncidents = data.ongoing_incidents || [];
-        const inProgressMaintenances = data.in_progress_maintenances || [];
+        // Check for active incident from our health API response
+        const incident = data.incident;
+        const status = data.status;
 
-        if (ongoingIncidents.length > 0) {
-            const incident = ongoingIncidents[0];
-            const impact = incident.current_worst_impact || 'partial_outage';
+        if (incident) {
+            const impact = incident.impact || 'partial_outage';
 
             // Map impact to indicator class
-            // major_outage = red (#dd340d)
-            // partial_outage = orange (#f5785c)  
-            // degraded_performance = yellow (#e4ba31)
             if (impact === 'major_outage') {
                 healthIndicator.classList.add('error');
             } else if (impact === 'partial_outage') {
                 healthIndicator.classList.add('partial-outage');
-            } else if (impact === 'degraded_performance') {
+            } else if (impact === 'degraded_performance' || impact === 'maintenance') {
                 healthIndicator.classList.add('degraded');
             } else {
                 healthIndicator.classList.add('partial-outage');
@@ -48,9 +44,10 @@ async function checkHealth() {
             return;
         }
 
-        if (inProgressMaintenances.length > 0) {
+        // If no incident but status is degraded, show degraded
+        if (status === 'degraded') {
             healthIndicator.classList.add('degraded');
-            healthIndicator.title = inProgressMaintenances[0].name || 'Maintenance in progress';
+            healthIndicator.title = data.message || 'Systems are experiencing issues';
             return;
         }
 
@@ -58,7 +55,7 @@ async function checkHealth() {
         healthIndicator.classList.add('ok');
         healthIndicator.title = 'All systems operational';
     } catch (error) {
-        // If we can't reach incident.io, show as ok (don't alarm users)
+        // If we can't reach our health API, show as ok (don't alarm users)
         healthIndicator.classList.add('ok');
         healthIndicator.title = 'All systems operational';
     }

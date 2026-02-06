@@ -97,12 +97,13 @@ function isAuthenticated() {
   const localStorageToken = localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
   const cookieToken = document.cookie.split('; ').find(row => row.startsWith('materio_auth_token='));
 
-  // If localStorage has token but cookie doesn't, clear localStorage (session expired)
+  // If localStorage has token but cookie doesn't, restore the cookie
   if (localStorageToken && !cookieToken) {
-    console.log('Cookie missing but localStorage has token - clearing stale token');
-    localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
-    localStorage.removeItem('materio_user');
-    return false;
+    console.log('Cookie missing but localStorage has token - restoring cookie');
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + 30);
+    document.cookie = `${LOCAL_STORAGE_TOKEN_KEY}=${localStorageToken}; path=/; expires=${expiryDate.toUTCString()}; SameSite=Lax`;
+    return true;
   }
 
   // If cookie has token but localStorage doesn't, sync them
@@ -121,10 +122,18 @@ function getAuthToken() {
 
 function setAuthToken(token) {
   localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, token);
+
+  // Also set it in a cookie for session persistence and server-side compatibility
+  const expiryDate = new Date();
+  expiryDate.setDate(expiryDate.getDate() + 30); // 30 days expiry
+  document.cookie = `${LOCAL_STORAGE_TOKEN_KEY}=${token}; path=/; expires=${expiryDate.toUTCString()}; SameSite=Lax`;
 }
 
 function clearAuthToken() {
   localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
+
+  // Also clear the cookie
+  document.cookie = `${LOCAL_STORAGE_TOKEN_KEY}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
 }
 
 function redirectToProfile() {
@@ -170,13 +179,14 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
   // Protect authenticated pages
-  const currentPage = window.location.pathname.split('/').pop();
+  const path = window.location.pathname;
+  const currentPage = path.split('/').pop().replace('.html', '');
 
   // Pages that require authentication
-  const authRequiredPages = ['profile'];
+  const authRequiredPages = ['profile', 'files', 'settings'];
 
   // Pages that are for non-authenticated users
-  const nonAuthPages = ['index', 'signup', 'forgot-password', ''];
+  const nonAuthPages = ['index', 'signup', 'forgot-password', '', 'login'];
 
   if (authRequiredPages.includes(currentPage) && !isAuthenticated()) {
     // Redirect to login if trying to access protected page without auth
