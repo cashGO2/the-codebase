@@ -41,7 +41,7 @@ const SPAM_CONFIG = {
 const INCIDENT_AUTO_CONFIG = {
   clusterThreshold: 2,         // Number of reports to trigger incident
   clusterWindowHours: 3,       // Time window for clustering (3 hours)
-  cooldownMinutes: 3,         // Cooldown before creating another incident
+  cooldownMinutes: 30,         // Cooldown before creating another incident
 };
 
 // --- Read version from releases.json ---
