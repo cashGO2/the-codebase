@@ -399,6 +399,127 @@
                 "text": "Send Feedback",
                 "icon": ""
             }
+        },
+        "bug-report": {
+            "id": "bug-report",
+            "title": "Report a Bug",
+            "icon": "fa-bug",
+            "description": "Help us squash bugs by reporting issues you encounter",
+            "fields": [
+                {
+                    "name": "title",
+                    "type": "text",
+                    "label": "Bug Title",
+                    "placeholder": "Brief description of the issue",
+                    "required": true,
+                    "minLength": 5,
+                    "maxLength": 150
+                },
+                {
+                    "name": "severity",
+                    "type": "select",
+                    "label": "Severity",
+                    "required": true,
+                    "options": [
+                        {
+                            "value": "critical",
+                            "label": "Critical - App is unusable"
+                        },
+                        {
+                            "value": "major",
+                            "label": "Major - Feature broken"
+                        },
+                        {
+                            "value": "minor",
+                            "label": "Minor - Small issue"
+                        },
+                        {
+                            "value": "cosmetic",
+                            "label": "Cosmetic - Visual glitch"
+                        }
+                    ]
+                },
+                {
+                    "name": "affectedArea",
+                    "type": "select",
+                    "label": "Affected Area",
+                    "required": true,
+                    "options": [
+                        {
+                            "value": "pdf-viewer",
+                            "label": "PDF Viewer"
+                        },
+                        {
+                            "value": "search",
+                            "label": "Search"
+                        },
+                        {
+                            "value": "navigation",
+                            "label": "Navigation"
+                        },
+                        {
+                            "value": "downloads",
+                            "label": "Downloads"
+                        },
+                        {
+                            "value": "auth",
+                            "label": "Login / Account"
+                        },
+                        {
+                            "value": "ai-features",
+                            "label": "AI Features"
+                        },
+                        {
+                            "value": "ui",
+                            "label": "UI / Layout"
+                        },
+                        {
+                            "value": "performance",
+                            "label": "Performance"
+                        },
+                        {
+                            "value": "other",
+                            "label": "Other"
+                        }
+                    ]
+                },
+                {
+                    "name": "description",
+                    "type": "textarea",
+                    "label": "What happened?",
+                    "placeholder": "Describe the bug in detail. What did you expect to happen vs what actually happened?",
+                    "required": true,
+                    "minLength": 20,
+                    "maxLength": 3000
+                },
+                {
+                    "name": "stepsToReproduce",
+                    "type": "textarea",
+                    "label": "Steps to Reproduce (optional)",
+                    "placeholder": "1. Go to...\n2. Click on...\n3. See error...",
+                    "required": false,
+                    "maxLength": 2000
+                },
+                {
+                    "name": "email",
+                    "type": "email",
+                    "label": "Email (optional)",
+                    "placeholder": "your@email.com",
+                    "required": false,
+                    "hint": "We'll notify you when the bug is fixed"
+                }
+            ],
+            "confirmations": [
+                {
+                    "name": "accuracyConfirm",
+                    "label": "I confirm this is a genuine bug report and not a duplicate",
+                    "required": true
+                }
+            ],
+            "submitButton": {
+                "text": "Submit Bug Report",
+                "icon": "fa-bug"
+            }
         }
     }
 }

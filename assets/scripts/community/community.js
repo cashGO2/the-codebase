@@ -944,6 +944,11 @@
                 headers
             });
 
+            const contentType = response.headers.get('content-type') || '';
+            if (!contentType.includes('application/json')) {
+                throw new Error('Community API unavailable');
+            }
+
             const data = await response.json();
 
             if (!response.ok) {
@@ -953,6 +958,10 @@
 
             return data;
         } catch (error) {
+            if (error.message === 'Failed to fetch') {
+                console.warn('[Community] API server unreachable at', config.apiUrl);
+                throw new Error('Community server is offline. Please try again later.');
+            }
             console.error('API Error:', error);
             throw error;
         }

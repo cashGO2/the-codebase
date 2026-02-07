@@ -94,20 +94,32 @@
       "destination": "/api/v2/search.js"
     },
     {
-      "source": "/api/v2/features/:path*",
-      "destination": "/api/v2/features.js"
+      "source": "/api/v2/features/(.*)",
+      "destination": "/api/v2/features.js?path=$1"
+    },
+    {
+      "source": "/api/v2/health/report",
+      "destination": "/api/v2/health.js?action=report"
+    },
+    {
+      "source": "/api/v2/health/alert",
+      "destination": "/api/v2/health.js?action=alert"
+    },
+    {
+      "source": "/api/v2/health",
+      "destination": "/api/v2/health.js"
     },
     {
       "source": "/api/v2/invites/sharelink-info",
       "destination": "/api/v2/invites.js"
     },
     {
-      "source": "/api/v2/invites/:path*",
-      "destination": "/api/v2/invites.js"
+      "source": "/api/v2/invites/(.*)",
+      "destination": "/api/v2/invites.js?path=$1"
     },
     {
-      "source": "/api/v2/chat/:path*",
-      "destination": "/api/v2/chat.js"
+      "source": "/api/v2/chat/(.*)",
+      "destination": "/api/v2/chat.js?path=$1"
     },
     {
       "source": "/sharelink-info",
@@ -134,8 +146,8 @@
       "destination": "/sharelink-test.html"
     },
     {
-      "source": "/api/v1/:path*",
-      "destination": "/api/v2/:path*"
+      "source": "/api/v1/(.*)",
+      "destination": "/api/v2/$1"
     }
   ],
   "redirects": [

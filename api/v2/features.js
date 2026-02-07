@@ -892,6 +892,17 @@ async function handleNotebooks(req, res, url) {
       return res.status(200).json({ success: true, message: 'Notebook synced' });
     }
 
+    // DELETE
+    if (method === 'DELETE' || (method === 'POST' && subAction === 'delete')) {
+      const notebookId = queryParams.id || req.body?.id || req.body?.notebookId;
+      if (!notebookId) {
+        return res.status(400).json({ error: 'Notebook ID required' });
+      }
+
+      await collection.deleteOne({ id: notebookId, userId: user.id });
+      return res.status(200).json({ success: true, message: 'Notebook deleted from cloud' });
+    }
+
     // LIST (Load)
     if (method === 'GET' || (method === 'POST' && subAction === 'list')) {
       const notebooks = await collection.find({ userId: user.id }).toArray();
@@ -904,7 +915,10 @@ async function handleNotebooks(req, res, url) {
     return res.status(400).json({ error: 'Invalid action' });
   } catch (error) {
     console.error('Notebooks API error:', error);
-    return res.status(500).json({ error: 'Database error' });
+    return res.status(503).json({
+      error: 'Cloud Sync is temporarily unavailable (Database offline). Your notes are saved locally and will sync once the server resumes.',
+      details: error.message
+    });
   }
 }
 

@@ -55,10 +55,11 @@ function applyTheme(isDark) {
     // Sync with Giscus iframe
     const giscusFrame = document.querySelector('iframe.giscus-frame');
     if (giscusFrame?.contentWindow) {
+        const giscusDarkTheme = `${window.location.origin}/assets/style/giscus.css`;
         giscusFrame.contentWindow.postMessage({
             giscus: {
                 setConfig: {
-                    theme: isDark ? 'http://localhost:8888/assets/style/giscus.css' : 'noborder_light'
+                    theme: isDark ? giscusDarkTheme : 'noborder_light'
                 }
             }
         }, 'https://giscus.app');

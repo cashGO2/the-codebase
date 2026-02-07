@@ -113,7 +113,7 @@
             this.syncStats(userId);
           }
         } catch (e) {
-          console.error('[Metrics] Identify failed', e);
+          if (!isLocal) console.error('[Metrics] Identify failed', e);
         }
       }
     }
@@ -261,10 +261,10 @@
           }
         }
 
-        console.log(`[Metrics] Sent ${eventsToSend.length} events`);
+        if (!isLocal) console.log(`[Metrics] Sent ${eventsToSend.length} events`);
 
       } catch (e) {
-        console.warn('[Metrics] Failed to send events, requeuing', e);
+        if (!isLocal) console.warn('[Metrics] Failed to send events, requeuing', e);
         // Re-queue events on failure
         this.buffer = [...eventsToSend, ...this.buffer];
         this.saveBuffer();

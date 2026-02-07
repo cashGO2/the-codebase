@@ -139,11 +139,25 @@
     }
 </script>
 
-<!-- PDF.js Viewer Preloading - Eliminates cold-start delay -->
-<link rel="preload" href="/oread/build/pdf.mjs" as="script" crossorigin>
-<link rel="preload" href="/oread/web/viewer.mjs" as="script" crossorigin>
-<link rel="preload" href="/oread/web/viewer.css" as="style">
-<link rel="modulepreload" href="/oread/build/pdf.mjs">
-<link rel="modulepreload" href="/oread/web/viewer.mjs">
-<link rel="prefetch" href="/oread/build/pdf.worker.mjs">
-<link rel="prefetch" href="/oread/web/viewer.html">
+<!-- PDF.js Viewer Preloading - Only on pages that use the PDF viewer -->
+<script>
+(function() {
+    // Only preload PDF.js assets if the page contains a PDF viewer or download links
+    if (document.querySelector('[data-pdf-src], .pdf-viewer, .download-card, a[href$=".pdf"]') ||
+        window.location.pathname.includes('/docs/')) {
+        var preloads = [
+            { href: '/oread/build/pdf.mjs', as: 'script', rel: 'modulepreload' },
+            { href: '/oread/web/viewer.mjs', as: 'script', rel: 'modulepreload' },
+            { href: '/oread/web/viewer.css', as: 'style', rel: 'preload' }
+        ];
+        preloads.forEach(function(p) {
+            var link = document.createElement('link');
+            link.rel = p.rel;
+            link.href = p.href;
+            if (p.as && p.rel === 'preload') link.setAttribute('as', p.as);
+            if (p.rel === 'modulepreload' || p.rel === 'preload') link.crossOrigin = 'anonymous';
+            document.head.appendChild(link);
+        });
+    }
+})();
+</script>

@@ -18,7 +18,7 @@
 
 const STORAGE_KEY = 'materio_notebooks';
 const CLOUD_SYNC_ENDPOINT = '/api/v2/features?action=notebooks';
-const AI_CHAT_ENDPOINT = '/api/v1/chat';
+// const AI_CHAT_ENDPOINT = '/api/v1/chat';
 
 // Default notebook structure
 const createDefaultNotebook = () => ({
@@ -737,6 +737,7 @@ class NotebookManager {
         }
 
         this.currentNotebook.updatedAt = new Date().toISOString();
+        this.currentNotebook.syncedToCloud = false;
 
         // Update in array or add if new
         const index = this.notebooks.findIndex(n => n.id === this.currentNotebook.id);
@@ -772,8 +773,15 @@ class NotebookManager {
 
         const index = this.notebooks.findIndex(n => n.id === notebookId);
         if (index !== -1) {
+            const notebook = this.notebooks[index];
             this.notebooks.splice(index, 1);
             this.saveToStorage();
+
+            // Sync deletion to cloud
+            if (this.isPlusUser || this.hasAdminPrivileges) {
+                this.deleteNotebookFromCloud(notebookId);
+            }
+
             document.dispatchEvent(new CustomEvent('notebook:update'));
         }
     }
@@ -1585,20 +1593,59 @@ class NotebookManager {
                 },
                 body: JSON.stringify({
                     subAction: 'sync',
-                    notebook: notebook
+                    notebook: { ...notebook, syncedToCloud: true }
                 }),
                 credentials: 'include'
             });
 
             if (response.ok) {
+                // Update the object reference directly
                 notebook.syncedToCloud = true;
+
+                // Also update in the main array to ensure it's saved correctly
+                const index = this.notebooks.findIndex(n => n.id === notebook.id);
+                if (index !== -1) {
+                    this.notebooks[index].syncedToCloud = true;
+                }
+
                 this.saveToStorage();
                 console.log('[Notebook] Synced to cloud:', notebook.id);
+
+                // Notify UI to update (show the cloud badge in tab)
+                document.dispatchEvent(new CustomEvent('notebook:update'));
             } else {
                 console.error('[Notebook] Cloud sync failed:', response.status);
             }
         } catch (e) {
             console.error('[Notebook] Cloud sync failed:', e);
+        }
+    }
+
+    /**
+     * Delete a notebook from cloud
+     */
+    async deleteNotebookFromCloud(notebookId) {
+        if (!this.isPlusUser && !this.hasAdminPrivileges) return;
+
+        const token = localStorage.getItem('materio_auth_token');
+        if (!token) return;
+
+        try {
+            await fetch(CLOUD_SYNC_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    subAction: 'delete',
+                    id: notebookId
+                }),
+                credentials: 'include'
+            });
+            console.log('[Notebook] Deleted from cloud:', notebookId);
+        } catch (e) {
+            console.error('[Notebook] Cloud deletion failed:', e);
         }
     }
 
@@ -1640,7 +1687,10 @@ class NotebookManager {
                 const cloudNotebooks = result.notebooks || [];
 
                 // Merge with local notebooks
-                for (const cloudNotebook of cloudNotebooks) {
+                for (let cloudNotebook of cloudNotebooks) {
+                    // Force syncedToCloud to true since it came from the cloud
+                    cloudNotebook.syncedToCloud = true;
+
                     const localIndex = this.notebooks.findIndex(n => n.id === cloudNotebook.id);
 
                     if (localIndex === -1) {
@@ -1657,6 +1707,9 @@ class NotebookManager {
 
                 this.saveToStorage();
                 console.log('[Notebook] Loaded from cloud:', cloudNotebooks.length, 'notebooks');
+
+                // Notify UI to update list
+                document.dispatchEvent(new CustomEvent('notebook:update'));
             }
         } catch (e) {
             console.error('[Notebook] Failed to load from cloud:', e);

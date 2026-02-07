@@ -10,10 +10,11 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-// Import chat functionality
+// Import API handlers
 const chatHandler = require('../api/v2/chat');
 const featuresHandler = require('../api/v2/features');
 const invitesHandler = require('../api/v2/invites');
+const healthHandler = require('../api/v2/health');
 
 // Chat API routes
 app.get('/api/v2/chat/models', async (req, res) => {
@@ -62,6 +63,17 @@ app.all('/api/v2/invites*', async (req, res) => {
 app.all('/api/v2/features', async (req, res) => {
   try {
     await featuresHandler(req, res);
+  } catch (error) {
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  }
+});
+
+// Health API routes (health check, bug reports, alerts)
+app.all('/api/v2/health*', async (req, res) => {
+  try {
+    await healthHandler(req, res);
   } catch (error) {
     if (!res.headersSent) {
       res.status(500).json({ success: false, error: error.message });
@@ -123,6 +135,9 @@ if (require.main === module) {
     console.log(`Chat Health: GET /api/v2/chat/health`);
     console.log(`Invites API: ALL /api/v2/invites*`);
     console.log(`Features API: ALL /api/v2/features`);
+    console.log(`Health API: GET /api/v2/health`);
+    console.log(`Health Report: POST /api/v2/health/report`);
+    console.log(`Health Alert: POST /api/v2/health/alert`);
   });
 }
 

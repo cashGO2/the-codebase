@@ -1,18 +1,25 @@
-// MongoDB configuration for Materio dynamic forms
-const { MongoClient } = require('mongodb');
+// Force relaxation for experimental Node 24 on Windows
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+const { MongoClient, ServerApiVersion } = require('mongodb');
 require('dotenv').config();
 
 let mongoClient = null;
 let db = null;
+let connectionPromise = null;
+
+const dns = require('dns');
+if (dns.setDefaultResultOrder) {
+    dns.setDefaultResultOrder('ipv4first');
+}
 
 /**
  * Get MongoDB database instance with connection pooling
  * @returns {Promise<import('mongodb').Db>}
  */
 async function getMongoDb() {
-    if (db) {
-        return db;
-    }
+    if (db) return db;
+    if (connectionPromise) return connectionPromise;
 
     const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -20,25 +27,46 @@ async function getMongoDb() {
         throw new Error('MONGODB_URI environment variable is not set');
     }
 
-    try {
-        console.log('Connecting to MongoDB...');
-        mongoClient = new MongoClient(MONGODB_URI, {
-            maxPoolSize: 10,
-            minPoolSize: 1,
-            maxIdleTimeMS: 30000,
-            connectTimeoutMS: 10000,
-            serverSelectionTimeoutMS: 10000,
-        });
+    connectionPromise = (async () => {
+        try {
+            console.log('Connecting to MongoDB (Aggressive Mode)...');
 
-        await mongoClient.connect();
-        db = mongoClient.db('materio');
+            // Mask password for logging
+            const maskedUri = MONGODB_URI.replace(/:([^@]+)@/, ':****@');
+            console.log(`Connecting to: ${maskedUri}`);
 
-        console.log('MongoDB connected successfully');
-        return db;
-    } catch (error) {
-        console.error('MongoDB connection error:', error.message);
-        throw error;
-    }
+            mongoClient = new MongoClient(MONGODB_URI, {
+                maxPoolSize: 5,
+                connectTimeoutMS: 60000, // Very high
+                socketTimeoutMS: 60000,  // Very high
+                serverSelectionTimeoutMS: 60000,
+                tls: true,
+                tlsAllowInvalidHostnames: true,
+                tlsAllowInvalidCertificates: true,
+                family: 4,
+                retryWrites: true,
+                compressors: ['none']
+            });
+
+            // Listen for failures but don't reset immediately
+            mongoClient.on('connectionPoolCleared', (e) => {
+                console.warn('MongoDB connection pool cleared:', e.reason);
+                // We let the driver handle reconnection unless it's a fatal error
+            });
+
+            await mongoClient.connect();
+            db = mongoClient.db('materio');
+            console.log('MongoDB connected successfully');
+            return db;
+        } catch (error) {
+            console.error('MongoDB connection error:', error.message);
+            connectionPromise = null;
+            db = null;
+            throw error;
+        }
+    })();
+
+    return connectionPromise;
 }
 
 /**
@@ -67,6 +95,7 @@ async function closeMongoConnection() {
         await mongoClient.close();
         mongoClient = null;
         db = null;
+        connectionPromise = null;
     }
 }
 

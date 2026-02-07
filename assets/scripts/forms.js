@@ -945,6 +945,17 @@ function populateSubjectsForForm(semester) {
 }
 
 /**
+ * Safely parse JSON from a fetch response, with fallback on non-JSON responses
+ */
+async function safeJsonParse(response) {
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+        throw new Error(`Server error (${response.status}): Unexpected response from server`);
+    }
+    return response.json();
+}
+
+/**
  * Submit the dynamic form
  */
 async function submitDynamicForm() {
@@ -1071,7 +1082,7 @@ async function submitDynamicForm() {
                 body: uploadFormData
             });
 
-            const result = await response.json();
+            const result = await safeJsonParse(response);
 
             if (response.ok && result.success) {
                 // Show success state
@@ -1080,6 +1091,34 @@ async function submitDynamicForm() {
                 document.getElementById('dynamicFormSuccess').style.display = 'flex';
             } else {
                 throw new Error(result.error || 'Upload failed');
+            }
+        } else if (currentFormType === 'bug-report') {
+            // Bug reports go to the health API /report endpoint (MongoDB)
+            const sessionId = sessionStorage.getItem('materio_session_id') || crypto.randomUUID();
+            sessionStorage.setItem('materio_session_id', sessionId);
+
+            const response = await fetch('/api/v2/health?action=report', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: formData.title,
+                    severity: formData.severity,
+                    affectedArea: formData.affectedArea,
+                    description: formData.description,
+                    stepsToReproduce: formData.stepsToReproduce || null,
+                    email: formData.email || null,
+                    sessionId: sessionId
+                })
+            });
+
+            const result = await safeJsonParse(response);
+
+            if (response.ok && result.success) {
+                document.getElementById('dynamicFormSuccessMessage').textContent =
+                    getSuccessMessage(currentFormType);
+                document.getElementById('dynamicFormSuccess').style.display = 'flex';
+            } else {
+                throw new Error(result.error || 'Bug report submission failed');
             }
         } else {
             // For non-file forms (feedback, beta-review), use JSON API
@@ -1104,7 +1143,7 @@ async function submitDynamicForm() {
                 })
             });
 
-            const result = await response.json();
+            const result = await safeJsonParse(response);
 
             if (response.ok && result.success) {
                 // Show success state
@@ -1131,7 +1170,8 @@ function getSuccessMessage(formType) {
     const messages = {
         'contribution': 'Thank you for your contribution! Our team will review and add your materials soon.',
         'feedback': 'Thank you for your feedback! We really appreciate you taking the time to help us improve.',
-        'beta-review': 'Thank you for your beta testing review! Your feedback helps us build a better product.'
+        'beta-review': 'Thank you for your beta testing review! Your feedback helps us build a better product.',
+        'bug-report': 'Bug report submitted! Our team will investigate this issue. Thank you for helping improve Materio!'
     };
     return messages[formType] || 'Your submission has been received. Thank you!';
 }

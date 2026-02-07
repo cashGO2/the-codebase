@@ -561,6 +561,47 @@ body.dark-mode .header-logo {
     background-image: url('/assets/img/materio_new_wh.svg');
 }
 
+/* Bug Report Button */
+.bug-report-btn {
+    position: absolute;
+    top: var(--spacing-md);
+    right: calc(var(--spacing-xl) + 40px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: var(--radius-pill);
+    corner-shape: squircle;
+    background: transparent;
+    color: var(--text);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    z-index: var(--z-dropdown);
+    opacity: 0.6;
+}
+
+.bug-report-btn:hover {
+    background-color: rgba(128, 128, 128, 0.1);
+    opacity: 1;
+    color: #e74c3c;
+}
+
+body.dark-mode .bug-report-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ff6b6b;
+}
+
+@media (max-width: 768px) {
+    .bug-report-btn {
+        right: calc(var(--spacing-xl) + 25px);
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
+    }
+}
 
 /* Health Status Indicator */
 .health-status-container {
