@@ -106,6 +106,10 @@
       "destination": "/api/v2/health.js?action=alert"
     },
     {
+      "source": "/api/v2/health/test-incident-email",
+      "destination": "/api/v2/health.js?action=test-incident-email"
+    },
+    {
       "source": "/api/v2/health",
       "destination": "/api/v2/health.js"
     },

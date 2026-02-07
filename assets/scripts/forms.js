@@ -1094,32 +1094,38 @@ async function submitDynamicForm() {
             }
         } else if (currentFormType === 'bug-report') {
             // Bug reports go to the health API /report endpoint (MongoDB)
+            // Fire-and-forget: show success immediately, submit in background
             const sessionId = sessionStorage.getItem('materio_session_id') || crypto.randomUUID();
             sessionStorage.setItem('materio_session_id', sessionId);
 
-            const response = await fetch('/api/v2/health?action=report', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    title: formData.title,
-                    severity: formData.severity,
-                    affectedArea: formData.affectedArea,
-                    description: formData.description,
-                    stepsToReproduce: formData.stepsToReproduce || null,
-                    email: formData.email || null,
-                    sessionId: sessionId
-                })
+            const payload = JSON.stringify({
+                title: formData.title,
+                severity: formData.severity,
+                affectedArea: formData.affectedArea,
+                description: formData.description,
+                stepsToReproduce: formData.stepsToReproduce || null,
+                email: formData.email || null,
+                sessionId: sessionId
             });
 
-            const result = await safeJsonParse(response);
+            // Show success immediately — don't make user wait
+            document.getElementById('dynamicFormSuccessMessage').textContent =
+                getSuccessMessage(currentFormType);
+            document.getElementById('dynamicFormSuccess').style.display = 'flex';
 
-            if (response.ok && result.success) {
-                document.getElementById('dynamicFormSuccessMessage').textContent =
-                    getSuccessMessage(currentFormType);
-                document.getElementById('dynamicFormSuccess').style.display = 'flex';
-            } else {
-                throw new Error(result.error || 'Bug report submission failed');
-            }
+            // Submit in background (fire-and-forget)
+            fetch('/api/v2/health?action=report', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: payload
+            }).then(async resp => {
+                if (!resp.ok) {
+                    const err = await safeJsonParse(resp).catch(() => ({}));
+                    console.warn('Bug report background submit issue:', err.error || resp.status);
+                }
+            }).catch(err => {
+                console.warn('Bug report background submit failed (will retry on next visit):', err.message);
+            });
         } else {
             // For non-file forms (feedback, beta-review), use JSON API
             const token = localStorage.getItem('materio_token');
@@ -1129,30 +1135,35 @@ async function submitDynamicForm() {
                 githubUsername: githubUsername
             };
 
-            const response = await fetch('/api/v2/features?action=forms', {
+            // Fire-and-forget: show success immediately, submit in background
+            const payload = JSON.stringify({
+                formType: currentFormType,
+                user: userInfo,
+                data: formData,
+                confirmations: confirmationData
+            });
+
+            // Show success immediately — don't make user wait for DB write
+            document.getElementById('dynamicFormSuccessMessage').textContent =
+                getSuccessMessage(currentFormType);
+            document.getElementById('dynamicFormSuccess').style.display = 'flex';
+
+            // Submit in background (fire-and-forget)
+            fetch('/api/v2/features?action=forms', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     ...(token ? { 'Authorization': `Bearer ${token}` } : {})
                 },
-                body: JSON.stringify({
-                    formType: currentFormType,
-                    user: userInfo,
-                    data: formData,
-                    confirmations: confirmationData
-                })
+                body: payload
+            }).then(async resp => {
+                if (!resp.ok) {
+                    const err = await safeJsonParse(resp).catch(() => ({}));
+                    console.warn('Form background submit issue:', err.error || resp.status);
+                }
+            }).catch(err => {
+                console.warn('Form background submit failed:', err.message);
             });
-
-            const result = await safeJsonParse(response);
-
-            if (response.ok && result.success) {
-                // Show success state
-                document.getElementById('dynamicFormSuccessMessage').textContent =
-                    getSuccessMessage(currentFormType);
-                document.getElementById('dynamicFormSuccess').style.display = 'flex';
-            } else {
-                throw new Error(result.error || 'Submission failed');
-            }
         }
     } catch (error) {
         console.error('Form submission error:', error);

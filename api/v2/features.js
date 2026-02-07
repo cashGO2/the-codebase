@@ -967,18 +967,22 @@ async function submitForm(req, res) {
     reviewedAt: null
   };
 
-  try {
-    const collection = await getFormsCollection();
-    const result = await collection.insertOne(submission);
-    return res.status(201).json({
-      success: true,
-      message: 'Form submitted successfully',
-      submissionId: result.insertedId.toString()
-    });
-  } catch (error) {
-    console.error('Error submitting form:', error);
-    return res.status(500).json({ error: 'Failed to submit form' });
-  }
+  // Respond immediately — DB write happens in background
+  res.status(201).json({
+    success: true,
+    message: 'Form submitted successfully',
+    submissionId: 'pending'
+  });
+
+  // Background: save to MongoDB (user already has their response)
+  (async () => {
+    try {
+      const collection = await getFormsCollection();
+      await collection.insertOne(submission);
+    } catch (error) {
+      console.error('Background form save failed:', error.message);
+    }
+  })();
 }
 
 async function listFormSubmissions(req, res) {

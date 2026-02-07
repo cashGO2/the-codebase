@@ -65,6 +65,12 @@ const SEVERITY_EMOJI = {
  * @param {Object} incidentData - output from buildIncidentSummary()
  *   { name, summary, severity, affectedAreas, reportCount }
  * @returns {Promise<{success: boolean, messageId?: string, error?: string}>}
+ * 
+ * NOTE on images & fonts:
+ * - External image URLs: Gmail blocks until user approves. Use CID attachments instead.
+ * - Custom fonts (@font-face): Email clients don't support. Falls back to system fonts.
+ * - Current setup: Uses system font stack (-apple-system, Roboto, etc.) which renders 
+ *   consistently across all email clients without external requests.
  */
 async function sendIncidentEmail(incidentData) {
   const transporter = getTransporter();
@@ -73,68 +79,108 @@ async function sendIncidentEmail(incidentData) {
     return { success: false, error: 'SMTP not configured' };
   }
 
-  const { name, summary, severity, affectedAreas, reportCount } = incidentData;
+  const { name, summary, severity, affectedAreas, reportCount, aiGenerated } = incidentData;
   const color = SEVERITY_COLORS[severity] || '#6B7280';
   const emoji = SEVERITY_EMOJI[severity] || '⚪';
   const timestamp = new Date().toISOString();
 
+  // Hosted logo URL (more reliable than CID for Gmail)
+  const LOGO_URL = 'https://materioa.vercel.app/assets/img/materio.png';
+
   const subject = `${emoji} [Materio Incident] ${name}`;
 
+  // Plain text version
+  const text = [
+    `${emoji} AUTO-INCIDENT CREATED`,
+    `Materio Health Monitor`,
+    ``,
+    `Incident: ${name}`,
+    `Severity: ${severity.toUpperCase()}`,
+    `Affected Areas: ${affectedAreas.join(', ')}`,
+    `Reports: ${reportCount} clustered reports`,
+    `Time: ${timestamp}`,
+    aiGenerated ? `Summary: AI-generated` : `Summary: Deterministic fallback`,
+    ``,
+    `--- SUMMARY ---`,
+    ``,
+    summary,
+    ``,
+    `--- END ---`,
+    ``,
+    `This incident was auto-created by Materio Health Monitor based on clustered bug reports.`,
+  ].join('\n');
+
+  // Severity-based background colors with transparency for the header
+  const SEVERITY_HEADER_BG = {
+    critical: 'rgba(220, 38, 38, 0.15)',  // Light red
+    major: 'rgba(234, 88, 12, 0.15)',     // Light orange (peach/salmon tone)
+    minor: 'rgba(202, 138, 4, 0.15)',     // Light yellow
+    cosmetic: 'rgba(107, 114, 128, 0.15)', // Light gray
+  };
+
+  const SEVERITY_HEADER_BORDER = {
+    critical: '#DC2626',
+    major: '#EA580C',
+    minor: '#CA8A04',
+    cosmetic: '#6B7280',
+  };
+
+  const headerBg = SEVERITY_HEADER_BG[severity] || 'rgba(107, 114, 128, 0.15)';
+  const headerBorder = SEVERITY_HEADER_BORDER[severity] || '#6B7280';
+
+  // Format date nicely: "February 7th 2026, 2:40 PM IST"
+  const dateObj = new Date();
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const day = dateObj.getDate();
+  const suffix = (day === 1 || day === 21 || day === 31) ? 'st' : (day === 2 || day === 22) ? 'nd' : (day === 3 || day === 23) ? 'rd' : 'th';
+  const formattedDate = `${months[dateObj.getMonth()]} ${day}${suffix} ${dateObj.getFullYear()}, ${dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} IST`;
+
+  // HTML version with embedded logo (base64) and system fonts
   const html = `
 <!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f9fafb;">
-  <div style="max-width:600px;margin:24px auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
-    <!-- Header -->
-    <div style="background:${color};padding:20px 24px;color:#fff;">
-      <h1 style="margin:0;font-size:18px;font-weight:600;">${emoji} Auto-Incident Created</h1>
-      <p style="margin:6px 0 0;font-size:13px;opacity:0.9;">Materio Health Monitor</p>
+<head><meta charset="utf-8"><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"><style>body { margin: 0; padding: 20px; background: #ffffff; font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }</style></head>
+<body>
+  <div style="max-width:600px;margin:24px auto;">
+    <!-- Logo -->
+    <div style="margin-bottom:24px;">
+      <img src="${LOGO_URL}" alt="materio." width="180" height="38" style="display:block;" />
     </div>
-
-    <!-- Body -->
-    <div style="padding:24px;">
-      <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
-        <tr>
-          <td style="padding:8px 0;font-size:13px;color:#6b7280;width:120px;">Incident</td>
-          <td style="padding:8px 0;font-size:14px;font-weight:600;">${escapeHtml(name)}</td>
-        </tr>
-        <tr>
-          <td style="padding:8px 0;font-size:13px;color:#6b7280;">Severity</td>
-          <td style="padding:8px 0;">
-            <span style="display:inline-block;background:${color};color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;text-transform:uppercase;">
-              ${severity}
-            </span>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:8px 0;font-size:13px;color:#6b7280;">Affected Areas</td>
-          <td style="padding:8px 0;font-size:14px;">${escapeHtml(affectedAreas.join(', '))}</td>
-        </tr>
-        <tr>
-          <td style="padding:8px 0;font-size:13px;color:#6b7280;">Reports</td>
-          <td style="padding:8px 0;font-size:14px;font-weight:600;">${reportCount} clustered reports</td>
-        </tr>
-        <tr>
-          <td style="padding:8px 0;font-size:13px;color:#6b7280;">Time</td>
-          <td style="padding:8px 0;font-size:13px;color:#374151;">${timestamp}</td>
-        </tr>
-      </table>
-
-      <div style="background:#f3f4f6;border-radius:8px;padding:16px;margin-bottom:16px;">
-        <h3 style="margin:0 0 8px;font-size:13px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Summary</h3>
-        <pre style="margin:0;font-size:13px;line-height:1.6;color:#1f2937;white-space:pre-wrap;word-break:break-word;font-family:inherit;">${escapeHtml(summary)}</pre>
+    
+    <!-- Outer card container -->
+    <div style="background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb;padding:24px;">
+      <!-- Combined Header + Info card -->
+      <div style="margin-bottom:16px;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
+        <!-- Header: rounded top, flat bottom -->
+        <div style="background:${headerBg};padding:16px 20px;">
+          <h2 style="margin:0 0 8px;font-size:18px;font-weight:700;line-height:1.4;color:#1f2937;">${escapeHtml(name.replace(/\[Auto\] /, ''))}</h2>
+          <div style="font-size:13px;">
+            <span style="color:${color};font-weight:600;">Incident created</span>
+            <span style="color:#6b7280;margin-left:12px;">Started ${formattedDate}</span>
+          </div>
+        </div>
+        <!-- Info section: flat top, rounded bottom -->
+        <div style="padding:16px 20px;font-size:14px;line-height:1.8;color:#1f2937;background:#fff;">
+          <div><strong>Severity</strong> : <span style="color:${color};font-weight:600;">${severity.charAt(0).toUpperCase() + severity.slice(1)}</span></div>
+          <div><strong>Affected Areas:</strong> ${escapeHtml(affectedAreas.join(', '))}</div>
+          <div><strong>Reports:</strong> ${reportCount} clustered reports</div>
+        </div>
       </div>
-
-      <p style="margin:16px 0 0;font-size:12px;color:#9ca3af;text-align:center;">
-        This incident was auto-created by the Materio Health Monitor based on clustered bug reports.
-      </p>
+      
+      <!-- Summary section: rounded corners, thin gray border -->
+      <div style="background:#fafafa;padding:16px 20px;margin-bottom:24px;border-radius:12px;border:1px solid #e5e7eb;">
+        <h3 style="margin:0 0 12px;font-size:16px;font-weight:700;color:#1f2937;">Summary</h3>
+        <div style="font-size:13px;line-height:1.7;color:#4b5563;">${escapeHtml(summary).replace(/\n/g, '<br>')}</div>
+      </div>
+      
+      <!-- Footer -->
+      <div style="text-align:center;font-size:12px;color:#9ca3af;">
+        This incident is auto generated by Materio's incident reporting system's
+      </div>
     </div>
   </div>
 </body>
 </html>`;
-
-  const text = `[Materio Incident] ${name}\nSeverity: ${severity}\nAffected: ${affectedAreas.join(', ')}\nReports: ${reportCount}\n\n${summary}`;
 
   try {
     const info = await transporter.sendMail({

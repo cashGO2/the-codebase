@@ -1,6 +1,3 @@
-// Force relaxation for experimental Node 24 on Windows
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
 const { MongoClient, ServerApiVersion } = require('mongodb');
 require('dotenv').config();
 
@@ -15,6 +12,7 @@ if (dns.setDefaultResultOrder) {
 
 /**
  * Get MongoDB database instance with connection pooling
+ * Optimized for Vercel serverless functions
  * @returns {Promise<import('mongodb').Db>}
  */
 async function getMongoDb() {
@@ -29,29 +27,29 @@ async function getMongoDb() {
 
     connectionPromise = (async () => {
         try {
-            console.log('Connecting to MongoDB (Aggressive Mode)...');
+            console.log('Connecting to MongoDB...');
 
             // Mask password for logging
             const maskedUri = MONGODB_URI.replace(/:([^@]+)@/, ':****@');
             console.log(`Connecting to: ${maskedUri}`);
 
             mongoClient = new MongoClient(MONGODB_URI, {
-                maxPoolSize: 5,
-                connectTimeoutMS: 60000, // Very high
-                socketTimeoutMS: 60000,  // Very high
-                serverSelectionTimeoutMS: 60000,
-                tls: true,
-                tlsAllowInvalidHostnames: true,
-                tlsAllowInvalidCertificates: true,
-                family: 4,
+                // Serverless-friendly timeouts (fail fast, don't block the function)
+                maxPoolSize: 3,
+                minPoolSize: 0,
+                connectTimeoutMS: 10000,
+                socketTimeoutMS: 15000,
+                serverSelectionTimeoutMS: 10000,
+                // Use MongoDB Atlas Stable API for consistency
+                serverApi: {
+                    version: ServerApiVersion.v1,
+                    strict: false,
+                    deprecationErrors: false,
+                },
+                // Let the driver handle TLS natively — Atlas requires TLS by default
                 retryWrites: true,
-                compressors: ['none']
-            });
-
-            // Listen for failures but don't reset immediately
-            mongoClient.on('connectionPoolCleared', (e) => {
-                console.warn('MongoDB connection pool cleared:', e.reason);
-                // We let the driver handle reconnection unless it's a fatal error
+                retryReads: true,
+                family: 4,
             });
 
             await mongoClient.connect();
