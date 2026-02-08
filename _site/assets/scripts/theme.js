@@ -26,7 +26,7 @@ const THEME_ELEMENT_IDS = [
     'recommendedPost2', 'recommendedPost3', 'recommendedPost4',
     'recommendedPost5', 'wallpaperSelectionCard', 'getinsights',
     'storageInfoCard', 'localCdnCard', 'serverTerminal', 'invertMode',
-    'clearSiteDataCard', 'noiseToggleCard', 'hapticToggleCard'
+    'clearSiteDataCard', 'hapticToggleCard'
 ];
 
 /**

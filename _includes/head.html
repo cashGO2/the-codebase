@@ -136,28 +136,51 @@
         document.head.appendChild(adsenseScript);
     } else {
         console.log('Enjoy un-interrupted reading.');
+        const version = "1.0.0";
+
+        console.log(
+            `%c
+                                                                                      z$$a\`                             
+                                                                                     %$$$$$:                            
+                                             <k@$$c                                  Q$$$$$                             
+                                             Q$$$$c                                    '"                               
+ t$$o u@$$$$$q[a$$$$$$k;    ?p$$$$$$$$O    ?U&$$$$$$$$J    nB$$$$$$w'    U$$w'Q$$$$O -$$$$M     ;m$$$$$$$C"             
+ t$$$$$$$$$$$$$$$$$$$$$$j   U$$$$$$$$$$$Q !$$$$$$$$$$$J  z$$$$$$$$$$$b   U$$$$$$$$$O -$$$$M    W$$$$$$$$$$$$            
+ t$$$$&^  z$$$$$:  /$$$$*   zp+     $$$$$  ))k$$$$q)))> ]$$$$a   _$$$$x  U$$$$%]     -$$$$M   w$$$$p   M$$$$8           
+ t$$$$p   >$$$$$   l$$$$8      >np#W$$$$$.   Q$$$$c     $$$$$     @$$$a  U$$$$J      -$$$$M   $$$$$     $$$$$           
+ t$$$$p   >$$$$$   l$$$$8   #$$$$$$$$$$$$.   Q$$$$c     $$$$$$$$$$$$$$a  U$$$$J      -$$$$M  ;$$$$8     $$$$$           
+ t$$$$p   >$$$$$   l$$$$8  W$$$B    @$$$$.   Q$$$$c     8$$$$I""""""""\`  U$$$$J      -$$$$M   $$$$$    .$$$$$           
+ t$$$$p   >$$$$$   l$$$$8  $$$$%    $$$$$.   Y$$$$8:    <$$$$%:    \`?b:  U$$$$J      -$$$$$]  m$$$$o\` ^%$$$$b  #$$$$/   
+ t$$$$p   >$$$$$   l$$$$8  1$$$$$$$$$$$$$.   .$$$$$$$$i  \\$$$$$$$$$$$$:  U$$$$J       8$$$$$   o$$$$$$$$$$$B   $$$$$$   
+ t$$$$p   >$$$$$   l$$$$8    v$$$$$p. @$$.     +8$$$$$i    !#$$$$$$$b_   U$$$$J        ;a$$$     n$$$$$$@x     :@$$#    
+
+Version: v4.8.0.0
+`,
+            "color: #ff5200; font-weight: bold;"
+        );
+
     }
 </script>
 
 <!-- PDF.js Viewer Preloading - Only on pages that use the PDF viewer -->
 <script>
-(function() {
-    // Only preload PDF.js assets if the page contains a PDF viewer or download links
-    if (document.querySelector('[data-pdf-src], .pdf-viewer, .download-card, a[href$=".pdf"]') ||
-        window.location.pathname.includes('/docs/')) {
-        var preloads = [
-            { href: '/oread/build/pdf.mjs', as: 'script', rel: 'modulepreload' },
-            { href: '/oread/web/viewer.mjs', as: 'script', rel: 'modulepreload' },
-            { href: '/oread/web/viewer.css', as: 'style', rel: 'preload' }
-        ];
-        preloads.forEach(function(p) {
-            var link = document.createElement('link');
-            link.rel = p.rel;
-            link.href = p.href;
-            if (p.as && p.rel === 'preload') link.setAttribute('as', p.as);
-            if (p.rel === 'modulepreload' || p.rel === 'preload') link.crossOrigin = 'anonymous';
-            document.head.appendChild(link);
-        });
-    }
-})();
+    (function () {
+        // Only preload PDF.js assets if the page contains a PDF viewer or download links
+        if (document.querySelector('[data-pdf-src], .pdf-viewer, .download-card, a[href$=".pdf"]') ||
+            window.location.pathname.includes('/docs/')) {
+            var preloads = [
+                { href: '/oread/build/pdf.mjs', as: 'script', rel: 'modulepreload' },
+                { href: '/oread/web/viewer.mjs', as: 'script', rel: 'modulepreload' },
+                { href: '/oread/web/viewer.css', as: 'style', rel: 'preload' }
+            ];
+            preloads.forEach(function (p) {
+                var link = document.createElement('link');
+                link.rel = p.rel;
+                link.href = p.href;
+                if (p.as && p.rel === 'preload') link.setAttribute('as', p.as);
+                if (p.rel === 'modulepreload' || p.rel === 'preload') link.crossOrigin = 'anonymous';
+                document.head.appendChild(link);
+            });
+        }
+    })();
 </script>

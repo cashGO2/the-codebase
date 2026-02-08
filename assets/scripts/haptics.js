@@ -124,7 +124,6 @@ function vibrate(pattern) {
     if (typeof pattern === 'string') {
         vibrationPattern = HapticPatterns[pattern];
         if (!vibrationPattern) {
-            console.warn(`Haptic pattern "${pattern}" not found, using default`);
             vibrationPattern = HapticPatterns.light;
         }
     } else if (Array.isArray(pattern)) {
@@ -139,7 +138,6 @@ function vibrate(pattern) {
     try {
         return navigator.vibrate(scaledPattern);
     } catch (error) {
-        console.warn('Haptic feedback failed:', error);
         return false;
     }
 }
@@ -480,7 +478,6 @@ function init() {
     autoAttachHaptics();
     initializeHapticToggle();
     setupMutationObserver();
-    console.log('[Haptics] Materio Haptics System initialized', isVibrationSupported ? '(vibration supported)' : '(vibration not supported)');
 }
 
 // Initialize when DOM is ready

@@ -117,30 +117,53 @@
         document.head.appendChild(adsenseScript);
     } else {
         console.log('Enjoy un-interrupted reading.');
+        const version = "1.0.0";
+
+        console.log(
+            `%c
+                                                                                      z$$a\`                             
+                                                                                     %$$$$$:                            
+                                             <k@$$c                                  Q$$$$$                             
+                                             Q$$$$c                                    '"                               
+ t$$o u@$$$$$q[a$$$$$$k;    ?p$$$$$$$$O    ?U&$$$$$$$$J    nB$$$$$$w'    U$$w'Q$$$$O -$$$$M     ;m$$$$$$$C"             
+ t$$$$$$$$$$$$$$$$$$$$$$j   U$$$$$$$$$$$Q !$$$$$$$$$$$J  z$$$$$$$$$$$b   U$$$$$$$$$O -$$$$M    W$$$$$$$$$$$$            
+ t$$$$&^  z$$$$$:  /$$$$*   zp+     $$$$$  ))k$$$$q)))> ]$$$$a   _$$$$x  U$$$$%]     -$$$$M   w$$$$p   M$$$$8           
+ t$$$$p   >$$$$$   l$$$$8      >np#W$$$$$.   Q$$$$c     $$$$$     @$$$a  U$$$$J      -$$$$M   $$$$$     $$$$$           
+ t$$$$p   >$$$$$   l$$$$8   #$$$$$$$$$$$$.   Q$$$$c     $$$$$$$$$$$$$$a  U$$$$J      -$$$$M  ;$$$$8     $$$$$           
+ t$$$$p   >$$$$$   l$$$$8  W$$$B    @$$$$.   Q$$$$c     8$$$$I""""""""\`  U$$$$J      -$$$$M   $$$$$    .$$$$$           
+ t$$$$p   >$$$$$   l$$$$8  $$$$%    $$$$$.   Y$$$$8:    <$$$$%:    \`?b:  U$$$$J      -$$$$$]  m$$$$o\` ^%$$$$b  #$$$$/   
+ t$$$$p   >$$$$$   l$$$$8  1$$$$$$$$$$$$$.   .$$$$$$$$i  \\$$$$$$$$$$$$:  U$$$$J       8$$$$$   o$$$$$$$$$$$B   $$$$$$   
+ t$$$$p   >$$$$$   l$$$$8    v$$$$$p. @$$.     +8$$$$$i    !#$$$$$$$b_   U$$$$J        ;a$$$     n$$$$$$@x     :@$$#    
+
+Version: v4.8.0.0
+`,
+            "color: #ff5200; font-weight: bold;"
+        );
+
     }
 </script>
 
 <!-- PDF.js Viewer Preloading - Only on pages that use the PDF viewer -->
 <script>
-(function() {
-    // Only preload PDF.js assets if the page contains a PDF viewer or download links
-    if (document.querySelector('[data-pdf-src], .pdf-viewer, .download-card, a[href$=".pdf"]') ||
-        window.location.pathname.includes('/docs/')) {
-        var preloads = [
-            { href: '/oread/build/pdf.mjs', as: 'script', rel: 'modulepreload' },
-            { href: '/oread/web/viewer.mjs', as: 'script', rel: 'modulepreload' },
-            { href: '/oread/web/viewer.css', as: 'style', rel: 'preload' }
-        ];
-        preloads.forEach(function(p) {
-            var link = document.createElement('link');
-            link.rel = p.rel;
-            link.href = p.href;
-            if (p.as && p.rel === 'preload') link.setAttribute('as', p.as);
-            if (p.rel === 'modulepreload' || p.rel === 'preload') link.crossOrigin = 'anonymous';
-            document.head.appendChild(link);
-        });
-    }
-})();
+    (function () {
+        // Only preload PDF.js assets if the page contains a PDF viewer or download links
+        if (document.querySelector('[data-pdf-src], .pdf-viewer, .download-card, a[href$=".pdf"]') ||
+            window.location.pathname.includes('/docs/')) {
+            var preloads = [
+                { href: '/oread/build/pdf.mjs', as: 'script', rel: 'modulepreload' },
+                { href: '/oread/web/viewer.mjs', as: 'script', rel: 'modulepreload' },
+                { href: '/oread/web/viewer.css', as: 'style', rel: 'preload' }
+            ];
+            preloads.forEach(function (p) {
+                var link = document.createElement('link');
+                link.rel = p.rel;
+                link.href = p.href;
+                if (p.as && p.rel === 'preload') link.setAttribute('as', p.as);
+                if (p.rel === 'modulepreload' || p.rel === 'preload') link.crossOrigin = 'anonymous';
+                document.head.appendChild(link);
+            });
+        }
+    })();
 </script>
     <link rel="stylesheet" href="/assets/style/main.css">
     <link rel="stylesheet" href="/assets/style/notification.css">
@@ -183,15 +206,21 @@
 
     <header class="actual-content">
         <a href="/" class="header-logo" role="button" aria-label="Go to homepage"></a>
-        <button class="bug-report-btn" id="bugReportBtn" aria-label="Report a Bug" title="Report a Bug"
-            onclick="openDynamicForm('bug-report')">
-            <i class="fa-regular fa-comment-exclamation"></i>
-        </button>
-        <a href="https://statuspage.incident.io/materio" target="_blank" class="health-status-container"
-            aria-label="System Status">
-            <div class="health-status-indicator" id="healthIndicator"></div>
-            <span class="health-status-text">View Status</span>
-        </a>
+        <div class="header-actions">
+            <button class="bug-report-btn" id="bugReportBtn" aria-label="Report a Bug" title="Report a Bug"
+                onclick="openDynamicForm('bug-report')">
+                <i class="fa-regular fa-comment-exclamation"></i>
+            </button>
+            <div id="bugReportTooltip" class="bug-report-tooltip">
+                <span>Found a bug? Report it here.</span>
+                <i class="fa-solid fa-xmark close-tooltip" onclick="closeBugTooltip()"></i>
+            </div>
+            <a href="https://statuspage.incident.io/materio" target="_blank" class="health-status-container"
+                aria-label="System Status">
+                <div class="health-status-indicator" id="healthIndicator"></div>
+                <span class="health-status-text" id="healthStatusText">Operational</span>
+            </a>
+        </div>
     </header>
     <main>
         <div class="container">
@@ -461,13 +490,7 @@
                 <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
             </div>
         </div>
-        <div class="shortcut-item" data-shortcut-id="toggle_noise">
-            <span class="shortcut-action">Toggle Noise Texture</span>
-            <div class="shortcut-right">
-                <code class="shortcut-keys" data-keys="Alt+G"></code>
-                <button class="shortcut-edit-btn" title="Edit shortcut"><i class="far fa-pen"></i></button>
-            </div>
-        </div>
+
         <div class="shortcut-item" data-shortcut-id="toggle_insightroom">
             <span class="shortcut-action">Toggle Insightroom Feed</span>
             <div class="shortcut-right">
@@ -608,6 +631,67 @@
                 <div class="blog-posts-container" id="blogPostsContent">
                     <!-- Default: Latest 5 posts (loaded from API) - Horizontal Scroll -->
                     <div id="defaultPosts" class="insight-cards-scroll">
+                        <!-- Exam Card in Default View -->
+                        <div id="examCardDefault" class="exam-card" style="display: none;" onclick="openExamModal()">
+                            <!-- View 1: Pre-Exam (Before exams start) -->
+                            <div class="exam-view exam-view-preexam" id="examViewPreexamDefault" style="display: none;">
+                                <div class="exam-card-header">
+                                    <i class="fa-solid fa-calendar-check"></i>
+                                    <span>Exams are in the way!</span>
+                                </div>
+                                <p class="exam-subtitle">Your <span id="examPeriodNameDefault">Mid Semester</span> exams
+                                    are starting this week</p>
+                                <div class="exam-first-info">
+                                    <div class="exam-label">Start with</div>
+                                    <div class="exam-subject" id="preexamFirstSubjectDefault">Subject name</div>
+                                    <div class="exam-date" id="preexamFirstDateDefault">16-02-26</div>
+                                </div>
+                                <div class="exam-syllabus-preview" id="preexamSyllabusDefault">
+                                    <span>Syllabus</span>
+                                </div>
+                                <div class="exam-divider"></div>
+                                <div class="exam-show-all">Show all</div>
+                            </div>
+
+                            <!-- View 2: Ongoing - Today/Tomorrow focus -->
+                            <div class="exam-view exam-view-ongoing" id="examViewOngoingDefault" style="display: none;">
+                                <div class="exam-card-header">
+                                    <i class="fa-solid fa-fire"></i>
+                                    <span>Exams are on going!</span>
+                                </div>
+                                <p class="exam-subtitle">Your <span id="examPeriodNameOngoingDefault">Mid
+                                        Semester</span> exams have started</p>
+                                <div class="exam-today-tomorrow">
+                                    <div class="exam-item exam-today" id="examTodayItemDefault" style="display: none;">
+                                        <div class="exam-item-label">Tomorrow you have</div>
+                                        <div class="exam-item-subject" id="examTodaySubjectDefault">Subject name exam
+                                        </div>
+                                        <div class="exam-item-date" id="examTodayDateDefault">16-02-26</div>
+                                    </div>
+                                </div>
+                                <div class="exam-syllabus-preview" id="ongoingSyllabusDefault">
+                                    <span>Syllabus</span>
+                                </div>
+                                <div class="exam-divider"></div>
+                                <div class="exam-show-all">Show all</div>
+                            </div>
+
+                            <!-- View 3: Timeline view -->
+                            <div class="exam-view exam-view-timeline" id="examViewTimelineDefault"
+                                style="display: none;">
+                                <div class="exam-card-header">
+                                    <i class="fa-solid fa-fire"></i>
+                                    <span>Exams are on going!</span>
+                                </div>
+                                <p class="exam-subtitle">Your <span id="examPeriodNameTimelineDefault">Mid
+                                        Semester</span> exams have started</p>
+                                <div class="exam-mini-timeline" id="examMiniTimelineDefault">
+                                    <!-- Timeline items will be populated by JS -->
+                                </div>
+                                <div class="exam-show-all">Show all</div>
+                            </div>
+                        </div>
+
                         <!-- Loading state -->
                         <div id="postsLoading" class="posts-loading">
                             <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #ff8200;"></i>
@@ -618,6 +702,65 @@
 
                     <!-- Smart Recommendations (hidden by default) -->
                     <div id="recommendedPosts" class="insight-cards-scroll" style="display: none;">
+                        <!-- Exam Card - shown first when exams are approaching/ongoing -->
+                        <div id="examCard" class="exam-card" style="display: none;" onclick="openExamModal()">
+                            <!-- View 1: Pre-Exam (Before exams start) -->
+                            <div class="exam-view exam-view-preexam" id="examViewPreexam" style="display: none;">
+                                <div class="exam-card-header">
+                                    <i class="fa-solid fa-calendar-check"></i>
+                                    <span>Exams are on the way!</span>
+                                </div>
+                                <p class="exam-subtitle">Your <span id="examPeriodName">Mid Semester</span> exams are
+                                    starting this week</p>
+                                <div class="exam-first-info">
+                                    <div class="exam-label">Start with</div>
+                                    <div class="exam-subject" id="preexamFirstSubject">Subject name</div>
+                                    <div class="exam-date" id="preexamFirstDate">16-02-26</div>
+                                </div>
+                                <div class="exam-syllabus-preview" id="preexamSyllabus">
+                                    <span>Syllabus</span>
+                                </div>
+                                <div class="exam-divider"></div>
+                                <div class="exam-show-all">Show all</div>
+                            </div>
+
+                            <!-- View 2: Ongoing - Today/Tomorrow focus -->
+                            <div class="exam-view exam-view-ongoing" id="examViewOngoing" style="display: none;">
+                                <div class="exam-card-header">
+                                    <i class="fa-solid fa-fire"></i>
+                                    <span>Exams are on going!</span>
+                                </div>
+                                <p class="exam-subtitle">Your <span id="examPeriodNameOngoing">Mid Semester</span> exams
+                                    have started</p>
+                                <div class="exam-today-tomorrow">
+                                    <div class="exam-item exam-today" id="examTodayItem" style="display: none;">
+                                        <div class="exam-item-label">Tomorrow you have</div>
+                                        <div class="exam-item-subject" id="examTodaySubject">Subject name exam</div>
+                                        <div class="exam-item-date" id="examTodayDate">16-02-26</div>
+                                    </div>
+                                </div>
+                                <div class="exam-syllabus-preview" id="ongoingSyllabus">
+                                    <span>Syllabus</span>
+                                </div>
+                                <div class="exam-divider"></div>
+                                <div class="exam-show-all">Show all</div>
+                            </div>
+
+                            <!-- View 3: Timeline view -->
+                            <div class="exam-view exam-view-timeline" id="examViewTimeline" style="display: none;">
+                                <div class="exam-card-header">
+                                    <i class="fa-solid fa-fire"></i>
+                                    <span>Exams are on going!</span>
+                                </div>
+                                <p class="exam-subtitle">Your <span id="examPeriodNameTimeline">Mid Semester</span>
+                                    exams have started</p>
+                                <div class="exam-mini-timeline" id="examMiniTimeline">
+                                    <!-- Timeline items will be populated by JS -->
+                                </div>
+                                <div class="exam-show-all">Show all</div>
+                            </div>
+                        </div>
+
                         <!-- Attachments Card - shown first in smart recommendations -->
                         <div id="attachmentsCard" class="attachments-card" style="display: none;">
                             <div class="attachments-card-header">
@@ -732,6 +875,27 @@
                             <input type="checkbox" id="dontShowAgainCheckbox" class="promo-checkbox">
                             <span class="promo-checkbox-text">Don't show this again</span>
                         </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exam Schedule Modal (Promo-style) -->
+        <div class="promo-modal-overlay exam-modal-overlay" id="examModal" style="display: none;">
+            <div class="promo-modal exam-modal">
+                <!-- Close Button -->
+                <i class="fas fa-times promo-close-btn" onclick="closeExamModal()"></i>
+
+                <!-- Content Panel (Full width, no media) -->
+                <div class="promo-content exam-modal-content">
+                    <h2><span class="promo-title" id="examModalTitle">Mid semester Exams are on going !</span></h2>
+
+                    <div class="exam-schedule-section">
+                        <h3 class="exam-schedule-heading">Exam schedule</h3>
+
+                        <div class="exam-timeline" id="examModalTimeline">
+                            <!-- Timeline items will be populated by JS -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -3012,18 +3176,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
 
-                <div class="card-layout" id="noiseToggleCard">
-                    <div class="toggle-container">
-                        <div class="paper-mode-info">
-                            <div class="paper-mode-title">Noise Texture</div>
-                            <div class="paper-mode-description">Enable Gaussian noise texture</div>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="enableNoiseToggle" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
+
 
                 <!-- Haptic Feedback Toggle -->
                 <div class="card-layout" id="hapticToggleCard">
@@ -3317,6 +3470,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <script src="/assets/scripts/downloads-ui.js" defer></script>
 
     <script src="/assets/scripts/main.js" defer></script>
+    <script src="/assets/scripts/exam-card.js" defer></script>
     <script src="/assets/scripts/notebooks-tab.js" defer></script>
     <script src="/assets/scripts/community/community.js" defer></script>
     <script src="/assets/scripts/advanced.js" defer></script>

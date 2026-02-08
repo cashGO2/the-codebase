@@ -55,7 +55,7 @@
 
         // Settings Toggles
         toggle_wallpaper: { keys: { ctrl: true, alt: true, key: 'w' }, display: 'Ctrl+Alt+W', action: 'toggleWallpaper', params: null },
-        toggle_noise: { keys: { alt: true, key: 'g' }, display: 'Alt+G', action: 'toggleNoise', params: null },
+
         toggle_insightroom: { keys: { alt: true, shift: true, key: 'n' }, display: 'Alt+Shift+N', action: 'toggleInsightroom', params: null },
         toggle_insightroom_view: { keys: { ctrl: true, shift: true, key: 'i' }, display: 'Ctrl+Shift+I', action: 'toggleInsightroomView', params: null },
         clear_data: { keys: { ctrl: true, key: 'Backspace' }, display: 'Ctrl+Backspace', action: 'clearData', params: null },
@@ -587,31 +587,7 @@
                 if (toggle) toggle.click();
             },
 
-            toggleNoise: () => {
-                const toggle = document.getElementById('enableNoiseToggle');
-                const homeElem = document.getElementById('home');
-                let isNoiseOn = true;
 
-                if (toggle) {
-                    toggle.checked = !toggle.checked;
-                    isNoiseOn = toggle.checked;
-                } else if (homeElem) {
-                    isNoiseOn = homeElem.classList.contains('no-noise');
-                }
-
-                if (homeElem) {
-                    if (isNoiseOn) {
-                        homeElem.classList.remove('no-noise');
-                    } else {
-                        homeElem.classList.add('no-noise');
-                    }
-                }
-
-                // Save setting
-                const date = new Date();
-                date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000));
-                document.cookie = "enableNoise=" + (isNoiseOn ? "true" : "false") + "; expires=" + date.toUTCString() + "; path=/";
-            },
 
             toggleInsightroom: () => {
                 // Use the global function that properly toggles and persists state

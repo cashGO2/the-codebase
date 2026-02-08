@@ -50,7 +50,41 @@ document.addEventListener('DOMContentLoaded', function () {
     callouts.forEach(callout => {
         callout.classList.add('google-auto-ads-ignore');
     });
+
+    // Bug Report Tooltip Logic
+    initBugTooltip();
 });
+
+function initBugTooltip() {
+    const tooltip = document.getElementById('bugReportTooltip');
+    if (!tooltip) return;
+
+    const lastShown = localStorage.getItem('bugTooltipLastShown');
+    const now = Date.now();
+    const oneWeek = 7 * 24 * 60 * 60 * 1000;
+
+    // Show if never shown or if more than 7 days have passed
+    if (!lastShown || (now - parseInt(lastShown)) > oneWeek) {
+        setTimeout(() => {
+            tooltip.classList.add('show');
+
+            // Auto close after 10 seconds if not already closed
+            setTimeout(() => {
+                if (tooltip.classList.contains('show')) {
+                    closeBugTooltip();
+                }
+            }, 10000);
+        }, 3000); // Show after 3 seconds
+    }
+}
+
+window.closeBugTooltip = function () {
+    const tooltip = document.getElementById('bugReportTooltip');
+    if (tooltip) {
+        tooltip.classList.remove('show');
+        localStorage.setItem('bugTooltipLastShown', Date.now().toString());
+    }
+};
 
 // Offline detection and redirect to downloads
 function checkOfflineAndRedirect() {
@@ -86,7 +120,7 @@ function showDownloadsTabOffline() {
         // Dispatch event to trigger downloads loading
         document.dispatchEvent(new Event('downloadsTabOpened'));
     } else {
-        console.error('[Offline] Downloads tab element not found');
+
     }
 }
 
@@ -509,7 +543,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         })
         .catch(err => {
-            console.error('Error loading resource library:', err);
+            // Resource load failed
             // Only show alert when online (offline is expected to fail)
             if (navigator.onLine) {
                 const roasts = [
@@ -652,7 +686,7 @@ fullscreenButton.addEventListener('click', () => {
             icon.className = 'fa-solid fa-compress';
             fullscreenButton.setAttribute('aria-label', 'Exit fullscreen');
         }).catch(err => {
-            console.error(`Failed to enable fullscreen mode: ${err.message}`);
+
         });
     } else {
         // Mark this as an intentional exit so fullscreenchange handler doesn't block it
@@ -664,7 +698,7 @@ fullscreenButton.addEventListener('click', () => {
             icon.className = 'fas fa-expand';
             fullscreenButton.setAttribute('aria-label', 'Enter fullscreen');
         }).catch(err => {
-            console.error(`Failed to exit fullscreen mode: ${err.message}`);
+
         });
     }
 });
@@ -729,12 +763,12 @@ function loadResourcesData(restoreSemester = null) {
             // Now get the new element and set up everything
             const finalSemesterSelect = document.getElementById('semesterSelect');
 
-            // Restore the previous semester value or set default to semester 5
+            // Restore the previous semester value if exists, otherwise leave unselected
             if (currentSemester && data[currentSemester]) {
                 finalSemesterSelect.value = currentSemester;
             } else {
-                // Default to semester 6
-                finalSemesterSelect.value = "6";
+                // Leave unselected to show "Latest from Insightroom"
+                finalSemesterSelect.value = "";
             }
 
             finalSemesterSelect.addEventListener('change', function () {
@@ -772,7 +806,6 @@ function loadResourcesData(restoreSemester = null) {
             return data;
         })
         .catch(err => {
-            console.error('Error loading data:', err);
             throw err;
         });
 }
@@ -841,7 +874,7 @@ fetch(libUrl)
         }
     })
     .catch(err => {
-        console.error('Error loading initial resource data:', err);
+        // Error loading initial resource data
         // Only show alert when online (offline is expected to fail)
         if (navigator.onLine) {
             const roasts = [
@@ -901,7 +934,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         licensesLoaded = true;
                     })
                     .catch(error => {
-                        console.error('Error loading licenses:', error);
                         licensesText.textContent = 'Error loading licenses. Please try again later.';
                     });
             }
@@ -1153,7 +1185,6 @@ async function loadInsightroomPosts() {
         window.dispatchEvent(new CustomEvent('insightroomPostsLoaded', { detail: postsData }));
 
     } catch (error) {
-        console.error('Error loading InsightRoom posts:', error);
         if (loadingEl) loadingEl.style.display = 'none';
         if (errorEl) errorEl.style.display = 'block';
     }
@@ -1183,10 +1214,8 @@ async function loadAttachmentsData() {
         if (!response.ok) throw new Error('Failed to fetch attachments');
         allAttachments = await response.json();
         attachmentsLoaded = true;
-        console.log('Attachments loaded:', allAttachments.length);
         return allAttachments;
     } catch (error) {
-        console.warn('Could not load attachments:', error.message);
         return [];
     }
 }
@@ -1273,7 +1302,7 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             allPosts = JSON.parse(allPostsDataElement.textContent);
         } catch (e) {
-            console.error('Error parsing posts data:', e);
+            // Error parsing posts data
         }
     }
 
@@ -1718,7 +1747,6 @@ function checkAndApplyAdFreeExperience() {
             return false;
         }
     } catch (error) {
-        console.error('Error checking ad-free privileges:', error);
         // On error, don't apply ad-free experience (safe default)
         document.body.classList.remove('ad-free-user');
         return false;
@@ -1778,7 +1806,7 @@ function getInsightroomSettings() {
                 return settings;
             }
         } catch (e) {
-            console.warn('Error parsing insightroomSettings cookie:', e);
+            // Error parsing insightroomSettings cookie
         }
     }
     // Default: [enabled=true, view='normal']
@@ -2052,21 +2080,17 @@ async function clearAllSiteData() {
             card.style.pointerEvents = 'none';
         }
 
-        // 1. Clear all cookies
         document.cookie.split(';').forEach(function (c) {
             const name = c.split('=')[0].trim();
             document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
             document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=' + window.location.hostname;
         });
-        console.log('Cookies cleared');
 
         // 2. Clear localStorage
         localStorage.clear();
-        console.log('localStorage cleared');
 
         // 3. Clear sessionStorage
         sessionStorage.clear();
-        console.log('sessionStorage cleared');
 
         // 4. Clear IndexedDB databases
         if (window.indexedDB && indexedDB.databases) {
@@ -2074,7 +2098,6 @@ async function clearAllSiteData() {
             for (const db of databases) {
                 if (db.name) {
                     indexedDB.deleteDatabase(db.name);
-                    console.log('Deleted IndexedDB:', db.name);
                 }
             }
         }
@@ -2084,7 +2107,6 @@ async function clearAllSiteData() {
             const registrations = await navigator.serviceWorker.getRegistrations();
             for (const registration of registrations) {
                 await registration.unregister();
-                console.log('Unregistered service worker:', registration.scope);
             }
         }
 
@@ -2093,7 +2115,6 @@ async function clearAllSiteData() {
             const cacheNames = await caches.keys();
             for (const cacheName of cacheNames) {
                 await caches.delete(cacheName);
-                console.log('Deleted cache:', cacheName);
             }
         }
 
@@ -2108,7 +2129,6 @@ async function clearAllSiteData() {
         window.location.reload(true);
 
     } catch (error) {
-        console.error('Error clearing site data:', error);
         await materioAlert('An error occurred while clearing site data. Some data may not have been cleared.', {
             title: 'Error',
             type: 'danger',
@@ -2329,7 +2349,7 @@ async function performQuickSearch(query) {
             return;
         }
 
-        console.error('Search error:', error);
+
         searchResults.innerHTML = `
             <div class="search-error">
                 <i class="far fa-exclamation-triangle"></i> 
@@ -2671,7 +2691,7 @@ function selectSearchResult(semester, subject, category, topic) {
             }, 300);
 
         } catch (error) {
-            console.error('=== Error populating fields ===', error);
+
         }
     }
 

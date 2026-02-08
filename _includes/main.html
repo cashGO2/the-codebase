@@ -177,6 +177,67 @@
                 <div class="blog-posts-container" id="blogPostsContent">
                     <!-- Default: Latest 5 posts (loaded from API) - Horizontal Scroll -->
                     <div id="defaultPosts" class="insight-cards-scroll">
+                        <!-- Exam Card in Default View -->
+                        <div id="examCardDefault" class="exam-card" style="display: none;" onclick="openExamModal()">
+                            <!-- View 1: Pre-Exam (Before exams start) -->
+                            <div class="exam-view exam-view-preexam" id="examViewPreexamDefault" style="display: none;">
+                                <div class="exam-card-header">
+                                    <i class="fa-solid fa-calendar-check"></i>
+                                    <span>Exams are in the way!</span>
+                                </div>
+                                <p class="exam-subtitle">Your <span id="examPeriodNameDefault">Mid Semester</span> exams
+                                    are starting this week</p>
+                                <div class="exam-first-info">
+                                    <div class="exam-label">Start with</div>
+                                    <div class="exam-subject" id="preexamFirstSubjectDefault">Subject name</div>
+                                    <div class="exam-date" id="preexamFirstDateDefault">16-02-26</div>
+                                </div>
+                                <div class="exam-syllabus-preview" id="preexamSyllabusDefault">
+                                    <span>Syllabus</span>
+                                </div>
+                                <div class="exam-divider"></div>
+                                <div class="exam-show-all">Show all</div>
+                            </div>
+
+                            <!-- View 2: Ongoing - Today/Tomorrow focus -->
+                            <div class="exam-view exam-view-ongoing" id="examViewOngoingDefault" style="display: none;">
+                                <div class="exam-card-header">
+                                    <i class="fa-solid fa-fire"></i>
+                                    <span>Exams are on going!</span>
+                                </div>
+                                <p class="exam-subtitle">Your <span id="examPeriodNameOngoingDefault">Mid
+                                        Semester</span> exams have started</p>
+                                <div class="exam-today-tomorrow">
+                                    <div class="exam-item exam-today" id="examTodayItemDefault" style="display: none;">
+                                        <div class="exam-item-label">Tomorrow you have</div>
+                                        <div class="exam-item-subject" id="examTodaySubjectDefault">Subject name exam
+                                        </div>
+                                        <div class="exam-item-date" id="examTodayDateDefault">16-02-26</div>
+                                    </div>
+                                </div>
+                                <div class="exam-syllabus-preview" id="ongoingSyllabusDefault">
+                                    <span>Syllabus</span>
+                                </div>
+                                <div class="exam-divider"></div>
+                                <div class="exam-show-all">Show all</div>
+                            </div>
+
+                            <!-- View 3: Timeline view -->
+                            <div class="exam-view exam-view-timeline" id="examViewTimelineDefault"
+                                style="display: none;">
+                                <div class="exam-card-header">
+                                    <i class="fa-solid fa-fire"></i>
+                                    <span>Exams are on going!</span>
+                                </div>
+                                <p class="exam-subtitle">Your <span id="examPeriodNameTimelineDefault">Mid
+                                        Semester</span> exams have started</p>
+                                <div class="exam-mini-timeline" id="examMiniTimelineDefault">
+                                    <!-- Timeline items will be populated by JS -->
+                                </div>
+                                <div class="exam-show-all">Show all</div>
+                            </div>
+                        </div>
+
                         <!-- Loading state -->
                         <div id="postsLoading" class="posts-loading">
                             <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #ff8200;"></i>
@@ -187,6 +248,65 @@
 
                     <!-- Smart Recommendations (hidden by default) -->
                     <div id="recommendedPosts" class="insight-cards-scroll" style="display: none;">
+                        <!-- Exam Card - shown first when exams are approaching/ongoing -->
+                        <div id="examCard" class="exam-card" style="display: none;" onclick="openExamModal()">
+                            <!-- View 1: Pre-Exam (Before exams start) -->
+                            <div class="exam-view exam-view-preexam" id="examViewPreexam" style="display: none;">
+                                <div class="exam-card-header">
+                                    <i class="fa-solid fa-calendar-check"></i>
+                                    <span>Exams are on the way!</span>
+                                </div>
+                                <p class="exam-subtitle">Your <span id="examPeriodName">Mid Semester</span> exams are
+                                    starting this week</p>
+                                <div class="exam-first-info">
+                                    <div class="exam-label">Start with</div>
+                                    <div class="exam-subject" id="preexamFirstSubject">Subject name</div>
+                                    <div class="exam-date" id="preexamFirstDate">16-02-26</div>
+                                </div>
+                                <div class="exam-syllabus-preview" id="preexamSyllabus">
+                                    <span>Syllabus</span>
+                                </div>
+                                <div class="exam-divider"></div>
+                                <div class="exam-show-all">Show all</div>
+                            </div>
+
+                            <!-- View 2: Ongoing - Today/Tomorrow focus -->
+                            <div class="exam-view exam-view-ongoing" id="examViewOngoing" style="display: none;">
+                                <div class="exam-card-header">
+                                    <i class="fa-solid fa-fire"></i>
+                                    <span>Exams are on going!</span>
+                                </div>
+                                <p class="exam-subtitle">Your <span id="examPeriodNameOngoing">Mid Semester</span> exams
+                                    have started</p>
+                                <div class="exam-today-tomorrow">
+                                    <div class="exam-item exam-today" id="examTodayItem" style="display: none;">
+                                        <div class="exam-item-label">Tomorrow you have</div>
+                                        <div class="exam-item-subject" id="examTodaySubject">Subject name exam</div>
+                                        <div class="exam-item-date" id="examTodayDate">16-02-26</div>
+                                    </div>
+                                </div>
+                                <div class="exam-syllabus-preview" id="ongoingSyllabus">
+                                    <span>Syllabus</span>
+                                </div>
+                                <div class="exam-divider"></div>
+                                <div class="exam-show-all">Show all</div>
+                            </div>
+
+                            <!-- View 3: Timeline view -->
+                            <div class="exam-view exam-view-timeline" id="examViewTimeline" style="display: none;">
+                                <div class="exam-card-header">
+                                    <i class="fa-solid fa-fire"></i>
+                                    <span>Exams are on going!</span>
+                                </div>
+                                <p class="exam-subtitle">Your <span id="examPeriodNameTimeline">Mid Semester</span>
+                                    exams have started</p>
+                                <div class="exam-mini-timeline" id="examMiniTimeline">
+                                    <!-- Timeline items will be populated by JS -->
+                                </div>
+                                <div class="exam-show-all">Show all</div>
+                            </div>
+                        </div>
+
                         <!-- Attachments Card - shown first in smart recommendations -->
                         <div id="attachmentsCard" class="attachments-card" style="display: none;">
                             <div class="attachments-card-header">
@@ -301,6 +421,27 @@
                             <input type="checkbox" id="dontShowAgainCheckbox" class="promo-checkbox">
                             <span class="promo-checkbox-text">Don't show this again</span>
                         </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exam Schedule Modal (Promo-style) -->
+        <div class="promo-modal-overlay exam-modal-overlay" id="examModal" style="display: none;">
+            <div class="promo-modal exam-modal">
+                <!-- Close Button -->
+                <i class="fas fa-times promo-close-btn" onclick="closeExamModal()"></i>
+
+                <!-- Content Panel (Full width, no media) -->
+                <div class="promo-content exam-modal-content">
+                    <h2><span class="promo-title" id="examModalTitle">Mid semester Exams are on going !</span></h2>
+
+                    <div class="exam-schedule-section">
+                        <h3 class="exam-schedule-heading">Exam schedule</h3>
+
+                        <div class="exam-timeline" id="examModalTimeline">
+                            <!-- Timeline items will be populated by JS -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -774,18 +915,7 @@
                     </div>
                 </div>
 
-                <div class="card-layout" id="noiseToggleCard">
-                    <div class="toggle-container">
-                        <div class="paper-mode-info">
-                            <div class="paper-mode-title">Noise Texture</div>
-                            <div class="paper-mode-description">Enable Gaussian noise texture</div>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="enableNoiseToggle" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
+
 
                 <!-- Haptic Feedback Toggle -->
                 <div class="card-layout" id="hapticToggleCard">

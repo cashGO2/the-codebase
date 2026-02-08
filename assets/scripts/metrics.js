@@ -45,8 +45,6 @@
 
       // Attempt identification if user is logged in
       this.identify();
-
-      console.log(`[Metrics] Initialized (${isLocal ? 'Local' : 'Prod'})`);
     }
 
     generateUUID() {
@@ -113,7 +111,7 @@
             this.syncStats(userId);
           }
         } catch (e) {
-          if (!isLocal) console.error('[Metrics] Identify failed', e);
+          // Identify failed
         }
       }
     }
@@ -138,15 +136,14 @@
           }
 
           localStorage.setItem('materio_user_stats', JSON.stringify(stats));
-          console.log(`[Metrics] Stats synced. User: ${userId}. History: ${stats.history.length}. PDFs: ${stats.pdfsRead}`);
 
           // Notify other scripts
           window.dispatchEvent(new CustomEvent('materio-stats-updated', { detail: stats }));
         } else {
-          console.error('[Metrics] Sync failed. Status:', response.status);
+          // Sync failed
         }
       } catch (e) {
-        console.error('[Metrics] Sync stats failed', e);
+        // Sync stats failed
       }
     }
 
@@ -215,7 +212,6 @@
           this.buffer = JSON.parse(stored);
         }
       } catch (e) {
-        console.error('[Metrics] Failed to load buffer', e);
         this.buffer = [];
       }
     }
@@ -224,7 +220,7 @@
       try {
         localStorage.setItem(CONFIG.STORAGE_KEY_EVENTS, JSON.stringify(this.buffer));
       } catch (e) {
-        console.error('[Metrics] Failed to save buffer', e);
+        // Failed to save buffer
       }
     }
 
@@ -261,11 +257,10 @@
           }
         }
 
-        if (!isLocal) console.log(`[Metrics] Sent ${eventsToSend.length} events`);
+
 
       } catch (e) {
-        if (!isLocal) console.warn('[Metrics] Failed to send events, requeuing', e);
-        // Re-queue events on failure
+        // Failed to send events, requeuing
         this.buffer = [...eventsToSend, ...this.buffer];
         this.saveBuffer();
       }
@@ -380,7 +375,6 @@
       this.track('pdf_opened', {
         url: pdfUrl
       });
-      console.log('[Metrics] PDF Opened:', pdfUrl);
     }
 
     handlePdfClose() {
@@ -393,8 +387,6 @@
         duration_ms: duration,
         duration_sec: Math.round(duration / 1000)
       });
-
-      console.log('[Metrics] PDF Closed. Duration:', Math.round(duration / 1000) + 's');
 
       this.currentPdf = null;
       this.pdfStartTime = null;

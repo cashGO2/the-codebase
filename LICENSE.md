@@ -5,7 +5,7 @@ heading: Materio Source-Available License v1.0
 permalink: /license
 ---
 
-Copyright (c) 2025, Jinansh Mehta, Materio
+Copyright (c) 2025-2026, Jinansh Mehta, Materio
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to view

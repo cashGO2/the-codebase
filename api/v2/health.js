@@ -148,6 +148,22 @@ async function checkCdnAPI() {
   }
 }
 
+// --- Helper: Check for general internet connectivity ---
+async function checkInternetConnection() {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2000);
+    const res = await fetch('https://www.google.com/favicon.ico', {
+      method: 'HEAD',
+      signal: controller.signal
+    }).catch(() => null);
+    clearTimeout(timeout);
+    return !!res;
+  } catch (err) {
+    return false;
+  }
+}
+
 // --- Helper: Check incident.io for active incidents (public widgets API) ---
 async function checkIncidentIO() {
   try {
@@ -374,7 +390,6 @@ Confidence: High.`;
       const text = data.choices?.[0]?.message?.content?.trim();
 
       if (text && text.length > 20) {
-        console.log(`[AI Summary] Generated via ${model} (${text.length} chars)`);
         return text;
       }
     } catch (err) {
@@ -458,7 +473,6 @@ async function checkAndCreateIncident() {
       { sort: { createdAt: -1 } }
     );
     if (recentIncident) {
-      console.log('Incident automation: still in cooldown period');
       return null;
     }
 
@@ -489,14 +503,10 @@ async function checkAndCreateIncident() {
 
     // Send incident alert via SMTP email (skip cosmetic severity - not incident-worthy)
     let emailResult = null;
-    if (incidentData.severity === 'cosmetic') {
-      console.log('Skipping email for cosmetic severity incident');
-    } else {
+    if (incidentData.severity !== 'cosmetic') {
       try {
         emailResult = await sendIncidentEmail(incidentData);
-        if (emailResult.success) {
-          console.log('Incident alert email sent:', emailResult.messageId);
-        } else {
+        if (!emailResult.success) {
           console.warn('Incident email not sent:', emailResult.error);
         }
       } catch (err) {
@@ -587,7 +597,6 @@ async function handleBugReport(req, res) {
     // Spam check (includes DB-backed rate limiting)
     const validation = await validateBugReport(body, clientIP, sessionId);
     if (!validation.valid) {
-      console.log('Bug report rejected by spam filter:', validation.reason);
       // Still return success to not reveal spam detection to potential abusers
       return res.status(201).json({
         success: true,
@@ -937,13 +946,25 @@ module.exports = async (req, res) => {
       cdnStatus.status === 'ok' &&
       !incidentStatus.hasIncident;
 
+    let status = healthy ? 'ok' : 'degraded';
+    let message = healthy
+      ? 'All systems operational'
+      : (incidentStatus.hasIncident ? (incidentStatus.incident.name || 'System incident reported') : 'Some dependencies are unavailable');
+
+    // Detect if the host environment is offline (to avoid "degraded" false negatives)
+    if (!healthy && (supabaseStatus.status === 'error' || cdnStatus.status === 'error')) {
+      const isOnline = await checkInternetConnection();
+      if (!isOnline) {
+        status = 'offline';
+        message = 'Please check your internet connection';
+      }
+    }
+
     const responseTime = Date.now() - requestStartTime;
 
     const response = {
-      status: healthy ? 'ok' : 'degraded',
-      message: healthy
-        ? 'All systems operational'
-        : (incidentStatus.hasIncident ? (incidentStatus.incident.name || 'System incident reported') : 'Some dependencies are unavailable'),
+      status,
+      message,
       timestamp: new Date().toISOString(),
       service: 'materio-core',
       responseTimeMs: responseTime,

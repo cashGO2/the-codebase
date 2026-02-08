@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
     const enableBgToggle = document.getElementById("enableBgToggle");
-    const enableNoiseToggle = document.getElementById("enableNoiseToggle");
     const homeElem = document.getElementById("home");
     let lastIsMobile = window.matchMedia("(max-width: 768px)").matches;
     let cachedEventToApply = null;
@@ -50,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         } else {
-            console.error('❌ Wallpaper card not found for:', wallpaperType);
+
         }
     }
 
@@ -398,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 window.MaterioHaptics.vibrate('success');
                             }
                         } catch (e) {
-                            console.error('Error saving custom wallpaper:', e);
+
                             if (window.materioAlert) {
                                 materioAlert('Could not save wallpaper. The image may be too large.', {
                                     title: 'Storage Error',
@@ -514,7 +513,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 applyEventBackgroundForHome();
             })
             .catch(err => {
-                console.error("Error loading event backgrounds:", err);
+
                 applyEventBackgroundForHome();
             });
     }
@@ -572,14 +571,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (enableBgToggle) enableBgToggle.checked = true;
     }
 
-    const savedNoiseSetting = getCookie("enableNoise");
-    if (savedNoiseSetting === "false") {
-        if (enableNoiseToggle) enableNoiseToggle.checked = false;
-        homeElem.classList.add("no-noise");
-    } else {
-        if (enableNoiseToggle) enableNoiseToggle.checked = true;
-        homeElem.classList.remove("no-noise");
-    }
+
 
     // Start by initializing event data, which will then apply background
     initEventData();
@@ -599,20 +591,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    if (enableNoiseToggle) {
-        enableNoiseToggle.addEventListener("change", function () {
-            // Haptic feedback
-            if (window.MaterioHaptics) {
-                window.MaterioHaptics.vibrate(this.checked ? 'toggleOn' : 'toggleOff');
-            }
-            if (!this.checked) {
-                homeElem.classList.add("no-noise");
-            } else {
-                homeElem.classList.remove("no-noise");
-            }
-            setCookie("enableNoise", this.checked ? "true" : "false", 30);
-        });
-    }
+
     function debounce(func, wait) {
         let timeout;
         return function (...args) {
@@ -645,7 +624,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 isLoggedIn: true
             };
         } catch (error) {
-            console.error('Error parsing user data:', error);
+
             return { isPlusUser: false, hasAdminPrivileges: false, isLoggedIn: false };
         }
     }
@@ -805,7 +784,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     enable: enable
                 }, '*');
             } catch (e) {
-                // console.log('Could not communicate with PDF iframe');
+
             }
         }
     }    // Listen for messages from iframe to handle overlay mode requests
@@ -1439,75 +1418,76 @@ document.addEventListener('DOMContentLoaded', function () {
             attributeFilter: ['style', 'class']
         });
     }
-});
 
-// Save time settings when changed
-function updateWarmth(value) {
-    const warmthOpacity = value / 100 * 0.3; // Scale from 0-100% to 0-0.3 opacity
-    if (popup) {
-        popup.style.setProperty('--warmth-opacity', warmthOpacity);
+
+    // Save time settings when changed
+    function updateWarmth(value) {
+        const warmthOpacity = value / 100 * 0.3; // Scale from 0-100% to 0-0.3 opacity
+        if (popup) {
+            popup.style.setProperty('--warmth-opacity', warmthOpacity);
+        }
+        if (warmthValue) {
+            warmthValue.textContent = `${value}%`;
+        }
+
+        // Send warmth level to PDF iframe
+        applyWarmthToPDFIframe(warmthOpacity);
+
+        // Log the warmth update for debugging
+        // console.log(`Warmth updated: ${value}% (opacity: ${warmthOpacity.toFixed(3)})`);
     }
-    if (warmthValue) {
-        warmthValue.textContent = `${value}%`;
-    }
+    // Helper function to apply warmth to PDF iframe
+    function applyWarmthToPDFIframe(opacity) {
+        const pdfIframe = document.getElementById('pdf-iframe');
+        if (pdfIframe && popup.classList.contains('night-reading')) {
+            // Try direct access first (same-origin)
+            try {
+                const iframeDoc = pdfIframe.contentDocument;
+                if (iframeDoc) {
+                    iframeDoc.documentElement.style.setProperty('--warmth-opacity', opacity);
 
-    // Send warmth level to PDF iframe
-    applyWarmthToPDFIframe(warmthOpacity);
-
-    // Log the warmth update for debugging
-    // console.log(`Warmth updated: ${value}% (opacity: ${warmthOpacity.toFixed(3)})`);
-}
-// Helper function to apply warmth to PDF iframe
-function applyWarmthToPDFIframe(opacity) {
-    const pdfIframe = document.getElementById('pdf-iframe');
-    if (pdfIframe && popup.classList.contains('night-reading')) {
-        // Try direct access first (same-origin)
-        try {
-            const iframeDoc = pdfIframe.contentDocument;
-            if (iframeDoc) {
-                iframeDoc.documentElement.style.setProperty('--warmth-opacity', opacity);
-
-                // Force repaint to ensure changes are applied
-                if (iframeDoc.body.classList.contains('night-reading')) {
-                    const viewer = iframeDoc.getElementById('viewer');
-                    if (viewer) {
-                        viewer.style.transform = 'translateZ(0)';
-                        setTimeout(() => {
-                            viewer.style.transform = '';
-                        }, 10);
+                    // Force repaint to ensure changes are applied
+                    if (iframeDoc.body.classList.contains('night-reading')) {
+                        const viewer = iframeDoc.getElementById('viewer');
+                        if (viewer) {
+                            viewer.style.transform = 'translateZ(0)';
+                            setTimeout(() => {
+                                viewer.style.transform = '';
+                            }, 10);
+                        }
                     }
+
+                    return; // Success with direct access
                 }
-
-                return; // Success with direct access
+            } catch (e) {
+                // Cross-origin, use postMessage
+                // console.log('Direct access failed, using postMessage:', e.message);
             }
-        } catch (e) {
-            // Cross-origin, use postMessage
-            // console.log('Direct access failed, using postMessage:', e.message);
-        }
 
-        // Use postMessage for cross-origin communication
-        try {
-            pdfIframe.contentWindow.postMessage({
-                type: 'nightWarmth',
-                opacity: opacity
-            }, '*');
-        } catch (e) {
-            // console.log('Could not send warmth level to PDF iframe');
+            // Use postMessage for cross-origin communication
+            try {
+                pdfIframe.contentWindow.postMessage({
+                    type: 'nightWarmth',
+                    opacity: opacity
+                }, '*');
+            } catch (e) {
+                // console.log('Could not send warmth level to PDF iframe');
+            }
         }
     }
-}
 
-// Warmth slider event listener
-if (warmthSlider) {
-    let lastWarmthValue = warmthSlider.value;
-    warmthSlider.addEventListener("input", function () {
-        const value = this.value;
-        // Haptic feedback for slider tick
-        if (window.MaterioHaptics && Math.abs(value - lastWarmthValue) >= 5) {
-            window.MaterioHaptics.vibrate('tick');
-            lastWarmthValue = value;
-        }
-        updateWarmth(value);
-        setCookie("nightWarmth", value, 30);
-    });
-}
+    // Warmth slider event listener
+    if (warmthSlider) {
+        let lastWarmthValue = warmthSlider.value;
+        warmthSlider.addEventListener("input", function () {
+            const value = this.value;
+            // Haptic feedback for slider tick
+            if (window.MaterioHaptics && Math.abs(value - lastWarmthValue) >= 5) {
+                window.MaterioHaptics.vibrate('tick');
+                lastWarmthValue = value;
+            }
+            updateWarmth(value);
+            setCookie("nightWarmth", value, 30);
+        });
+    }
+});

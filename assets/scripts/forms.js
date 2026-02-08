@@ -28,10 +28,10 @@ async function loadFormsConfig() {
         const response = await fetch('/assets/data/forms-config.json');
         if (response.ok) {
             formsConfig = await response.json();
-            // console.log('Forms config loaded successfully');
+
         }
     } catch (error) {
-        console.error('Error loading forms config:', error);
+
     }
 }
 
@@ -45,7 +45,7 @@ async function loadSemesterSubjectMappingsForForms() {
             semesterSubjectMappings = await response.json();
         }
     } catch (error) {
-        console.log('Could not load semester-subject mappings, using defaults');
+
         // Use default mappings
         semesterSubjectMappings = {
             "1": ["Applied Mathematics 1", "Applied Physics 1", "Applied Chemistry", "Engineering Mechanics", "Basic Electrical Engineering"],
@@ -67,7 +67,7 @@ async function loadSemesterSubjectMappingsForForms() {
  */
 function openDynamicForm(formType, skipWizard = false) {
     if (!formsConfig || !formsConfig.forms[formType]) {
-        console.error('Form type not found:', formType);
+
         showNotification('Form not available', 'error');
         return;
     }
@@ -78,7 +78,7 @@ function openDynamicForm(formType, skipWizard = false) {
     const modal = document.getElementById('dynamicFormModal');
 
     if (!modal) {
-        console.error('Dynamic form modal not found');
+
         return;
     }
 
@@ -1159,14 +1159,14 @@ async function submitDynamicForm() {
             }).then(async resp => {
                 if (!resp.ok) {
                     const err = await safeJsonParse(resp).catch(() => ({}));
-                    console.warn('Form background submit issue:', err.error || resp.status);
+                    // Form background submit issue
                 }
             }).catch(err => {
-                console.warn('Form background submit failed:', err.message);
+                // Form background submit failed
             });
         }
     } catch (error) {
-        console.error('Form submission error:', error);
+        // Form submission error
         document.getElementById('dynamicFormErrorMessage').textContent = error.message;
         document.getElementById('dynamicFormError').style.display = 'flex';
     }
@@ -1212,7 +1212,6 @@ async function loadFormActivityConfig() {
         const response = await fetch('/assets/data/formActivity.json');
         if (response.ok) {
             formActivityConfig = await response.json();
-            console.log('Form activity config loaded');
 
             // Wait a bit for other configs to load, then check triggers
             setTimeout(() => {
@@ -1220,7 +1219,7 @@ async function loadFormActivityConfig() {
             }, 1000);
         }
     } catch (error) {
-        console.log('Form activity config not found or disabled');
+        // Form activity config not found or disabled
     }
 }
 
@@ -1409,8 +1408,6 @@ function triggerFormActivity(activity) {
         localStorage.setItem(storageKey, new Date().toISOString());
         formsShownThisSession++;
         lastFormShownTime = Date.now();
-
-        console.log(`Form activity triggered: ${activity.id}`);
     }, delay);
 }
 

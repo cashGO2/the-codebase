@@ -247,7 +247,6 @@ class NotebookManager {
             const data = localStorage.getItem(STORAGE_KEY);
             this.notebooks = data ? JSON.parse(data) : [];
         } catch (e) {
-            console.error(e);
             this.notebooks = [];
         }
     }
@@ -259,7 +258,7 @@ class NotebookManager {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(this.notebooks));
         } catch (e) {
-            console.error('[Notebook] Failed to save to storage:', e);
+            // Failed to save to storage
         }
     }
 
@@ -305,7 +304,7 @@ class NotebookManager {
                 this.isLoggedIn = true;
             }
         } catch (e) {
-            console.error('[Notebook] Failed to detect user privileges:', e);
+            // Failed to detect privileges
         }
 
         this.updateAIToolbarVisibility();
@@ -639,7 +638,7 @@ class NotebookManager {
                             throwOnError: false
                         });
                     } catch (e) {
-                        console.warn('[Notebook] LaTeX render error:', e);
+                        // LaTeX render error
                     }
                 }
             }
@@ -1205,7 +1204,6 @@ class NotebookManager {
                 listEl.innerHTML = '<div class="link-pdf-empty">Download manager not available</div>';
             }
         } catch (e) {
-            console.error('[Notebook] Failed to load downloaded PDFs:', e);
             listEl.innerHTML = '<div class="link-pdf-empty">Failed to load PDFs</div>';
         }
     }
@@ -1525,9 +1523,8 @@ class NotebookManager {
             }
         } catch (e) {
             if (e.name === 'AbortError') {
-                console.log('[Notebook] AI writing cancelled');
+                // AI writing cancelled
             } else {
-                console.error('[Notebook] AI writing error:', e);
                 // Show error message to user
                 const editor = document.getElementById('notebookEditor');
                 if (editor) {
@@ -1580,7 +1577,6 @@ class NotebookManager {
 
         const token = localStorage.getItem('materio_auth_token');
         if (!token) {
-            console.warn('[Notebook] No auth token for cloud sync');
             return;
         }
 
@@ -1609,15 +1605,13 @@ class NotebookManager {
                 }
 
                 this.saveToStorage();
-                console.log('[Notebook] Synced to cloud:', notebook.id);
 
                 // Notify UI to update (show the cloud badge in tab)
                 document.dispatchEvent(new CustomEvent('notebook:update'));
             } else {
-                console.error('[Notebook] Cloud sync failed:', response.status);
             }
         } catch (e) {
-            console.error('[Notebook] Cloud sync failed:', e);
+            // Cloud sync failed
         }
     }
 
@@ -1643,9 +1637,8 @@ class NotebookManager {
                 }),
                 credentials: 'include'
             });
-            console.log('[Notebook] Deleted from cloud:', notebookId);
         } catch (e) {
-            console.error('[Notebook] Cloud deletion failed:', e);
+            // Cloud deletion failed
         }
     }
 
@@ -1670,7 +1663,6 @@ class NotebookManager {
 
         const token = localStorage.getItem('materio_auth_token');
         if (!token) {
-            console.warn('[Notebook] No auth token for cloud load');
             return;
         }
 
@@ -1706,13 +1698,12 @@ class NotebookManager {
                 }
 
                 this.saveToStorage();
-                console.log('[Notebook] Loaded from cloud:', cloudNotebooks.length, 'notebooks');
 
                 // Notify UI to update list
                 document.dispatchEvent(new CustomEvent('notebook:update'));
             }
         } catch (e) {
-            console.error('[Notebook] Failed to load from cloud:', e);
+            // Failed to load from cloud
         }
     }
 }

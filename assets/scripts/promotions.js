@@ -17,48 +17,46 @@ if (document.readyState === 'loading') {
 
 async function loadAndDisplayPromotion() {
   try {
-    // console.log('Starting to load promotion data...');
+
 
     // Add cache busting to ensure we get the latest data
     const timestamp = new Date().getTime();
     const response = await fetch(`/assets/data/promo.json?t=${timestamp}`);
 
-    // console.log('Fetch response status:', response.status);
+
 
     if (!response.ok) {
-      // console.log('No promotion data found or fetch failed');
+
       return;
     }
 
     promoData = await response.json();
-    // console.log('Loaded promotion data:', promoData);
+
 
     // Check if promotion should be displayed
     if (shouldDisplayPromotion(promoData)) {
       displayPromotionModal(promoData);
     }
   } catch (error) {
-    console.error('Error loading promotion data:', error);
   }
 }
 
 function shouldDisplayPromotion(data) {
-  // console.log('Checking if promotion should be displayed...');
-  // console.log('Promotion data:', data);
+
 
   // Don't show if disabled
   if (!data.enabled) {
-    // console.log('Promotion disabled - not showing');
+
     return false;
   }
-  // console.log('✓ Promotion is enabled');
+
 
   // Check device type (showOn property)
   if (!checkDeviceType(data.showOn)) {
-    // console.log('Device type does not match showOn setting - not showing');
+
     return false;
   }
-  // console.log('✓ Device type matches showOn setting');
+
 
   // Check if it's a limited time offer
   if (data.isLimitedOffer && data.startDate && data.endDate) {
@@ -70,25 +68,25 @@ function shouldDisplayPromotion(data) {
     if (now < startDate || now > endDate) {
       return false;
     }
-    // console.log('✓ Promotion is within date range');
+
   } else {
-    // console.log('✓ Not a limited time offer, no date restrictions');
+
   }
 
   // Check if user selected "Don't show again"
   const dontShowAgain = localStorage.getItem('promoDoNotShowAgain');
   if (dontShowAgain === 'true') {
-    // console.log('User selected "Don\'t show again" - not showing');
+
     return false;
   }
-  // console.log('✓ User has not selected "Don\'t show again"');
+
 
   // Check frequency settings
   if (!checkFrequency(data.frequency, data.customFrequencyHours)) {
     return false;
   }
 
-  // console.log('✓ All checks passed - promotion should be displayed');
+
   return true;
 }
 
@@ -96,7 +94,7 @@ function shouldDisplayPromotion(data) {
 function checkDeviceType(showOn) {
   // Default to 'All' if not specified
   if (!showOn) {
-    console.log('[Promo Debug] showOn not specified, showing on all devices');
+
     return true;
   }
 
@@ -108,7 +106,7 @@ function checkDeviceType(showOn) {
 
   // Check for 'all'
   if (normalizedDevices.includes('all')) {
-    console.log('[Promo Debug] showOn is "all", showing on all devices');
+
     return true;
   }
 
@@ -116,7 +114,7 @@ function checkDeviceType(showOn) {
   const currentDevice = detectDeviceType();
 
   const matches = normalizedDevices.includes(currentDevice);
-  console.log(`[Promo Debug] showOn: ${JSON.stringify(normalizedDevices)}, detected device: "${currentDevice}", matches: ${matches}`);
+
 
   return matches;
 }
@@ -295,20 +293,20 @@ function parseMarkdown(text) {
 }
 
 function displayPromotionModal(data) {
-  // console.log('displayPromotionModal called with data:', data);
+
 
   const modal = document.getElementById('promoModal');
   if (!modal) {
     console.error('❌ Promotion modal element not found - check if main.html includes the modal');
     return;
   }
-  // console.log('✓ Modal element found:', modal);
+
 
   // Update modal content
   updateModalContent(modal, data);
 
   // Show the modal with proper centering
-  // console.log('Setting modal to display: flex for proper centering...');
+
   setTimeout(() => {
     // Add classes for proper display and body scroll prevention
     modal.style.display = 'flex';
@@ -318,16 +316,16 @@ function displayPromotionModal(data) {
     // Record when the modal was shown (for frequency tracking)
     localStorage.setItem('promoLastShown', new Date().getTime().toString());
 
-    // console.log('✓ Promotion modal should now be visible and centered');
-    // console.log('Modal computed style display:', getComputedStyle(modal).display);
-    // console.log('Modal style display:', modal.style.display);
+
+
+
   }, 1000);
 
   // Setup media rotation if multiple media items
   // Support both 'media' (new) and 'images' (legacy) properties
   const mediaItems = data.media || data.images;
   if (mediaItems && mediaItems.length > 1) {
-    // console.log('Setting up media rotation for', mediaItems.length, 'items');
+
     setupImageRotation(mediaItems, data.imageRotationInterval || 5000, data.imageAnimation);
   }
 
@@ -337,7 +335,7 @@ function displayPromotionModal(data) {
 
 // Debug function to check video controls
 function debugVideoControls() {
-  console.log('=== VIDEO CONTROLS DEBUG ===');
+
   const modal = document.querySelector('.promo-modal');
   if (!modal) {
     console.error('Promo modal not found');
@@ -352,30 +350,30 @@ function debugVideoControls() {
 }
 
 function updateModalContent(modal, data) {
-  // console.log('Updating modal content:', data);
+
 
   // Update title (find the span with class promo-title, or update h2 directly)
   const titleSpan = modal.querySelector('.promo-title');
   const titleEl = modal.querySelector('h2');
   if (titleSpan) {
     titleSpan.textContent = data.title;
-    // console.log('Updated title span:', data.title);
+
   } else if (titleEl) {
     titleEl.innerHTML = `<i class="fa-solid fa-bullhorn" style="margin-right: 10px;"></i>${data.title}`;
-    // console.log('Updated title element:', data.title);
+
   }
 
   // Update description
   const descriptionEl = modal.querySelector('.promo-description');
   if (descriptionEl) {
     descriptionEl.innerHTML = parseMarkdown(data.description);
-    // console.log('Updated description:', data.description);
+
   } else {
     // Fallback to first paragraph
     const paragraphs = modal.querySelectorAll('p');
     if (paragraphs.length > 0) {
       paragraphs[0].innerHTML = parseMarkdown(data.description);
-      // console.log('Updated description (fallback):', data.description);
+
     }
   }
 
@@ -431,7 +429,7 @@ function updateModalContent(modal, data) {
     if (modalContainer) {
       modalContainer.classList.remove('no-image');
     }
-    // console.log('Updated and showed media:', firstMedia, isVideo ? '(video)' : '(image)');
+
   } else {
     if (imageEl) {
       imageEl.style.display = 'none';
@@ -445,7 +443,7 @@ function updateModalContent(modal, data) {
     if (modalContainer) {
       modalContainer.classList.add('no-image');
     }
-    // console.log('Hidden media (no media available)');
+
   }
 
   // Hide video controls for images
@@ -491,7 +489,7 @@ function updateModalContent(modal, data) {
     } else {
       modal.querySelector('.promo-modal').appendChild(dateEl);
     }
-    // console.log('Added date info:', dateText);
+
   }
 }
 
@@ -553,7 +551,7 @@ function ensureVideoControlsExist(modal) {
   let controls = modal.querySelector('.video-controls');
 
   if (!controls) {
-    console.log('Video controls not found, creating them...');
+
     const imageContainer = modal.querySelector('.promo-image');
     if (imageContainer) {
       controls = document.createElement('div');
@@ -574,7 +572,7 @@ function ensureVideoControlsExist(modal) {
       controls.appendChild(muteBtn);
       imageContainer.appendChild(controls);
 
-      console.log('Video controls created and added to DOM');
+
     }
   }
 
@@ -689,12 +687,12 @@ function updateButtons(modal, data) {
     if (primaryButton) {
       primaryButton.style.display = 'flex';
     }
-    // console.log('Updated primary button with text:', primaryText?.textContent || defaults.primary.text);
+
   } else {
     if (primaryLink) {
       primaryLink.style.display = 'none';
     }
-    // console.log('Hidden primary button');
+
   }
 
   // Update secondary button
@@ -735,12 +733,12 @@ function updateButtons(modal, data) {
     if (secondaryButton) {
       secondaryButton.style.display = 'flex';
     }
-    // console.log('Updated secondary button with text:', secondaryText?.textContent || defaults.secondary.text);
+
   } else {
     if (secondaryButton) {
       secondaryButton.style.display = 'none';
     }
-    // console.log('Hidden secondary button');
+
   }
 }
 
@@ -779,12 +777,12 @@ function updateDisclaimer(modal, data) {
     if (disclaimerContainer) {
       disclaimerContainer.style.display = 'block';
     }
-    // console.log('Updated disclaimer with text:', disclaimerText?.textContent || defaults.text);
+
   } else {
     if (disclaimerContainer) {
       disclaimerContainer.style.display = 'none';
     }
-    // console.log('Hidden disclaimer');
+
   }
 }
 
@@ -808,19 +806,19 @@ function updateOptions(modal, data) {
     if (optionsContainer) {
       optionsContainer.style.display = 'block';
     }
-    // console.log('Updated options with text:', checkboxText?.textContent || defaults.dontShowAgainText);
+
   } else {
     if (optionsContainer) {
       optionsContainer.style.display = 'none';
     }
-    // console.log('Hidden options');
+
   }
 }
 
 function setupImageRotation(images, interval, animationConfig) {
   if (!images || images.length <= 1) return;
 
-  // console.log('Setting up image rotation for', images.length, 'images');
+
   currentImageIndex = 0;
 
   // Default animation configuration
@@ -848,7 +846,6 @@ function setupImageRotation(images, interval, animationConfig) {
     if (imageContainer) {
       // Apply custom animation
       applyMediaAnimation(imageEl, videoEl, imageContainer, images[currentImageIndex], animation);
-      // console.log('Rotated to media with animation:', images[currentImageIndex], animation.type);
     }
   }, interval);
 }
@@ -937,7 +934,7 @@ function closePromoModal() {
     const dontShowCheckbox = document.getElementById('dontShowAgainCheckbox');
     if (dontShowCheckbox && dontShowCheckbox.checked) {
       localStorage.setItem('promoDoNotShowAgain', 'true');
-      // console.log('User selected "Don\'t show again" - saved to localStorage');
+
     }
 
     // Stop any playing video and audio
@@ -973,7 +970,7 @@ function closePromoModal() {
       document.body.classList.remove('modal-open');
     }
 
-    // console.log('Promotion modal closed');
+
   }
 
   // Clear image rotation timer
@@ -1007,7 +1004,7 @@ function remindMeLater() {
     modal.classList.remove('show');
     document.body.classList.remove('modal-open');
 
-    // console.log('Promotion modal closed - remind me later');
+
   }
 
   // Clear image rotation timer
@@ -1029,7 +1026,7 @@ function remindMeLater() {
 
   const remindLaterTime = new Date().getTime() + (delayHours * 60 * 60 * 1000);
   localStorage.setItem('promoRemindLaterTime', remindLaterTime.toString());
-  // console.log(`Remind me later set for ${delayHours} hours`);
+
 }
 
 // Make functions globally available
@@ -1041,12 +1038,12 @@ window.loadAndDisplayPromotion = loadAndDisplayPromotion;
 
 // Function to force reload promotion data (called from profile.js)
 window.reloadPromotionData = function () {
-  // console.log('🔄 Forcing promotion data reload...');
+
   loadAndDisplayPromotion();
 };
 
 window.setupVideoControls = function (modal) {
-  console.log('Setting up video controls...');
+
   const video = modal.querySelector('.promo-video');
   const controls = modal.querySelector('.video-controls');
   const playPauseBtn = modal.querySelector('.play-pause-btn');
@@ -1122,13 +1119,13 @@ window.setupVideoControls = function (modal) {
 
 // Simple force show video controls for testing
 function forceShowVideoControls(modal) {
-  console.log('Force showing video controls...');
+
 
   // Ensure controls exist
   let controls = modal.querySelector('.video-controls');
 
   if (!controls) {
-    console.log('Creating video controls...');
+
     const imageContainer = modal.querySelector('.promo-image');
     if (imageContainer) {
       controls = document.createElement('div');
@@ -1152,7 +1149,7 @@ function forceShowVideoControls(modal) {
     controls.style.bottom = '16px';
     controls.style.right = '16px';
     controls.style.zIndex = '1000';
-    console.log('Video controls should now be visible');
+
 
     // Add basic click handlers
     const playBtn = controls.querySelector('.play-pause-btn');
@@ -1187,13 +1184,13 @@ function forceShowVideoControls(modal) {
 
 // Manual test functions for debugging
 window.testPromoModal = function () {
-  // console.log('Manual test: forcing promo modal to show...');
+
   const modal = document.getElementById('promoModal');
   if (modal) {
     modal.style.display = 'flex';
     modal.classList.add('show');
     document.body.classList.add('modal-open');
-    // console.log('Modal forced to show with proper centering');
+
   } else {
     console.error('Modal not found!');
   }
@@ -1201,18 +1198,18 @@ window.testPromoModal = function () {
 
 window.resetPromoSettings = function () {
   localStorage.removeItem('promoDoNotShowAgain');
-  // console.log('Promo settings cleared - modal will show again');
+
   loadAndDisplayPromotion();
 };
 
 window.forceLoadPromo = function () {
-  // console.log('Force loading promotion...');
+
   loadAndDisplayPromotion();
 };
 
 // Deprecated function for backward compatibility
 window.clearDismissedPromos = function () {
-  // console.log('Note: clearDismissedPromos is deprecated, use resetPromoSettings instead');
+
   resetPromoSettings();
 };
 
