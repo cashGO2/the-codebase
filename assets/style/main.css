@@ -2863,7 +2863,7 @@ body.dark-mode #notices a {
     justify-content: center;
     z-index: 9999;
     opacity: 1;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.4s cubic-bezier(0.32, 0.72, 0, 1), background-color 0.4s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .promo-modal {
@@ -2878,8 +2878,10 @@ body.dark-mode #notices a {
     max-height: 85vh;
     height: auto;
     position: relative;
-    animation: fadeIn 0.3s ease;
+    animation: modalFadeIn 0.4s cubic-bezier(0.32, 0.72, 0, 1);
     margin: 20px auto;
+    /* Performance optimization */
+    will-change: transform, opacity;
     /* Custom slim scrollbar */
     scrollbar-width: thin;
     scrollbar-color: #ff8200 transparent;
@@ -3132,12 +3134,15 @@ body.dark-mode #notices a {
         max-height: 85vh;
         overflow-y: auto;
         position: relative;
-        animation: slideUp 0.3s ease;
+        animation: modalSlideUp 0.4s cubic-bezier(0.32, 0.72, 0, 1);
         /* Hide scrollbar on mobile */
         scrollbar-width: none;
         /* Firefox */
         -ms-overflow-style: none;
         /* Internet Explorer 10+ */
+        /* Touch optimization */
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
     }
 
     /* Hide webkit scrollbar on mobile */
@@ -3145,19 +3150,25 @@ body.dark-mode #notices a {
         display: none;
     }
 
-    /* Top handle bar for mobile sheet - make it more prominent for interaction */
+    /* Top handle bar for mobile sheet - make it more prominent for swipe interaction */
     .promo-modal::before {
         content: "";
         position: absolute;
-        top: 8px;
+        top: 10px;
         left: 50%;
         transform: translateX(-50%);
-        width: 50px;
-        height: 5px;
-        background-color: #999;
+        width: 60px;
+        height: 6px;
+        background-color: rgba(150, 150, 150, 0.6);
         border-radius: 3px;
-        z-index: 1;
-        cursor: pointer;
+        z-index: 10;
+        cursor: grab;
+        transition: background-color 0.2s ease, width 0.2s ease;
+    }
+
+    .promo-modal:active::before {
+        background-color: rgba(120, 120, 120, 0.8);
+        width: 70px;
     }
 
     .promo-image {
@@ -3224,14 +3235,14 @@ body.dark-mode #notices a {
         justify-content: center;
     }
 
-    /* Closing animation - slide down */
+    /* Closing animation - slide down with spring easing */
     .promo-modal.closing {
-        animation: slideDown 0.3s ease forwards;
+        animation: modalSlideDown 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards;
     }
 }
 
 /* Slide down animation for mobile close */
-@keyframes slideDown {
+@keyframes modalSlideDown {
     from {
         transform: translateY(0);
         opacity: 1;
@@ -3240,6 +3251,36 @@ body.dark-mode #notices a {
     to {
         transform: translateY(100%);
         opacity: 0;
+    }
+}
+
+/* Slide up animation for mobile open */
+@keyframes modalSlideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Desktop closing animation - slide down like mobile */
+.promo-modal.closing {
+    animation: modalSlideDown 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -3276,7 +3317,7 @@ body.dark-mode #notices a {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    transition: all 0.25s cubic-bezier(0.32, 0.72, 0, 1);
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
@@ -3284,6 +3325,11 @@ body.dark-mode #notices a {
     color: #ff4444;
     background: rgba(255, 255, 255, 1);
     transform: scale(1.1);
+}
+
+.promo-close-btn:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
 }
 
 /* Dark Mode Styles for Promotional Modal */
@@ -6397,12 +6443,15 @@ body.dark-mode .attachments-empty {
 .exam-modal {
     max-width: 500px;
     width: 90%;
+    overflow: hidden;
 }
 
 .exam-modal .promo-content {
     flex: 1;
     width: 100%;
-    padding: 30px;
+    padding: 32px;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .exam-modal-content h2 {
@@ -6505,28 +6554,33 @@ body.dark-mode .attachments-empty {
     background: var(--color-primary-alt);
 }
 
-/* Blinking dot animation for active/today items */
+/* Blinking dot animation for active/today items - subtle glow pulse */
 @keyframes examDotBlink {
 
     0%,
     100% {
-        box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.6);
+        box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.5);
     }
 
     50% {
-        box-shadow: 0 0 0 6px rgba(255, 107, 53, 0);
+        box-shadow: 0 0 0 5px rgba(255, 107, 53, 0.2);
     }
 }
 
 .exam-timeline-item.today .exam-timeline-dot::before,
 .exam-timeline-item.active .exam-timeline-dot::before {
     background: #ff6b35;
-    animation: examDotBlink 1.5s ease-in-out infinite;
+    animation: examDotBlink 2.5s ease-in-out infinite;
 }
 
-.exam-timeline-item.today .exam-timeline-dot::after,
-.exam-timeline-item.active .exam-timeline-dot::after {
+/* Only today's exam shows the progress line (half orange/half gray) */
+.exam-timeline-item.today .exam-timeline-dot::after {
     background: linear-gradient(to bottom, #ff6b35 50%, #e0e0e0 50%);
+}
+
+/* Upcoming active exam keeps gray line (no progress) - only dot blinks */
+.exam-timeline-item.upcoming.active .exam-timeline-dot::after {
+    background: #e0e0e0;
 }
 
 .exam-timeline-item.upcoming .exam-timeline-dot::before {
@@ -6654,6 +6708,20 @@ body.dark-mode .exam-timeline-item.completed .exam-timeline-dot::after {
     background: var(--color-primary-alt);
 }
 
+/* Dark mode: Active/Today exam dots should be solid orange */
+body.dark-mode .exam-timeline-item.today .exam-timeline-dot::before,
+body.dark-mode .exam-timeline-item.active .exam-timeline-dot::before {
+    background: #ff6b35;
+}
+
+body.dark-mode .exam-timeline-item.today .exam-timeline-dot::after {
+    background: linear-gradient(to bottom, #ff6b35 50%, #555 50%);
+}
+
+body.dark-mode .exam-timeline-item.upcoming.active .exam-timeline-dot::after {
+    background: #555;
+}
+
 /* Responsive styles */
 @media (max-width: 768px) {
     .exam-card {
@@ -6677,6 +6745,7 @@ body.dark-mode .exam-timeline-item.completed .exam-timeline-dot::after {
     .exam-modal .promo-content,
     .exam-modal-content {
         padding: 20px;
+        padding-top: 28px;
     }
 
     .exam-timeline {
@@ -6707,6 +6776,16 @@ body.dark-mode .exam-timeline-item.completed .exam-timeline-dot::after {
     }
 }
 
+/* Mobile bottom-sheet style for exam modal (matching promo modal) */
+@media (max-width: 500px) {
+    .promo-modal.exam-modal {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        border-radius: 40px;
+    }
+}
+
 @media (max-width: 480px) {
     .exam-card {
         width: 220px;
@@ -6734,11 +6813,12 @@ body.dark-mode .exam-timeline-item.completed .exam-timeline-dot::after {
         max-width: 100%;
         max-height: 90vh;
         margin: 0;
-        border-radius: 20px 20px 0 0;
+        border-radius: 40px;
     }
 
     .exam-modal-content {
-        padding: 16px;
+        padding: 20px;
+        padding-top: 28px;
     }
 
     .exam-timeline {

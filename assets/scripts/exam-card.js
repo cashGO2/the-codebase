@@ -7,6 +7,42 @@ let currentSemesterData = null;
 let examViewRotationTimer = null;
 let currentExamView = 0; // 0 = preexam, 1 = ongoing, 2 = timeline
 
+// Debug: Fake date for testing (set via console)
+let _fakeDate = null;
+
+// Helper to get current date (uses fake date if set, otherwise real date)
+function getCurrentDate() {
+    return _fakeDate ? new Date(_fakeDate) : new Date();
+}
+
+// Debug functions - use these in browser console to test different dates
+// Example: setFakeDate('2026-02-16') to simulate exam day
+// Example: setFakeDate('2026-02-17') to simulate day after first exam
+// Example: clearFakeDate() to reset to real date
+window.setFakeDate = function (dateString) {
+    _fakeDate = dateString;
+    console.log(`[ExamCard Debug] Fake date set to: ${dateString}`);
+    console.log(`[ExamCard Debug] Refreshing exam card...`);
+    // Refresh the exam card with new date
+    if (examData && currentSemesterData) {
+        generateExamTimeline();
+    }
+    return `Fake date set to ${dateString}. Open the exam modal to see the changes.`;
+};
+
+window.clearFakeDate = function () {
+    _fakeDate = null;
+    console.log('[ExamCard Debug] Fake date cleared. Using real date now.');
+    if (examData && currentSemesterData) {
+        generateExamTimeline();
+    }
+    return 'Fake date cleared. Using real date now.';
+};
+
+window.getFakeDate = function () {
+    return _fakeDate ? `Fake date: ${_fakeDate}` : 'No fake date set (using real date)';
+};
+
 // Constants
 const VIEW_ROTATION_INTERVAL = 15000; // 15 seconds shuffle as default
 const SHOW_BEFORE_DAYS = 7; // Show card 7 days before exam starts
@@ -646,26 +682,32 @@ function scrollToActiveExam() {
     const timeline = document.getElementById('examModalTimeline');
     if (!timeline) return;
 
-    // Find the active or today item
-    const activeItem = timeline.querySelector('.exam-timeline-item.today, .exam-timeline-item.active');
+    // Get all exam items from the DOM
+    const allItems = timeline.querySelectorAll('.exam-timeline-item');
+    if (allItems.length === 0) return;
 
-    if (activeItem) {
-        // Scroll so that the active item is near the top
-        const containerRect = timeline.getBoundingClientRect();
-        const itemRect = activeItem.getBoundingClientRect();
-        const scrollOffset = itemRect.top - containerRect.top - 20; // 20px from top
+    // Find the first item that is NOT completed (i.e., today or upcoming)
+    // This ensures we scroll to show the first non-completed exam at the top
+    let targetItem = null;
 
-        timeline.scrollTop = scrollOffset;
-    } else {
-        // If no active item, find the first upcoming item
-        const upcomingItem = timeline.querySelector('.exam-timeline-item.upcoming');
-        if (upcomingItem) {
-            const containerRect = timeline.getBoundingClientRect();
-            const itemRect = upcomingItem.getBoundingClientRect();
-            const scrollOffset = itemRect.top - containerRect.top - 20;
-
-            timeline.scrollTop = scrollOffset;
+    for (const item of allItems) {
+        if (!item.classList.contains('completed')) {
+            targetItem = item;
+            break;
         }
+    }
+
+    // If all exams are completed, show the last one
+    if (!targetItem) {
+        targetItem = allItems[allItems.length - 1];
+    }
+
+    if (targetItem) {
+        // Use scrollIntoView for more reliable positioning
+        targetItem.scrollIntoView({ behavior: 'instant', block: 'start' });
+
+        // Add a small offset so it's not flush with the top
+        timeline.scrollTop = Math.max(0, timeline.scrollTop - 10);
     }
 }
 
@@ -673,9 +715,34 @@ function scrollToActiveExam() {
 function closeExamModal() {
     const modal = document.getElementById('examModal');
     if (modal) {
-        modal.style.display = 'none';
-        modal.classList.remove('show');
-        document.body.classList.remove('modal-open');
+        // Add closing animation - works on both mobile and desktop
+        const examModalElement = modal.querySelector('.exam-modal');
+        if (examModalElement) {
+            // Prepare for animation
+            examModalElement.style.willChange = 'transform, opacity';
+            examModalElement.classList.add('closing');
+
+            // Animate overlay fade out
+            modal.style.transition = 'opacity 0.4s cubic-bezier(0.32, 0.72, 0, 1)';
+            modal.style.opacity = '0';
+
+            // Wait for animation to finish before hiding
+            setTimeout(() => {
+                modal.style.display = 'none';
+                modal.classList.remove('show');
+                modal.style.opacity = '';
+                modal.style.transition = '';
+                examModalElement.classList.remove('closing');
+                examModalElement.style.willChange = '';
+                examModalElement.style.transform = '';
+                document.body.classList.remove('modal-open');
+            }, 400); // Match the animation duration
+        } else {
+            // Fallback if .exam-modal doesn't exist
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+            document.body.classList.remove('modal-open');
+        }
     }
 }
 
@@ -683,34 +750,33 @@ function generateExamTimeline() {
     const timelineContainer = document.getElementById('examModalTimeline');
     if (!timelineContainer || !currentSemesterData || !currentSemesterData.exams) return;
 
-    const now = new Date();
+    const now = getCurrentDate();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const sortedExams = [...currentSemesterData.exams].sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    // Find the first upcoming exam (this will be marked as "active")
-    let activeExamIndex = -1;
-    for (let i = 0; i < sortedExams.length; i++) {
-        const examDate = new Date(sortedExams[i].date);
-        const examDateOnly = new Date(examDate.getFullYear(), examDate.getMonth(), examDate.getDate());
-        if (examDateOnly >= today) {
-            activeExamIndex = i;
-            break;
-        }
-    }
-
     let timelineHTML = '';
+    let foundFirstUpcoming = false; // Track if we've found the first upcoming exam
+
     sortedExams.forEach((exam, index) => {
         const examDate = new Date(exam.date);
         const examDateOnly = new Date(examDate.getFullYear(), examDate.getMonth(), examDate.getDate());
 
         const isCompleted = examDateOnly < today;
         const isToday = examDateOnly.toDateString() === today.toDateString();
-        const isActive = index === activeExamIndex;
 
         let statusClass = 'upcoming';
-        if (isCompleted) statusClass = 'completed';
-        else if (isToday) statusClass = 'today active';
-        else if (isActive) statusClass = 'active';
+        if (isCompleted) {
+            statusClass = 'completed';
+        } else if (isToday) {
+            // Today's exam gets active blinking indicator
+            statusClass = 'today active';
+            foundFirstUpcoming = true; // Today counts as "found"
+        } else if (!foundFirstUpcoming) {
+            // First upcoming exam (after today or after last completed) gets active indicator
+            // This shows blinking even on gap days between exams
+            statusClass = 'upcoming active';
+            foundFirstUpcoming = true;
+        }
 
         // Generate syllabus HTML
         let syllabusHTML = '';

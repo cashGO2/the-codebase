@@ -398,34 +398,67 @@ function goToWizardPage(pageIndex) {
  */
 function closeDynamicForm() {
     const modal = document.getElementById('dynamicFormModal');
-    modal.classList.remove('show');
-    modal.setAttribute('aria-hidden', 'true');
-    document.body.classList.remove('modal-open');
+    if (!modal) return;
 
-    // Reset form after animation
-    setTimeout(() => {
-        currentFormType = null;
-        selectedFiles = [];
+    // Add closing animation - works on both mobile and desktop
+    const formModalElement = modal.querySelector('.dynamic-form-modal');
+    if (formModalElement) {
+        // Prepare for animation
+        formModalElement.style.willChange = 'transform, opacity';
+        formModalElement.classList.add('closing');
 
-        // Clear dynamic fields
-        const fieldsContainer = document.getElementById('dynamicFormFields');
-        const confirmationsContainer = document.getElementById('dynamicFormConfirmations');
-        if (fieldsContainer) fieldsContainer.innerHTML = '';
-        if (confirmationsContainer) confirmationsContainer.innerHTML = '';
+        // Animate overlay fade out
+        modal.style.transition = 'opacity 0.4s cubic-bezier(0.32, 0.72, 0, 1)';
+        modal.style.opacity = '0';
 
-        // Hide success/error states
-        const successState = document.getElementById('dynamicFormSuccess');
-        const errorState = document.getElementById('dynamicFormError');
-        if (successState) successState.style.display = 'none';
-        if (errorState) errorState.style.display = 'none';
+        // Wait for animation to finish before hiding
+        setTimeout(() => {
+            modal.classList.remove('show');
+            modal.setAttribute('aria-hidden', 'true');
+            modal.style.opacity = '';
+            modal.style.transition = '';
+            formModalElement.classList.remove('closing');
+            formModalElement.style.willChange = '';
+            formModalElement.style.transform = '';
+            document.body.classList.remove('modal-open');
 
-        // Reset submit button
-        const submitBtn = document.getElementById('dynamicFormSubmitBtn');
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i id="dynamicFormSubmitIcon" class="fa-solid fa-paper-plane" style="margin-right: 8px;"></i><span id="dynamicFormSubmitText">Submit</span>';
-        }
-    }, 300);
+            // Reset form state
+            resetFormState();
+        }, 400);
+    } else {
+        // Fallback if modal element doesn't exist
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('modal-open');
+        resetFormState();
+    }
+}
+
+/**
+ * Reset form state after closing
+ */
+function resetFormState() {
+    currentFormType = null;
+    selectedFiles = [];
+
+    // Clear dynamic fields
+    const fieldsContainer = document.getElementById('dynamicFormFields');
+    const confirmationsContainer = document.getElementById('dynamicFormConfirmations');
+    if (fieldsContainer) fieldsContainer.innerHTML = '';
+    if (confirmationsContainer) confirmationsContainer.innerHTML = '';
+
+    // Hide success/error states
+    const successState = document.getElementById('dynamicFormSuccess');
+    const errorState = document.getElementById('dynamicFormError');
+    if (successState) successState.style.display = 'none';
+    if (errorState) errorState.style.display = 'none';
+
+    // Reset submit button
+    const submitBtn = document.getElementById('dynamicFormSubmitBtn');
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i id="dynamicFormSubmitIcon" class="fa-solid fa-paper-plane" style="margin-right: 8px;"></i><span id="dynamicFormSubmitText">Submit</span>';
+    }
 }
 
 /**

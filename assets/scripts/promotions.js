@@ -934,7 +934,6 @@ function closePromoModal() {
     const dontShowCheckbox = document.getElementById('dontShowAgainCheckbox');
     if (dontShowCheckbox && dontShowCheckbox.checked) {
       localStorage.setItem('promoDoNotShowAgain', 'true');
-
     }
 
     // Stop any playing video and audio
@@ -952,25 +951,34 @@ function closePromoModal() {
       audio.currentTime = 0;
     });
 
-    // Add closing animation on mobile
+    // Add closing animation - works on both mobile and desktop
     const promoModalElement = modal.querySelector('.promo-modal');
     if (promoModalElement) {
+      // Prepare for animation
+      promoModalElement.style.willChange = 'transform, opacity';
       promoModalElement.classList.add('closing');
+
+      // Animate overlay fade out
+      modal.style.transition = 'opacity 0.4s cubic-bezier(0.32, 0.72, 0, 1)';
+      modal.style.opacity = '0';
+
       // Wait for animation to finish before hiding
       setTimeout(() => {
         modal.style.display = 'none';
         modal.classList.remove('show');
+        modal.style.opacity = '';
+        modal.style.transition = '';
         promoModalElement.classList.remove('closing');
+        promoModalElement.style.willChange = '';
+        promoModalElement.style.transform = '';
         document.body.classList.remove('modal-open');
-      }, 300); // Match the animation duration
+      }, 400); // Match the animation duration
     } else {
       // Fallback if .promo-modal doesn't exist
       modal.style.display = 'none';
       modal.classList.remove('show');
       document.body.classList.remove('modal-open');
     }
-
-
   }
 
   // Clear image rotation timer
@@ -1215,9 +1223,10 @@ window.clearDismissedPromos = function () {
 
 // Mobile drag-down to dismiss functionality for all bottom sheet modals
 function initMobileSwipeHandling() {
-  // Mobile breakpoint
-  const MOBILE_BREAKPOINT = 768;
-  const DISMISS_THRESHOLD = 100; // pixels to drag before dismiss
+  // Mobile breakpoint - match CSS media query (500px)
+  const MOBILE_BREAKPOINT = 500;
+  const DISMISS_THRESHOLD = 80; // pixels to drag before dismiss (reduced for better responsiveness)
+  const VELOCITY_THRESHOLD = 0.5; // pixels per ms for fast swipe
 
   // Get all modal overlays - both existing and new ones
   const overlays = document.querySelectorAll('.promo-modal-overlay');
@@ -1229,6 +1238,7 @@ function initMobileSwipeHandling() {
 
     let startY = 0;
     let currentY = 0;
+    let startTime = 0;
     let isDragging = false;
     let modalElement = null;
     let canDismiss = false;
@@ -1237,17 +1247,17 @@ function initMobileSwipeHandling() {
       // Only on mobile
       if (window.innerWidth > MOBILE_BREAKPOINT) return;
 
-      modalElement = overlay.querySelector('.promo-modal, .dynamic-form-modal');
+      modalElement = overlay.querySelector('.promo-modal, .dynamic-form-modal, .exam-modal');
       if (!modalElement) return;
 
       // Check if touch started near the top (handle area) or if modal is at scroll top
       const touchY = e.touches[0].clientY;
       const modalRect = modalElement.getBoundingClientRect();
-      const handleAreaHeight = 60; // pixels from top of modal
+      const handleAreaHeight = 80; // pixels from top of modal (increased for easier grabbing)
 
       // Only start drag if touching near top handle area OR modal is scrolled to top
       const isNearTop = touchY < (modalRect.top + handleAreaHeight);
-      const isScrolledToTop = modalElement.scrollTop <= 0;
+      const isScrolledToTop = modalElement.scrollTop <= 5; // small tolerance
 
       // Allow dismissing if near handle area OR scrolled to top
       canDismiss = isNearTop || isScrolledToTop;
@@ -1256,9 +1266,12 @@ function initMobileSwipeHandling() {
 
       startY = touchY;
       currentY = touchY;
+      startTime = Date.now();
       isDragging = true;
 
+      // Disable transition during drag for responsive feel
       modalElement.style.transition = 'none';
+      modalElement.style.willChange = 'transform';
     }
 
     function handleTouchMove(e) {
@@ -1269,19 +1282,23 @@ function initMobileSwipeHandling() {
 
       // Only allow downward dragging when we can dismiss
       if (deltaY > 0 && canDismiss) {
-        modalElement.style.transform = `translateY(${deltaY}px)`;
+        // Apply rubber-band effect - slower movement as you drag further
+        const resistance = 0.6;
+        const dampedDeltaY = deltaY * resistance;
+        modalElement.style.transform = `translateY(${dampedDeltaY}px)`;
 
-        // Add opacity fade effect
-        const opacity = Math.max(0.3, 1 - (deltaY / 400));
+        // Add opacity fade effect on overlay
+        const opacity = Math.max(0.2, 1 - (deltaY / 300));
         overlay.style.backgroundColor = `rgba(0, 0, 0, ${0.5 * opacity})`;
 
         // Prevent scrolling while dragging down
         e.preventDefault();
-      } else if (deltaY < 0) {
+      } else if (deltaY < 0 && canDismiss) {
         // User is scrolling up, cancel the dismiss gesture
         isDragging = false;
         canDismiss = false;
         modalElement.style.transform = '';
+        modalElement.style.willChange = '';
       }
     }
 
@@ -1294,20 +1311,37 @@ function initMobileSwipeHandling() {
       }
 
       const deltaY = currentY - startY;
+      const elapsedTime = Date.now() - startTime;
+      const velocity = deltaY / elapsedTime; // px per ms
 
-      modalElement.style.transition = 'transform 0.3s ease';
-      overlay.style.transition = 'background-color 0.3s ease';
+      // Apply smooth spring-like transition
+      modalElement.style.transition = 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1)';
+      overlay.style.transition = 'background-color 0.4s cubic-bezier(0.32, 0.72, 0, 1)';
 
-      // If dragged down more than threshold, close the modal
-      if (deltaY > DISMISS_THRESHOLD && canDismiss) {
+      // Close if dragged down more than threshold OR fast swipe downward
+      const shouldDismiss = canDismiss && (deltaY > DISMISS_THRESHOLD || velocity > VELOCITY_THRESHOLD);
+
+      if (shouldDismiss) {
         modalElement.style.transform = 'translateY(100%)';
         overlay.style.backgroundColor = 'rgba(0, 0, 0, 0)';
 
         setTimeout(() => {
+          // Reset styles before closing
+          modalElement.style.willChange = '';
+
           // Determine which close function to call - use window scope for production compatibility
           if (overlay.id === 'promoModal') {
             if (typeof window.closePromoModal === 'function') {
               window.closePromoModal();
+            }
+          } else if (overlay.id === 'examModal') {
+            if (typeof window.closeExamModal === 'function') {
+              window.closeExamModal();
+            } else {
+              // Fallback for exam modal
+              overlay.style.display = 'none';
+              overlay.classList.remove('show');
+              document.body.classList.remove('modal-open');
             }
           } else if (overlay.id === 'dynamicFormModal') {
             if (typeof window.closeDynamicForm === 'function') {
@@ -1320,20 +1354,23 @@ function initMobileSwipeHandling() {
             document.body.classList.remove('modal-open');
           }
 
-          // Reset transform
+          // Reset transform and transitions
           modalElement.style.transform = '';
+          modalElement.style.transition = '';
           overlay.style.backgroundColor = '';
           overlay.style.transition = '';
-        }, 300);
+        }, 400);
       } else {
-        // Snap back to original position
+        // Snap back to original position with spring animation
         modalElement.style.transform = 'translateY(0)';
         overlay.style.backgroundColor = '';
 
         setTimeout(() => {
           modalElement.style.transform = '';
+          modalElement.style.transition = '';
+          modalElement.style.willChange = '';
           overlay.style.transition = '';
-        }, 300);
+        }, 400);
       }
 
       isDragging = false;
@@ -1342,11 +1379,21 @@ function initMobileSwipeHandling() {
       currentY = 0;
     }
 
-    // Add event listeners with proper passive handling
+    // Add event listeners - bind to both overlay and modal for better touch capture
     overlay.addEventListener('touchstart', handleTouchStart, { passive: true });
     overlay.addEventListener('touchmove', handleTouchMove, { passive: false });
     overlay.addEventListener('touchend', handleTouchEnd, { passive: true });
     overlay.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+
+    // Also bind to modal element directly for more reliable touch capture
+    const modalEl = overlay.querySelector('.promo-modal, .dynamic-form-modal, .exam-modal');
+    if (modalEl && !modalEl.dataset.swipeInitialized) {
+      modalEl.dataset.swipeInitialized = 'true';
+      modalEl.addEventListener('touchstart', handleTouchStart, { passive: true });
+      modalEl.addEventListener('touchmove', handleTouchMove, { passive: false });
+      modalEl.addEventListener('touchend', handleTouchEnd, { passive: true });
+      modalEl.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+    }
   });
 }
 
