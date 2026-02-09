@@ -1,4 +1,4 @@
-{
+﻿{
     "enabled": true,
     "viewRotationInterval": 15000,
     "showBeforeDays": 9,
@@ -6,8 +6,8 @@
         {
             "semester": 6,
             "examPeriod": {
-                "name": "Mid Semester",
-                "shortName": "Mid Sem",
+                "name": "Mid Semester Exams",
+                "shortName": "Mid Semester",
                 "startDate": "2026-02-16T09:00:00",
                 "endDate": "2026-02-24T11:15:00"
             },
@@ -29,8 +29,7 @@
                     "syllabus": [
                         "Android Operating System and Development Environment",
                         "Android Components and Resource Handling",
-                        "Android User Interface Elements",
-                        "Working with Views and Fragments"
+                        "Android User Interface Elements"
                     ]
                 },
                 {
@@ -45,9 +44,10 @@
                     "time": "09:45",
                     "duration": "1.5 hours",
                     "syllabus": [
-                        "UNIT-1: Introduction to Machine Learning \n Learning Paradigms \n PAC learning \n Basics of Probability \n Version Spaces \n  *Machine Learning in Practice*, Data collection \n Preprocessing (Missing values, Normalization, Adopting to chosen algorithm etc.,) \n Outlier Analysis (Z-Score) - Model selection & evaluation \n Optimization of tuning parameters \n Setting the environment \n Visualization of results",
-                        "UNIT-2: Supervised Learning \n I, Linear and Non-Linear examples \n Multi–Class & Multi-Label classification \n LinearRegression \n Multilinear Regression \n Naïve Bayes Classifier \n Decision Trees \n ID3 \n CART \n Error bounds",
-                        "UNIT-3: Supervised Learning - II \n K-NN classifier \n Logistic regression"
+                        "Linear Regression",
+                        "Classification",
+                        "Neural Networks",
+                        "Deep Learning Basics"
                     ]
                 },
                 {
@@ -63,9 +63,10 @@
                     "time": "09:45",
                     "duration": "1.5 hours",
                     "syllabus": [
-                        "1 Overview of compilation : The structure of a compiler and applications of compiler technology; Lexical analysis - The role of a lexical analyzer, specification of tokens, recognition of tokens, hand-written lexical analyzers, LEX, examples of LEX programs.",
-                        "2 Introduction to syntax analysis : Role of a parser, use of context-free grammars (CFG) in the specification of the syntax of programming languages, techniques for writing grammars for programming languages (removal left recursion, etc.), non-context-free constructs in programming languages, parse trees and ambiguity, examples of programming language grammars.",
-                        "3 Top-down parsing : FIRST & FOLLOW sets, LL(1) conditions, predictive parsing, recursive descent parsing, error recovery. LR-parsing - Handle pruning, shift-reduce parsing, viable prefixes, valid items, LR(0) automaton, LR-parsing algorithm, SLR(1), LR(1)"
+                        "Lexical Analysis",
+                        "Parsing",
+                        "Code Generation",
+                        "Optimization"
                     ]
                 },
                 {
@@ -82,9 +83,10 @@
                     "time": "09:45",
                     "duration": "1.5 hours",
                     "syllabus": [
-                        "Unit - 1",
-                        "Unit - 2",
-                        "Unit - 3"
+                        "Introduction to MEAN Stack",
+                        "Setting up the Development Environment",
+                        "Creating a MEAN Stack Application",
+                        "Deployment of MEAN Stack Application"
                     ]
                 },
                 {
@@ -118,11 +120,9 @@
                     "time": "09:45",
                     "duration": "1.5 hours",
                     "syllabus": [
-                        "Number system, LCM &. HCF simplification and Approximation",
-                        "Averages and Progressions",
-                        "Ratio & Proportion, Problems on ages and Percentage",
-                        "Profit & Loss, partnerships, S.I & C.I",
-                        "Time & work , pipes and Cisterns, Time speed and distance , Problems on train crossings, Boats & streams"
+                        "Introduction to Quant and Reasoning",
+                        "Reasoning",
+                        "Quant"
                     ]
                 }
             ]

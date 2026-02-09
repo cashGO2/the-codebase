@@ -508,16 +508,19 @@ function showTimelineView(exams, isDefault = false) {
         if (isCompleted) statusClass = 'completed';
         else if (isToday) statusClass = 'today';
 
-        // Get a random topic from syllabus
-        const randomTopic = exam.syllabus && exam.syllabus.length > 0
-            ? exam.syllabus[Math.floor(Math.random() * exam.syllabus.length)]
-            : '';
+        // Get a random topic and truncate if necessary
+        let topicStr = '';
+        if (exam.syllabus && exam.syllabus.length > 0) {
+            const randomTopic = exam.syllabus[Math.floor(Math.random() * exam.syllabus.length)];
+            // Limit topic length for mini timeline
+            topicStr = randomTopic.length > 30 ? randomTopic.substring(0, 27) + '...' : randomTopic;
+        }
 
         timelineHTML += `
             <div class="exam-mini-item ${statusClass}">
                 <div class="exam-mini-content">
                     <div class="exam-mini-subject">${isToday ? "Today's exam" : exam.subject}</div>
-                    <div class="exam-mini-date">${formatDate(exam.date)}${randomTopic ? ` - ${randomTopic}` : ''}</div>
+                    <div class="exam-mini-date">${formatDate(exam.date)}${topicStr ? ` - ${topicStr}` : ''}</div>
                 </div>
             </div>
         `;
@@ -652,10 +655,12 @@ function openExamModal() {
         const startDate = new Date(currentSemesterData.examPeriod.startDate);
         const isPreExam = now < startDate;
 
-        if (isPreExam) {
-            titleEl.textContent = `${periodName} Exams are coming!`;
+        const fullText = isPreExam ? `${periodName} Exams are coming!` : `${periodName} Exams are on going !`;
+        const words = fullText.split(' ');
+        if (words.length > 3) {
+            titleEl.innerHTML = words.slice(0, 3).join(' ') + '<br>' + words.slice(3).join(' ');
         } else {
-            titleEl.textContent = `${periodName} Exams are on going !`;
+            titleEl.textContent = fullText;
         }
     }
 
@@ -714,6 +719,8 @@ function scrollToActiveExam() {
 // Close exam modal
 function closeExamModal() {
     const modal = document.getElementById('examModal');
+    const slider = document.getElementById('examModalSlider');
+
     if (modal) {
         // Add closing animation - works on both mobile and desktop
         const examModalElement = modal.querySelector('.exam-modal');
@@ -721,6 +728,13 @@ function closeExamModal() {
             // Prepare for animation
             examModalElement.style.willChange = 'transform, opacity';
             examModalElement.classList.add('closing');
+
+            // Reset slider to timeline page for next opening (smoothly)
+            if (slider) {
+                setTimeout(() => {
+                    slider.classList.remove('show-syllabus');
+                }, 300);
+            }
 
             // Animate overlay fade out
             modal.style.transition = 'opacity 0.4s cubic-bezier(0.32, 0.72, 0, 1)';
@@ -742,6 +756,7 @@ function closeExamModal() {
             modal.style.display = 'none';
             modal.classList.remove('show');
             document.body.classList.remove('modal-open');
+            if (slider) slider.classList.remove('show-syllabus');
         }
     }
 }
@@ -778,21 +793,26 @@ function generateExamTimeline() {
             foundFirstUpcoming = true;
         }
 
-        // Generate syllabus HTML
+        // Generate syllabus HTML with truncation
         let syllabusHTML = '';
         if (exam.syllabus && exam.syllabus.length > 0) {
+            const displayLimit = 2;
+            const hasMore = exam.syllabus.length > displayLimit;
+            const shownItems = exam.syllabus.slice(0, displayLimit);
+
             syllabusHTML = `
                 <div class="exam-timeline-syllabus">
                     <div class="exam-timeline-syllabus-label">Syllabus</div>
                     <div class="exam-timeline-syllabus-list">
-                        ${exam.syllabus.map(item => `<div class="exam-timeline-syllabus-item">${item}</div>`).join('')}
+                        ${shownItems.map(item => `<div class="exam-timeline-syllabus-item">${item}</div>`).join('')}
+                        ${hasMore ? `<span class="syllabus-show-link" onclick="showExamSyllabus('${exam.id || index}')">... show</span>` : ''}
                     </div>
                 </div>
             `;
         }
 
         timelineHTML += `
-            <div class="exam-timeline-item ${statusClass}" data-exam-id="${exam.id}">
+            <div class="exam-timeline-item ${statusClass}" data-exam-id="${exam.id || index}">
                 <div class="exam-timeline-dot"></div>
                 <div class="exam-timeline-content">
                     <div class="exam-timeline-subject">${exam.subject}${exam.code ? ` (${exam.code})` : ''}</div>
@@ -804,6 +824,116 @@ function generateExamTimeline() {
     });
 
     timelineContainer.innerHTML = timelineHTML;
+}
+
+// Syllabus View Functions
+function showExamSyllabus(examId) {
+    if (!currentSemesterData || !currentSemesterData.exams) return;
+
+    // Find the exam by ID or index
+    const exam = currentSemesterData.exams.find(e => (e.id || '').toString() === examId.toString()) ||
+        currentSemesterData.exams[parseInt(examId)];
+
+    if (!exam) return;
+
+    const slider = document.getElementById('examModalSlider');
+    const titleEl = document.getElementById('syllabusSubjectTitle');
+    const contentEl = document.getElementById('syllabusFullContent');
+    const bannerImg = document.getElementById('syllabusBannerImg');
+
+    if (!slider || !titleEl || !contentEl) return;
+
+    // Update syllabus view content
+    titleEl.textContent = `${exam.subject} Syllabus`;
+
+    // Set banner image
+    if (bannerImg) {
+        if (exam.image) {
+            bannerImg.src = exam.image;
+            bannerImg.style.display = 'block';
+        } else {
+            // Placeholder: Use a solid dark color or a generic pattern
+            bannerImg.src = '';
+            bannerImg.style.display = 'none'; // Will show the .syllabus-banner-img background
+        }
+    }
+
+    // Joint syllabus array into a single string for markdown parsing
+    const syllabusText = Array.isArray(exam.syllabus) ? exam.syllabus.join('\n\n') : (exam.syllabus || '');
+    contentEl.innerHTML = parseSyllabusMarkdown(syllabusText);
+
+    // Slide to syllabus page
+    slider.classList.add('show-syllabus');
+
+    // Reset scroll
+    contentEl.scrollTop = 0;
+
+    // Haptic feedback
+    if (window.MaterioHaptics) {
+        window.MaterioHaptics.vibrate('light');
+    }
+}
+
+function showExamTimeline() {
+    const slider = document.getElementById('examModalSlider');
+    if (!slider) return;
+
+    // Slide back to timeline
+    slider.classList.remove('show-syllabus');
+
+    // Haptic feedback
+    if (window.MaterioHaptics) {
+        window.MaterioHaptics.vibrate('light');
+    }
+}
+
+
+
+function parseSyllabusMarkdown(text) {
+    if (!text) return '';
+
+    // Handle literal '\n' strings converted from JSON if any
+    let formattedText = text.replace(/\\n/g, '\n');
+
+    // Basic markdown parsing
+    let html = formattedText
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold **text**
+        .replace(/__(.*?)__/g, '<strong>$1</strong>');     // Bold __text__
+
+    // Split into lines to handle lists and paragraphs properly
+    const lines = html.split('\n');
+    let inList = false;
+    let result = '';
+
+    lines.forEach(line => {
+        const trimmed = line.trim();
+        if (!trimmed) {
+            if (inList) {
+                result += '</ul>';
+                inList = false;
+            }
+            return;
+        }
+
+        if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+            if (!inList) {
+                result += '<ul>';
+                inList = true;
+            }
+            result += `<li>${trimmed.substring(2)}</li>`;
+        } else {
+            if (inList) {
+                result += '</ul>';
+                inList = false;
+            }
+            // If it's a normal line, wrap in a div or p if it's meant to be a block
+            result += `<p>${trimmed}</p>`;
+        }
+    });
+
+    if (inList) result += '</ul>';
+
+    return result;
 }
 
 // Close modal when clicking outside
@@ -824,3 +954,5 @@ document.addEventListener('keydown', function (e) {
 // Expose functions globally
 window.openExamModal = openExamModal;
 window.closeExamModal = closeExamModal;
+window.showExamSyllabus = showExamSyllabus;
+window.showExamTimeline = showExamTimeline;
