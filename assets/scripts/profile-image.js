@@ -411,7 +411,7 @@ function init() {
   if (profileMenuItem) {
     if (isLoggedIn) {
       profileMenuItem.classList.add('has-submenu');
-      if (profileItemText) profileItemText.textContent = 'Profile';
+      if (profileItemText) profileItemText.textContent = 'Account';
       if (profileChevron) profileChevron.style.display = 'block';
       if (profileSubmenu) profileSubmenu.style.display = 'flex';
     } else {

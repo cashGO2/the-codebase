@@ -152,6 +152,10 @@
     {
       "source": "/api/v1/(.*)",
       "destination": "/api/v2/$1"
+    },
+    {
+      "source": "/:slug([a-zA-Z0-9_-]{2,20})",
+      "destination": "/index.html?r=:slug"
     }
   ],
   "redirects": [
