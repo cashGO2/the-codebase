@@ -177,6 +177,10 @@ function handleOutsideClick(e) {
     profileDropdown.querySelectorAll('.dropdown-item').forEach(
       item => item.setAttribute('tabindex', '-1')
     );
+    // Reset submenus
+    profileDropdown.querySelectorAll('.has-submenu').forEach(
+      p => p.classList.remove('submenu-open')
+    );
   }
 }
 
@@ -199,6 +203,7 @@ function handleDropdownKeydown(e) {
       profileDropdown.classList.remove('show');
       profileDropdown.setAttribute('aria-hidden', 'true');
       items.forEach(item => item.setAttribute('tabindex', '-1'));
+      profileDropdown.querySelectorAll('.has-submenu').forEach(p => p.classList.remove('submenu-open'));
       profileIconLink?.focus();
       break;
     case 'ArrowDown':
@@ -302,12 +307,70 @@ function setupProfileDropdown(profileIconLink, profileDropdown) {
     });
   }
 
+  // Handle nested submenu interactions (event delegation for dynamic classes)
+  profileDropdown.addEventListener('click', function (e) {
+    const parent = e.target.closest('.has-submenu');
+    if (!parent) return;
+
+    // If we clicked inside the submenu itself (on an actual item), don't toggle the submenu
+    if (e.target.closest('.dropdown-submenu')) return;
+
+    // Prevent event from bubbling up and closing the menu
+    e.stopPropagation();
+
+    const isOpening = !parent.classList.contains('submenu-open');
+
+    // Close all other submenus in this dropdown
+    profileDropdown.querySelectorAll('.has-submenu').forEach(p => {
+      if (p !== parent) p.classList.remove('submenu-open');
+    });
+
+    // Toggle this one
+    parent.classList.toggle('submenu-open');
+
+    if (window.MaterioHaptics) {
+      window.MaterioHaptics.vibrate(isOpening ? 'dropdownOpen' : 'dropdownClose');
+    }
+  });
+
+  // Close dropdown when any item inside a submenu is clicked
+  profileDropdown.addEventListener('click', function (e) {
+    const item = e.target.closest('.dropdown-submenu .dropdown-item');
+    if (!item) return;
+
+    // Close everything
+    profileDropdown.classList.remove('show');
+    profileDropdown.setAttribute('aria-hidden', 'true');
+    profileDropdown.querySelectorAll('.has-submenu').forEach(p => p.classList.remove('submenu-open'));
+
+    if (window.MaterioHaptics) {
+      window.MaterioHaptics.vibrate('select');
+    }
+  });
+
   // Event listeners for closing dropdown
   document.addEventListener('click', handleOutsideClick);
   document.addEventListener('keydown', handleDropdownKeydown);
 
   // Initial aria state
   profileDropdown.setAttribute('aria-hidden', 'true');
+}
+
+/**
+ * Log out current user
+ */
+window.handleLogout = function () {
+  localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
+  localStorage.removeItem(LOCAL_STORAGE_USER_KEY);
+
+  if (window.MaterioHaptics) {
+    window.MaterioHaptics.vibrate('success');
+  }
+
+  // Delay reload slightly for haptic feedback
+  setTimeout(() => {
+    window.location.reload();
+  }, 100);
 }
 
 /**
@@ -337,6 +400,33 @@ function init() {
     }
 
     setupProfileDropdown(profileIconLink, profileDropdown);
+  }
+
+  // Handle Profile dynamic nested menu
+  const profileMenuItem = document.getElementById('profile-menu-item');
+  const profileItemText = document.getElementById('profile-item-text');
+  const profileChevron = document.getElementById('profile-chevron');
+  const profileSubmenu = document.getElementById('profile-submenu');
+
+  if (profileMenuItem) {
+    if (isLoggedIn) {
+      profileMenuItem.classList.add('has-submenu');
+      if (profileItemText) profileItemText.textContent = 'Profile';
+      if (profileChevron) profileChevron.style.display = 'block';
+      if (profileSubmenu) profileSubmenu.style.display = 'flex';
+    } else {
+      profileMenuItem.classList.remove('has-submenu');
+      if (profileItemText) profileItemText.textContent = 'Account';
+      if (profileChevron) profileChevron.style.display = 'none';
+      if (profileSubmenu) profileSubmenu.style.display = 'none';
+
+      // If not logged in, clicking the parent should take to /account
+      profileMenuItem.onclick = function () {
+        if (!isUserLoggedIn()) {
+          window.location.href = '/account';
+        }
+      };
+    }
   }
 
   // Update account card in settings tab

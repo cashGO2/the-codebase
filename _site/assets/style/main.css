@@ -954,9 +954,9 @@ i span {
 
 #versionInfo::after {
     content: "";
-    width: 150px;
-    height: 150px;
-    background-image: url("/assets/img/v4_logo.png");
+    width: 130px;
+    height: 64px;
+    background-image: url("/assets/img/4.8.svg");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -3704,7 +3704,7 @@ body.dark-mode .shimmer-button {
     /* Force backdrop-filter to work with additional properties */
     isolation: isolate;
     will-change: transform, opacity;
-    contain: layout style paint;
+    contain: layout style;
     /* Additional backdrop blur properties */
     -moz-backdrop-filter: blur(25px) saturate(180%);
     -ms-backdrop-filter: blur(25px) saturate(180%);
@@ -3801,6 +3801,125 @@ body.dark-mode .shimmer-button {
     font-size: 14px !important;
 }
 
+/* Submenu / Nested Dropdown Styles */
+.dropdown-item.has-submenu {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 12px;
+}
+
+.submenu-chevron {
+    font-size: 10px !important;
+    opacity: 0.5;
+    margin-left: 8px;
+    transition: transform 0.25s ease;
+}
+
+.dropdown-item.has-submenu:hover .submenu-chevron {
+    transform: translateX(2px);
+    opacity: 1;
+}
+
+.dropdown-submenu {
+    position: absolute;
+    left: calc(100% + 5px);
+    bottom: -6px;
+    /* Align slightly above bottom of parent for better look */
+    background: rgb(231, 231, 221) !important;
+    backdrop-filter: blur(25px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+    border: 1px solid rgb(209, 209, 209);
+    border-radius: 25px;
+    corner-shape: squircle;
+    min-width: 150px;
+    padding: 6px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-10px);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 1101;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Hover bridge to prevent submenu from closing when moving mouse across the gap */
+.dropdown-submenu::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -15px;
+    bottom: -10px;
+    width: 20px;
+    background: transparent;
+    z-index: -1;
+}
+
+/* Show submenu on hover or when clicked (active) */
+.dropdown-item.has-submenu:hover .dropdown-submenu,
+.dropdown-item.has-submenu.submenu-open .dropdown-submenu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+/* Rotate chevron when submenu is open */
+.dropdown-item.has-submenu.submenu-open .submenu-chevron {
+    transform: rotate(90deg);
+}
+
+/* Arrow for submenu */
+.dropdown-submenu::after {
+    content: '';
+    position: absolute;
+    bottom: 20px;
+    left: -6px;
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-right: 6px solid rgba(231, 231, 221, 0.85);
+}
+
+/* Submenu Dark Mode adjustments */
+body.dark-mode .dropdown-submenu {
+    background: rgb(40, 40, 40) !important;
+    border-color: rgb(68, 68, 68);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .dropdown-submenu::after {
+    border-right-color: rgba(40, 40, 40, 0.85);
+}
+
+/* Mobile Adjustments for Submenu */
+@media (max-width: 768px) {
+    .dropdown-submenu {
+        left: auto;
+        right: calc(100% + 10px);
+        transform: translateX(10px);
+    }
+
+    .dropdown-submenu::after {
+        left: auto;
+        right: -6px;
+        border-right: none;
+        border-left: 6px solid rgba(231, 231, 221, 0.85);
+    }
+
+    body.dark-mode .dropdown-submenu::after {
+        border-left-color: rgba(40, 40, 40, 0.85);
+    }
+
+    .dropdown-item.has-submenu:hover .dropdown-submenu {
+        transform: translateX(0);
+    }
+}
+
 /* Dark mode styles for dropdown */
 body.dark-mode .profile-dropdown {
     background: rgb(40, 40, 40) !important;
@@ -3809,7 +3928,7 @@ body.dark-mode .profile-dropdown {
     -moz-backdrop-filter: blur(25px) saturate(180%) !important;
     -ms-backdrop-filter: blur(25px) saturate(180%) !important;
     border: 1px solid rgb(68, 68, 68);
-    contain: layout style paint;
+    contain: layout style;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 

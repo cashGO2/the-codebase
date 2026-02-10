@@ -25,15 +25,17 @@ window.setFakeDate = function (dateString) {
     console.log(`[ExamCard Debug] Refreshing exam card...`);
     // Refresh the exam card with new date
     if (examData && currentSemesterData) {
+        displayExamCard(examData, currentSemesterData);
         generateExamTimeline();
     }
-    return `Fake date set to ${dateString}. Open the exam modal to see the changes.`;
+    return `Fake date set to ${dateString}. Main card and modal refreshed.`;
 };
 
 window.clearFakeDate = function () {
     _fakeDate = null;
     console.log('[ExamCard Debug] Fake date cleared. Using real date now.');
     if (examData && currentSemesterData) {
+        displayExamCard(examData, currentSemesterData);
         generateExamTimeline();
     }
     return 'Fake date cleared. Using real date now.';
@@ -85,18 +87,14 @@ async function loadAndDisplayExamCard() {
 
 
         if (currentSemesterData) {
-
             const shouldDisplay = shouldDisplayExamCard(examData, currentSemesterData);
-
-
             if (shouldDisplay) {
-
                 displayExamCard(examData, currentSemesterData);
             } else {
-
+                hideExamCards();
             }
         } else {
-
+            hideExamCards();
         }
 
         // Listen for semester/subject changes
@@ -183,7 +181,7 @@ function findSemesterData(data, semester) {
 
     // If no specific semester, find the first one with upcoming/ongoing exams
     if (semester === null) {
-        const now = new Date();
+        const now = getCurrentDate();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const showBeforeDays = data.showBeforeDays || SHOW_BEFORE_DAYS;
 
@@ -229,7 +227,7 @@ function shouldDisplayExamCard(data, semesterData) {
         return false;
     }
 
-    const now = new Date();
+    const now = getCurrentDate();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const startDate = new Date(semesterData.examPeriod.startDate);
     const startDateOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
@@ -263,7 +261,23 @@ function hideExamCards() {
         document.getElementById('examCard'),
         document.getElementById('examCardDefault')
     ].filter(Boolean);
+
+    // Hide the cards themselves
     examCards.forEach(card => card.style.display = 'none');
+
+    // Hide the parent containers if they exist (insightroom carousel item)
+    examCards.forEach(card => {
+        const insightItem = card.closest('.insight-item');
+        if (insightItem) {
+            insightItem.style.display = 'none';
+        }
+    });
+
+    // Also hide from smart recommendations if it exists there
+    const smartRecExam = document.querySelector('.recommendation-item#examCardDefault');
+    if (smartRecExam) {
+        smartRecExam.style.display = 'none';
+    }
 }
 
 function displayExamCard(data, semesterData) {
@@ -309,18 +323,19 @@ function displayExamCard(data, semesterData) {
     });
 
     if (isPreExam) {
-        // Pre-exam view - show on both cards
-        showPreExamView(sortedExams, data, false); // Regular
-        showPreExamView(sortedExams, data, true);  // Default
+        // Pre-exam phase: Only show the info/countdown view
+        showPreExamView(sortedExams, data, false);
+        showPreExamView(sortedExams, data, true);
+        currentExamView = 0;
     } else {
-        // Ongoing exam - show based on current rotation state
+        // Ongoing phase: show based on current rotation state (Info vs Timeline)
         if (currentExamView === 2) {
             showTimelineView(sortedExams, false);
             showTimelineView(sortedExams, true);
         } else {
             showOngoingViews(sortedExams, data, false);
             showOngoingViews(sortedExams, data, true);
-            currentExamView = 1; // Default to 1 if not set
+            currentExamView = 1; // Default to 1 (Ongoing Info)
         }
     }
 
@@ -391,14 +406,52 @@ function showPreExamView(exams, data, isDefault = false) {
     if (!targetExam) {
         targetExam = upcomingExams[0] || exams[0];
     }
-
     if (targetExam) {
         // Update exam info
         const subjectEl = document.getElementById('preexamFirstSubject' + suffix);
         const dateEl = document.getElementById('preexamFirstDate' + suffix);
         const syllabusEl = document.getElementById('preexamSyllabus' + suffix);
+        const labelEl = preexamView.querySelector('.exam-label');
 
-        if (subjectEl) subjectEl.textContent = targetExam.subject;
+        // Global countdown for exam period start
+        const headerSpan = preexamView.querySelector('.exam-card-header span');
+        const headerIcon = preexamView.querySelector('.exam-card-header i');
+        const subtitle = preexamView.querySelector('.exam-subtitle');
+
+        // Calculate days until the WHOLE exam period starts
+        const periodStartDate = new Date(currentSemesterData.examPeriod.startDate);
+        const daysUntilStart = getDaysUntil(periodStartDate.toISOString());
+
+        if (daysUntilStart === 0) {
+            if (headerSpan) headerSpan.textContent = "Exams are on going!";
+            if (headerIcon) {
+                headerIcon.className = 'fa-solid fa-fire';
+                headerIcon.style.color = '#ff8200';
+            }
+        } else if (daysUntilStart > 0 && daysUntilStart <= 3) {
+            if (headerSpan) headerSpan.textContent = `${daysUntilStart} Day${daysUntilStart > 1 ? 's' : ''} Left!`;
+            if (headerIcon) {
+                headerIcon.className = 'fa-solid fa-fire';
+                headerIcon.style.color = '#ff8200';
+            }
+            if (subtitle) {
+                const periodName = currentSemesterData?.examPeriod?.shortName || 'Semester';
+                subtitle.textContent = `Your ${periodName} exams are starting soon`;
+            }
+        } else {
+            if (headerSpan) headerSpan.textContent = "Exams are on the way!";
+            if (headerIcon) {
+                headerIcon.className = 'fa-solid fa-calendar-check';
+                headerIcon.style.color = '';
+            }
+        }
+
+        if (labelEl) labelEl.textContent = "Start with";
+
+        if (subjectEl) {
+            const subject = targetExam.subject;
+            subjectEl.textContent = subject.toLowerCase().endsWith('exam') ? subject : subject + " exam";
+        }
         if (dateEl) dateEl.textContent = formatDate(targetExam.date);
 
         // Show syllabus topics for this exam
@@ -456,24 +509,42 @@ function showOngoingView(todayExam, tomorrowExam, nextExam, allExams, isDefault 
         itemContainer.style.display = 'block';
 
         if (todayExam) {
-            if (labelEl) labelEl.textContent = "Today's exam";
-            if (subjectEl) subjectEl.textContent = todayExam.subject + " exam";
+            const headerSpan = ongoingView.querySelector('.exam-card-header span');
+            if (headerSpan) headerSpan.textContent = "Exams are on going!";
+            if (labelEl) labelEl.textContent = "Today is";
+            if (subjectEl) {
+                const subject = todayExam.subject;
+                subjectEl.textContent = subject.toLowerCase().endsWith('exam') ? subject : subject + " exam";
+            }
             if (dateEl) dateEl.textContent = formatDate(todayExam.date);
             if (syllabusEl && todayExam.syllabus) {
                 const randomTopics = getRandomItems(todayExam.syllabus, 2);
                 syllabusEl.innerHTML = `<span>Topics: ${randomTopics.join(', ')}</span>`;
             }
         } else if (tomorrowExam) {
+            const headerSpan = ongoingView.querySelector('.exam-card-header span');
+            if (headerSpan) headerSpan.textContent = "Tomorrow is the day!";
             if (labelEl) labelEl.textContent = "Tomorrow you have";
-            if (subjectEl) subjectEl.textContent = tomorrowExam.subject + " exam";
+            if (subjectEl) {
+                const subject = tomorrowExam.subject;
+                subjectEl.textContent = subject.toLowerCase().endsWith('exam') ? subject : subject + " exam";
+            }
             if (dateEl) dateEl.textContent = formatDate(tomorrowExam.date);
             if (syllabusEl && tomorrowExam.syllabus) {
                 const randomTopics = getRandomItems(tomorrowExam.syllabus, 2);
                 syllabusEl.innerHTML = `<span>Topics: ${randomTopics.join(', ')}</span>`;
             }
         } else if (nextExam) {
+            const headerSpan = ongoingView.querySelector('.exam-card-header span');
+
+            // Simplified: Always show "Exams are on going!" and "Next exam" for next upcoming
+            if (headerSpan) headerSpan.textContent = "Exams are on going!";
             if (labelEl) labelEl.textContent = "Next exam";
-            if (subjectEl) subjectEl.textContent = nextExam.subject + " exam";
+
+            if (subjectEl) {
+                const subject = nextExam.subject;
+                subjectEl.textContent = subject.toLowerCase().endsWith('exam') ? subject : subject + " exam";
+            }
             if (dateEl) dateEl.textContent = formatDate(nextExam.date);
             if (syllabusEl && nextExam.syllabus) {
                 const randomTopics = getRandomItems(nextExam.syllabus, 2);
@@ -494,19 +565,23 @@ function showTimelineView(exams, isDefault = false) {
 
     timelineView.style.display = 'flex';
 
-    const now = new Date();
+    const now = getCurrentDate();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    // Generate mini timeline HTML
+    // Filter to show ONLY today's and upcoming exams
+    const relevantExams = exams.filter(e => {
+        const examDate = new Date(e.date);
+        const examDateOnly = new Date(examDate.getFullYear(), examDate.getMonth(), examDate.getDate());
+        return examDateOnly >= today;
+    });
+
+    // Generate mini timeline HTML for the next 2 exams
     let timelineHTML = '';
-    exams.slice(0, 2).forEach((exam, index) => {
+    relevantExams.slice(0, 2).forEach((exam, index) => {
         const examDate = new Date(exam.date);
-        const isCompleted = examDate < today;
         const isToday = examDate.toDateString() === today.toDateString();
 
-        let statusClass = 'upcoming';
-        if (isCompleted) statusClass = 'completed';
-        else if (isToday) statusClass = 'today';
+        const statusClass = isToday ? 'today' : 'upcoming';
 
         // Get a random topic and truncate if necessary
         let topicStr = '';
@@ -519,7 +594,7 @@ function showTimelineView(exams, isDefault = false) {
         timelineHTML += `
             <div class="exam-mini-item ${statusClass}">
                 <div class="exam-mini-content">
-                    <div class="exam-mini-subject">${isToday ? "Today's exam" : exam.subject}</div>
+                    <div class="exam-mini-subject">${exam.subject}</div>
                     <div class="exam-mini-date">${formatDate(exam.date)}${topicStr ? ` - ${topicStr}` : ''}</div>
                 </div>
             </div>
@@ -542,58 +617,62 @@ function setupViewRotation(exams, data) {
         clearInterval(examViewRotationTimer);
     }
 
-    const rotationInterval = 30000; // Force 15s for better UX, ignore JSON override if too long
+    const rotationInterval = 15000; // 15 seconds shuffle
 
     // Determine the state once
-    const now = new Date();
+    const now = getCurrentDate();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const startDate = currentSemesterData ? new Date(currentSemesterData.examPeriod.startDate) : null;
     const isPreExam = startDate && now < startDate;
 
     // Use current state or default
-    if (!currentExamView) {
+    if (currentExamView === undefined || currentExamView === null) {
         currentExamView = isPreExam ? 0 : 1;
     }
 
     let subIndex = 0;
     const upcomingExams = exams.filter(e => new Date(e.date) >= today);
 
-
-
     examViewRotationTimer = setInterval(() => {
         // Refresh 'now' for date calculations inside interval
-        const innerNow = new Date();
+        const innerNow = getCurrentDate();
         const innerToday = new Date(innerNow.getFullYear(), innerNow.getMonth(), innerNow.getDate());
 
-        if (isPreExam) {
-            // Rotate through upcoming exams in pre-exam view
+        // Use daysUntilStart to determine if we are in the countdown phase or ongoing phase
+        const innerStartDate = currentSemesterData ? new Date(currentSemesterData.examPeriod.startDate) : null;
+        const daysUntilStart = innerStartDate ? getDaysUntil(innerStartDate.toISOString()) : 99;
+
+        const isCurrentlyOngoing = daysUntilStart <= 0;
+
+        if (!isCurrentlyOngoing) {
+            // Countdown/Pre-exam: Rotate through upcoming exams in the countdown view
             if (upcomingExams.length > 1) {
                 subIndex = (subIndex + 1) % upcomingExams.length;
                 const nextTarget = upcomingExams[subIndex];
                 updatePreExamWithSubject(nextTarget, false);
                 updatePreExamWithSubject(nextTarget, true);
-
             }
+            currentExamView = 0;
         } else {
-            // Toggle between Ongoing Info (1) and Timeline (2)
-            if (currentExamView === 1) {
-                // Switch to timeline view
-                showTimelineView(exams, false);
-                showTimelineView(exams, true);
-                currentExamView = 2;
-
-            } else {
-                // Switch back to ongoing info view
+            // Ongoing phase: Toggle between Ongoing Info (focus exam) and Timeline
+            if (currentExamView === 2) {
+                // Switch back to info view (Today/Tomorrow/Next)
                 const tomorrow = new Date(innerToday);
                 tomorrow.setDate(tomorrow.getDate() + 1);
+
+                // Refetch focusing only on what's current - NO rotation of subjects here
                 const todayExam = exams.find(e => new Date(e.date).toDateString() === innerToday.toDateString());
                 const tomorrowExam = exams.find(e => new Date(e.date).toDateString() === tomorrow.toDateString());
-                const nextUpcoming = exams.filter(e => new Date(e.date) > tomorrow)[0];
+                const nextUpcoming = exams.filter(e => new Date(e.date) > innerToday)[0];
 
                 showOngoingView(todayExam, tomorrowExam, nextUpcoming, exams, false);
                 showOngoingView(todayExam, tomorrowExam, nextUpcoming, exams, true);
                 currentExamView = 1;
-
+            } else {
+                // Switch to timeline view
+                showTimelineView(exams, false);
+                showTimelineView(exams, true);
+                currentExamView = 2;
             }
         }
     }, rotationInterval);
@@ -601,11 +680,38 @@ function setupViewRotation(exams, data) {
 
 function updatePreExamWithSubject(exam, isDefault = false) {
     const suffix = isDefault ? 'Default' : '';
+    const preexamView = document.getElementById('examViewPreexam' + suffix);
     const subjectEl = document.getElementById('preexamFirstSubject' + suffix);
     const dateEl = document.getElementById('preexamFirstDate' + suffix);
     const syllabusEl = document.getElementById('preexamSyllabus' + suffix);
+    const labelEl = preexamView ? preexamView.querySelector('.exam-label') : null;
+    const headerSpan = preexamView ? preexamView.querySelector('.exam-card-header span') : null;
+    const headerIcon = preexamView ? preexamView.querySelector('.exam-card-header i') : null;
 
-    if (subjectEl) subjectEl.textContent = exam.subject;
+    const periodStartDate = new Date(currentSemesterData.examPeriod.startDate);
+    const daysUntilStart = getDaysUntil(periodStartDate.toISOString());
+
+    if (daysUntilStart > 0 && daysUntilStart <= 3) {
+        if (headerSpan) headerSpan.textContent = `${daysUntilStart} Day${daysUntilStart > 1 ? 's' : ''} Left!`;
+        if (headerIcon) {
+            headerIcon.className = 'fa-solid fa-fire';
+            headerIcon.style.color = '#ff8200';
+        }
+    } else {
+        if (headerSpan) headerSpan.textContent = "Exams are on the way!";
+        if (headerIcon) {
+            headerIcon.className = 'fa-solid fa-calendar-check';
+            headerIcon.style.color = '';
+        }
+    }
+
+    // In pre-exam phase, the label is always "Start with"
+    if (labelEl) labelEl.textContent = "Start with";
+
+    if (subjectEl) {
+        const subject = exam.subject;
+        subjectEl.textContent = subject.toLowerCase().endsWith('exam') ? subject : subject + " exam";
+    }
     if (dateEl) dateEl.textContent = formatDate(exam.date);
 
     if (syllabusEl && exam.syllabus) {
@@ -632,6 +738,18 @@ function formatDateLong(dateStr) {
     const date = new Date(dateStr);
     const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
     return date.toLocaleDateString('en-US', options);
+}
+
+// Helper to get days until a date
+function getDaysUntil(dateStr) {
+    const now = getCurrentDate();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const targetDate = new Date(dateStr);
+    const targetDay = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+
+    const diffTime = targetDay.getTime() - today.getTime();
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
 }
 
 // Open exam modal

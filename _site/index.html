@@ -15,19 +15,30 @@
 <meta property="og:title" content="Materio">
 <meta property="og:description"
     content="Official materials you trust, in a way you love — Because e-learning shouldn't feel like suffering. Find organized, official study materials, notes, and peer help — all in one clean place." />
-<meta property="og:image" itemprop="image" content="https://materioa.vercel.app/assets/img/og.jpeg">
-<meta property="og:image:secure_url" itemprop="image" content="https://materioa.vercel.app/assets/img/og.jpeg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
+<meta property="og:image" content="https://materioa.vercel.app/assets/img/open-graph.png">
+<meta property="og:image" content="https://materioa.vercel.app/assets/img/open-graph.jpeg">
+<meta property="og:image" content="https://materioa.vercel.app/assets/img/open-graph-general.png">
+<meta property="og:image" content="https://materioa.vercel.app/assets/img/open-graph-general.jpg">
 <meta property="og:url" content="https://materioa.vercel.app">
 <meta property="og:type" content="website">
+
+<!-- Twitter Meta Tags -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Materio">
+<meta name="twitter:description"
+    content="Official materials you trust, in a way you love — Because e-learning shouldn't feel like suffering.">
+<meta name="twitter:image" content="https://materioa.vercel.app/assets/img/open-graph.png">
 <meta name="theme-color" content="#333333">
 
 
 
 <!-- Favicon and Icons -->
-<link rel="icon" type="image/x-icon" href="/assets/img/icon.svg" sizes="256x256">
-<link rel="icon" href="/assets/img/icon-x.svg" sizes="16x16" type="image/svg">
+<link rel="icon" href="/assets/img/favico.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/img/favico.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/img/favicon.png" sizes="128x128" type="image/png">
+<link rel="icon" type="image/x-icon" href="/assets/img/favicon.svg" sizes="32x32" type="image/svg">
+<link rel="icon" href="/assets/img/i16.svg" sizes="16x16" type="image/svg">
+<link rel="icon" href="/assets/img/favico.svg" sizes="128x128" type="image/svg">
 
 <!-- External Stylesheets -->
 <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -280,23 +291,47 @@ Version: v4.8.0.0
                 </a>
                 <!-- Profile dropdown menu -->
                 <div id="profile-dropdown" class="profile-dropdown" role="menu" aria-hidden="true">
-                    <a href="/account/profile" class="dropdown-item" data-action="profile" role="menuitem"
-                        tabindex="-1">
-                        <i class="fas fa-user" aria-hidden="true"></i>
-                        <span>Profile</span>
-                    </a>
+                    <div id="profile-menu-item" class="dropdown-item" role="menuitem" tabindex="-1">
+                        <i class="fa-regular fa-user" aria-hidden="true"></i>
+                        <span id="profile-item-text">Account</span>
+                        <i class="fa-regular fa-chevron-right submenu-chevron" id="profile-chevron"
+                            style="display: none;" aria-hidden="true"></i>
+                        <div class="dropdown-submenu" id="profile-submenu" style="display: none;">
+                            <a href="/account/profile" class="dropdown-item">
+                                <i class="fa-regular fa-user-circle" aria-hidden="true"></i>
+                                <span>Profile</span>
+                            </a>
+                            <a href="#" class="dropdown-item" id="logout-btn"
+                                onclick="if(window.handleLogout) { window.handleLogout(); } return false;">
+                                <i class="fa-regular fa-sign-out-alt" aria-hidden="true"></i>
+                                <span>Log Out</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="dropdown-item has-submenu" role="menuitem" tabindex="-1">
+                        <i class="fa-regular fa-book-bookmark" aria-hidden="true"></i>
+                        <span>Notebooks</span>
+                        <i class="fa-regular fa-chevron-right submenu-chevron" aria-hidden="true"></i>
+                        <div class="dropdown-submenu" role="menu" aria-hidden="true">
+                            <a href="#" class="dropdown-item" onclick="createNewNotebook(); return false;"
+                                role="menuitem" tabindex="-1">
+                                <i class="fa-regular fa-plus" aria-hidden="true"></i>
+                                <span>Create</span>
+                            </a>
+                            <a href="#notebooks" class="dropdown-item tab-link" data-tab="notebooks" role="menuitem"
+                                tabindex="-1">
+                                <i class="fa-regular fa-tasks" aria-hidden="true"></i>
+                                <span>Manage</span>
+                            </a>
+                        </div>
+                    </div>
                     <a href="#5" class="dropdown-item" data-action="downloads" role="menuitem" tabindex="-1">
-                        <i class="fa-solid fa-folder-arrow-down" aria-hidden="true"></i>
+                        <i class="fa-regular fa-folder-arrow-down" aria-hidden="true"></i>
                         <span>Downloads</span>
                     </a>
                     <a href="#4" class="dropdown-item" data-action="settings" role="menuitem" tabindex="-1">
-                        <i class="fas fa-cog" aria-hidden="true"></i>
+                        <i class="fa-regular fa-cog" aria-hidden="true"></i>
                         <span>Settings</span>
-                    </a>
-                    <a href="#" class="dropdown-item" onclick="createNewNotebook(); return false;" role="menuitem"
-                        tabindex="-1">
-                        <i class="fas fa-edit" aria-hidden="true"></i>
-                        <span>Create Note</span>
                     </a>
                 </div>
             </div>
