@@ -401,7 +401,58 @@ function init() {
   const profileChevron = document.getElementById('profile-chevron');
   const profileSubmenu = document.getElementById('profile-submenu');
 
-  const isLoggedIn = isUserLoggedIn();
+  // Helper safe cookie reader to prevent external dependency crashes
+  const getCookieSafe = (name) => {
+    try {
+      const nameEQ = name + "=";
+      const ca = document.cookie.split(';');
+      for(let i=0;i < ca.length;i++) {
+        let c = ca[i].trim();
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+      }
+      return null;
+    } catch(e) { return null; }
+  };
+
+  // Robust login check using local helper
+  const isUserLoggedInSafe = () => {
+    return !!(localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY) ||
+      localStorage.getItem(LOCAL_STORAGE_USER_KEY) ||
+      getCookieSafe(LOCAL_STORAGE_TOKEN_KEY) ||
+      getCookieSafe(LOCAL_STORAGE_USER_KEY));
+  };
+
+  const isLoggedIn = isUserLoggedInSafe();
+  
+  // Handle Profile Menu Item Logic (Run early to ensure UI state)
+  if (profileMenuItem) {
+    if (isLoggedIn) {
+      profileMenuItem.classList.add('has-submenu');
+      if (profileItemText) profileItemText.textContent = 'Profile';
+      if (profileChevron) profileChevron.style.display = 'block';
+      if (profileSubmenu) profileSubmenu.style.display = 'flex';
+      // Remove any existing click listeners (reset state)
+      profileMenuItem.onclick = null;
+    } else {
+      profileMenuItem.classList.remove('has-submenu');
+      if (profileItemText) profileItemText.textContent = 'Account';
+      if (profileChevron) profileChevron.style.display = 'none';
+      if (profileSubmenu) profileSubmenu.style.display = 'none';
+
+      // Robust click handler for redirection
+      profileMenuItem.style.cursor = 'pointer'; 
+      profileMenuItem.onclick = function (e) {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        
+        if (!isUserLoggedInSafe()) {
+          window.location.href = '/account?callback=../';
+        }
+      };
+    }
+  }
 
   // Update navbar elements
   if (profileImage && settingsIcon) {
@@ -526,26 +577,7 @@ function init() {
       });
   }
 
-  if (profileMenuItem) {
-    if (isLoggedIn) {
-      profileMenuItem.classList.add('has-submenu');
-      if (profileItemText) profileItemText.textContent = 'Profile';
-      if (profileChevron) profileChevron.style.display = 'block';
-      if (profileSubmenu) profileSubmenu.style.display = 'flex';
-    } else {
-      profileMenuItem.classList.remove('has-submenu');
-      if (profileItemText) profileItemText.textContent = 'Account';
-      if (profileChevron) profileChevron.style.display = 'none';
-      if (profileSubmenu) profileSubmenu.style.display = 'none';
 
-      // If not logged in, clicking the parent should take to /account with callback
-      profileMenuItem.onclick = function () {
-        if (!isUserLoggedIn()) {
-          window.location.href = '/account?callback=../';
-        }
-      };
-    }
-  }
 
   // Update account card in settings tab
   if (accountProfileImage && accountName) {
