@@ -70,6 +70,7 @@
     /* Special Colors */
     --color-verified-admin: #800020;
     --color-verified-plus: #D4AF37;
+    --color-verified-pro: #AD4446;
     --color-slider-track: #ccc;
     --color-tooltip-bg: #444444;
 
@@ -967,7 +968,13 @@ i span {
 #versionInfo.plus-user::after {
     width: 184px;
     height: 86px;
-    background-image: url("/assets/img/plu.svg");
+    background-image: url("/assets/img/plu.svg") !important;
+}
+
+#versionInfo.pro-user::after {
+    width: 184px;
+    height: 86px;
+    background-image: url("/assets/img/pro.svg") !important;
 }
 
 #versionInfo.admin-user::after {
@@ -1994,6 +2001,10 @@ body.dark-mode #changeLogDetails[open] {
 
 .verified-badge.plus {
     color: var(--color-verified-plus);
+}
+
+.verified-badge.pro {
+    color: var(--color-verified-pro);
 }
 
 .account-username {

@@ -1443,7 +1443,8 @@ document.addEventListener('DOMContentLoaded', function () {
     async function checkAuthAndFilterPosts() {
         const token = localStorage.getItem('materio_auth_token');
         let hasAdminPrivileges = false;
-        let isPlusUser = false;
+        let isProUser = false;
+        let isLiteUser = false;
 
         // Hide entire blogs card if user is not logged in
         const blogsCard = document.getElementById('blogs');
@@ -1468,16 +1469,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (response.ok) {
                     const userData = await response.json();
                     hasAdminPrivileges = userData.user?.hasAdminPrivileges || false;
-                    isPlusUser = userData.user?.isPlusUser || false;
+                    isProUser = userData.user?.isPlusUser || false;
+                    isLiteUser = userData.user?.isLiteUser || false;
+
                 } else {
-                    // If API call fails, hide the blogs card
                     if (blogsCard) {
                         blogsCard.style.display = 'none';
                     }
                     return;
                 }
             } catch (error) {
-                // If auth check fails, hide the blogs card
                 if (blogsCard) {
                     blogsCard.style.display = 'none';
                 }
@@ -1485,9 +1486,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Show blogs card only if user is plus user OR admin AND InsightRoom toggle is enabled
+        // Show blogs card only if user is pro user OR admin AND InsightRoom toggle is enabled
         if (blogsCard) {
-            if (isPlusUser || hasAdminPrivileges) {
+            if (isProUser || hasAdminPrivileges) {
                 // Check if InsightRoom is enabled from saved cookie (read directly to avoid scope issues)
                 let isInsightroomEnabled = true; // default
                 const settingsCookie = getCookie('insightroomSettings');
@@ -1515,8 +1516,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Hide private posts in default listing if no admin privileges or plus membership
-        if (!hasAdminPrivileges && !isPlusUser) {
+        // Hide private posts in default listing if no admin privileges or pro membership
+        if (!hasAdminPrivileges && !isProUser) {
             const privatePosts = document.querySelectorAll('#defaultPosts [data-visibility="private"]');
             privatePosts.forEach(post => {
                 post.style.display = 'none';
@@ -1524,21 +1525,30 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Store private access status for filtering recommendations  
-        window.materioUserHasPrivateAccess = hasAdminPrivileges || isPlusUser;
+        window.materioUserHasPrivateAccess = hasAdminPrivileges || isProUser;
         window.materioUserHasAdminPrivileges = hasAdminPrivileges;
 
         // Apply appropriate logo based on user privileges
         const versionInfo = document.getElementById('versionInfo');
         if (versionInfo) {
             // Remove any existing privilege classes
-            versionInfo.classList.remove('premium-user', 'plus-user', 'admin-user');
+            versionInfo.classList.remove('premium-user', 'plus-user', 'admin-user', 'pro-user');
 
             // Apply the appropriate class based on privileges
             if (hasAdminPrivileges) {
                 versionInfo.classList.add('admin-user');
-            } else if (isPlusUser) {
-                versionInfo.classList.add('plus-user');
+            } else if (isProUser) {
+                versionInfo.classList.add('pro-user');
+            } else if (isLiteUser) {
+                versionInfo.classList.add('plus-user'); // Plus (Lite) users get the plu.svg
             }
+
+            // Force a repaint/style update to ensure the change is visible immediately
+            // This can sometimes help with SVG background images not updating
+            const display = versionInfo.style.display;
+            versionInfo.style.display = 'none';
+            versionInfo.offsetHeight; // trigger reflow
+            versionInfo.style.display = display;
         }
     }
 

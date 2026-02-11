@@ -148,11 +148,11 @@ document.addEventListener('DOMContentLoaded', function () {
           if (user.hasAdminPrivileges) {
             nameHtml += ' <i class="fas fa-badge-check verified-badge admin" title="Admin"></i>';
             if (upgradeContainer) upgradeContainer.style.display = 'none';
-          } else if (user.isProUser) {
-            nameHtml += ' <i class="fas fa-badge-check verified-badge pro" title="Pro User"></i>'; // Gold Badge
+          } else if (user.isProUser || user.isPlusUser) {
+            nameHtml += ' <i class="fas fa-badge-check verified-badge pro" title="Pro User"></i>'; // Pro Badge
             if (upgradeContainer) upgradeContainer.style.display = 'none';
-          } else if (user.isPlusUser) {
-            nameHtml += ' <i class="fas fa-badge-check verified-badge plus" title="Plus User"></i>'; // Silver Badge
+          } else if (user.isLiteUser) {
+            nameHtml += ' <i class="fas fa-badge-check verified-badge plus" title="Plus User"></i>'; // Plus Badge
 
             // Add expiry info if available
             if (user.plusExpiry) {

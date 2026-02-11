@@ -5,7 +5,7 @@
  * @module profile-image
  */
 
-import { setCookie } from './utils.js';
+import { setCookie, getCookie } from './utils.js';
 
 // Constants for authentication storage
 const LOCAL_STORAGE_TOKEN_KEY = 'materio_auth_token';
@@ -72,7 +72,9 @@ function updateAccountCard(accountProfileImage, accountName, accountUsername) {
     // Add verified badges
     if (user.hasAdminPrivileges) {
       accountName.innerHTML += '<i class="fas fa-badge-check verified-badge admin" title="Admin"></i>';
-    } else if (user.isPlusUser) {
+    } else if (user.isProUser || user.isPlusUser) {
+      accountName.innerHTML += '<i class="fas fa-badge-check verified-badge pro" title="Pro User"></i>';
+    } else if (user.isLiteUser) {
       accountName.innerHTML += '<i class="fas fa-badge-check verified-badge plus" title="Plus User"></i>';
     }
   }
@@ -393,6 +395,12 @@ function init() {
   const profileIconLink = document.querySelector('.profile-icon');
   const accountLink = document.querySelector('.account-link');
 
+  // Handle Profile dynamic nested menu elements
+  const profileMenuItem = document.getElementById('profile-menu-item');
+  const profileItemText = document.getElementById('profile-item-text');
+  const profileChevron = document.getElementById('profile-chevron');
+  const profileSubmenu = document.getElementById('profile-submenu');
+
   const isLoggedIn = isUserLoggedIn();
 
   // Update navbar elements
@@ -475,20 +483,10 @@ function init() {
           // Add verified badges manually since we have the data
           if (user.hasAdminPrivileges) {
             accountName.innerHTML += '<i class="fas fa-badge-check verified-badge admin" title="Admin"></i>';
-          } else if (user.isPlusUser) { // Note: 'isPlusUser' here maps to Pro tier in frontend usually, check mapping
-            // Map backend 'isPlusUser' (Pro) and 'isLiteUser' (Plus) to frontend expectations
-            // profile.js returns:
-            // isProUser: user.is_plus_user (Pro)
-            // isPlusUser: user.is_lite_user (Plus)
-            // Wait, the fetch returns what profile.js sends.
-            // profile.js sends: { user: { isProUser: ..., isPlusUser: ... } }
-            // So 'user' variable here has isProUser and isPlusUser.
-
-            if (user.isProUser) {
-              accountName.innerHTML += '<i class="fas fa-badge-check verified-badge pro" title="Pro User"></i>';
-            } else if (user.isPlusUser) {
-              accountName.innerHTML += '<i class="fas fa-badge-check verified-badge plus" title="Plus User"></i>';
-            }
+          } else if (user.isProUser || user.isPlusUser) {
+            accountName.innerHTML += '<i class="fas fa-badge-check verified-badge pro" title="Pro User"></i>';
+          } else if (user.isLiteUser) {
+            accountName.innerHTML += '<i class="fas fa-badge-check verified-badge plus" title="Plus User"></i>';
           }
         }
 
@@ -509,20 +507,6 @@ function init() {
         const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '') + window.location.hash;
         window.history.replaceState({}, document.title, newUrl);
 
-        // Re-run init logic to ensure all UI states are consistent
-        // We can just call init() again, but we need to avoid infinite loop with handoff code
-        // Since we removed handoff code from URL, valid to call init? 
-        // Better to just update the specific parts.
-
-        // Re-enable profile menu
-        if (profileMenuItem) {
-          profileMenuItem.classList.add('has-submenu');
-          if (profileItemText) profileItemText.textContent = 'Profile';
-          if (profileChevron) profileChevron.style.display = 'block';
-          if (profileSubmenu) profileSubmenu.style.display = 'flex';
-          profileMenuItem.onclick = null; // Remove redirect handler
-        }
-
         // Re-enable profile menu
         if (profileMenuItem) {
           profileMenuItem.classList.add('has-submenu');
@@ -541,12 +525,6 @@ function init() {
         window.history.replaceState({}, document.title, newUrl);
       });
   }
-
-  // Handle Profile dynamic nested menu
-  const profileMenuItem = document.getElementById('profile-menu-item');
-  const profileItemText = document.getElementById('profile-item-text');
-  const profileChevron = document.getElementById('profile-chevron');
-  const profileSubmenu = document.getElementById('profile-submenu');
 
   if (profileMenuItem) {
     if (isLoggedIn) {

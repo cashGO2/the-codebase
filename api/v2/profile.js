@@ -77,8 +77,8 @@ async function handleGetProfile(req, res) {
         profilePicture: user.profile_picture,
         recoveryKey: user.recovery_key,
         hasAdminPrivileges: user.has_admin_privileges,
-        isProUser: user.is_plus_user,      // Pro tier (₹299 lifetime) - old is_plus_user
-        isPlusUser: user.is_lite_user,     // Plus tier (₹59/3mo) - new is_lite_user
+        isPlusUser: user.is_plus_user,      // Pro tier (₹299 lifetime)
+        isLiteUser: user.is_lite_user,      // Plus tier (₹59/3mo)
         plusExpiry: user.lite_expiry,      // Expiry for Plus subscription
         createdAt: user.created_at,
         updatedAt: user.updated_at
@@ -248,8 +248,8 @@ async function handleUpdateProfile(req, res) {
         profilePicture: updatedUser.profile_picture,
         recoveryKey: updatedUser.recovery_key,
         hasAdminPrivileges: updatedUser.has_admin_privileges,
-        isProUser: updatedUser.is_plus_user,    // Pro tier (₹299 lifetime)
-        isPlusUser: updatedUser.is_lite_user,   // Plus tier (₹59/3mo)
+        isPlusUser: updatedUser.is_plus_user,    // Pro tier (₹299 lifetime)
+        isLiteUser: updatedUser.is_lite_user,   // Plus tier (₹59/3mo)
         plusExpiry: updatedUser.lite_expiry,
         createdAt: updatedUser.created_at,
         updatedAt: updatedUser.updated_at
