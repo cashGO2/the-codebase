@@ -5,7 +5,8 @@ const {
   verifyToken,
   getTokenFromHeaders,
   generateRecoveryKey,
-  addCorsHeaders
+  addCorsHeaders,
+  consumeHandoffCode
 } = require('./_utils');
 const cors = require('./cors');
 
@@ -259,6 +260,8 @@ async function handleUpdateProfile(req, res) {
     return res.status(500).json({ error: 'Internal server error', details: error.message });
   }
 }
+
+// Delete user account
 
 // Delete user account
 async function handleDeleteAccount(req, res) {

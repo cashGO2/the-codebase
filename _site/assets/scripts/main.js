@@ -5,7 +5,22 @@
 
 function closePromoModal() {
     const modal = document.getElementById('promoModal');
-    modal.style.display = 'none';
+    if (modal) {
+        modal.style.display = 'none';
+        // Reset transform in case it was swiped
+        const modalContent = modal.querySelector('.promo-modal');
+        if (modalContent) modalContent.style.transform = '';
+    }
+}
+
+function closeExamModal() {
+    const modal = document.getElementById('examModal');
+    if (modal) {
+        modal.style.display = 'none';
+        // Reset transform in case it was swiped
+        const modalContent = modal.querySelector('.exam-modal');
+        if (modalContent) modalContent.style.transform = '';
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -46,6 +61,14 @@ document.addEventListener('DOMContentLoaded', function () {
         '.callout-caution'
     ];
 
+    // Clean up 'handoff' parameter from URL if present
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('handoff')) {
+        urlParams.delete('handoff');
+        const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '') + window.location.hash;
+        window.history.replaceState({}, document.title, newUrl);
+    }
+
     const callouts = document.querySelectorAll(calloutSelectors.join(', '));
     callouts.forEach(callout => {
         callout.classList.add('google-auto-ads-ignore');
@@ -58,6 +81,9 @@ document.addEventListener('DOMContentLoaded', function () {
 function initBugTooltip() {
     const tooltip = document.getElementById('bugReportTooltip');
     if (!tooltip) return;
+
+    // Initialize Swipe Gestures for Modals
+    initModalSwipeGestures();
 
     const lastShown = localStorage.getItem('bugTooltipLastShown');
     const now = Date.now();
@@ -254,6 +280,97 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+
+
+// Swipe Gesture Logic for Modals
+function initModalSwipeGestures() {
+    const modals = [
+        { id: 'promoModal', contentClass: '.promo-modal', closeFunc: closePromoModal },
+        { id: 'examModal', contentClass: '.exam-modal', closeFunc: closeExamModal } // Assuming closeExamModal exists or will be created
+    ];
+
+    modals.forEach(modalInfo => {
+        const modalOverlay = document.getElementById(modalInfo.id);
+        if (!modalOverlay) return;
+
+        const modalContent = modalOverlay.querySelector(modalInfo.contentClass);
+        if (!modalContent) return;
+
+        let startY = 0;
+        let currentY = 0;
+        let isDragging = false;
+        const threshold = 100; // Minimum distance to swipe to close
+
+        // Touch Start
+        modalContent.addEventListener('touchstart', (e) => {
+            // Only enable swipe if we are at the top of the scroll
+            // Check if the target is scrollable and not at the top
+            let target = e.target;
+            let isScrollable = false;
+
+            while (target && target !== modalContent) {
+                if (target.scrollHeight > target.clientHeight && target.scrollTop > 0) {
+                    isScrollable = true;
+                    break;
+                }
+                target = target.parentElement;
+            }
+
+            if (isScrollable) return;
+
+            startY = e.touches[0].clientY;
+            isDragging = true;
+            modalContent.style.transition = 'none'; // Disable transition during drag
+        }, { passive: true });
+
+        // Touch Move
+        modalContent.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+
+            const touchY = e.touches[0].clientY;
+            const deltaY = touchY - startY;
+
+            if (deltaY > 0) { // Only allow dragging downwards
+                e.preventDefault(); // Prevent scrolling
+                currentY = deltaY;
+                modalContent.style.transform = `translateY(${currentY}px)`;
+            }
+        }, { passive: false });
+
+        // Touch End
+        modalContent.addEventListener('touchend', (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            modalContent.style.transition = 'transform 0.3s ease-out';
+
+            if (currentY > threshold) {
+                // Swipe success - close modal
+                modalContent.style.transform = `translateY(100%)`;
+                setTimeout(() => {
+                    modalInfo.closeFunc();
+                    modalContent.style.transform = ''; // Reset for next time
+                }, 300);
+            } else {
+                // Swipe cancel - revert position
+                modalContent.style.transform = '';
+            }
+            currentY = 0;
+        });
+    });
+
+    // Inject CSS for smooth scrolling in modals - Target ONLY touch devices to prevent desktop jitter
+    const style = document.createElement('style');
+    style.textContent = `
+        @media (hover: none) and (pointer: coarse) {
+            .promo-modal, .promo-content, .exam-modal-page, .syllabus-full-content {
+                -webkit-overflow-scrolling: touch;
+                scroll-behavior: smooth;
+                overscroll-behavior: contain;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
 
 const submitButton = document.getElementById('submitButton');
 const popup = document.getElementById('popup');

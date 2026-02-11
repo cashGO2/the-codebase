@@ -48,8 +48,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (redirectUrl) {
               // Append token to redirect URL
-              const targetUrl = new URL(redirectUrl);
-              targetUrl.searchParams.set('handoff', response.handoffCode);
+              // Append token to redirect URL
+              const targetUrl = new URL(redirectUrl, window.location.origin);
+              targetUrl.searchParams.set('handoff', response.handoffCode || '');
               window.location.href = targetUrl.toString();
             } else {
               redirectToProfile();

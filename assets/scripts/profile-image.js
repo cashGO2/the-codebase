@@ -16,19 +16,23 @@ const LOCAL_STORAGE_USER_KEY = 'materio_user';
  * @returns {boolean}
  */
 function isUserLoggedIn() {
-  return !!localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
+  // Check both localStorage and cookies for production compatibility
+  return !!(localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY) ||
+    localStorage.getItem(LOCAL_STORAGE_USER_KEY) ||
+    getCookie(LOCAL_STORAGE_TOKEN_KEY) ||
+    getCookie(LOCAL_STORAGE_USER_KEY));
 }
 
 /**
- * Get current user data from localStorage
+ * Get current user data
  * @returns {Object|null}
  */
 function getUserData() {
-  const userData = localStorage.getItem(LOCAL_STORAGE_USER_KEY);
+  const userData = localStorage.getItem(LOCAL_STORAGE_USER_KEY) || getCookie(LOCAL_STORAGE_USER_KEY);
   if (!userData) return null;
 
   try {
-    return JSON.parse(userData);
+    return typeof userData === 'string' ? JSON.parse(userData) : userData;
   } catch (error) {
     console.error('Error parsing user data:', error);
     return null;
@@ -63,7 +67,7 @@ function updateAccountCard(accountProfileImage, accountName, accountUsername) {
 
   // Update display name and username
   if (accountName) {
-    accountName.innerHTML = user.displayName || user.username || '';
+    accountName.innerHTML = user.displayName || user.username || user.name || '';
 
     // Add verified badges
     if (user.hasAdminPrivileges) {
@@ -362,6 +366,9 @@ function setupProfileDropdown(profileIconLink, profileDropdown) {
 window.handleLogout = function () {
   localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
   localStorage.removeItem(LOCAL_STORAGE_USER_KEY);
+  // Also clear cookies
+  document.cookie = LOCAL_STORAGE_TOKEN_KEY + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  document.cookie = LOCAL_STORAGE_USER_KEY + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
   if (window.MaterioHaptics) {
     window.MaterioHaptics.vibrate('success');
@@ -384,6 +391,7 @@ function init() {
   const accountUsername = document.getElementById('account-username');
   const profileDropdown = document.getElementById('profile-dropdown');
   const profileIconLink = document.querySelector('.profile-icon');
+  const accountLink = document.querySelector('.account-link');
 
   const isLoggedIn = isUserLoggedIn();
 
@@ -402,6 +410,138 @@ function init() {
     setupProfileDropdown(profileIconLink, profileDropdown);
   }
 
+  // Handle Handoff Code from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const handoffCode = urlParams.get('handoff');
+
+  if (handoffCode) {
+    // Validate Handoff Code
+    fetch('/api/v2/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        code: handoffCode,
+        action: 'exchange'
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.token) {
+          // Use the token to fetch full user profile to get Pro/Plus status and all perks
+          return fetch('/api/v2/profile', {
+            headers: {
+              'Authorization': `Bearer ${data.token}`
+            }
+          })
+            .then(userRes => {
+              if (!userRes.ok) throw new Error('Failed to fetch user profile');
+              return userRes.json();
+            })
+            .then(userData => {
+              // userData is likely { user: Object } based on profile.js
+              return { token: data.token, user: userData.user || userData };
+            });
+        }
+        throw new Error(data.error || 'Invalid handoff code');
+      })
+      .then(({ token, user }) => {
+        // Store session
+        localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, token);
+        localStorage.setItem(LOCAL_STORAGE_USER_KEY, JSON.stringify(user));
+
+        // Set cookies with a 7-day expiration (or match your auth duration)
+        const date = new Date();
+        date.setTime(date.getTime() + (7 * 24 * 60 * 60 * 1000));
+        const expires = "; expires=" + date.toUTCString();
+
+        document.cookie = LOCAL_STORAGE_TOKEN_KEY + "=" + (token || "") + expires + "; path=/";
+        document.cookie = LOCAL_STORAGE_USER_KEY + "=" + (JSON.stringify(user) || "") + expires + "; path=/";
+
+        // Update UI immediately
+        if (profileImage) {
+          profileImage.src = user.profilePicture || '/assets/img/default-avatar.svg';
+          profileImage.style.display = 'block';
+        }
+        if (settingsIcon) settingsIcon.style.display = 'none';
+
+        if (accountProfileImage) {
+          accountProfileImage.src = user.profilePicture || '/assets/img/default-avatar.svg';
+        }
+
+        if (accountName) {
+          accountName.innerHTML = user.displayName || user.username || user.name || '';
+          // Add verified badges manually since we have the data
+          if (user.hasAdminPrivileges) {
+            accountName.innerHTML += '<i class="fas fa-badge-check verified-badge admin" title="Admin"></i>';
+          } else if (user.isPlusUser) { // Note: 'isPlusUser' here maps to Pro tier in frontend usually, check mapping
+            // Map backend 'isPlusUser' (Pro) and 'isLiteUser' (Plus) to frontend expectations
+            // profile.js returns:
+            // isProUser: user.is_plus_user (Pro)
+            // isPlusUser: user.is_lite_user (Plus)
+            // Wait, the fetch returns what profile.js sends.
+            // profile.js sends: { user: { isProUser: ..., isPlusUser: ... } }
+            // So 'user' variable here has isProUser and isPlusUser.
+
+            if (user.isProUser) {
+              accountName.innerHTML += '<i class="fas fa-badge-check verified-badge pro" title="Pro User"></i>';
+            } else if (user.isPlusUser) {
+              accountName.innerHTML += '<i class="fas fa-badge-check verified-badge plus" title="Plus User"></i>';
+            }
+          }
+        }
+
+        if (accountUsername && user.username) {
+          accountUsername.textContent = '@' + user.username;
+        }
+
+        // Update account link to point to profile
+        if (accountLink) {
+          accountLink.href = '/account/profile';
+        }
+
+        // Show success notification or similar feedback if needed
+        console.log('Session restored via handoff');
+
+        // Clean URL
+        urlParams.delete('handoff');
+        const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '') + window.location.hash;
+        window.history.replaceState({}, document.title, newUrl);
+
+        // Re-run init logic to ensure all UI states are consistent
+        // We can just call init() again, but we need to avoid infinite loop with handoff code
+        // Since we removed handoff code from URL, valid to call init? 
+        // Better to just update the specific parts.
+
+        // Re-enable profile menu
+        if (profileMenuItem) {
+          profileMenuItem.classList.add('has-submenu');
+          if (profileItemText) profileItemText.textContent = 'Profile';
+          if (profileChevron) profileChevron.style.display = 'block';
+          if (profileSubmenu) profileSubmenu.style.display = 'flex';
+          profileMenuItem.onclick = null; // Remove redirect handler
+        }
+
+        // Re-enable profile menu
+        if (profileMenuItem) {
+          profileMenuItem.classList.add('has-submenu');
+          if (profileItemText) profileItemText.textContent = 'Profile';
+          if (profileChevron) profileChevron.style.display = 'block';
+          if (profileSubmenu) profileSubmenu.style.display = 'flex';
+          profileMenuItem.onclick = null; // Remove redirect handler
+        }
+
+      })
+      .catch(err => {
+        console.error('Handoff validation failed:', err);
+        // Clean URL anyway to avoid stale codes
+        urlParams.delete('handoff');
+        const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '') + window.location.hash;
+        window.history.replaceState({}, document.title, newUrl);
+      });
+  }
+
   // Handle Profile dynamic nested menu
   const profileMenuItem = document.getElementById('profile-menu-item');
   const profileItemText = document.getElementById('profile-item-text');
@@ -411,7 +551,7 @@ function init() {
   if (profileMenuItem) {
     if (isLoggedIn) {
       profileMenuItem.classList.add('has-submenu');
-      if (profileItemText) profileItemText.textContent = 'Account';
+      if (profileItemText) profileItemText.textContent = 'Profile';
       if (profileChevron) profileChevron.style.display = 'block';
       if (profileSubmenu) profileSubmenu.style.display = 'flex';
     } else {
@@ -420,10 +560,10 @@ function init() {
       if (profileChevron) profileChevron.style.display = 'none';
       if (profileSubmenu) profileSubmenu.style.display = 'none';
 
-      // If not logged in, clicking the parent should take to /account
+      // If not logged in, clicking the parent should take to /account with callback
       profileMenuItem.onclick = function () {
         if (!isUserLoggedIn()) {
-          window.location.href = '/account';
+          window.location.href = '/account?callback=../';
         }
       };
     }
@@ -433,12 +573,14 @@ function init() {
   if (accountProfileImage && accountName) {
     if (isLoggedIn) {
       updateAccountCard(accountProfileImage, accountName, accountUsername);
+      if (accountLink) accountLink.href = '/account/profile';
     } else {
       accountProfileImage.src = '/assets/img/default-avatar.svg';
       accountName.textContent = 'Log in to Materio Account';
       if (accountUsername) {
         accountUsername.textContent = '';
       }
+      if (accountLink) accountLink.href = '/account?callback=../';
     }
   }
 }
