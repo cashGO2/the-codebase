@@ -321,7 +321,8 @@ function setupProfileDropdown(profileIconLink, profileDropdown) {
     // If we clicked inside the submenu itself (on an actual item), don't toggle the submenu
     if (e.target.closest('.dropdown-submenu')) return;
 
-    // Prevent event from bubbling up and closing the menu
+    // Prevent event from bubbling up, closing the menu, or following links
+    e.preventDefault();
     e.stopPropagation();
 
     const isOpening = !parent.classList.contains('submenu-open');
@@ -401,7 +402,42 @@ function init() {
   const profileChevron = document.getElementById('profile-chevron');
   const profileSubmenu = document.getElementById('profile-submenu');
 
-  const isLoggedIn = isUserLoggedIn();
+  // Helper safe cookie reader to prevent external dependency crashes
+  const getCookieSafe = (name) => {
+    try {
+      const nameEQ = name + "=";
+      const ca = document.cookie.split(';');
+      for(let i=0;i < ca.length;i++) {
+        let c = ca[i].trim();
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+      }
+      return null;
+    } catch(e) { return null; }
+  };
+
+  // Robust login check using local helper
+  const isUserLoggedInSafe = () => {
+    return !!(localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY) ||
+      localStorage.getItem(LOCAL_STORAGE_USER_KEY) ||
+      getCookieSafe(LOCAL_STORAGE_TOKEN_KEY) ||
+      getCookieSafe(LOCAL_STORAGE_USER_KEY));
+  };
+
+  const isLoggedIn = isUserLoggedInSafe();
+  
+  // Handle Profile Menu Item Logic (Run early to ensure UI state)
+  if (profileMenuItem) {
+    if (isLoggedIn) {
+      // Add has-submenu class — CSS handles showing chevron and submenu
+      profileMenuItem.classList.add('has-submenu');
+      if (profileItemText) profileItemText.textContent = 'Profile';
+    } else {
+      // Remove has-submenu class — CSS hides chevron and submenu
+      profileMenuItem.classList.remove('has-submenu');
+      if (profileItemText) profileItemText.textContent = 'Account';
+      // Login redirect is handled by inline onclick in HTML as a no-JS fallback
+    }
+  }
 
   // Update navbar elements
   if (profileImage && settingsIcon) {
@@ -467,39 +503,53 @@ function init() {
         document.cookie = LOCAL_STORAGE_TOKEN_KEY + "=" + (token || "") + expires + "; path=/";
         document.cookie = LOCAL_STORAGE_USER_KEY + "=" + (JSON.stringify(user) || "") + expires + "; path=/";
 
-        // Update UI immediately
-        if (profileImage) {
-          profileImage.src = user.profilePicture || '/assets/img/default-avatar.svg';
-          profileImage.style.display = 'block';
-        }
-        if (settingsIcon) settingsIcon.style.display = 'none';
+        // Re-query DOM elements to avoid stale references
+        const _profileImage = document.getElementById('profile-image');
+        const _settingsIcon = document.getElementById('settings-icon');
+        const _accountProfileImage = document.getElementById('account-profile-image');
+        const _accountName = document.getElementById('account-name');
+        const _accountUsername = document.getElementById('account-username');
+        const _accountLink = document.querySelector('.account-link');
+        const _profileMenuItem = document.getElementById('profile-menu-item');
+        const _profileItemText = document.getElementById('profile-item-text');
 
-        if (accountProfileImage) {
-          accountProfileImage.src = user.profilePicture || '/assets/img/default-avatar.svg';
+        // Update navbar profile image
+        if (_profileImage) {
+          _profileImage.src = user.profilePicture || '/assets/img/default-avatar.svg';
+          _profileImage.style.display = 'block';
+        }
+        if (_settingsIcon) _settingsIcon.style.display = 'none';
+
+        // Update account card in settings tab
+        if (_accountProfileImage) {
+          _accountProfileImage.src = user.profilePicture || '/assets/img/default-avatar.svg';
         }
 
-        if (accountName) {
-          accountName.innerHTML = user.displayName || user.username || user.name || '';
-          // Add verified badges manually since we have the data
+        if (_accountName) {
+          _accountName.innerHTML = user.displayName || user.username || user.name || '';
           if (user.hasAdminPrivileges) {
-            accountName.innerHTML += '<i class="fas fa-badge-check verified-badge admin" title="Admin"></i>';
+            _accountName.innerHTML += '<i class="fas fa-badge-check verified-badge admin" title="Admin"></i>';
           } else if (user.isProUser || user.isPlusUser) {
-            accountName.innerHTML += '<i class="fas fa-badge-check verified-badge pro" title="Pro User"></i>';
+            _accountName.innerHTML += '<i class="fas fa-badge-check verified-badge pro" title="Pro User"></i>';
           } else if (user.isLiteUser) {
-            accountName.innerHTML += '<i class="fas fa-badge-check verified-badge plus" title="Plus User"></i>';
+            _accountName.innerHTML += '<i class="fas fa-badge-check verified-badge plus" title="Plus User"></i>';
           }
         }
 
-        if (accountUsername && user.username) {
-          accountUsername.textContent = '@' + user.username;
+        if (_accountUsername && user.username) {
+          _accountUsername.textContent = '@' + user.username;
         }
 
-        // Update account link to point to profile
-        if (accountLink) {
-          accountLink.href = '/account/profile';
+        if (_accountLink) {
+          _accountLink.href = '/account/profile';
         }
 
-        // Show success notification or similar feedback if needed
+        // Re-enable profile menu (CSS handles chevron/submenu visibility via has-submenu class)
+        if (_profileMenuItem) {
+          _profileMenuItem.classList.add('has-submenu');
+          if (_profileItemText) _profileItemText.textContent = 'Profile';
+        }
+
         console.log('Session restored via handoff');
 
         // Clean URL
@@ -507,13 +557,12 @@ function init() {
         const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '') + window.location.hash;
         window.history.replaceState({}, document.title, newUrl);
 
-        // Re-enable profile menu
-        if (profileMenuItem) {
-          profileMenuItem.classList.add('has-submenu');
-          if (profileItemText) profileItemText.textContent = 'Profile';
-          if (profileChevron) profileChevron.style.display = 'block';
-          if (profileSubmenu) profileSubmenu.style.display = 'flex';
-          profileMenuItem.onclick = null; // Remove redirect handler
+        // Dispatch auth event so other components can react to the login
+        window.dispatchEvent(new CustomEvent('auth:login', { detail: { user } }));
+
+        // Notify same-tab storage listeners (storage event only fires in other tabs)
+        if (typeof window.checkAndApplyAdFreeExperience === 'function') {
+          window.checkAndApplyAdFreeExperience();
         }
 
       })
@@ -526,26 +575,7 @@ function init() {
       });
   }
 
-  if (profileMenuItem) {
-    if (isLoggedIn) {
-      profileMenuItem.classList.add('has-submenu');
-      if (profileItemText) profileItemText.textContent = 'Profile';
-      if (profileChevron) profileChevron.style.display = 'block';
-      if (profileSubmenu) profileSubmenu.style.display = 'flex';
-    } else {
-      profileMenuItem.classList.remove('has-submenu');
-      if (profileItemText) profileItemText.textContent = 'Account';
-      if (profileChevron) profileChevron.style.display = 'none';
-      if (profileSubmenu) profileSubmenu.style.display = 'none';
 
-      // If not logged in, clicking the parent should take to /account with callback
-      profileMenuItem.onclick = function () {
-        if (!isUserLoggedIn()) {
-          window.location.href = '/account?callback=../';
-        }
-      };
-    }
-  }
 
   // Update account card in settings tab
   if (accountProfileImage && accountName) {

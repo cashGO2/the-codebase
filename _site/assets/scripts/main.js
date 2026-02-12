@@ -1773,7 +1773,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     .join('');
 
                 // NON-DESTRUCTIVE UPDATE:
-                // 1. Remove existing post links (but keep Attachments Card)
+                // 1. Remove existing post links (but keep Attachments Card and Exam Card)
                 const existingPostLinks = recommendedPosts.querySelectorAll('.insight-card-link');
                 existingPostLinks.forEach(el => el.remove());
 
@@ -1792,6 +1792,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     }
                 });
+            }
+
+            // Trigger exam card display logic for Smart Recommendations view
+            if (window.loadAndDisplayExamCard) {
+                window.loadAndDisplayExamCard();
             }
         } else {
             // No posts found for selected criteria - but show attachments if available
@@ -1818,6 +1823,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 // No posts and no attachments
                 if (recommendedPosts) recommendedPosts.style.setProperty('display', 'none', 'important');
                 if (noPostsMessage) noPostsMessage.style.display = 'block';
+            }
+
+            // Trigger exam card display logic for Smart Recommendations view
+            if (window.loadAndDisplayExamCard) {
+                window.loadAndDisplayExamCard();
             }
         }
     }
