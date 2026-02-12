@@ -374,6 +374,9 @@
                         onclick="createNewNotebook()">
                         <i class="far fa-edit"></i>
                     </button>
+                    <button id="sharePdfButton" title="Share PDF" aria-label="Share PDF">
+                        <i class="far fa-share-nodes"></i>
+                    </button>
                     <button id="downloadButton" title="Download for offline reading"
                         aria-label="Download for offline reading">
                         <i class="far fa-bookmark"></i>
@@ -648,6 +651,10 @@
             <div class="notebooks-tab-header">
                 <h1>My Notebooks</h1>
                 <div class="notebooks-tab-actions">
+                    <select id="notebookFilter" class="notebook-filter-select">
+                        <option value="all">All Notes</option>
+                        <option value="linked">Linked to PDFs</option>
+                    </select>
                     <button class="site-button" onclick="createNewNotebook()">
                         <i class="fas fa-plus"></i> New Note
                     </button>

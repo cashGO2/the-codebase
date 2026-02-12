@@ -278,6 +278,13 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+
+    // Initialize PDF Share
+    checkSharedPdf();
+    const shareBtn = document.getElementById('sharePdfButton');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', handlePdfShareClick);
+    }
 });
 
 
@@ -475,41 +482,184 @@ popup.addEventListener('animationend', (event) => {
     }
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-    const tabLinks = document.querySelectorAll('.tab-link');
-    const tabContents = document.querySelectorAll('.tab-content');
+/**
+ * Custom share modal for PDFs
+ * @param {string} actualUrl - The PDF URL to share
+ */
+function materioShareModal(actualUrl) {
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'materio-modal-overlay';
+    overlay.innerHTML = `
+        <div class="materio-modal" role="dialog" aria-modal="true" aria-labelledby="share-modal-title">
+            <h3 class="materio-modal-title" id="share-modal-title">Share PDF</h3>
+            <div class="share-input-container">
+                <input type="text" class="share-url-input" id="share-url-input" readonly value="Crafting your secure link..." aria-label="Share URL">
+                <button class="share-copy-btn" id="share-copy-btn" disabled aria-label="Copy link">
+                    <i class="fa-regular fa-loader fa-spin"></i>
+                </button>
+            </div>
+            <div class="materio-modal-buttons">
+                <button class="materio-modal-btn primary" id="share-modal-close" style="max-width: 100%; flex: 1;">Back</button>
+            </div>
+        </div>
+    `;
 
-    tabLinks.forEach(link => {
-        link.addEventListener('click', function (e) {
-            e.preventDefault();
+    document.body.appendChild(overlay);
 
-            // Remove active class and change icons back to regular for all tabs
-            tabLinks.forEach(tab => {
-                tab.classList.remove('active');
-                const icon = tab.querySelector('i');
-                if (icon && !tab.querySelector('img')) { // Skip profile icon with image
-                    icon.classList.remove('fas');
-                    icon.classList.add('far');
-                }
+    // Trigger animation
+    requestAnimationFrame(() => {
+        overlay.classList.add('visible');
+    });
+
+    const input = overlay.querySelector('#share-url-input');
+    const copyBtn = overlay.querySelector('#share-copy-btn');
+    const closeBtn = overlay.querySelector('#share-modal-close');
+
+    // Auto-select input on click
+    input.addEventListener('click', () => input.select());
+
+    // Close function
+    function closeModal() {
+        overlay.classList.remove('visible');
+        setTimeout(() => {
+            overlay.remove();
+        }, 250);
+    }
+
+    // Event listeners
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeModal();
+    });
+
+    // Handle Esc key
+    const escHandler = (e) => {
+        if (e.key === 'Escape') {
+            document.removeEventListener('keydown', escHandler);
+            closeModal();
+        }
+    };
+    document.addEventListener('keydown', escHandler);
+
+    // Initial focus
+    setTimeout(() => closeBtn.focus(), 100);
+
+    // PDF Share API Call
+    (async () => {
+        try {
+            const response = await fetch('/api/v2/features?action=pdf-share&subAction=create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ actualUrl })
             });
 
-            // Remove active class from all tab contents
-            tabContents.forEach(content => content.classList.remove('active'));
+            const data = await response.json();
+            if (data.maskId) {
+                const shareUrl = `${window.location.origin}${window.location.pathname}?share=${data.maskId}`;
 
-            // Add active class to clicked tab and change icon to solid
-            this.classList.add('active');
-            const icon = this.querySelector('i');
-            if (icon && !this.querySelector('img')) { // Skip profile icon with image
-                icon.classList.remove('far');
-                icon.classList.add('fas');
+                // Update UI
+                input.value = shareUrl;
+                copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
+                copyBtn.disabled = false;
+
+                // Copy logic
+                copyBtn.onclick = async () => {
+                    try {
+                        await navigator.clipboard.writeText(shareUrl);
+                        const originalContent = '<i class="fa-regular fa-copy"></i>';
+                        copyBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                        copyBtn.classList.add('success');
+
+                        setTimeout(() => {
+                            copyBtn.innerHTML = originalContent;
+                            copyBtn.classList.remove('success');
+                        }, 2000);
+                    } catch (err) {
+                        console.error('Copy failed:', err);
+                    }
+                };
+            } else {
+                throw new Error('No maskId');
+            }
+        } catch (e) {
+            console.error('Share error:', e);
+            input.value = 'Failed to generate link';
+            copyBtn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+            copyBtn.style.background = '#dc3545';
+        }
+    })();
+}
+
+// PDF Share Logic
+async function handlePdfShareClick() {
+    // 1. Try global variable from caching.js
+    let actualUrl = window.materioCurrentPdfUrl;
+
+    // 2. Fallback to Analytics variable
+    if (!actualUrl && window.pdfAnalytics) {
+        actualUrl = window.pdfAnalytics.currentPdf;
+    }
+
+    // 3. Last resort: Try to extract from iframe
+    if (!actualUrl) {
+        const iframe = document.getElementById('pdf-iframe') || document.querySelector('#popupContent iframe');
+        if (iframe && iframe.src) {
+            try {
+                const url = new URL(iframe.src, window.location.origin);
+                actualUrl = url.searchParams.get('file');
+            } catch (e) {
+                console.error('Failed to parse iframe src');
+            }
+        }
+    }
+
+    if (!actualUrl || actualUrl === 'unknown') {
+        if (window.materioAlert) {
+            window.materioAlert('Could not identify the PDF to share. Please try re-opening it.', { type: 'warning' });
+        }
+        return;
+    }
+
+    // Open share modal
+    materioShareModal(actualUrl);
+}
+
+// Function removed as its logic is now inside materioShareModal
+// async function generateAndShareLink(actualUrl) { ... }
+
+async function checkSharedPdf() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const maskId = urlParams.get('share');
+    if (!maskId) return;
+
+    try {
+        const response = await fetch(`/api/v2/features?action=pdf-share&subAction=resolve&maskId=${maskId}`);
+        const data = await response.json();
+
+        if (data.actualUrl) {
+            const popup = document.getElementById('popup');
+            if (typeof window.loadPdfWithCache === 'function') {
+                window.loadPdfWithCache(data.actualUrl);
+            } else {
+                document.getElementById('popupContent').innerHTML =
+                    `<iframe id="pdf-iframe" scrolling='no' allowfullscreen webkitallowfullscreen style="border:none; width:100%; height:calc(100% - 17px); border-radius:25px; margin-top:22px; corner-shape: squircle;" 
+                src="/oread/web/viewer.html?file=${encodeURIComponent(data.actualUrl)}"></iframe>`;
+            }
+            if (popup) {
+                popup.classList.remove('closing');
+                popup.style.display = 'block';
             }
 
-            // Show the corresponding tab content
-            const tab = this.getAttribute('data-tab');
-            document.getElementById(tab).classList.add('active');
-        });
-    });
-});
+            // Clean URL
+            const newUrl = window.location.origin + window.location.pathname;
+            window.history.replaceState({}, document.title, newUrl);
+        }
+    } catch (e) {
+        console.error('Failed to resolve shared PDF:', e);
+    }
+}
+
 
 document.addEventListener('DOMContentLoaded', function () {
     const libUrl = window.MaterioLocalCDN?.transformUrl('https://cdn-materioa.vercel.app/databases/beta/resource.lib.json') || 'https://cdn-materioa.vercel.app/databases/beta/resource.lib.json';
@@ -3129,4 +3279,49 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem('lastSeenChangelogDate', latestUpdate);
         changelogBtn.classList.remove('has-update');
     });
+});
+
+// ================================================
+// PDF LINK INTERCEPTOR
+// ================================================
+document.addEventListener('click', function (e) {
+    // Find closest anchor tag
+    const link = e.target.closest('a');
+    if (!link) return;
+
+    const href = link.href;
+    if (!href) return;
+
+    // Check if it's a PDF
+    // 1. Ends with .pdf (ignoring query params)
+    // 2. Has data-type="pdf"
+    let isPdf = false;
+
+    try {
+        const urlObj = new URL(href, window.location.origin);
+        // Check pathname for .pdf extension
+        if (urlObj.pathname.toLowerCase().endsWith('.pdf')) {
+            isPdf = true;
+        }
+    } catch (e) {
+        // invalid URL, ignore
+    }
+
+    if (!isPdf && link.dataset.type === 'pdf') {
+        isPdf = true;
+    }
+
+    if (isPdf) {
+        // Prevent default navigation (opening in new tab or navigating away)
+        e.preventDefault();
+
+        // Use the cache loader/popup viewer if available
+        if (typeof window.loadPdfWithCache === 'function') {
+            window.loadPdfWithCache(href);
+        } else {
+            // Fallback context: just let it open if our viewer isn't ready, 
+            // but we intercepted it so we must handle it.
+            window.open(href, '_blank');
+        }
+    }
 });

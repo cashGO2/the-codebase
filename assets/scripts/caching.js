@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Just validate URL is accessible, don't download
         try {
-            const response = await fetch(pdfUrl, { 
+            const response = await fetch(pdfUrl, {
                 method: 'HEAD',
                 mode: 'cors',
                 credentials: 'omit'  // Don't send cookies for cross-origin
@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!cachedInfo || !cachedInfo.validated) {
             try {
                 // Use cors mode and handle CORS errors gracefully
-                const headResponse = await fetch(pdfUrl, { 
+                const headResponse = await fetch(pdfUrl, {
                     method: 'HEAD',
                     mode: 'cors',
                     credentials: 'omit'  // Don't send cookies for cross-origin
@@ -282,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function () {
             } catch (error) {
                 // CORS errors or network issues - don't block, let PDF.js try to load
                 // PDF.js handles its own error display if the file doesn't exist
-                
+
                 // Only show error for definite offline state
                 if (!navigator.onLine) {
                     if (window.MaterioHaptics) {
@@ -438,7 +438,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // PDF.js document loaded event
-        if (event.data.type === 'pdfLoaded' || event.data.type === 'documentloaded') {
+        if (event.data.type === 'pdfLoaded' || event.data.type === 'documentloaded' || event.data.type === 'pagerendered' || event.data.type === 'blobDataResponse') {
+            // Remove loading indicator when document is ready or data is transferred
+            const loadingIndicator = document.getElementById('pdf-loading-indicator');
+            if (loadingIndicator) {
+                loadingIndicator.remove();
+            }
+
             // Only trigger completion if we were actively loading
             if (pdfLoadingActive) {
                 pdfLoadingActive = false;
@@ -453,6 +459,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // PDF.js error event
         if (event.data.type === 'pdfError') {
+            // Remove loading indicator on error too
+            const loadingIndicator = document.getElementById('pdf-loading-indicator');
+            if (loadingIndicator) loadingIndicator.remove();
+
             pdfLoadingActive = false;
             lastProgressPercent = 0;
 
@@ -655,6 +665,16 @@ document.addEventListener('DOMContentLoaded', function () {
     async function enhancedLoadPdfWithCache(pdfUrl) {
         // Update current PDF URL for bookmark functionality
         currentPdfUrl = pdfUrl;
+        window.materioCurrentPdfUrl = pdfUrl; // Expose globally for sharing
+
+        // Set current PDF info for notebook linking
+        const fileName = pdfUrl.split('/').pop().split('?')[0] || 'Document';
+        window.currentPdfInfo = {
+            id: btoa(pdfUrl).substring(0, 16), // Consistent ID from URL
+            url: pdfUrl,
+            name: decodeURIComponent(fileName).replace(/_/g, ' '),
+            path: pdfUrl.split('pdfs/')[1] ? 'Library / ' + pdfUrl.split('pdfs/')[1] : 'External'
+        };
 
         // Check if we're offline and if PDF is cached
         if (!navigator.onLine) {
@@ -680,6 +700,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Show popup and update bookmark icon
                 popup.classList.remove('closing');
                 popup.style.display = 'block';
+
+                // For cached PDFs, the content is already available.
+                // We'll remove the indicator once we've sent the blob data or after a short delay
+                // to ensure the viewer has at least initialized.
+                setTimeout(() => {
+                    const loadingIndicator = document.getElementById('pdf-loading-indicator');
+                    if (loadingIndicator) loadingIndicator.remove();
+                }, 500);
 
                 // Update bookmark icon after a short delay
                 setTimeout(updateBookmarkIcon, 500);

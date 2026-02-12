@@ -3822,11 +3822,11 @@ body.dark-mode .shimmer-button {
 }
 
 /* Hide chevron and submenu when parent is not a submenu trigger (CSS-driven, no JS dependency) */
-.dropdown-item:not(.has-submenu) > .submenu-chevron {
+.dropdown-item:not(.has-submenu)>.submenu-chevron {
     display: none !important;
 }
 
-.dropdown-item:not(.has-submenu) > .dropdown-submenu {
+.dropdown-item:not(.has-submenu)>.dropdown-submenu {
     display: none !important;
 }
 
@@ -5440,6 +5440,76 @@ body.dark-mode .materio-modal-btn.secondary {
 
 body.dark-mode .materio-modal-btn.secondary:hover {
     background: #4a4a4a;
+}
+
+/* Share Modal Styles */
+.share-input-container {
+    display: flex;
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 24px;
+    corner-shape: squircle;
+    padding: 2px 2px 2px 14px;
+    margin: 16px 0 20px;
+    align-items: center;
+    gap: 0;
+    transition: var(--transition-normal);
+}
+
+body.dark-mode .share-input-container {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.share-url-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--color-text-primary);
+    font-family: var(--font-primary);
+    font-size: 14px;
+    font-weight: 500;
+    outline: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.share-copy-btn {
+    background: transparent;
+    color: var(--color-primary-alt);
+    border: none;
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0 10px 10px 0;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Manrope', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body.dark-mode .share-copy-btn {
+    border-left-color: rgba(255, 255, 255, 0.1);
+}
+
+.share-copy-btn:hover {
+    background: rgba(255, 130, 0, 0.1);
+    color: var(--color-primary-dark);
+}
+
+.share-copy-btn:active {
+    background: rgba(255, 130, 0, 0.2);
+}
+
+.share-copy-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: var(--color-text-muted);
 }
 
 /* Mobile: Bottom sheet style with floating effect */

@@ -416,8 +416,17 @@ class NotebookManager {
 
         // Link PDF modal
         const linkPdfCloseBtn = document.getElementById('linkPdfCloseBtn');
+        const linkNewNoteBtn = document.getElementById('linkNewNoteBtn');
+
         if (linkPdfCloseBtn) {
             linkPdfCloseBtn.addEventListener('click', () => this.closeLinkPdfModal());
+        }
+
+        if (linkNewNoteBtn) {
+            linkNewNoteBtn.addEventListener('click', () => {
+                this.closeLinkPdfModal();
+                this.open(null, false, true); // Open new note (forceNew = true)
+            });
         }
 
         // Preview modal
@@ -537,8 +546,9 @@ class NotebookManager {
      * Open a notebook in the modal
      * @param {string|null} notebookId - ID of notebook to open, or null for new
      * @param {boolean} viewMode - If true, open in view mode (default for existing notebooks)
+     * @param {boolean} forceNew - If true, force creation of a new note regardless of existing links
      */
-    open(notebookId = null, viewMode = null) {
+    async open(notebookId = null, viewMode = null, forceNew = false) {
         const modal = document.getElementById('notebookModal');
         if (!modal) {
             console.error('[Notebook] Modal element not found');
@@ -557,10 +567,73 @@ class NotebookManager {
             }
             // Default to view mode for existing notebooks if not specified
             if (viewMode === null) viewMode = true;
+        } else if (!forceNew) {
+            // Check if there's already a note linked to the current PDF
+            const currentPdf = window.currentPdfInfo;
+            const existingLinkedNote = currentPdf ? this.notebooks.find(n =>
+                n.linkedPdf && (n.linkedPdf.id === currentPdf.id || n.linkedPdf.url === currentPdf.url)
+            ) : null;
+
+            if (existingLinkedNote) {
+                // Prompt user to open existing or create new
+                if (window.materioConfirm) {
+                    const result = await window.materioConfirm(`A note for "${currentPdf.name}" already exists. Would you like to open it?`, {
+                        title: 'Linked Note Found',
+                        confirmText: 'Open Existing',
+                        cancelText: 'Create New',
+                        type: 'info'
+                    });
+
+                    if (result) {
+                        this.currentNotebook = existingLinkedNote;
+                        viewMode = true;
+                    } else {
+                        // User chose to create new anyway
+                        this.currentNotebook = createDefaultNotebook();
+                        viewMode = false;
+                        this.currentNotebook.linkedPdf = {
+                            id: currentPdf.id,
+                            url: currentPdf.url,
+                            name: currentPdf.name,
+                            path: currentPdf.path
+                        };
+                        this.currentNotebook.title = `Notes on ${currentPdf.name} (New)`;
+                    }
+                } else {
+                    // Fallback to existing behavior if materioConfirm isn't available
+                    this.currentNotebook = existingLinkedNote;
+                    viewMode = true;
+                }
+            } else {
+                // Create new notebook object but DON'T add to list yet
+                this.currentNotebook = createDefaultNotebook();
+                viewMode = false; // Always edit mode for new notebooks
+
+                // Auto-link to current PDF if one is open
+                if (currentPdf) {
+                    this.currentNotebook.linkedPdf = {
+                        id: currentPdf.id,
+                        url: currentPdf.url,
+                        name: currentPdf.name,
+                        path: currentPdf.path
+                    };
+                    this.currentNotebook.title = `Notes on ${currentPdf.name}`;
+                }
+            }
         } else {
-            // Create new notebook object but DON'T add to list yet
+            // Force create new
             this.currentNotebook = createDefaultNotebook();
-            viewMode = false; // Always edit mode for new notebooks
+            viewMode = false;
+            const currentPdf = window.currentPdfInfo;
+            if (currentPdf) {
+                this.currentNotebook.linkedPdf = {
+                    id: currentPdf.id,
+                    url: currentPdf.url,
+                    name: currentPdf.name,
+                    path: currentPdf.path
+                };
+                this.currentNotebook.title = `Notes on ${currentPdf.name}`;
+            }
         }
 
         // Store current mode
@@ -1130,13 +1203,33 @@ class NotebookManager {
         const currentOption = document.getElementById('linkPdfCurrentOption');
 
         if (popup && popup.style.display !== 'none' && currentOption) {
-            // Get current PDF info from popup or global state
-            const pdfInfo = window.currentPdfInfo || null;
+            this.updateLinkPdfCurrentOption();
+        }
+    }
 
+    /**
+     * Update the "Link Current PDF" option in the modal.
+     */
+    updateLinkPdfCurrentOption() {
+        const currentOption = document.getElementById('linkPdfCurrentOption');
+        if (currentOption) {
+            const pdfInfo = window.currentPdfInfo;
             if (pdfInfo) {
                 currentOption.style.display = 'flex';
                 document.getElementById('linkPdfCurrentName').textContent = pdfInfo.name;
                 document.getElementById('linkPdfCurrentPath').textContent = pdfInfo.path;
+
+                // Add click handler to link the current PDF
+                currentOption.onclick = () => {
+                    this.linkPdf({
+                        id: pdfInfo.id || 'current',
+                        name: pdfInfo.name,
+                        subject: pdfInfo.subject || '',
+                        semester: pdfInfo.semester || ''
+                    });
+                };
+            } else {
+                currentOption.style.display = 'none';
             }
         }
     }

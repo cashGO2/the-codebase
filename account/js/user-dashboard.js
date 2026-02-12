@@ -110,34 +110,34 @@ function renderHistory(history) {
 
     // Show top 5 recent
     history.slice(0, 5).forEach(item => {
-        // Extract simpler name from URL if possible
-        let name = 'PDF Document';
-        try {
-            // Try to get filename from URL
-            const urlParts = item.url.split('/');
-            const filename = urlParts[urlParts.length - 1];
-            name = decodeURIComponent(filename.replace('.pdf', '')).split('?')[0]; // Remove query params and extension
+        // Prefer the captured title from the database
+        let name = item.title;
 
-            // If name is too cryptic (e.g. UUID), keep it generic or try to format
-            if (name.length > 30) name = name.substring(0, 27) + '...';
-        } catch (e) { }
+        if (!name || name === 'Unknown PDF' || name === 'PDF Document') {
+            try {
+                // Try to get filename from URL as fallback
+                const urlParts = item.url.split('/');
+                const filename = urlParts[urlParts.length - 1];
+                name = decodeURIComponent(filename.replace('.pdf', '')).split('?')[0];
+
+                if (name.length > 30) name = name.substring(0, 27) + '...';
+            } catch (e) {
+                name = 'PDF Document';
+            }
+        }
 
         const el = document.createElement('div');
         el.className = 'list-item';
+        // Note: No onclick or pointer cursor as per user request
+        el.style.cursor = 'default';
+
         el.innerHTML = `
             <i class="fas fa-file-pdf"></i>
             <div class="item-details">
-                <span class="item-title" title="${item.url}">${name}</span>
+                <span class="item-title" style="font-style: normal;" title="${item.url}">${name}</span>
                 <span class="item-meta">${formatTime(item.duration)} read • ${new Date(item.date).toLocaleDateString()}</span>
             </div>
         `;
-
-        // Make it clickable to reopen if possible (simplified for now)
-        el.onclick = () => {
-            // Optional: logic to reopen PDF
-            window.open(item.url, '_blank');
-        };
-        el.style.cursor = 'pointer';
 
         container.appendChild(el);
     });

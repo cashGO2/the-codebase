@@ -81,39 +81,44 @@ module.exports = async (req, res) => {
 
     // Check query param action
     const action = queryParams.action || req.query?.action;
+    const pathParam = queryParams.path || '';
 
-    console.log('Features API - pathname:', url.pathname, 'action:', action);
+    console.log('Features API - pathname:', url.pathname, 'action:', action, 'pathParam:', pathParam);
 
-    if (isInsights || action === 'insights') {
+    if (isInsights || action === 'insights' || pathParam.includes('insights')) {
       return await handleInsights(req, res);
     }
 
-    if (isSavePromo || action === 'save-promo') {
+    if (isSavePromo || action === 'save-promo' || pathParam.includes('save-promo')) {
       return await handleSavePromo(req, res);
     }
 
-    if (isGoogleDrive || action === 'google-drive') {
+    if (isGoogleDrive || action === 'google-drive' || pathParam.includes('google-drive')) {
       return await handleGoogleDrive(req, res, url);
     }
 
-    if (isSharelink || action === 'sharelink') {
+    if (isSharelink || action === 'sharelink' || pathParam.includes('sharelink')) {
       return await handleSharelink(req, res);
     }
 
-    if (isForms || action === 'forms') {
+    if (isForms || action === 'forms' || pathParam.includes('forms')) {
       return await handleForms(req, res, url);
     }
 
-    if (isContribute || action === 'contribute') {
+    if (isContribute || action === 'contribute' || pathParam.includes('contribute')) {
       return await handleContribute(req, res);
     }
 
-    if (isNotebooks || action === 'notebooks') {
+    if (isNotebooks || action === 'notebooks' || pathParam.includes('notebooks')) {
       return await handleNotebooks(req, res, url);
     }
 
-    if (isSubscription || action === 'subscription') {
+    if (isSubscription || action === 'subscription' || pathParam.includes('subscription')) {
       return await handleSubscription(req, res, url);
+    }
+
+    if (url.pathname.includes('/pdf-share') || pathParam.includes('pdf-share') || action === 'pdf-share') {
+      return await handlePdfShare(req, res, url);
     }
 
     return res.status(404).json({
@@ -121,7 +126,8 @@ module.exports = async (req, res) => {
       debug: {
         pathname: url.pathname,
         action: action,
-        availableFeatures: ['insights', 'save-promo', 'google-drive', 'sharelink', 'forms', 'contribute', 'notebooks']
+        pathParam: pathParam,
+        availableFeatures: ['insights', 'save-promo', 'google-drive', 'sharelink', 'forms', 'contribute', 'notebooks', 'pdf-share']
       }
     });
 
@@ -1361,3 +1367,76 @@ async function handleSubscription(req, res, url) {
 }
 
 
+// ==========================================
+// PDF Share Handler (MongoDB Masked URLs)
+// ==========================================
+async function handlePdfShare(req, res, url) {
+  const origin = req.headers.origin || req.headers.Origin;
+  const headers = corsHeaders(origin);
+  Object.entries(headers).forEach(([key, value]) => {
+    res.setHeader(key, value);
+  });
+
+  const method = req.method;
+  const queryParams = {};
+  url.searchParams.forEach((value, key) => queryParams[key] = value);
+
+  const subAction = queryParams.subAction || req.body?.subAction;
+
+  try {
+    const db = await getMongoDb();
+    const collection = db.collection('pdf_shares');
+
+    // CREATE / CREATE MASK
+    if (method === 'POST' && (subAction === 'create' || url.pathname.includes('/create'))) {
+      const { actualUrl } = req.body;
+      if (!actualUrl) {
+        return res.status(400).json({ error: 'actualUrl is required' });
+      }
+
+      // 1. Check if mapping already exists
+      const existing = await collection.findOne({ actualUrl });
+      if (existing) {
+        return res.status(200).json({ maskId: existing.maskId, isNew: false });
+      }
+
+      // 2. Generate unique maskId
+      let maskId;
+      let isUnique = false;
+      while (!isUnique) {
+        maskId = crypto.randomBytes(4).toString('hex'); // 8 char hex
+        const duplicate = await collection.findOne({ maskId });
+        if (!duplicate) isUnique = true;
+      }
+
+      // 3. Insert and return
+      await collection.insertOne({
+        maskId,
+        actualUrl,
+        createdAt: new Date()
+      });
+
+      return res.status(201).json({ maskId, isNew: true });
+    }
+
+    // RESOLVE / GET ACTUAL URL
+    if (method === 'GET' && (subAction === 'resolve' || url.pathname.includes('/resolve'))) {
+      const maskId = queryParams.maskId;
+      if (!maskId) {
+        return res.status(400).json({ error: 'maskId is required' });
+      }
+
+      const share = await collection.findOne({ maskId });
+      if (!share) {
+        return res.status(404).json({ error: 'Shared link not found or expired' });
+      }
+
+      return res.status(200).json({ actualUrl: share.actualUrl });
+    }
+
+    return res.status(400).json({ error: 'Invalid share action' });
+  } catch (error) {
+    console.error('PDF Share API error:', error);
+    return res.status(503).json({ error: 'Database error', details: error.message });
+  }
+}

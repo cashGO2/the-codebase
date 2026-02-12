@@ -28,10 +28,22 @@ function initNotebooksTab() {
 
     function renderNotebooks() {
         const notebooks = window.MaterioNotebook.getAll();
+        const filter = document.getElementById('notebookFilter')?.value || 'all';
 
-        if (notebooks.length === 0) {
+        let filteredNotebooks = notebooks;
+        if (filter === 'linked') {
+            filteredNotebooks = notebooks.filter(n => n.linkedPdf);
+        }
+
+        if (filteredNotebooks.length === 0) {
             grid.style.display = 'none';
-            if (emptyState) emptyState.style.display = 'block';
+            if (emptyState) {
+                emptyState.style.display = 'block';
+                const emptyText = emptyState.querySelector('p');
+                if (emptyText) {
+                    emptyText.textContent = filter === 'linked' ? 'No notes are linked to PDFs yet.' : 'Create your first note to get started.';
+                }
+            }
             return;
         }
 
@@ -40,7 +52,7 @@ function initNotebooksTab() {
         grid.innerHTML = '';
 
         // Sort by updated date desc
-        const sortedNotebooks = [...notebooks].sort((a, b) =>
+        const sortedNotebooks = [...filteredNotebooks].sort((a, b) =>
             new Date(b.updatedAt) - new Date(a.updatedAt)
         );
 
@@ -109,6 +121,14 @@ function initNotebooksTab() {
             renderNotebooks();
         }
     });
+
+    // Add filter change listener
+    const filter = document.getElementById('notebookFilter');
+    if (filter) {
+        filter.addEventListener('change', () => {
+            renderNotebooks();
+        });
+    }
 
     // Global sync function for the tab
     window.syncNotebooks = async () => {
