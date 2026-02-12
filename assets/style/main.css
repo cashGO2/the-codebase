@@ -3821,6 +3821,15 @@ body.dark-mode .shimmer-button {
     padding-right: 12px;
 }
 
+/* Hide chevron and submenu when parent is not a submenu trigger (CSS-driven, no JS dependency) */
+.dropdown-item:not(.has-submenu) > .submenu-chevron {
+    display: none !important;
+}
+
+.dropdown-item:not(.has-submenu) > .dropdown-submenu {
+    display: none !important;
+}
+
 .submenu-chevron {
     font-size: 10px !important;
     opacity: 0.5;
