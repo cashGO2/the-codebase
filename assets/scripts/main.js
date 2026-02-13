@@ -225,6 +225,10 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("home").classList.add("active");
     }
 
+    // Toggle scrollbar visibility for home tab on load
+    const currentTab = getCookie("activeTab") || "home";
+    document.querySelector('.content')?.classList.toggle('hide-scrollbar', currentTab === 'home');
+
     tabLinks.forEach(link => {
         link.addEventListener("click", function (e) {
             // Check if this is the profile icon with dropdown functionality
@@ -267,6 +271,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const tab = this.getAttribute("data-tab");
             document.getElementById(tab)?.classList.add("active");
             setCookie("activeTab", tab, 7);
+
+            // Toggle scrollbar visibility for home tab
+            document.querySelector('.content')?.classList.toggle('hide-scrollbar', tab === 'home');
 
             // Dispatch event for other scripts to respond to tab change
             document.dispatchEvent(new CustomEvent('tabOpened', { detail: { tab: tab } }));

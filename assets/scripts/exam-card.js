@@ -454,9 +454,10 @@ function showPreExamView(exams, data, isDefault = false) {
         }
         if (dateEl) dateEl.textContent = formatDate(targetExam.date);
 
-        // Show syllabus topics for this exam
+        // Show syllabus topics for this exam - stable if locked in
         if (syllabusEl && targetExam.syllabus && targetExam.syllabus.length > 0) {
-            const topics = getRandomItems(targetExam.syllabus, 2);
+            const isLocked = daysUntilStart <= 3;
+            const topics = isLocked ? targetExam.syllabus.slice(0, 2) : getRandomItems(targetExam.syllabus, 2);
             syllabusEl.innerHTML = `<span>Topics: ${topics.join(', ')}</span>`;
         }
     }
@@ -469,18 +470,29 @@ function showOngoingViews(exams, data, isDefault = false) {
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     // Find today's and tomorrow's exams
-    const todayExam = exams.find(e => {
+    let todayExam = exams.find(e => {
         const examDate = new Date(e.date);
         return examDate.toDateString() === today.toDateString();
     });
+
+    // If today's exam exists, check if it's already finished
+    if (todayExam && isExamFinished(todayExam, now)) {
+        todayExam = null; // Treat as already past
+    }
 
     const tomorrowExam = exams.find(e => {
         const examDate = new Date(e.date);
         return examDate.toDateString() === tomorrow.toDateString();
     });
 
-    // Get next upcoming exam
-    const upcomingExams = exams.filter(e => new Date(e.date) > now);
+    // Get next upcoming exam (strictly in the future from 'now')
+    const upcomingExams = exams.filter(e => {
+        const examDate = new Date(e.date);
+        if (examDate.toDateString() === today.toDateString()) {
+            return !isExamFinished(e, now);
+        }
+        return examDate > now;
+    });
     const nextExam = upcomingExams[0];
 
     // Show ongoing view first
@@ -518,8 +530,8 @@ function showOngoingView(todayExam, tomorrowExam, nextExam, allExams, isDefault 
             }
             if (dateEl) dateEl.textContent = formatDate(todayExam.date);
             if (syllabusEl && todayExam.syllabus) {
-                const randomTopics = getRandomItems(todayExam.syllabus, 2);
-                syllabusEl.innerHTML = `<span>Topics: ${randomTopics.join(', ')}</span>`;
+                const topics = todayExam.syllabus.slice(0, 2); // Stable for ongoing
+                syllabusEl.innerHTML = `<span>Topics: ${topics.join(', ')}</span>`;
             }
         } else if (tomorrowExam) {
             const headerSpan = ongoingView.querySelector('.exam-card-header span');
@@ -531,8 +543,8 @@ function showOngoingView(todayExam, tomorrowExam, nextExam, allExams, isDefault 
             }
             if (dateEl) dateEl.textContent = formatDate(tomorrowExam.date);
             if (syllabusEl && tomorrowExam.syllabus) {
-                const randomTopics = getRandomItems(tomorrowExam.syllabus, 2);
-                syllabusEl.innerHTML = `<span>Topics: ${randomTopics.join(', ')}</span>`;
+                const topics = tomorrowExam.syllabus.slice(0, 2); // Stable for ongoing
+                syllabusEl.innerHTML = `<span>Topics: ${topics.join(', ')}</span>`;
             }
         } else if (nextExam) {
             const headerSpan = ongoingView.querySelector('.exam-card-header span');
@@ -547,8 +559,8 @@ function showOngoingView(todayExam, tomorrowExam, nextExam, allExams, isDefault 
             }
             if (dateEl) dateEl.textContent = formatDate(nextExam.date);
             if (syllabusEl && nextExam.syllabus) {
-                const randomTopics = getRandomItems(nextExam.syllabus, 2);
-                syllabusEl.innerHTML = `<span>Topics: ${randomTopics.join(', ')}</span>`;
+                const topics = nextExam.syllabus.slice(0, 2); // Stable for ongoing
+                syllabusEl.innerHTML = `<span>Topics: ${topics.join(', ')}</span>`;
             }
         }
     }
@@ -568,11 +580,17 @@ function showTimelineView(exams, isDefault = false) {
     const now = getCurrentDate();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    // Filter to show ONLY today's and upcoming exams
+    // Filter to show ONLY today's (if not finished) and upcoming exams
     const relevantExams = exams.filter(e => {
         const examDate = new Date(e.date);
         const examDateOnly = new Date(examDate.getFullYear(), examDate.getMonth(), examDate.getDate());
-        return examDateOnly >= today;
+
+        if (examDateOnly.toDateString() === today.toDateString()) {
+            // It's today, only include if not finished
+            return !isExamFinished(e, now);
+        }
+
+        return examDateOnly > today;
     });
 
     // Generate mini timeline HTML for the next 2 exams
@@ -645,12 +663,22 @@ function setupViewRotation(exams, data) {
         const isCurrentlyOngoing = daysUntilStart <= 0;
 
         if (!isCurrentlyOngoing) {
-            // Countdown/Pre-exam: Rotate through upcoming exams in the countdown view
-            if (upcomingExams.length > 1) {
-                subIndex = (subIndex + 1) % upcomingExams.length;
-                const nextTarget = upcomingExams[subIndex];
-                updatePreExamWithSubject(nextTarget, false);
-                updatePreExamWithSubject(nextTarget, true);
+            // Countdown/Pre-exam phase
+            if (daysUntilStart > 3) {
+                // More than 3 days: Rotate through upcoming exams
+                if (upcomingExams.length > 1) {
+                    subIndex = (subIndex + 1) % upcomingExams.length;
+                    const nextTarget = upcomingExams[subIndex];
+                    updatePreExamWithSubject(nextTarget, false);
+                    updatePreExamWithSubject(nextTarget, true);
+                }
+            } else {
+                // 3 days or less: Lock in with the FIRST upcoming exam
+                const firstExam = upcomingExams[0];
+                if (firstExam) {
+                    updatePreExamWithSubject(firstExam, false);
+                    updatePreExamWithSubject(firstExam, true);
+                }
             }
             currentExamView = 0;
         } else {
@@ -669,7 +697,7 @@ function setupViewRotation(exams, data) {
                 showOngoingView(todayExam, tomorrowExam, nextUpcoming, exams, true);
                 currentExamView = 1;
             } else {
-                // Switch to timeline view
+                // Switch to timeline view (shows current and next)
                 showTimelineView(exams, false);
                 showTimelineView(exams, true);
                 currentExamView = 2;
@@ -715,7 +743,8 @@ function updatePreExamWithSubject(exam, isDefault = false) {
     if (dateEl) dateEl.textContent = formatDate(exam.date);
 
     if (syllabusEl && exam.syllabus) {
-        const topics = getRandomItems(exam.syllabus, 2);
+        const isLocked = daysUntilStart <= 3 || daysUntilStart <= 0;
+        const topics = isLocked ? exam.syllabus.slice(0, 2) : getRandomItems(exam.syllabus, 2);
         syllabusEl.innerHTML = `<span>Topics: ${topics.join(', ')}</span>`;
     }
 }
@@ -750,6 +779,37 @@ function getDaysUntil(dateStr) {
     const diffTime = targetDay.getTime() - today.getTime();
     const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
+}
+
+// Helper to check if an exam has finished based on its start time and duration
+function isExamFinished(exam, now) {
+    if (!exam || !exam.time) return false;
+
+    try {
+        // Parse exam start time
+        const [hours, minutes] = exam.time.split(':').map(Number);
+        const examStartDate = new Date(exam.date);
+        examStartDate.setHours(hours, minutes, 0, 0);
+
+        // Parse duration (e.g., "1.5 hours", "60 mins")
+        let durationMinutes = 90; // Default 1.5 hours
+        if (exam.duration) {
+            const durationStr = String(exam.duration).toLowerCase();
+            if (durationStr.includes('hour')) {
+                const hoursMatch = durationStr.match(/(\d+\.?\d*)\s*hour/);
+                if (hoursMatch) durationMinutes = parseFloat(hoursMatch[1]) * 60;
+            } else if (durationStr.includes('min')) {
+                const minsMatch = durationStr.match(/(\d+)\s*min/);
+                if (minsMatch) durationMinutes = parseInt(minsMatch[1]);
+            }
+        }
+
+        const examEndDate = new Date(examStartDate.getTime() + durationMinutes * 60000);
+        return now > examEndDate;
+    } catch (e) {
+        console.error('[ExamCard] Error calculating if exam is finished:', e);
+        return false;
+    }
 }
 
 // Open exam modal

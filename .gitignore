@@ -44,3 +44,5 @@ _site/
 _drafts/*
 .private
 blog-svelte/*
+community-api/*
+pdfs/*
