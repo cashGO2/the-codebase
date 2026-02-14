@@ -515,9 +515,9 @@ class NotebookManager {
      */
     exposeGlobalAPI() {
         window.MaterioNotebook = {
-            open: (notebookId, viewMode) => this.open(notebookId, viewMode),
+            open: (notebookId, viewMode, forceNew, isGeneral) => this.open(notebookId, viewMode, forceNew, isGeneral),
             close: () => this.close(),
-            create: () => this.create(),
+            create: (isGeneral) => this.create(isGeneral),
             getAll: () => this.notebooks,
             delete: (id) => this.delete(id),
             deleteCurrent: () => this.deleteCurrent(),
@@ -526,9 +526,9 @@ class NotebookManager {
         };
 
         // Global function for opening notebook modal
-        window.openNotebookModal = (notebookId, viewMode) => this.open(notebookId, viewMode);
+        window.openNotebookModal = (notebookId, viewMode, forceNew, isGeneral) => this.open(notebookId, viewMode, forceNew, isGeneral);
         window.closeNotebookModal = () => this.close();
-        window.createNewNotebook = () => this.create();
+        window.createNewNotebook = (isGeneral) => this.create(isGeneral);
     }
 
     // ================================================
@@ -537,9 +537,10 @@ class NotebookManager {
 
     /**
      * Create a new notebook
+     * @param {boolean} isGeneral - If true, create a general note (not linked to PDF)
      */
-    create() {
-        this.open(null);
+    create(isGeneral = false) {
+        this.open(null, false, false, isGeneral);
     }
 
     /**
@@ -547,8 +548,9 @@ class NotebookManager {
      * @param {string|null} notebookId - ID of notebook to open, or null for new
      * @param {boolean} viewMode - If true, open in view mode (default for existing notebooks)
      * @param {boolean} forceNew - If true, force creation of a new note regardless of existing links
+     * @param {boolean} isGeneral - If true, create a general note (skip PDF linking)
      */
-    async open(notebookId = null, viewMode = null, forceNew = false) {
+    async open(notebookId = null, viewMode = null, forceNew = false, isGeneral = false) {
         const modal = document.getElementById('notebookModal');
         if (!modal) {
             console.error('[Notebook] Modal element not found');
@@ -567,9 +569,17 @@ class NotebookManager {
             }
             // Default to view mode for existing notebooks if not specified
             if (viewMode === null) viewMode = true;
+        } else if (isGeneral) {
+            // Force general note
+            this.currentNotebook = createDefaultNotebook();
+            viewMode = false;
         } else if (!forceNew) {
             // Check if there's already a note linked to the current PDF
-            const currentPdf = window.currentPdfInfo;
+            // Only auto-link if the PDF viewer is actually open
+            const popup = document.getElementById('popup');
+            const isPopupVisible = popup && popup.style.display !== 'none' && !popup.classList.contains('closing');
+
+            const currentPdf = isPopupVisible ? window.currentPdfInfo : null;
             const existingLinkedNote = currentPdf ? this.notebooks.find(n =>
                 n.linkedPdf && (n.linkedPdf.id === currentPdf.id || n.linkedPdf.url === currentPdf.url)
             ) : null;
@@ -609,7 +619,7 @@ class NotebookManager {
                 this.currentNotebook = createDefaultNotebook();
                 viewMode = false; // Always edit mode for new notebooks
 
-                // Auto-link to current PDF if one is open
+                // Auto-link to current PDF if one is open and visible
                 if (currentPdf) {
                     this.currentNotebook.linkedPdf = {
                         id: currentPdf.id,
@@ -624,7 +634,12 @@ class NotebookManager {
             // Force create new
             this.currentNotebook = createDefaultNotebook();
             viewMode = false;
-            const currentPdf = window.currentPdfInfo;
+
+            // Only auto-link if the PDF viewer is actually open
+            const popup = document.getElementById('popup');
+            const isPopupVisible = popup && popup.style.display !== 'none' && !popup.classList.contains('closing');
+            const currentPdf = isPopupVisible ? window.currentPdfInfo : null;
+
             if (currentPdf) {
                 this.currentNotebook.linkedPdf = {
                     id: currentPdf.id,

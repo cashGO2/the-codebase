@@ -8,7 +8,7 @@ permalink: /pages/notebooks
     <div class="notebooks-header">
         <h1>My Notebooks</h1>
         <div class="notebooks-actions">
-            <button class="site-button" onclick="createNewNotebook()">
+            <button class="site-button" onclick="createNewNotebook(true)">
                 <i class="fas fa-plus"></i> New Note
             </button>
             <button class="site-button secondary" onclick="syncNotebooks()" id="syncBtn" style="display: none;">
@@ -32,7 +32,7 @@ permalink: /pages/notebooks
         </div>
         <h3>No notebooks yet</h3>
         <p>Create your first note to get started.</p>
-        <button class="site-button" onclick="createNewNotebook()">Create Note</button>
+        <button class="site-button" onclick="createNewNotebook(true)">Create Note</button>
     </div>
 </div>
 

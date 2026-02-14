@@ -78,7 +78,7 @@
                         <span>Notebooks</span>
                         <i class="fa-regular fa-chevron-right submenu-chevron" aria-hidden="true"></i>
                         <div class="dropdown-submenu" role="menu" aria-hidden="true">
-                            <a href="#" class="dropdown-item" onclick="createNewNotebook(); return false;"
+                            <a href="#" class="dropdown-item" onclick="createNewNotebook(true); return false;"
                                 role="menuitem" tabindex="-1">
                                 <i class="fa-regular fa-plus" aria-hidden="true"></i>
                                 <span>Create</span>
@@ -468,7 +468,23 @@
                             <h2><span class="promo-title" id="examModalTitle">Mid semester Exams are on going !</span>
                             </h2>
                             <div class="exam-schedule-section">
-                                <h3 class="exam-schedule-heading">Exam schedule</h3>
+                                <div class="exam-schedule-header">
+                                    <h3 class="exam-schedule-heading">Exam schedule</h3>
+                                    <!-- Seating Lookup -->
+                                    <div class="seating-lookup" id="seatingLookup">
+                                        <div class="seating-input-row" id="seatingInputRow">
+                                            <input type="text" id="enrollmentInput" class="enrollment-input"
+                                                placeholder="Enrollment no." inputmode="numeric" maxlength="16">
+                                            <button id="seatingSearchBtn" class="seating-search-btn"
+                                                onclick="lookupSeating()"><i class="fas fa-arrow-right"></i></button>
+                                        </div>
+                                        <div class="seating-result" id="seatingResult" style="display: none;">
+                                            <span class="seating-result-text" id="seatingResultText"></span>
+                                            <button class="seating-clear-btn" onclick="clearSeatingLookup()"
+                                                title="Clear"><i class="fas fa-times"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="exam-timeline" id="examModalTimeline">
                                     <!-- Timeline items will be populated by JS -->
                                 </div>
@@ -655,7 +671,7 @@
                         <option value="all">All Notes</option>
                         <option value="linked">Linked to PDFs</option>
                     </select>
-                    <button class="site-button" onclick="createNewNotebook()">
+                    <button class="site-button" onclick="createNewNotebook(true)">
                         <i class="fas fa-plus"></i> New Note
                     </button>
                     <button class="site-button secondary" onclick="syncNotebooks()" id="syncBtnInTab"
@@ -680,7 +696,7 @@
                 </div>
                 <h3>No notebooks yet</h3>
                 <p>Create your first note to get started.</p>
-                <button class="site-button" onclick="createNewNotebook()">Create Note</button>
+                <button class="site-button" onclick="createNewNotebook(true)">Create Note</button>
             </div>
         </div>
 

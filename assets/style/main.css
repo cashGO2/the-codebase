@@ -6710,10 +6710,185 @@ body.dark-mode .attachments-empty {
 }
 
 .exam-schedule-heading {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
     color: #555;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
+}
+
+/* Seating Lookup - Pill Style */
+.exam-schedule-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.exam-schedule-header .exam-schedule-heading {
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+.seating-lookup {
+    flex: 1;
+    min-width: 0;
+}
+
+.seating-input-row {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 50px;
+    padding: 2px 2px 2px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    transition: border-color 0.2s ease;
+}
+
+.seating-input-row:focus-within {
+    border-color: rgba(255, 130, 0, 0.3);
+}
+
+.enrollment-input {
+    flex: 1;
+    padding: 2px 0;
+    border: none;
+    font-size: 11px;
+    font-family: inherit;
+    background: transparent;
+    color: #333;
+    outline: none;
+    min-width: 0;
+}
+
+.enrollment-input::placeholder {
+    color: #aaa;
+    font-size: 10px;
+}
+
+.seating-search-btn {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.8);
+    color: #555;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    transition: all 0.2s ease;
+    margin-left: 6px;
+}
+
+.seating-search-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.seating-result {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 50px;
+    padding: 2px 2px 2px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.seating-result-text {
+    flex: 1;
+    font-size: 11px;
+    color: #444;
+    font-weight: 500;
+    padding: 2px 0;
+}
+
+.seating-result-text i {
+    color: #ff8200;
+    margin-right: 5px;
+    font-size: 12px;
+}
+
+.seating-result.not-found {
+    border-color: rgba(220, 53, 69, 0.15);
+}
+
+.seating-result.not-found .seating-result-text {
+    color: #888;
+}
+
+.seating-clear-btn {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.8);
+    color: #888;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    transition: all 0.2s ease;
+    margin-left: 6px;
+}
+
+.seating-clear-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    color: #555;
+}
+
+/* Dark mode */
+body.dark-mode .seating-input-row {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .seating-input-row:focus-within {
+    border-color: rgba(255, 130, 0, 0.3);
+}
+
+body.dark-mode .enrollment-input {
+    color: #e0e0e0;
+}
+
+body.dark-mode .enrollment-input::placeholder {
+    color: #666;
+}
+
+body.dark-mode .seating-search-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #bbb;
+}
+
+body.dark-mode .seating-search-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-mode .seating-result {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .seating-result-text {
+    color: #ccc;
+}
+
+body.dark-mode .seating-result.not-found {
+    border-color: rgba(220, 53, 69, 0.15);
+}
+
+body.dark-mode .seating-result.not-found .seating-result-text {
+    color: #777;
+}
+
+body.dark-mode .seating-clear-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #999;
 }
 
 /* Full timeline in modal */

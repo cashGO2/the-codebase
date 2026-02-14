@@ -15,20 +15,21 @@ function getCurrentDate() {
     return _fakeDate ? new Date(_fakeDate) : new Date();
 }
 
-// Debug functions - use these in browser console to test different dates
-// Example: setFakeDate('2026-02-16') to simulate exam day
-// Example: setFakeDate('2026-02-17') to simulate day after first exam
-// Example: clearFakeDate() to reset to real date
-window.setFakeDate = function (dateString) {
-    _fakeDate = dateString;
-    console.log(`[ExamCard Debug] Fake date set to: ${dateString}`);
+// Debug functions - use these in browser console to test different dates and times
+// Example: setFakeDate('2026-02-16') to simulate exam day start
+// Example: setFakeDate('2026-02-16T11:20:00') to simulate 11:20 AM on exam day
+// Example: clearFakeDate() to reset to real date/time
+window.setFakeDate = function (dateTimeString) {
+    _fakeDate = dateTimeString;
+    const dateObj = new Date(dateTimeString);
+    console.log(`[ExamCard Debug] Fake date/time set to: ${dateObj.toLocaleString()}`);
     console.log(`[ExamCard Debug] Refreshing exam card...`);
     // Refresh the exam card with new date
     if (examData && currentSemesterData) {
         displayExamCard(examData, currentSemesterData);
         generateExamTimeline();
     }
-    return `Fake date set to ${dateString}. Main card and modal refreshed.`;
+    return `Fake date/time set to ${dateObj.toLocaleString()}. Card and modal refreshed.`;
 };
 
 window.clearFakeDate = function () {
@@ -845,6 +846,11 @@ function openExamModal() {
     // Generate timeline
     generateExamTimeline();
 
+    // Auto-load saved enrollment for seating lookup
+    if (typeof initSeatingLookup === 'function') {
+        initSeatingLookup();
+    }
+
     // Show modal
     modal.style.display = 'flex';
     modal.classList.add('show');
@@ -1134,3 +1140,122 @@ window.openExamModal = openExamModal;
 window.closeExamModal = closeExamModal;
 window.showExamSyllabus = showExamSyllabus;
 window.showExamTimeline = showExamTimeline;
+
+// ================================================
+// SEATING LOOKUP
+// ================================================
+let seatingData = null; // Cached CSV data
+const SEATING_LS_KEY = 'usr_enr';
+
+async function fetchSeatingData() {
+    if (seatingData) return seatingData;
+    try {
+        const response = await fetch('/assets/data/seating_data.csv');
+        if (!response.ok) throw new Error('CSV not found');
+        const text = await response.text();
+        const lines = text.trim().split(/\r?\n/);
+        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+        seatingData = [];
+        for (let i = 1; i < lines.length; i++) {
+            const values = lines[i].split(',');
+            if (values.length >= headers.length) {
+                const row = {};
+                headers.forEach((h, idx) => {
+                    row[h] = (values[idx] || '').trim();
+                });
+                seatingData.push(row);
+            }
+        }
+        return seatingData;
+    } catch (e) {
+        console.error('[SeatingLookup] Error fetching CSV:', e);
+        return null;
+    }
+}
+
+async function lookupSeating() {
+    const input = document.getElementById('enrollmentInput');
+    const inputRow = document.getElementById('seatingInputRow');
+    const resultDiv = document.getElementById('seatingResult');
+    const resultText = document.getElementById('seatingResultText');
+    if (!input || !resultDiv || !resultText) return;
+
+    const enrollment = input.value.trim();
+    if (!enrollment) {
+        input.focus();
+        return;
+    }
+
+    // Show loading state
+    const searchBtn = document.getElementById('seatingSearchBtn');
+    if (searchBtn) searchBtn.innerHTML = '<i class="fa-regular fa-loader fa-spin"></i>';
+
+    const data = await fetchSeatingData();
+
+    // Restore button
+    if (searchBtn) searchBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
+
+    if (!data) {
+        resultText.textContent = 'Could not load seating data';
+        resultDiv.className = 'seating-result not-found';
+        resultDiv.style.display = 'flex';
+        inputRow.style.display = 'none';
+        return;
+    }
+
+    // Search for enrollment number
+    const match = data.find(row => row.enrollment_no === enrollment);
+
+    if (match) {
+        const room = match.room_no || '—';
+        const bench = match.bench_no || '—';
+        resultText.innerHTML = `<i class="fa-regular fa-location-dot"></i> Room ${room} · Bench ${bench}`;
+        resultDiv.className = 'seating-result';
+        // Save to localStorage
+        try { localStorage.setItem(SEATING_LS_KEY, enrollment); } catch (e) { }
+    } else {
+        resultText.innerHTML = 'Enrollment not found';
+        resultDiv.className = 'seating-result not-found';
+    }
+
+    resultDiv.style.display = 'flex';
+    inputRow.style.display = 'none';
+}
+
+function clearSeatingLookup() {
+    const input = document.getElementById('enrollmentInput');
+    const inputRow = document.getElementById('seatingInputRow');
+    const resultDiv = document.getElementById('seatingResult');
+    if (input) input.value = '';
+    if (inputRow) inputRow.style.display = 'flex';
+    if (resultDiv) resultDiv.style.display = 'none';
+    // Remove from localStorage
+    try { localStorage.removeItem(SEATING_LS_KEY); } catch (e) { }
+}
+
+// Auto-load saved enrollment when modal opens
+function initSeatingLookup() {
+    try {
+        const saved = localStorage.getItem(SEATING_LS_KEY);
+        if (saved) {
+            const input = document.getElementById('enrollmentInput');
+            if (input) {
+                input.value = saved;
+                lookupSeating();
+            }
+        }
+    } catch (e) { }
+}
+
+// Enter key support for enrollment input
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && document.activeElement && document.activeElement.id === 'enrollmentInput') {
+        e.preventDefault();
+        lookupSeating();
+    }
+});
+
+window.lookupSeating = lookupSeating;
+window.clearSeatingLookup = clearSeatingLookup;
+window.initSeatingLookup = initSeatingLookup;
+
