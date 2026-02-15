@@ -331,17 +331,22 @@ function displayExamCard(data, semesterData) {
     // Show the exam cards with !important to override any CSS issues
     examCards.forEach(card => {
         card.style.setProperty('display', 'flex', 'important');
+    });
 
-        // Ensure the parent scroll container is visible too
-        // (updateSmartRecommendations may have hidden #recommendedPosts)
-        const parentScroll = card.closest('.insight-cards-scroll');
-        if (parentScroll) {
-            parentScroll.style.removeProperty('display');
-            if (getComputedStyle(parentScroll).display === 'none') {
-                parentScroll.style.display = 'flex';
+    // If smart recommendations are active (defaultPosts hidden), ensure
+    // #recommendedPosts is visible so #examCard can render inside it.
+    // Don't do this for #examCardDefault — its parent is managed by the default view.
+    const defaultPosts = document.getElementById('defaultPosts');
+    const isSmartRecommendationsActive = defaultPosts && getComputedStyle(defaultPosts).display === 'none';
+    if (isSmartRecommendationsActive) {
+        const recommendedPosts = document.getElementById('recommendedPosts');
+        if (recommendedPosts) {
+            recommendedPosts.style.removeProperty('display');
+            if (getComputedStyle(recommendedPosts).display === 'none') {
+                recommendedPosts.style.display = 'flex';
             }
         }
-    });
+    }
 
     if (isPreExam) {
         // Pre-exam phase: Only show the info/countdown view
