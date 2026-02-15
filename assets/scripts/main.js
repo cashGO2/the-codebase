@@ -1977,9 +1977,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 if (noPostsMessage) noPostsMessage.style.display = 'none';
             } else {
-                // No posts and no attachments
-                if (recommendedPosts) recommendedPosts.style.setProperty('display', 'none', 'important');
-                if (noPostsMessage) noPostsMessage.style.display = 'block';
+                // No posts and no attachments - but exam card might still need to show
+                // Keep recommendedPosts visible so exam card can render inside it.
+                // The async loadAndDisplayExamCard / displayExamCard in exam-card.js
+                // will ensure #recommendedPosts stays visible if the exam card is needed.
+                if (recommendedPosts) {
+                    recommendedPosts.style.removeProperty('display');
+                    if (getComputedStyle(recommendedPosts).display === 'none') {
+                        recommendedPosts.style.display = 'flex';
+                    }
+                    // Clear any leftover post links
+                    const existingPostLinks = recommendedPosts.querySelectorAll('.insight-card-link');
+                    existingPostLinks.forEach(el => el.remove());
+                }
+                // Hide "no posts" message initially (exam card may still appear)
+                if (noPostsMessage) noPostsMessage.style.display = 'none';
             }
 
             // Trigger exam card display logic for Smart Recommendations view

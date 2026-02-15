@@ -231,6 +231,13 @@ body {
     flex-direction: column;
     height: 100vh;
     -webkit-tap-highlight-color: transparent;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    display: none;
 }
 
 header {
@@ -267,16 +274,12 @@ header {
     flex: 1;
     padding: var(--spacing-xl);
     overflow-y: auto;
-}
-
-/* Hide scrollbar on content while on home tab */
-.content.hide-scrollbar::-webkit-scrollbar {
-    display: none;
-}
-
-.content.hide-scrollbar {
     scrollbar-width: none;
     -ms-overflow-style: none;
+}
+
+.content::-webkit-scrollbar {
+    display: none;
 }
 
 

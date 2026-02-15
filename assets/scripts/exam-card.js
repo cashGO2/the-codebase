@@ -279,6 +279,17 @@ function hideExamCards() {
     if (smartRecExam) {
         smartRecExam.style.display = 'none';
     }
+
+    // If #recommendedPosts has no other visible content, hide it to avoid empty area
+    const recommendedPosts = document.getElementById('recommendedPosts');
+    if (recommendedPosts) {
+        const hasVisiblePosts = recommendedPosts.querySelectorAll('.insight-card-link').length > 0;
+        const attachmentsCard = document.getElementById('attachmentsCard');
+        const hasVisibleAttachments = attachmentsCard && attachmentsCard.style.display !== 'none';
+        if (!hasVisiblePosts && !hasVisibleAttachments) {
+            recommendedPosts.style.setProperty('display', 'none', 'important');
+        }
+    }
 }
 
 function displayExamCard(data, semesterData) {
@@ -321,6 +332,15 @@ function displayExamCard(data, semesterData) {
     examCards.forEach(card => {
         card.style.setProperty('display', 'flex', 'important');
 
+        // Ensure the parent scroll container is visible too
+        // (updateSmartRecommendations may have hidden #recommendedPosts)
+        const parentScroll = card.closest('.insight-cards-scroll');
+        if (parentScroll) {
+            parentScroll.style.removeProperty('display');
+            if (getComputedStyle(parentScroll).display === 'none') {
+                parentScroll.style.display = 'flex';
+            }
+        }
     });
 
     if (isPreExam) {
