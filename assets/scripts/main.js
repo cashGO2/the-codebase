@@ -494,18 +494,21 @@ popup.addEventListener('animationend', (event) => {
  * @param {string} actualUrl - The PDF URL to share
  */
 function materioShareModal(actualUrl) {
+    const llmToggleSaved = localStorage.getItem('materio_llm_share') === 'true';
+
     // Create overlay
     const overlay = document.createElement('div');
     overlay.className = 'materio-modal-overlay';
     overlay.innerHTML = `
         <div class="materio-modal" role="dialog" aria-modal="true" aria-labelledby="share-modal-title">
             <h3 class="materio-modal-title" id="share-modal-title">Share PDF</h3>
-            <div class="share-input-container">
+            <div class="share-input-container" id="share-input-container">
                 <input type="text" class="share-url-input" id="share-url-input" readonly value="Crafting your secure link..." aria-label="Share URL">
                 <button class="share-copy-btn" id="share-copy-btn" disabled aria-label="Copy link">
                     <i class="fa-regular fa-loader fa-spin"></i>
                 </button>
             </div>
+           
             <div class="materio-modal-buttons">
                 <button class="materio-modal-btn primary" id="share-modal-close" style="max-width: 100%; flex: 1;">Back</button>
             </div>
@@ -520,8 +523,11 @@ function materioShareModal(actualUrl) {
     });
 
     const input = overlay.querySelector('#share-url-input');
+    const inputContainer = overlay.querySelector('#share-input-container');
     const copyBtn = overlay.querySelector('#share-copy-btn');
     const closeBtn = overlay.querySelector('#share-modal-close');
+    const llmToggle = overlay.querySelector('#llm-share-toggle');
+    const llmExpiryInfo = overlay.querySelector('#llm-expiry-info');
 
     // Auto-select input on click
     input.addEventListener('click', () => input.select());
@@ -552,7 +558,109 @@ function materioShareModal(actualUrl) {
     // Initial focus
     setTimeout(() => closeBtn.focus(), 100);
 
-    // PDF Share API Call
+    // State
+    let normalShareUrl = null;
+    let llmShareUrl = null;
+    let llmLinkGenerated = false;
+
+    // Helper to set the copy button behavior
+    function setupCopyBtn(url) {
+        copyBtn.onclick = async () => {
+            try {
+                await navigator.clipboard.writeText(url);
+                copyBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                copyBtn.classList.add('success');
+                setTimeout(() => {
+                    copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
+                    copyBtn.classList.remove('success');
+                }, 2000);
+            } catch (err) {
+                console.error('Copy failed:', err);
+            }
+        };
+    }
+
+    // Show the appropriate URL based on toggle state
+    function showUrl() {
+        const isLlm = llmToggle.checked;
+        if (isLlm && llmShareUrl) {
+            input.value = llmShareUrl;
+            inputContainer.classList.add('llm-active');
+            llmExpiryInfo.classList.add('visible');
+            copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
+            copyBtn.disabled = false;
+            setupCopyBtn(llmShareUrl);
+        } else if (isLlm && !llmShareUrl) {
+            input.value = 'Generating LLM link...';
+            inputContainer.classList.add('llm-active');
+            llmExpiryInfo.classList.add('visible');
+            copyBtn.innerHTML = '<i class="fa-regular fa-loader fa-spin"></i>';
+            copyBtn.disabled = true;
+        } else if (normalShareUrl) {
+            input.value = normalShareUrl;
+            inputContainer.classList.remove('llm-active');
+            llmExpiryInfo.classList.remove('visible');
+            copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
+            copyBtn.disabled = false;
+            setupCopyBtn(normalShareUrl);
+        }
+    }
+
+    // Generate LLM link
+    async function generateLlmLink() {
+        if (llmLinkGenerated) return;
+        llmLinkGenerated = true;
+
+        try {
+            const response = await fetch('/api/v2/features?action=pdf-share&subAction=create-llm', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ actualUrl })
+            });
+
+            const data = await response.json();
+            if (data.llmMaskId) {
+                llmShareUrl = `${window.location.origin}/llm?link-id=${data.llmMaskId}`;
+
+                // Update expiry display
+                if (data.expiresAt) {
+                    const expiresAt = new Date(data.expiresAt);
+                    const now = new Date();
+                    const hoursLeft = Math.max(0, Math.round((expiresAt - now) / (1000 * 60 * 60) * 10) / 10);
+                    llmExpiryInfo.querySelector('span').textContent = `Link expires in ~${hoursLeft}h`;
+                }
+
+                if (llmToggle.checked) showUrl();
+            } else {
+                throw new Error('No llmMaskId');
+            }
+        } catch (e) {
+            console.error('LLM Share error:', e);
+            if (llmToggle.checked) {
+                input.value = 'Failed to generate LLM link';
+                copyBtn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+            }
+            llmLinkGenerated = false;
+        }
+    }
+
+    // Toggle handler
+    llmToggle.addEventListener('change', () => {
+        const isEnabled = llmToggle.checked;
+        localStorage.setItem('materio_llm_share', isEnabled);
+
+        if (isEnabled) {
+            generateLlmLink();
+        }
+        showUrl();
+    });
+
+    // If toggle was saved as enabled, generate LLM link immediately
+    if (llmToggleSaved) {
+        generateLlmLink();
+    }
+
+    // Normal share API call
     (async () => {
         try {
             const response = await fetch('/api/v2/features?action=pdf-share&subAction=create', {
@@ -563,37 +671,18 @@ function materioShareModal(actualUrl) {
 
             const data = await response.json();
             if (data.maskId) {
-                const shareUrl = `${window.location.origin}${window.location.pathname}?share=${data.maskId}`;
-
-                // Update UI
-                input.value = shareUrl;
-                copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
-                copyBtn.disabled = false;
-
-                // Copy logic
-                copyBtn.onclick = async () => {
-                    try {
-                        await navigator.clipboard.writeText(shareUrl);
-                        const originalContent = '<i class="fa-regular fa-copy"></i>';
-                        copyBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
-                        copyBtn.classList.add('success');
-
-                        setTimeout(() => {
-                            copyBtn.innerHTML = originalContent;
-                            copyBtn.classList.remove('success');
-                        }, 2000);
-                    } catch (err) {
-                        console.error('Copy failed:', err);
-                    }
-                };
+                normalShareUrl = `${window.location.origin}${window.location.pathname}?share=${data.maskId}`;
+                showUrl();
             } else {
                 throw new Error('No maskId');
             }
         } catch (e) {
             console.error('Share error:', e);
-            input.value = 'Failed to generate link';
-            copyBtn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
-            copyBtn.style.background = '#dc3545';
+            if (!llmToggle.checked) {
+                input.value = 'Failed to generate link';
+                copyBtn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+                copyBtn.style.background = '#dc3545';
+            }
         }
     })();
 }

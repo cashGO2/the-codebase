@@ -70,6 +70,23 @@ app.all('/api/v2/features', async (req, res) => {
   }
 });
 
+// LLM Share URL rewrite (mirrors vercel.json rewrite)
+app.get('/share/llm/:id', async (req, res) => {
+  try {
+    req.query = req.query || {};
+    req.query.action = 'pdf-share';
+    req.query.subAction = 'resolve-llm';
+    req.query.llmMaskId = req.params.id;
+    // Rewrite the URL so the handler can parse it
+    req.url = `/api/v2/features?action=pdf-share&subAction=resolve-llm&llmMaskId=${req.params.id}`;
+    await featuresHandler(req, res);
+  } catch (error) {
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  }
+});
+
 // Health API routes (health check, bug reports, alerts)
 app.all('/api/v2/health*', async (req, res) => {
   try {
@@ -86,40 +103,40 @@ app.post('/api/save-promo', (req, res) => {
   try {
     const promoData = req.body;
     const jsonContent = JSON.stringify(promoData, null, 2);
-    
+
     // Define file paths
     const sourceFile = path.join(__dirname, 'assets', 'data', 'promo.json');
     const siteFile = path.join(__dirname, '_site', 'assets', 'data', 'promo.json');
-    
+
     // Ensure directories exist
     const sourceDir = path.dirname(sourceFile);
     const siteDir = path.dirname(siteFile);
-    
+
     if (!fs.existsSync(sourceDir)) {
       fs.mkdirSync(sourceDir, { recursive: true });
     }
-    
+
     if (!fs.existsSync(siteDir)) {
       fs.mkdirSync(siteDir, { recursive: true });
     }
-    
+
     // Write to both files
     fs.writeFileSync(sourceFile, jsonContent);
     fs.writeFileSync(siteFile, jsonContent);
-    
+
     console.log('✅ Successfully saved promo.json files');
-    
-    res.json({ 
-      success: true, 
+
+    res.json({
+      success: true,
       message: 'Promotion data saved successfully',
       timestamp: new Date().toISOString()
     });
-    
+
   } catch (error) {
     console.error('❌ Error saving promo files:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      error: error.message
     });
   }
 });

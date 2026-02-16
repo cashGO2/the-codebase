@@ -1434,6 +1434,86 @@ async function handlePdfShare(req, res, url) {
       return res.status(200).json({ actualUrl: share.actualUrl });
     }
 
+    // ==========================================
+    // LLM Share - Create expiring masked URL
+    // ==========================================
+    if (method === 'POST' && (subAction === 'create-llm' || url.pathname.includes('/create-llm'))) {
+      const { actualUrl } = req.body;
+      if (!actualUrl) {
+        return res.status(400).json({ error: 'actualUrl is required' });
+      }
+
+      const llmCollection = db.collection('pdf_shares_llm');
+
+      // Ensure TTL index exists (MongoDB auto-deletes expired docs)
+      try {
+        await llmCollection.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+      } catch (e) {
+        // Index may already exist, ignore
+      }
+
+      // Check if a valid (non-expired) LLM share already exists for this URL
+      const existing = await llmCollection.findOne({
+        actualUrl,
+        expiresAt: { $gt: new Date() }
+      });
+      if (existing) {
+        return res.status(200).json({
+          llmMaskId: existing.llmMaskId,
+          expiresAt: existing.expiresAt,
+          isNew: false
+        });
+      }
+
+      // Generate unique llmMaskId
+      let llmMaskId;
+      let isUnique = false;
+      while (!isUnique) {
+        llmMaskId = 'llm-' + crypto.randomBytes(6).toString('hex'); // 16 char with prefix
+        const duplicate = await llmCollection.findOne({ llmMaskId });
+        if (!duplicate) isUnique = true;
+      }
+
+      // Set expiry to 6 hours from now
+      const expiresAt = new Date(Date.now() + 6 * 60 * 60 * 1000);
+
+      await llmCollection.insertOne({
+        llmMaskId,
+        actualUrl,
+        createdAt: new Date(),
+        expiresAt
+      });
+
+      return res.status(201).json({ llmMaskId, expiresAt, isNew: true });
+    }
+
+    // ==========================================
+    // LLM Share - Resolve (redirect to actual PDF)
+    // ==========================================
+    if (method === 'GET' && (subAction === 'resolve-llm' || url.pathname.includes('/resolve-llm'))) {
+      const llmMaskId = queryParams.llmMaskId || queryParams.maskId;
+      if (!llmMaskId) {
+        return res.status(400).json({ error: 'llmMaskId is required' });
+      }
+
+      const llmCollection = db.collection('pdf_shares_llm');
+      const share = await llmCollection.findOne({ llmMaskId });
+
+      if (!share) {
+        return res.status(404).json({ error: 'LLM share link not found or expired' });
+      }
+
+      // Check if expired
+      if (new Date() > new Date(share.expiresAt)) {
+        return res.status(410).json({ error: 'This LLM share link has expired' });
+      }
+
+      // Redirect to the actual PDF URL so LLMs can fetch it
+      res.setHeader('Location', share.actualUrl);
+      res.setHeader('Cache-Control', 'no-store');
+      return res.status(302).end();
+    }
+
     return res.status(400).json({ error: 'Invalid share action' });
   } catch (error) {
     console.error('PDF Share API error:', error);

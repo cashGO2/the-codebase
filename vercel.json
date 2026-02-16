@@ -130,6 +130,10 @@
       "destination": "/api/v2/invites.js"
     },
     {
+      "source": "/share/llm/(.*)",
+      "destination": "/api/v2/features.js?action=pdf-share&subAction=resolve-llm&llmMaskId=$1"
+    },
+    {
       "source": "/invites/:code",
       "destination": "/invite.html"
     },

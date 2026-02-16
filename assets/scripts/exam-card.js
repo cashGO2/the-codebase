@@ -985,14 +985,17 @@ function generateExamTimeline() {
         const examDate = new Date(exam.date);
         const examDateOnly = new Date(examDate.getFullYear(), examDate.getMonth(), examDate.getDate());
 
-        const isCompleted = examDateOnly < today;
+        const isPastDate = examDateOnly < today;
         const isToday = examDateOnly.toDateString() === today.toDateString();
+        // Check if today's exam has actually finished (start time + duration passed)
+        const isFinished = isToday && isExamFinished(exam, now);
+        const isCompleted = isPastDate || isFinished;
 
         let statusClass = 'upcoming';
         if (isCompleted) {
             statusClass = 'completed';
         } else if (isToday) {
-            // Today's exam gets active blinking indicator
+            // Today's exam is still in progress - active blinking indicator
             statusClass = 'today active';
             foundFirstUpcoming = true; // Today counts as "found"
         } else if (!foundFirstUpcoming) {
