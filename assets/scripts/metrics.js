@@ -152,7 +152,7 @@
 
     loadBuffer() {
       try {
-        const stored = localStorage.getItem(CONFIG.STORAGE_KEY_EVENTS);
+        const stored = localStorage.getItem(CONFIG.STORAGE_KEY_V1);
         if (stored) {
           this.buffer = JSON.parse(stored);
         }
@@ -163,7 +163,7 @@
 
     saveBuffer() {
       try {
-        localStorage.setItem(CONFIG.STORAGE_KEY_EVENTS, JSON.stringify(this.buffer));
+        localStorage.setItem(CONFIG.STORAGE_KEY_V1, JSON.stringify(this.buffer));
       } catch (e) {
       }
     }
@@ -184,9 +184,9 @@
 
         if (navigator.sendBeacon && document.visibilityState === 'hidden') {
           const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
-          navigator.sendBeacon(CONFIG.API_COLLECT, blob);
+          navigator.sendBeacon(CONFIG.DATA_PUSH, blob);
         } else {
-          const response = await fetch(CONFIG.API_COLLECT, {
+          const response = await fetch(CONFIG.DATA_PUSH, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -270,7 +270,7 @@
     stopEngagementTracking() {
       const timeSpent = Date.now() - this.engagementStartTime;
       if (timeSpent >= CONFIG.MIN_ENGAGEMENT_TIME) {
-        this.track('user_engagement', {
+        this.push('user_engagement', {
           duration_ms: timeSpent,
           duration_sec: Math.round(timeSpent / 1000)
         });
@@ -351,19 +351,19 @@
           }
           this.currentPdf = pdfUrl;
           this.pdfStartTime = Date.now();
-          this.track('pdf_open', { url: pdfUrl, title: title });
+          this.push('pdf_open', { url: pdfUrl, title: title });
         }, 800); // Increased delay slightly
       } else {
         this.currentPdf = pdfUrl;
         this.pdfStartTime = Date.now();
-        this.track('pdf_open', { url: pdfUrl, title: title });
+        this.push('pdf_open', { url: pdfUrl, title: title });
       }
     }
 
     handlePdfClose() {
       if (!this.currentPdf) return;
       const duration = Date.now() - this.pdfStartTime;
-      this.track('pdf_close', {
+      this.push('pdf_close', {
         url: this.currentPdf,
         duration_ms: duration,
         duration_sec: Math.round(duration / 1000)
@@ -373,5 +373,5 @@
     }
   }
 
-  window.MaterioMetrics = new MetricsClient();
+  window.SyncManager = new SyncManager();
 })();
