@@ -12,7 +12,7 @@
   const API_BASE = isLocal ? 'http://localhost:3000' : 'https://materio-analytics.vercel.app';
 
   const CONFIG = {
-    API_COLLECT: `${API_BASE}/stream`,
+    API_COLLECT: `${API_BASE}/sync`,
     API_IDENTIFY: `${API_BASE}/client`,
     BATCH_INTERVAL: 60000, // 60 seconds
     MIN_ENGAGEMENT_TIME: 2000, // 2 seconds

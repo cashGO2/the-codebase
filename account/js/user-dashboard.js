@@ -35,12 +35,13 @@ async function fetchServerStats() {
         if (response.ok) {
             const data = await response.json();
 
-            // Construct the "Super Data" object
+            // Construct the "Super Data" object with new trends support
             const stats = {
-                pdfsRead: data.metrics.pdfs_read_count || 0,
+                pdfsRead: data.metrics.unique_pdfs_count || 0, // Switched to Unique count
                 timeSpent: (data.metrics.reading_time_seconds || 0) + (data.metrics.engagement_time_seconds || 0),
                 streak: data.streak || 0,
                 history: data.history || [],
+                trends: data.trends || {}, // New datewise trends from backend
                 lastReadDate: null
             };
 
@@ -53,6 +54,7 @@ async function fetchServerStats() {
 
             // Update UI
             updateDashboardUI(stats);
+            console.log('[Analytics] Fresh trends & stats synced:', stats.trends);
         }
     } catch (e) {
         console.error('Failed to fetch server stats', e);

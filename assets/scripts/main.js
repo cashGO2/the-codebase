@@ -508,8 +508,7 @@ function materioShareModal(actualUrl) {
                     <i class="fa-regular fa-loader fa-spin"></i>
                 </button>
             </div>
-           
-            <div class="materio-modal-buttons">
+                       <div class="materio-modal-buttons">
                 <button class="materio-modal-btn primary" id="share-modal-close" style="max-width: 100%; flex: 1;">Back</button>
             </div>
         </div>
