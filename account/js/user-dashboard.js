@@ -19,17 +19,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
 async function fetchServerStats() {
     // Wait for Metrics to be ready if needed
-    if (!window.MaterioMetrics) {
+    if (!window.SyncManager) {
         setTimeout(fetchServerStats, 500);
         return;
     }
 
-    const userId = window.MaterioMetrics.getUserId();
+    const userId = window.SyncManager.getUserId();
     if (!userId) return;
 
     try {
         const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const API_BASE = isLocal ? 'http://localhost:3000' : 'https://materio-analytics.vercel.app';
+        const API_BASE = isLocal ? 'http://localhost:3000' : 'https://materiosync.vercel.app';
 
         const response = await fetch(`${API_BASE}/stats/${userId}?period=all_time`);
         if (response.ok) {

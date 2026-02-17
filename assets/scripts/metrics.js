@@ -9,19 +9,20 @@
 
   // Environment detection
   const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  const API_BASE = isLocal ? 'http://localhost:3000' : 'https://materio-analytics.vercel.app';
+  // UPDATE THIS URL after you rename the Vercel project
+  const API_BASE = isLocal ? 'http://localhost:3000' : 'https://materiosync.vercel.app';
 
   const CONFIG = {
-    API_COLLECT: `${API_BASE}/sync`,
-    API_IDENTIFY: `${API_BASE}/client`,
-    BATCH_INTERVAL: 60000, // 60 seconds
-    MIN_ENGAGEMENT_TIME: 2000, // 2 seconds
-    STORAGE_KEY_EVENTS: 'materio_analytics_events',
-    STORAGE_KEY_ANON_ID: 'materio_anonymous_id',
-    STORAGE_KEY_AUTH_TOKEN: 'materio_auth_token'
+    DATA_PUSH: `${API_BASE}/v1/p`,
+    DATA_VERIFY: `${API_BASE}/client`,
+    BATCH_INTERVAL: 60000,
+    MIN_ENGAGEMENT_TIME: 2000,
+    STORAGE_KEY_V1: 'm_v1_store',
+    STORAGE_KEY_ID: 'm_u_id',
+    STORAGE_KEY_TOKEN: 'materio_auth_token'
   };
 
-  class MetricsClient {
+  class SyncManager {
     constructor() {
       this.buffer = [];
       this.sessionId = this.generateUUID();
@@ -36,16 +37,15 @@
       // Initial setup
       this.loadBuffer();
       this.setupEventListeners();
-      this.startBatchTimer();
 
-      // Track initial page view
-      this.track('page_view', {
+      // Track initial entry
+      this.push('page_view', {
         title: document.title,
         path: window.location.pathname
       });
 
-      // Attempt identification if user is logged in
-      this.identify();
+      // Attempt verification if user is logged in
+      this.verify();
     }
 
     generateUUID() {
@@ -59,16 +59,16 @@
     }
 
     getAnonymousId() {
-      let id = localStorage.getItem(CONFIG.STORAGE_KEY_ANON_ID);
+      let id = localStorage.getItem(CONFIG.STORAGE_KEY_ID);
       if (!id) {
         id = this.generateUUID();
-        localStorage.setItem(CONFIG.STORAGE_KEY_ANON_ID, id);
+        localStorage.setItem(CONFIG.STORAGE_KEY_ID, id);
       }
       return id;
     }
 
     getUserId() {
-      const token = localStorage.getItem(CONFIG.STORAGE_KEY_AUTH_TOKEN);
+      const token = localStorage.getItem(CONFIG.STORAGE_KEY_TOKEN);
       if (!token) return null;
 
       try {
@@ -85,11 +85,11 @@
       }
     }
 
-    async identify() {
+    async verify() {
       const userId = this.getUserId();
       if (userId && !this.hasIdentified) {
         try {
-          const response = await fetch(CONFIG.API_IDENTIFY, {
+          const response = await fetch(CONFIG.DATA_VERIFY, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -113,9 +113,10 @@
         if (response.ok) {
           const data = await response.json();
           const stats = {
-            pdfsRead: data.metrics.pdfs_read_count || 0,
+            pdfsRead: data.metrics.unique_pdfs_count || 0,
             timeSpent: (data.metrics.reading_time_seconds || 0) + (data.metrics.engagement_time_seconds || 0),
             streak: data.streak || 0,
+            trends: data.trends || {},
             history: data.history || [],
             lastReadDate: null
           };
@@ -131,7 +132,7 @@
       }
     }
 
-    track(eventName, properties = {}) {
+    push(eventName, properties = {}) {
       const event = {
         type: eventName,
         data: properties,

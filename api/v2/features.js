@@ -1491,7 +1491,7 @@ async function handlePdfShare(req, res, url) {
     // LLM Share - Resolve (redirect to actual PDF)
     // ==========================================
     if (method === 'GET' && (subAction === 'resolve-llm' || url.pathname.includes('/resolve-llm'))) {
-      const llmMaskId = queryParams.llmMaskId || queryParams.maskId;
+      const llmMaskId = queryParams.llmMaskId || queryParams.maskId || queryParams['link-id'];
       if (!llmMaskId) {
         return res.status(400).json({ error: 'llmMaskId is required' });
       }

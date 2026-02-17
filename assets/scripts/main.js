@@ -502,13 +502,31 @@ function materioShareModal(actualUrl) {
     overlay.innerHTML = `
         <div class="materio-modal" role="dialog" aria-modal="true" aria-labelledby="share-modal-title">
             <h3 class="materio-modal-title" id="share-modal-title">Share PDF</h3>
+            
+            <div class="llm-share-toggle-row">
+                <div class="llm-toggle-left">
+                    <i class="fa-solid fa-sparkles llm-toggle-icon"></i>
+                    <span class="llm-toggle-label">Share to LLM</span>
+                </div>
+                <label class="llm-toggle-switch">
+                    <input type="checkbox" id="llm-share-toggle" ${llmToggleSaved ? 'checked' : ''}>
+                    <span class="llm-toggle-slider"></span>
+                </label>
+            </div>
+
             <div class="share-input-container" id="share-input-container">
                 <input type="text" class="share-url-input" id="share-url-input" readonly value="Crafting your secure link..." aria-label="Share URL">
                 <button class="share-copy-btn" id="share-copy-btn" disabled aria-label="Copy link">
                     <i class="fa-regular fa-loader fa-spin"></i>
                 </button>
             </div>
-                       <div class="materio-modal-buttons">
+
+            <div class="llm-expiry-info" id="llm-expiry-info">
+                <i class="fa-solid fa-clock"></i>
+                <span>Generating secure link...</span>
+            </div>
+
+            <div class="materio-modal-buttons">
                 <button class="materio-modal-btn primary" id="share-modal-close" style="max-width: 100%; flex: 1;">Back</button>
             </div>
         </div>
