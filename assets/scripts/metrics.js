@@ -13,7 +13,7 @@
   const API_BASE = isLocal ? 'http://localhost:3000' : 'https://materiosync.vercel.app';
 
   const CONFIG = {
-    DATA_PUSH: `${API_BASE}/v1/p`,
+    DATA_PUSH: `${API_BASE}/sync`,
     DATA_VERIFY: `${API_BASE}/client`,
     BATCH_INTERVAL: 60000,
     MIN_ENGAGEMENT_TIME: 2000,
