@@ -19,10 +19,10 @@
     MIN_ENGAGEMENT_TIME: 2000,
     STORAGE_KEY_V1: 'm_v1_store',
     STORAGE_KEY_ID: 'm_u_id',
-    STORAGE_KEY_TOKEN: 'materio_auth_token'
+    // STORAGE_KEY_TOKEN: 'materio_auth_token'
   };
 
-  class SyncManager {
+  class MetricsClient {
     constructor() {
       this.buffer = [];
       this.sessionId = this.generateUUID();
@@ -373,5 +373,6 @@
     }
   }
 
-  window.SyncManager = new SyncManager();
+  window.MetricsClient = new MetricsClient();
+  window.SyncManager = window.MetricsClient;
 })();

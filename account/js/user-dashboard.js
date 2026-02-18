@@ -19,12 +19,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 async function fetchServerStats() {
     // Wait for Metrics to be ready if needed
-    if (!window.SyncManager) {
+    if (!window.MetricsClient) {
         setTimeout(fetchServerStats, 500);
         return;
     }
 
-    const userId = window.SyncManager.getUserId();
+    const userId = window.MetricsClient.getUserId();
     if (!userId) return;
 
     try {
