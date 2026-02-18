@@ -135,7 +135,7 @@ function loadOTA() {
  * @returns {Promise}
  */
 function loadAnalytics() {
-    return loadScript('/assets/scripts/metrics.js');
+    return loadScript('/assets/scripts/sync.js');
 }
 
 /**
@@ -170,7 +170,7 @@ function loadNonCritical() {
  */
 function loadNonCriticalScripts() {
     const nonCritical = [
-        '/assets/scripts/metrics.js',
+        '/assets/scripts/sync.js',
         '/assets/scripts/ga.js',
         '/assets/scripts/ota-hugeicons.js',
         '/account/js/ux-enhancers.js',
