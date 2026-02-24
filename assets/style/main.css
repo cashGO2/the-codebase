@@ -10,7 +10,19 @@
        COLOR PALETTE
        ============================================ */
 
-    /* Primary Colors */
+       --materio-orange : #ff5400;
+       --white-bg: #fcfcf9;
+       --jetblack-bg: #121212;
+       --off-white-blur: rgba(205, 205, 197, 0.2);
+       --space-grey-blur: rgba(33,33,33,0.5);
+       --jetblack-blur: rgba(57,55,55,0.5) ;/*not in use yet*/
+
+       --tone1: #ff8400;
+       --tone2:#e67300;
+       --tone3:#ff8200;
+       --tone4:#ff7800;
+
+       /* Primary Colors */
     --color-primary: #ff8400;
     --color-primary-hover: #e67300;
     --color-primary-light: rgba(255, 130, 0, 0.1);
@@ -304,13 +316,6 @@ header {
     z-index: -1;
 }
 
-
-
-
-
-
-
-
 .navbar {
     position: fixed;
     top: var(--header-height);
@@ -358,7 +363,7 @@ header::after {
     /* shifted left by strip width */
     width: 20px;
     height: 20px;
-    background: radial-gradient(circle at 0% 100%, transparent 20px, rgba(231, 231, 221, 0.5) 20px);
+    background: radial-gradient(circle at 0% 100%, transparent var(--frame-corner-size), var(--color-bg-overlay) var(--frame-corner-size));
     pointer-events: none;
 }
 
@@ -372,7 +377,7 @@ body::before {
     /* navbar width */
     width: 20px;
     height: 20px;
-    background: radial-gradient(circle at 100% 0%, transparent 20px, var(--color-bg-overlay) 20px);
+    background: radial-gradient(circle at 100% 0%, transparent var(--frame-corner-size), var(--color-bg-overlay) var(--frame-corner-size));
     pointer-events: none;
     z-index: 999;
 }
@@ -387,7 +392,7 @@ body::after {
     /* shifted left by strip width */
     width: 20px;
     height: 20px;
-    background: radial-gradient(circle at 0% 0%, transparent 20px, rgba(231, 231, 221, 0.5) 20px);
+    background: radial-gradient(circle at 0% 0%, transparent var(--frame-corner-size), var(--color-bg-overlay) var(--frame-corner-size));
     pointer-events: none;
     z-index: 999;
 }
@@ -554,6 +559,14 @@ body.dark-mode .bug-report-btn:hover {
     transition: opacity 0.3s ease, transform 0.3s ease;
     align-items: center;
     gap: 10px;
+}
+
+body.dark-mode .bug-report-tooltip {
+    background-color: #444;
+}
+
+body.dark-mode .bug-report-tooltip::before {
+    background-color: #444;
 }
 
 .bug-report-tooltip.show {

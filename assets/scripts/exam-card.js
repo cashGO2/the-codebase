@@ -199,9 +199,9 @@ function findSemesterData(data, semester) {
 
 
             // Check if this semester's exams are within display window
-            // Show if: within showBeforeDays before start OR exam day OR exams ongoing
+            // Show if: within showBeforeDays before start OR exams ongoing (using full datetime for end check)
             if ((daysUntilExam <= showBeforeDays && daysUntilExam >= 0) ||
-                (today >= startDateOnly && (!endDateOnly || today <= endDateOnly))) {
+                (today >= startDateOnly && (!endDate || now <= endDate))) {
 
                 return semData;
             }
@@ -247,8 +247,8 @@ function shouldDisplayExamCard(data, semesterData) {
         return true;
     }
 
-    // Show if exams are currently ongoing
-    if (today >= startDateOnly && (!endDateOnly || today <= endDateOnly)) {
+    // Show if exams are currently ongoing (use full datetime for end check so card hides once last exam finishes)
+    if (today >= startDateOnly && (!endDate || now <= endDate)) {
 
         return true;
     }
