@@ -32,8 +32,8 @@
         enableAttachments: true
     };
 
-    // Supabase config for realtime
-    const SUPABASE_URL = 'https://popaoujsfvznlqltszfr.supabase.co';
+    // Supabase config for realtime (using proxy URL as primary, fallback to direct URL)
+    const SUPABASE_URL = 'https://materio.jiobase.com' || 'https://popaoujsfvznlqltszfr.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvcGFvdWpzZnZ6bmxxbHRzemZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcxMTg1NTIsImV4cCI6MjA2MjY5NDU1Mn0.nJFDXqpcnQDnZa7OueLSiHeqE0RxbINEcKcwv8l8bRw';
 
     // ============================================

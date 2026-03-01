@@ -10,19 +10,20 @@
        COLOR PALETTE
        ============================================ */
 
-       --materio-orange : #ff5400;
-       --white-bg: #fcfcf9;
-       --jetblack-bg: #121212;
-       --off-white-blur: rgba(205, 205, 197, 0.2);
-       --space-grey-blur: rgba(33,33,33,0.5);
-       --jetblack-blur: rgba(57,55,55,0.5) ;/*not in use yet*/
+    --materio-orange: #ff5400;
+    --white-bg: #fcfcf9;
+    --jetblack-bg: #121212;
+    --off-white-blur: rgba(205, 205, 197, 0.2);
+    --space-grey-blur: rgba(33, 33, 33, 0.5);
+    --jetblack-blur: rgba(57, 55, 55, 0.5);
+    /*not in use yet*/
 
-       --tone1: #ff8400;
-       --tone2:#e67300;
-       --tone3:#ff8200;
-       --tone4:#ff7800;
+    --tone1: #ff8400;       
+    --tone2: #e67300;
+    --tone3: #ff8200;
+    --tone4: #ff7800;
 
-       /* Primary Colors */
+    /* Primary Colors */
     --color-primary: #ff8400;
     --color-primary-hover: #e67300;
     --color-primary-light: rgba(255, 130, 0, 0.1);
@@ -725,12 +726,23 @@ p {
     text-decoration: none;
 }
 
-.navbar a i {
+.navbar a i,
+.navbar a svg {
     margin-right: 0;
 }
 
+/* Base SVG icon sizing in navbar - inherits from font-size like icon fonts */
+.navbar a svg {
+    width: 1em;
+    height: 1em;
+    stroke: currentColor;
+    fill: none;
+    vertical-align: middle;
+}
+
 .navbar a.active i,
-.navbar a.active .fa {
+.navbar a.active .fa,
+.navbar a.active svg {
     position: relative;
     color: var(--nav-icon-active-color, var(--color-primary));
     /* primary active color */
@@ -745,6 +757,12 @@ p {
     -webkit-text-stroke: 0.3px rgba(0, 0, 0, 0.06);
     transition: var(--transition-normal);
     transform: translateZ(0);
+}
+
+/* SVG-specific active state: use filter for drop-shadow since text-shadow doesn't apply to SVGs */
+.navbar a.active svg {
+    stroke: var(--nav-icon-active-color, var(--color-primary));
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
 }
 
 
@@ -1164,11 +1182,13 @@ body.dark-mode .container::after {
     color: var(--color-dark-text-secondary);
 }
 
-.navbar.dark-mode a.profile-icon i {
+.navbar.dark-mode a.profile-icon i,
+.navbar.dark-mode a.profile-icon svg {
     color: var(--color-dark-text-secondary);
 }
 
-.navbar.dark-mode a.profile-icon.active i {
+.navbar.dark-mode a.profile-icon.active i,
+.navbar.dark-mode a.profile-icon.active svg {
     color: var(--color-primary-alt);
 }
 
@@ -1458,11 +1478,13 @@ body.dark-mode #gh .contribute-button span {
         transform: scale(1.2);
     }
 
-    .navbar a i {
+    .navbar a i,
+    .navbar a svg {
         font-size: 22px;
     }
 
-    .navbar a.profile-icon.active i {
+    .navbar a.profile-icon.active i,
+    .navbar a.profile-icon.active svg {
         color: var(--color-primary);
     }
 

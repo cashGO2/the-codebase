@@ -1,5 +1,5 @@
 // Supabase configuration
-const SUPABASE_URL = process.env.PUBLIC_SUPABASE_URL || "https://svfuynziufsxccwihfbw.supabase.co";
+const SUPABASE_URL = process.env.SUPABASE_PROXY_URL || process.env.PUBLIC_SUPABASE_URL || "https://svfuynziufsxccwihfbw.supabase.co";
 const SUPABASE_ANON_KEY = process.env.PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2ZnV5bnppdWZzeGNjd2loZmJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcwNDIyMjcsImV4cCI6MjA2MjYxODIyN30.yRyMD0oXhEks91yaJTemgSVHwPMw5oEg86P6EW9CODI";
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2ZnV5bnppdWZzeGNjd2loZmJ3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NzA0MjIyNywiZXhwIjoyMDYyNjE4MjI3fQ.oGHaEZn7rkAIvEWayNL7E3t7klfOgJnN0iSgKqVCOY4";
 
