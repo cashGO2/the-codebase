@@ -3,7 +3,7 @@
     "event": "Materio Birthday",
     "type": "overlay",
     "overlay_script": "/assets/scripts/birthday-overlay.js",
-    "setDate": "2026-03-13T00:00:00+05:30",
+    "setDate": "2026-03-16T00:00:00+05:30",
     "endDate": "2026-03-21T23:59:59+05:30",
     "config": {
       "eyebrow": "Happy Birthday",
@@ -57,20 +57,32 @@
         "image": "/assets/img/events/dynamic/christmas/part_7.webp",
         "start": "21:20",
         "end": "22:50",
-        "exclusive_dates": ["2025-12-25", "2025-12-26", "2025-12-27"]
+        "exclusive_dates": [
+          "2025-12-25",
+          "2025-12-26",
+          "2025-12-27"
+        ]
       },
       {
         "image": "/assets/img/events/dynamic/christmas/part_8.webp",
         "start": "22:50",
         "end": "05:45",
-        "exclusive_dates": ["2025-12-25", "2025-12-26", "2025-12-27"]
+        "exclusive_dates": [
+          "2025-12-25",
+          "2025-12-26",
+          "2025-12-27"
+        ]
       },
       {
         "image": "/assets/img/events/dynamic/christmas/part_2026.webp",
         "start": "22:50",
         "end": "05:45",
         "showLockscreen": true,
-        "exclusive_dates": ["2025-12-30", "2025-12-31", "2025-12-01"]
+        "exclusive_dates": [
+          "2025-12-30",
+          "2025-12-31",
+          "2025-12-01"
+        ]
       },
       {
         "image": "/assets/img/events/dynamic/christmas/part_6.webp",
