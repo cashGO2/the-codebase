@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Materio · Birthday Ticket</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Libre+Baskerville:ital@1&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            :root {
+                --clr-dark: #121212;
+                --clr-mid: #232323;
+                --clr-off-wht: #f8f8f3;
+                --clr-orange: #ff8400;
+                --clr-blue: #6a9bcc;
+                --clr-green: #788c5d;
+                --page-bg: #0d0d0d;
+                --perf-pct: 35%;
+            }
+
+            html,
+            body {
+                height: 100%;
+            }
+
+            body {
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: var(--page-bg);
+                font-family: "Manrope", sans-serif;
+                padding: 60px 24px;
+            }
+
+            /* ─── Outer wrapper (holds notches + floating hat) ─── */
+            .ticket-wrap {
+                position: relative;
+                max-width: 700px;
+                width: 100%;
+            }
+
+            /* Semicircle notches punched into the card edges at the perf line */
+            .ticket-wrap::before,
+            .ticket-wrap::after {
+                content: "";
+                position: absolute;
+                left: var(--perf-pct);
+                transform: translateX(-50%);
+                width: 22px;
+                height: 11px;
+                background: var(--page-bg);
+                z-index: 10;
+                pointer-events: none;
+            }
+            .ticket-wrap::before {
+                top: -1px;
+                border-radius: 0 0 11px 11px;
+            }
+            .ticket-wrap::after {
+                bottom: -1px;
+                border-radius: 11px 11px 0 0;
+            }
+
+            /* Birthday hat – sits outside the card so it can overflow the edge */
+            .bday-hat-wrap {
+                position: absolute;
+                top: -28px;
+                right: -16px;
+                z-index: 20;
+                transform: rotate(40deg);
+                transform-origin: 50% 90%;
+                pointer-events: none;
+            }
+
+            /* ─── Card shell ─── */
+            .ticket-card {
+                display: flex;
+                align-items: stretch;
+                background: var(--clr-dark);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 16px;
+                box-shadow:
+                    0 2px 4px rgba(0, 0, 0, 0.5),
+                    0 12px 32px rgba(0, 0, 0, 0.65),
+                    0 40px 90px rgba(0, 0, 0, 0.55);
+                overflow: hidden;
+                min-height: 220px;
+            }
+
+            /* ─── Left stub ─── */
+            .ticket-left {
+                width: var(--perf-pct);
+                flex-shrink: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 28px 18px;
+                text-align: center;
+            }
+
+            .stub-year {
+                font-size: 8px;
+                font-weight: 700;
+                letter-spacing: 0.4em;
+                text-transform: uppercase;
+                color: rgba(248, 248, 243, 0.35);
+            }
+
+            .stub-num {
+                font-family: "Manrope", sans-serif;
+                font-size: 88px;
+                font-weight: 800;
+                color: var(--clr-orange);
+                line-height: 0.88;
+                letter-spacing: -0.05em;
+                margin: 8px 0 6px;
+            }
+
+            .stub-anniversary {
+                font-size: 8px;
+                font-weight: 700;
+                letter-spacing: 0.24em;
+                text-transform: uppercase;
+                color: rgba(248, 248, 243, 0.35);
+            }
+
+            .stub-divider {
+                width: 30px;
+                height: 1px;
+                background: rgba(248, 248, 243, 0.1);
+                margin: 14px auto;
+            }
+
+            .stub-dates {
+                font-family: "Courier New", Courier, monospace;
+                font-size: 10px;
+                color: rgba(248, 248, 243, 0.26);
+                letter-spacing: 0.05em;
+            }
+
+            /* ─── Perforation line ─── */
+            .ticket-perf {
+                flex-shrink: 0;
+                width: 1px;
+                align-self: stretch;
+                background: repeating-linear-gradient(
+                    to bottom,
+                    transparent 0px,
+                    transparent 4px,
+                    rgba(255, 255, 255, 0.13) 4px,
+                    rgba(255, 255, 255, 0.13) 8px
+                );
+                margin: 18px 0;
+            }
+
+            /* ─── Right panel ─── */
+            .ticket-right {
+                flex: 1;
+                min-width: 0;
+                padding: 26px 30px 30px 24px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            /* Confetti layer */
+            .confetti {
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+                z-index: 0;
+            }
+            .c {
+                position: absolute;
+            }
+
+            /* Top row */
+            .panel-top {
+                position: relative;
+                z-index: 1;
+                margin-bottom: 20px;
+            }
+
+            .event-label {
+                font-size: 9px;
+                font-weight: 700;
+                letter-spacing: 0.3em;
+                text-transform: uppercase;
+                color: var(--clr-orange);
+                margin-bottom: 7px;
+            }
+
+            .materio-wordmark {
+                display: block;
+            }
+
+            /* Body copy */
+            .ticket-body {
+                font-family: "Libre Baskerville", Georgia, serif;
+                font-style: italic;
+                font-size: 12.5px;
+                line-height: 1.78;
+                color: rgba(248, 248, 243, 0.52);
+                position: relative;
+                z-index: 1;
+                max-width: 390px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="ticket-wrap">
+            <!-- ── Birthday Hat (outside card, overflows edge) ── -->
+            <div class="bday-hat-wrap">
+                <svg
+                    width="92"
+                    height="118"
+                    viewBox="0 0 92 118"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <defs>
+                        <clipPath id="cone-clip">
+                            <!-- Main cone triangle -->
+                            <polygon points="46,14 82,100 10,100" />
+                        </clipPath>
+                    </defs>
+
+                    <!-- Cone body -->
+                    <polygon points="46,14 82,100 10,100" fill="#ff8400" />
+
+                    <!-- Dark horizontal stripes clipped to cone -->
+                    <rect
+                        x="0"
+                        y="38"
+                        width="92"
+                        height="9"
+                        fill="rgba(0,0,0,0.28)"
+                        clip-path="url(#cone-clip)"
+                    />
+                    <rect
+                        x="0"
+                        y="58"
+                        width="92"
+                        height="9"
+                        fill="rgba(0,0,0,0.28)"
+                        clip-path="url(#cone-clip)"
+                    />
+                    <rect
+                        x="0"
+                        y="78"
+                        width="92"
+                        height="9"
+                        fill="rgba(0,0,0,0.28)"
+                        clip-path="url(#cone-clip)"
+                    />
+
+                    <!-- Slight highlight sheen on left face -->
+                    <polygon
+                        points="46,14 10,100 28,100"
+                        fill="rgba(255,255,255,0.07)"
+                        clip-path="url(#cone-clip)"
+                    />
+
+                    <!-- Brim (dark ellipse at base) -->
+                    <ellipse cx="46" cy="100" rx="37" ry="9" fill="#1c1c1c" />
+                    <ellipse
+                        cx="46"
+                        cy="100"
+                        rx="37"
+                        ry="9"
+                        fill="none"
+                        stroke="rgba(255,255,255,0.06)"
+                        stroke-width="1"
+                    />
+
+                    <!-- White star on cone body (5-pointed, near tip) -->
+                    <polygon
+                        points="46,22 47.6,27.1 53,27.1 48.7,30.2 50.3,35.3 46,32.2 41.7,35.3 43.3,30.2 39,27.1 44.4,27.1"
+                        fill="white"
+                        opacity="0.88"
+                    />
+
+                    <!-- Pompom circle at very tip -->
+                    <circle cx="46" cy="9" r="9" fill="white" opacity="0.95" />
+                    <!-- Pompom inner texture suggestion -->
+                    <circle
+                        cx="44"
+                        cy="7"
+                        r="2.5"
+                        fill="rgba(255,255,255,0.4)"
+                    />
+                    <circle
+                        cx="49"
+                        cy="11"
+                        r="2"
+                        fill="rgba(255,255,255,0.3)"
+                    />
+                </svg>
+            </div>
+
+            <!-- ── Ticket Card ── -->
+            <div class="ticket-card">
+                <!-- LEFT STUB -->
+                <div class="ticket-left">
+                    <span class="stub-year">Year</span>
+                    <div class="stub-num">2</div>
+                    <span class="stub-anniversary">Anniversary</span>
+                    <div class="stub-divider"></div>
+                    <span class="stub-dates">2023 — 2025</span>
+                </div>
+
+                <!-- PERFORATION -->
+                <div class="ticket-perf"></div>
+
+                <!-- RIGHT PANEL -->
+                <div class="ticket-right">
+                    <!-- Scattered confetti (subtle, low opacity) -->
+                    <div class="confetti" aria-hidden="true">
+                        <!-- Rectangles -->
+                        <div
+                            class="c"
+                            style="
+                                left: 6%;
+                                top: 12%;
+                                width: 9px;
+                                height: 4px;
+                                background: #ff8400;
+                                opacity: 0.18;
+                                border-radius: 1px;
+                                transform: rotate(22deg);
+                            "
+                        ></div>
+                        <div
+                            class="c"
+                            style="
+                                left: 38%;
+                                top: 8%;
+                                width: 7px;
+                                height: 3px;
+                                background: #6a9bcc;
+                                opacity: 0.16;
+                                border-radius: 1px;
+                                transform: rotate(-14deg);
+                            "
+                        ></div>
+                        <div
+                            class="c"
+                            style="
+                                left: 58%;
+                                top: 18%;
+                                width: 8px;
+                                height: 3px;
+                                background: #788c5d;
+                                opacity: 0.17;
+                                border-radius: 1px;
+                                transform: rotate(38deg);
+                            "
+                        ></div>
+                        <div
+                            class="c"
+                            style="
+                                left: 22%;
+                                top: 55%;
+                                width: 10px;
+                                height: 3px;
+                                background: #ff8400;
+                                opacity: 0.15;
+                                border-radius: 1px;
+                                transform: rotate(-30deg);
+                            "
+                        ></div>
+                        <div
+                            class="c"
+                            style="
+                                left: 72%;
+                                top: 62%;
+                                width: 7px;
+                                height: 3px;
+                                background: #6a9bcc;
+                                opacity: 0.17;
+                                border-radius: 1px;
+                                transform: rotate(12deg);
+                            "
+                        ></div>
+                        <div
+                            class="c"
+                            style="
+                                left: 48%;
+                                top: 78%;
+                                width: 8px;
+                                height: 3px;
+                                background: #788c5d;
+                                opacity: 0.16;
+                                border-radius: 1px;
+                                transform: rotate(-20deg);
+                            "
+                        ></div>
+                        <div
+                            class="c"
+                            style="
+                                left: 84%;
+                                top: 42%;
+                                width: 6px;
+                                height: 3px;
+                                background: #ff8400;
+                                opacity: 0.15;
+                                border-radius: 1px;
+                                transform: rotate(45deg);
+                            "
+                        ></div>
+                        <div
+                            class="c"
+                            style="
+                                left: 14%;
+                                top: 85%;
+                                width: 9px;
+                                height: 3px;
+                                background: #6a9bcc;
+                                opacity: 0.17;
+                                border-radius: 1px;
+                                transform: rotate(16deg);
+                            "
+                        ></div>
+                        <div
+                            class="c"
+                            style="
+                                left: 65%;
+                                top: 88%;
+                                width: 7px;
+                                height: 3px;
+                                background: #ff8400;
+                                opacity: 0.15;
+                                border-radius: 1px;
+                                transform: rotate(-35deg);
+                            "
+                        ></div>
+                        <!-- Circles -->
+                        <div
+                            class="c"
+                            style="
+                                left: 28%;
+                                top: 22%;
+                                width: 5px;
+                                height: 5px;
+                                background: #6a9bcc;
+                                opacity: 0.17;
+                                border-radius: 50%;
+                            "
+                        ></div>
+                        <div
+                            class="c"
+                            style="
+                                left: 52%;
+                                top: 44%;
+                                width: 4px;
+                                height: 4px;
+                                background: #ff8400;
+                                opacity: 0.16;
+                                border-radius: 50%;
+                            "
+                        ></div>
+                        <div
+                            class="c"
+                            style="
+                                left: 78%;
+                                top: 28%;
+                                width: 5px;
+                                height: 5px;
+                                background: #788c5d;
+                                opacity: 0.17;
+                                border-radius: 50%;
+                            "
+                        ></div>
+                        <div
+                            class="c"
+                            style="
+                                left: 10%;
+                                top: 68%;
+                                width: 4px;
+                                height: 4px;
+                                background: #ff8400;
+                                opacity: 0.15;
+                                border-radius: 50%;
+                            "
+                        ></div>
+                        <div
+                            class="c"
+                            style="
+                                left: 42%;
+                                top: 88%;
+                                width: 5px;
+                                height: 5px;
+                                background: #6a9bcc;
+                                opacity: 0.16;
+                                border-radius: 50%;
+                            "
+                        ></div>
+                        <div
+                            class="c"
+                            style="
+                                left: 88%;
+                                top: 76%;
+                                width: 4px;
+                                height: 4px;
+                                background: #788c5d;
+                                opacity: 0.15;
+                                border-radius: 50%;
+                            "
+                        ></div>
+                        <div
+                            class="c"
+                            style="
+                                left: 34%;
+                                top: 72%;
+                                width: 5px;
+                                height: 5px;
+                                background: #ff8400;
+                                opacity: 0.17;
+                                border-radius: 50%;
+                            "
+                        ></div>
+                    </div>
+
+                    <!-- Top row: event label + Materio wordmark -->
+                    <div class="panel-top">
+                        <div class="event-label">Happy Birthday</div>
+
+                        <!-- Materio logotype: bold sans "materio" + orange period dot -->
+                        <svg
+                            class="materio-wordmark"
+                            viewBox="0 0 154 26"
+                            height="22"
+                            xmlns="http://www.w3.org/2000/svg"
+                            aria-label="materio"
+                        >
+                            <text
+                                x="0"
+                                y="21"
+                                font-family="Manrope, sans-serif"
+                                font-weight="800"
+                                font-size="22"
+                                letter-spacing="-0.4"
+                                fill="#f8f8f3"
+                            >
+                                materio
+                            </text>
+                            <!-- Orange period -->
+                            <circle cx="150" cy="19" r="3.4" fill="#ff8400" />
+                        </svg>
+                    </div>
+
+                    <!-- Body copy -->
+                    <p class="ticket-body">
+                        From a late-night side project to your go-to study
+                        partner — thank you for being part of this. Every note
+                        uploaded, every session, every bit of feedback shaped
+                        what Materio is today. Here's to everything still ahead.
+                    </p>
+                </div>
+                <!-- /ticket-right -->
+            </div>
+            <!-- /ticket-card -->
+        </div>
+        <!-- /ticket-wrap -->
+    </body>
+</html>

@@ -489,6 +489,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 let activeEvents = events.filter(ev => {
                     const eventDate = new Date(ev.setDate);
 
+                    // Skip overlay-type events (handled separately below)
+                    if (ev.type === 'overlay') return false;
+
                     // Check if event is active based on start date
                     if (eventDate > now) return false;
 
@@ -511,6 +514,37 @@ document.addEventListener('DOMContentLoaded', function () {
                     updateHeaderLogo(eventToApply);
                 }
                 applyEventBackgroundForHome();
+
+                // ── Overlay events (e.g. birthday celebration) ──
+                // These are separate from wallpaper events; look for any active
+                // event with type === 'overlay' and dynamically load its script.
+                var overlayEvents = events.filter(function (ev) {
+                    if (ev.type !== 'overlay') return false;
+                    var start = new Date(ev.setDate);
+                    var end = ev.endDate ? new Date(ev.endDate) : null;
+                    return start <= now && (!end || end >= now);
+                });
+
+                overlayEvents.forEach(function (ov) {
+                    if (!ov.overlay_script) return;
+
+                    // Respect show_once_per_day: check localStorage before loading
+                    if (ov.config && ov.config.show_once_per_day) {
+                        var storageKey = 'materio_overlay_' + ov.event.replace(/\s+/g, '_').toLowerCase();
+                        var today = new Date().toISOString().slice(0, 10);
+                        try {
+                            if (localStorage.getItem(storageKey) === today) return;
+                        } catch (e) { /* proceed */ }
+                    }
+
+                    // Dynamically inject the overlay script
+                    var s = document.createElement('script');
+                    s.src = ov.overlay_script;
+                    s.defer = true;
+                    // Pass config to the overlay script via a global
+                    window.__materioOverlayConfig = ov.config || {};
+                    document.body.appendChild(s);
+                });
             })
             .catch(err => {
 

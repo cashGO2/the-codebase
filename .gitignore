@@ -45,5 +45,6 @@ _drafts/*
 .private
 blog-svelte/*
 community-api/*
+materio-mcp-server/
 pdfs/*
 .gemini/
