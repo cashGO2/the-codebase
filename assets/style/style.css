@@ -39,6 +39,16 @@ body {
   transition: background 0.3s, color 0.3s;
 }
 
+::selection {
+  background: #ff895075;
+  color: inherit;
+}
+
+::-moz-selection {
+  background: #ff895075;
+  color: inherit;
+}
+
 .container,
 .home-container,
 .post-container {
@@ -260,11 +270,16 @@ body {
 
 /* Blockquote styling */
 .post-body blockquote {
-  background: var(--card-bg);
-  padding: 1rem 1.5rem;
+  background: transparent;
+  border-left: 4px solid #d0d7de;
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
   margin: 1.5rem 0;
-  border-radius: 12px;
+  border-radius: 0;
   position: relative;
+}
+
+body.dark-mode .post-body blockquote {
+  border-left-color: #6e7681;
 }
 
 /* Prevent ads inside blockquotes */
@@ -1070,6 +1085,10 @@ table td code {
   .post-body {
     font-size: 1rem;
     line-height: 1.6;
+  }
+
+  .post-body p {
+    font-size: 1rem;
   }
 
   .post-body img {

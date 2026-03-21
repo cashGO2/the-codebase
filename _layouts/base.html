@@ -179,6 +179,19 @@
       order: 1;
     }
 
+    /* Only show link-simple icon for anchor pills, hide any arrow icons */
+    .post-body a.anchor-pill i.fa-arrow-up-right,
+    .post-content a.anchor-pill i.fa-arrow-up-right {
+      display: none;
+    }
+
+    /* Tilt the link-simple icon for anchor pills */
+    .post-body a.anchor-pill i.fa-link-simple,
+    .post-content a.anchor-pill i.fa-link-simple {
+      display: inline-block;
+      transform: rotate(-45deg);
+    }
+
     @media (max-width: 640px) {
 
       .post-body a.link-pill::after,
@@ -219,8 +232,34 @@
             if (a.querySelector('img')) return;
             // Skip anchors inside code or pre
             if (a.closest('code, pre')) return;
+            
+            var href = a.getAttribute('href');
+            
+            // Handle anchor pills (internal links starting with #)
+            if (href && href.startsWith('#')) {
+              if (!a.classList.contains('anchor-pill')) a.classList.add('anchor-pill');
+              // Remove link-pill class if present
+              a.classList.remove('link-pill');
+              // Remove any existing pill icons to avoid duplicates
+              var anchorPillIcons = a.querySelectorAll('i.fa-arrow-up-right, i.fa-link, i.fa-link-simple');
+              anchorPillIcons.forEach(function (icon) { icon.remove(); });
+              // Ensure FontAwesome link-simple icon exists
+              if (!a.querySelector('i.fa-link-simple')) {
+                var i = document.createElement('i');
+                i.className = 'fa-regular fa-link-simple';
+                i.style.transform = 'rotate(-45deg)';
+                a.appendChild(i);
+              }
+              return;
+            }
+            
+            // Handle external links as link-pills
             // Add pill class if not already present
             if (!a.classList.contains('link-pill')) a.classList.add('link-pill');
+            a.classList.remove('anchor-pill');
+            // Remove any anchor-style icons before adding external icon
+            var linkPillIcons = a.querySelectorAll('i.fa-link-simple, i.fa-link');
+            linkPillIcons.forEach(function (icon) { icon.remove(); });
             // Ensure FontAwesome arrow exists
             if (!a.querySelector('i.fa-arrow-up-right')) {
               var i = document.createElement('i');

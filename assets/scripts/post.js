@@ -117,7 +117,7 @@ function addHeadingAnchorLinks() {
 
       // Copy to clipboard
       navigator.clipboard.writeText(url).then(() => {
-        showAnchorToast('Link copied to clipboard!');
+        // Copied successfully; no toast needed.
       }).catch(() => {
         // Fallback for older browsers
         const textArea = document.createElement('textarea');
@@ -128,9 +128,8 @@ function addHeadingAnchorLinks() {
         textArea.select();
         try {
           document.execCommand('copy');
-          showAnchorToast('Link copied to clipboard!');
         } catch (err) {
-          showAnchorToast('Failed to copy link');
+          console.error('Failed to copy heading link:', err);
         }
         document.body.removeChild(textArea);
       });
@@ -139,32 +138,6 @@ function addHeadingAnchorLinks() {
     // Append anchor at the end of the heading
     heading.appendChild(anchor);
   });
-}
-
-// Show toast notification for anchor copy
-function showAnchorToast(message) {
-  // Remove existing toast
-  const existingToast = document.querySelector('.anchor-toast');
-  if (existingToast) {
-    existingToast.remove();
-  }
-
-  // Create toast
-  const toast = document.createElement('div');
-  toast.className = 'anchor-toast';
-  toast.innerHTML = `<i class="fa-solid fa-check"></i>${message}`;
-  document.body.appendChild(toast);
-
-  // Show toast
-  requestAnimationFrame(() => {
-    toast.classList.add('show');
-  });
-
-  // Hide and remove after 2 seconds
-  setTimeout(() => {
-    toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 300);
-  }, 2000);
 }
 
 function slugify(text) {

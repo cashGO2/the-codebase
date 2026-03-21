@@ -4,7 +4,7 @@
   "frequency": "daily",
   "customFrequencyHours": "0",
   "title": "Materio is now in your AI",
-  "link": "/changelog/introducing-mcp-connectors/",
+  "link": "/whats-new/introducing-mcp-connectors/",
   "description": "**Introducing MCP Connectors for Claude & ChatGPT.**\n\nYour AI can now search the Materio library, read your subject notes, and answer questions directly from your course material.\n\nNo copy-pasting. No tab switching. Just ask.\n\n**Reading a PDF and need help?** Hit the Share button and choose your AI — it opens with full context already set, ready to assist right where you left off.",
   "media": [
     
