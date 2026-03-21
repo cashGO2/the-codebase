@@ -122,20 +122,22 @@ module.exports = async (req, res) => {
     }
 
     // 3. TRADITIONAL LOGIN (Case: has username and password)
-    if (!username || !password) {
+    const normalizedUsername = (username || '').trim();
+
+    if (!normalizedUsername || !password) {
       return res.status(400).json({ error: 'Username and password are required' });
     }
 
     // Check if username is an email
-    const isEmail = /\S+@\S+\.\S+/.test(username);
+    const isEmail = /\S+@\S+\.\S+/.test(normalizedUsername);
     const field = isEmail ? 'email' : 'username';
 
-    // Find user by username or email
+    // Find user by username or email (case-insensitive to avoid unexpected auth failures)
     const { data: user, error } = await supabase
       .from('users')
       .select('*')
-      .eq(field, username)
-      .single();
+      .ilike(field, normalizedUsername)
+      .maybeSingle();
 
     if (error || !user) {
       return res.status(401).json({ error: 'Invalid credentials' });

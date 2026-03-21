@@ -383,6 +383,71 @@ function updateModalContent(modal, data) {
   const imageContainer = modal.querySelector('.promo-image');
   const modalContainer = modal.querySelector('.promo-modal');
 
+  // Orientation feature flag (desktop/tablet only):
+  // default is horizontal; set promo.json orientation to "vertical" for stacked layout.
+  if (modalContainer) {
+    modalContainer.classList.remove('promo-orientation-vertical');
+
+    const orientation = (data.orientation || 'horizontal').toLowerCase();
+    const isMobileBottomSheet = window.matchMedia('(max-width: 500px)').matches;
+    const shouldUseVertical = orientation === 'vertical' && !isMobileBottomSheet;
+
+    if (shouldUseVertical) {
+      modalContainer.classList.add('promo-orientation-vertical');
+
+      // Inline fail-safe: apply vertical layout even if cached CSS misses the new class rules.
+      modalContainer.style.flexDirection = 'column';
+      modalContainer.style.maxWidth = '460px';
+      modalContainer.style.maxHeight = 'none';
+      modalContainer.style.overflow = 'hidden';
+      modalContainer.style.borderRadius = '28px';
+
+      if (imageContainer) {
+        imageContainer.style.minWidth = '100%';
+        imageContainer.style.maxWidth = '100%';
+        imageContainer.style.width = '100%';
+        imageContainer.style.height = 'min(26vh, 220px)';
+        imageContainer.style.flexShrink = '0';
+        imageContainer.style.borderRight = 'none';
+        imageContainer.style.borderBottom = document.body.classList.contains('dark-mode')
+          ? '1px solid rgba(255, 255, 255, 0.15)'
+          : '1px solid rgba(0, 0, 0, 0.12)';
+      }
+
+      const contentContainer = modal.querySelector('.promo-content');
+      if (contentContainer) {
+        contentContainer.style.width = '100%';
+        contentContainer.style.padding = '18px 28px 28px';
+        contentContainer.style.boxSizing = 'border-box';
+      }
+    } else {
+      // Reset inline fallbacks for horizontal or mobile bottom-sheet mode.
+      modalContainer.style.flexDirection = '';
+      modalContainer.style.maxWidth = '';
+      modalContainer.style.maxHeight = '';
+      modalContainer.style.overflow = '';
+      modalContainer.style.borderRadius = '';
+
+      if (imageContainer) {
+        imageContainer.style.minWidth = '';
+        imageContainer.style.maxWidth = '';
+        imageContainer.style.width = '';
+        imageContainer.style.height = '';
+        imageContainer.style.flexShrink = '';
+        imageContainer.style.borderRight = '';
+        imageContainer.style.borderBottom = '';
+      }
+
+      const contentContainer = modal.querySelector('.promo-content');
+      if (contentContainer) {
+        contentContainer.style.width = '';
+        contentContainer.style.padding = '';
+        contentContainer.style.overflow = '';
+        contentContainer.style.boxSizing = '';
+      }
+    }
+  }
+
   // Support both 'media' (new) and 'images' (legacy) properties
   const mediaItems = data.media || data.images;
 

@@ -228,8 +228,23 @@ body {
   margin-bottom: 1rem;
 }
 
+.post-body p {
+  font-size: 17px;
+  font-family: 'Libre Baskerville', serif;
+}
+
+.post-body h1,
+.post-body h2,
+.post-body h3,
+.post-body h4,
+.post-body h5,
+.post-body h6 {
+  font-family: 'Manrope', sans-serif;
+  font-size: 20px;
+}
+
 .post-body a {
-  color: #ff8200;
+  color: #ff5400;
   text-decoration: underline;
 }
 
@@ -563,6 +578,7 @@ body.dark-mode .post-body blockquote.quote::before {
 }
 
 .post-description {
+  font-family: 'Libre Baskerville', serif;
   font-size: 1rem;
   color: #555;
   margin: 0.5rem 0 1.25rem 0;

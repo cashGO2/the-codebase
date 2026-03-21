@@ -414,9 +414,15 @@
                         onclick="createNewNotebook()">
                         <i class="far fa-edit"></i>
                     </button>
-                    <button id="sharePdfButton" title="Share PDF" aria-label="Share PDF">
-                        <i class="far fa-share-nodes"></i>
-                    </button>
+                    <div class="popup-share-tooltip-anchor">
+                        <button id="sharePdfButton" title="Share PDF" aria-label="Share PDF">
+                            <i class="far fa-share-nodes"></i>
+                        </button>
+                        <div id="popupShareTooltip" class="bug-report-tooltip popup-share-tooltip">
+                            <span>Materio is now in your AI,<br>Share to try out</span>
+                            <i class="fa-solid fa-xmark close-tooltip" onclick="closePopupShareTooltip()"></i>
+                        </div>
+                    </div>
                     <button id="downloadButton" title="Download for offline reading"
                         aria-label="Download for offline reading">
                         <i class="far fa-bookmark"></i>

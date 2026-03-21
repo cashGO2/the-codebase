@@ -80,7 +80,7 @@ body.dark-mode #followup-response {
 }
 
 .attachment-card:hover {
-  border-color: #ff8200;
+  border-color: #ff5400;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -382,7 +382,7 @@ body.dark-mode .attachment-card {
 }
 
 .author-info .author-name:hover {
-  color: #ff8200 !important;
+  color: #ff5400 !important;
 }
 
 /* Dark mode author styles */
@@ -407,7 +407,7 @@ body.dark-mode .author-info .author-name {
 }
 
 body.dark-mode .attachment-card:hover {
-  border-color: #ff8200;
+  border-color: #ff5400;
 }
 
 body.dark-mode .attachment-title {
@@ -520,16 +520,16 @@ body.dark-mode .code-tab-btn {
 
 .code-tab-btn:hover {
   background: rgba(255, 130, 0, 0.05);
-  color: #ff8200;
+  color: #ff5400;
 }
 
 .code-tab-btn.active {
-  background: #ff8200;
+  background: #ff5400;
   color: #ffffff !important;
 }
 
 body.dark-mode .code-tab-btn.active {
-  background: #ff8200;
+  background: #ff5400;
   color: #ffffff !important;
 }
 
@@ -566,8 +566,8 @@ body.dark-mode .code-tab-btn.active {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--primary, #ff8200);
-  border: 2px solid var(--primary, #ff8200);
+  background: var(--primary, #ff5400);
+  border: 2px solid var(--primary, #ff5400);
   color: white;
   cursor: pointer;
   opacity: 0;
@@ -586,7 +586,7 @@ body.dark-mode .code-tab-btn.active {
 
 #scroll-to-top:hover {
   background: white;
-  color: var(--primary, #ff8200);
+  color: var(--primary, #ff5400);
 }
 
 #scroll-to-top i {
@@ -594,14 +594,14 @@ body.dark-mode .code-tab-btn.active {
 }
 
 body.dark-mode #scroll-to-top {
-  background: var(--primary, #ff8200);
-  border-color: var(--primary, #ff8200);
+  background: var(--primary, #ff5400);
+  border-color: var(--primary, #ff5400);
 }
 
 body.dark-mode #scroll-to-top:hover {
   background: #444444;
   border-color: #555555;
-  color: var(--primary, #ff8200);
+  color: var(--primary, #ff5400);
 }
 
 /* Print styles for code */
@@ -678,7 +678,7 @@ body.dark-mode #scroll-to-top:hover {
 }
 
 .post-toc .toc a:hover {
-  color: var(--primary, #ff8200);
+  color: var(--primary, #ff5400);
   text-decoration: underline;
 }
 
@@ -949,7 +949,7 @@ body.dark-mode .site-toc-sidebar {
 }
 
 .site-toc-sidebar .toc a:hover {
-  color: var(--primary, #ff8200);
+  color: var(--primary, #ff5400);
   text-decoration: none;
 }
 
@@ -959,7 +959,7 @@ body.dark-mode .site-toc-sidebar {
 }
 
 .site-toc-sidebar .toc a.active {
-  color: var(--primary, #ff8200);
+  color: var(--primary, #ff5400);
   font-weight: 600;
 }
 
@@ -971,7 +971,7 @@ body.dark-mode .site-toc-sidebar {
   top: 8px;
   bottom: 8px;
   width: 4px;
-  background: var(--primary, #ff8200);
+  background: var(--primary, #ff5400);
   border-radius: 2px;
 }
 
@@ -1098,7 +1098,7 @@ body {
   display: inline-block;
   margin-left: 10px;
   font-size: 0.65em;
-  color: #ff8200;
+  color: #ff5400;
   opacity: 0;
   transition: opacity 0.2s ease;
   text-decoration: none;
@@ -1267,7 +1267,7 @@ body {
   gap: 4px;
   margin-top: 8px;
   padding: 4px 8px;
-  background: linear-gradient(135deg, #ff8200 0%, #ff6b00 100%);
+  background: linear-gradient(135deg, #ff5400 0%, #ff6b00 100%);
   color: white;
   font-size: 10px;
   font-weight: 600;

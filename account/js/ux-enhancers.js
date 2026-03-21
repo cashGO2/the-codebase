@@ -1,5 +1,8 @@
 document.addEventListener('keydown', function (e) {
-    const key = e.key.toLowerCase();
+    const key = (e.key || '').toLowerCase();
+    if (!key) {
+        return;
+    }
     const isBlockedCombo =
         key === 'f12' ||
         (e.ctrlKey && e.shiftKey && ['i', 'j', 'c'].includes(key)) ||
