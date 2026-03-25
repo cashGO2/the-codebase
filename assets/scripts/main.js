@@ -504,6 +504,84 @@ const submitButton = document.getElementById("submitButton");
 const popup = document.getElementById("popup");
 const closePopup = document.getElementById("closePopup");
 
+const PDF_LFS_POINTER_MAX_BYTES = 2048;
+
+function buildApiPdfFallbackUrl(pdfUrl) {
+  try {
+    const parsed = new URL(pdfUrl, window.location.origin);
+    const pdfPathPrefix = "/pdfs/";
+
+    if (!parsed.pathname.includes(pdfPathPrefix)) {
+      return null;
+    }
+
+    const relativePdfPath = parsed.pathname.split(pdfPathPrefix)[1];
+    if (!relativePdfPath || !relativePdfPath.toLowerCase().endsWith(".pdf")) {
+      return null;
+    }
+
+    return `/api/pdfs/${relativePdfPath}`;
+  } catch (error) {
+    return null;
+  }
+}
+
+async function resolvePdfSourceUrl(pdfUrl) {
+  const fallbackApiUrl = buildApiPdfFallbackUrl(pdfUrl);
+  if (!fallbackApiUrl) {
+    return pdfUrl;
+  }
+
+  try {
+    const headResponse = await fetch(pdfUrl, {
+      method: "HEAD",
+      cache: "no-store",
+    });
+
+    if (headResponse.ok) {
+      const contentLengthHeader = headResponse.headers.get("content-length");
+      const contentLength = Number(contentLengthHeader);
+
+      if (Number.isFinite(contentLength) && contentLength > 0) {
+        if (contentLength <= PDF_LFS_POINTER_MAX_BYTES) {
+          return fallbackApiUrl;
+        }
+
+        return pdfUrl;
+      }
+    }
+
+    const probeResponse = await fetch(pdfUrl, {
+      method: "GET",
+      cache: "no-store",
+      headers: {
+        Range: `bytes=0-${PDF_LFS_POINTER_MAX_BYTES - 1}`,
+      },
+    });
+
+    if (!probeResponse.ok) {
+      return pdfUrl;
+    }
+
+    const probeBuffer = await probeResponse.arrayBuffer();
+    if (probeBuffer.byteLength <= PDF_LFS_POINTER_MAX_BYTES) {
+      const probeText = new TextDecoder("utf-8").decode(probeBuffer);
+      const looksLikeLfsPointer = probeText.includes(
+        "version https://git-lfs.github.com/spec/v1",
+      );
+      const looksLikePdfHeader = probeText.startsWith("%PDF-");
+
+      if (looksLikeLfsPointer || !looksLikePdfHeader) {
+        return fallbackApiUrl;
+      }
+    }
+  } catch (error) {
+    console.warn("Failed to probe PDF source URL, using original URL:", error);
+  }
+
+  return pdfUrl;
+}
+
 submitButton.addEventListener("click", async () => {
   // Haptic feedback for submit action
   if (window.MaterioHaptics) {
@@ -643,6 +721,7 @@ submitButton.addEventListener("click", async () => {
 
     // Transform to local CDN if enabled
     pdfUrl = window.MaterioLocalCDN?.transformUrl(pdfUrl) || pdfUrl;
+    pdfUrl = await resolvePdfSourceUrl(pdfUrl);
 
     // Use the cached loading system
     window.loadPdfWithCache(pdfUrl);
@@ -664,6 +743,7 @@ submitButton.addEventListener("click", async () => {
 
     // Transform to local CDN if enabled
     pdfUrl = window.MaterioLocalCDN?.transformUrl(pdfUrl) || pdfUrl;
+    pdfUrl = await resolvePdfSourceUrl(pdfUrl);
     document.getElementById("popupContent").innerHTML =
       `<iframe id="pdf-iframe" scrolling='no' allowfullscreen webkitallowfullscreen style="border:none; width:100%; height:calc(100% - 17px); border-radius:25px; margin-top:22px; corner-shape: squircle;"
         src="/oread/web/viewer.html?disableStream=false&disableRange=false&rangeChunkSize=1048576&file=${encodeURIComponent(pdfUrl)}"></iframe>`;
@@ -971,13 +1051,14 @@ async function checkSharedPdf() {
     const data = await response.json();
 
     if (data.actualUrl) {
+      const resolvedPdfUrl = await resolvePdfSourceUrl(data.actualUrl);
       const popup = document.getElementById("popup");
       if (typeof window.loadPdfWithCache === "function") {
-        window.loadPdfWithCache(data.actualUrl);
+        window.loadPdfWithCache(resolvedPdfUrl);
       } else {
         document.getElementById("popupContent").innerHTML =
           `<iframe id="pdf-iframe" scrolling='no' allowfullscreen webkitallowfullscreen style="border:none; width:100%; height:calc(100% - 17px); border-radius:25px; margin-top:22px; corner-shape: squircle;"
-                src="/oread/web/viewer.html?file=${encodeURIComponent(data.actualUrl)}"></iframe>`;
+                src="/oread/web/viewer.html?file=${encodeURIComponent(resolvedPdfUrl)}"></iframe>`;
       }
       if (popup) {
         popup.classList.remove("closing");
@@ -3490,7 +3571,7 @@ function collapseSearchResults(event) {
 }
 
 // Open PDF directly from search result
-function openSearchResultPdf(event, semester, subject, topic) {
+async function openSearchResultPdf(event, semester, subject, topic) {
   // Stop event propagation to prevent selecting the result
   if (event) event.stopPropagation();
 
@@ -3518,6 +3599,7 @@ function openSearchResultPdf(event, semester, subject, topic) {
 
   // Transform to local CDN if enabled
   pdfUrl = window.MaterioLocalCDN?.transformUrl(pdfUrl) || pdfUrl;
+  pdfUrl = await resolvePdfSourceUrl(pdfUrl);
 
   // Open PDF using cache system if available
   if (typeof window.loadPdfWithCache === "function") {
@@ -3947,7 +4029,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // ================================================
 // PDF LINK INTERCEPTOR
 // ================================================
-document.addEventListener("click", function (e) {
+document.addEventListener("click", async function (e) {
   // Find closest anchor tag
   const link = e.target.closest("a");
   if (!link) return;
@@ -3977,14 +4059,15 @@ document.addEventListener("click", function (e) {
   if (isPdf) {
     // Prevent default navigation (opening in new tab or navigating away)
     e.preventDefault();
+    const resolvedHref = await resolvePdfSourceUrl(href);
 
     // Use the cache loader/popup viewer if available
     if (typeof window.loadPdfWithCache === "function") {
-      window.loadPdfWithCache(href);
+      window.loadPdfWithCache(resolvedHref);
     } else {
       // Fallback context: just let it open if our viewer isn't ready,
       // but we intercepted it so we must handle it.
-      window.open(href, "_blank");
+      window.open(resolvedHref, "_blank");
     }
   }
 });
