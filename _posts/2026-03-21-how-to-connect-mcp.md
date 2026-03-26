@@ -28,28 +28,49 @@ Every conversation you open through the Materio GPT has full access to the libra
 
 ![ChatGPT](/assets/img/post-content/56ghsa212ty.webp)
 
+
 ## Connecting Claude
 
-The Claude connector uses MCP (Model Context Protocol), which currently requires the **Claude Desktop app**. Remote MCP connectors or Custom connectors are still in beta and not yet available to all users. Free tier users are also limited to one active custom connector at a time, so keep that in mind.
+The Claude connector uses MCP (Model Context Protocol). Remote MCP connectors and custom connectors are still in beta and not yet available to all users. Free tier users are also limited to one active custom connector at a time, so keep that in mind.
 
-### Option 1 — One-Click Configurator (Recommended)
+### Option 1 — Custom Connector (Beta)
+
+If you have access to Claude's custom connector feature, this is the most straightforward path — no scripts, no config file editing.
+
+Open Claude and navigate to the **Connectors** tab, then click **Add Custom Connector**.
+
+![connectors tab](/assets/img/post-content/23dkj54v.webp)
+
+Enter a name (e.g. "Materio") and paste the following as the Remote MCP Server URL: `https://materiomcp.vercel.app`
+
+Click **Add** and you're done.
+
+![custom connector modal](/assets/img/post-content/1h3490s.webp)
+
+Set tool permissions to **Always Allow** for a smoother experience.
+
+![allow permissions](/assets/img/post-content/7as823kd0.webp)
+
+> [!NOTE] Custom connectors are currently in beta and may not be available to all Claude users yet.  
+> Options 2 and 3 require the Claude Desktop app to be installed. If you don't have it, download it from [claude.ai/download](https://claude.ai/download). Option 1 is the recommended path for better experience across platforms.  
+
+### Option 2 — One-Click Configurator
 
 Open your terminal and run the command for your operating system:
 
 **Windows:**
 ```
-irm https://materiomcp.vercel.app/scripts/claude.js | node --input-type=module
+irm https://materiomcp.vercel.app/setup/getclaude.js | node --input-type=module
 ```
 
 **macOS:**
 ```
-curl -s https://materiomcp.vercel.app/scripts/claude.js | node --input-type=module
+curl -s https://materiomcp.vercel.app/setup/getclaude.js | node --input-type=module
 ```
 
 This script automatically configures the Materio MCP server in your Claude Desktop setup. Restart Claude Desktop after running it and the connector will be active.
 
-
-### Option 2 — Manual Configuration
+### Option 3 — Manual Configuration
 
 If you prefer to set it up manually, you'll need to edit the Claude Desktop config file directly. The easiest way to find it is through the app itself: open Claude Desktop, go to **Settings**, and navigate to the **Developer** tab. Under the **Local MCP Servers** section, click **Edit Config**.
 
@@ -68,30 +89,12 @@ Inside the config, locate the `mcpServers` object and add the following entry:
   "args": [
     "-y",
     "mcp-remote",
-    "https://materiomcp.vercel.app/mcp"
+    "https://materiomcp.vercel.app"
   ]
 }
 ```
+
 Save the file, then restart Claude Desktop. The Materio MCP server should now appear in your active connectors.
-
-### Option 3 — Custom Connector (Beta)
-
-If you have access to Claude's custom connector feature, this is the most straightforward path — no scripts, no config file editing.
-
-Open Claude and navigate to the **Connectors** tab, then click **Add Custom Connector**.
-
-![custom connector modal](/assets/img/post-content/34kjjs8usd.webp)
-
-Enter a name (e.g. "Materio") and paste the following as the Remote MCP Server URL:
-
-```
-https://materiomcp.vercel.app/mcp
-```
-
-Click **Add** and you're done.
-
-> [!NOTE] Custom connectors are currently in beta and may not be available to all Claude users yet.
-
 
 ## What You Can Do After Connecting
 

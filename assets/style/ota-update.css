@@ -41,7 +41,7 @@ i[class*="hgi-"] {
     font-family: 'Manrope', sans-serif;
     font-weight: 700;
     font-size: 15px;
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
     transition: all 0.3s ease;
     align-items: center;
     justify-content: center;

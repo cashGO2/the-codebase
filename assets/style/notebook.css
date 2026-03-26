@@ -97,7 +97,7 @@ body.dark-mode {
     border: none;
     background: rgba(0, 0, 0, 0.05);
     border-radius: 50%;
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -212,7 +212,7 @@ body.dark-mode .notebook-close-btn {
     border: none;
     background: transparent;
     border-radius: 8px;
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -412,7 +412,7 @@ body.dark-mode .notebook-editor code {
     height: 18px;
     margin-top: 2px;
     accent-color: var(--notebook-accent);
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
 }
 
 /* Image styling */
@@ -510,7 +510,7 @@ body.dark-mode .notebook-editor code {
     height: 36px;
     border: none;
     border-radius: 50%;
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -554,7 +554,7 @@ body.dark-mode .ai-cancel-btn {
     border-radius: 20px;
     font-size: 12px;
     color: #7c3aed;
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
     transition: all var(--notebook-transition);
 }
 
@@ -601,7 +601,7 @@ body.dark-mode .ai-cancel-btn {
     color: white;
     font-size: 12px;
     font-weight: 600;
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
     transition: background var(--notebook-transition);
 }
 
@@ -692,7 +692,7 @@ body.dark-mode .notebook-manage-link {
     font-family: 'Manrope', sans-serif;
     font-size: 13px;
     font-weight: 600;
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
     transition: all var(--notebook-transition);
 }
 
@@ -787,7 +787,7 @@ body.dark-mode .notebook-btn-secondary:hover {
     font-size: 12px;
     font-weight: 700;
     color: var(--notebook-accent);
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
     transition: all var(--notebook-transition);
 }
 
@@ -806,7 +806,7 @@ body.dark-mode .notebook-btn-secondary:hover {
     border: none;
     background: rgba(0, 0, 0, 0.06);
     border-radius: 50%;
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -891,7 +891,7 @@ body.dark-mode .link-pdf-option:hover {
     border-radius: 20px;
     font-size: 12px;
     font-weight: 600;
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
     transition: background var(--notebook-transition);
 }
 
@@ -984,7 +984,7 @@ body.dark-mode .link-pdf-option:hover {
     border: none;
     background: rgba(0, 0, 0, 0.06);
     border-radius: 50%;
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1058,7 +1058,7 @@ body.dark-mode .link-pdf-option:hover {
     border: none;
     background: rgba(0, 0, 0, 0.06);
     border-radius: 50%;
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1081,7 +1081,7 @@ body.dark-mode .link-pdf-option:hover {
     gap: 14px;
     padding: 14px 16px;
     border-radius: 12px;
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
     transition: background var(--notebook-transition);
     margin-bottom: 8px;
 }
@@ -1129,7 +1129,7 @@ body.dark-mode .export-option:hover {
     font-size: larger;
     transition: all 0.3s ease;
     position: relative;
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
     background: none;
     border: none;
 }
@@ -1277,7 +1277,7 @@ body.dark-mode .notebook-nav-btn:hover i {
     font-family: 'Manrope', sans-serif;
     font-size: 14px;
     font-weight: 600;
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
     transition: background var(--notebook-transition);
 }
 
@@ -1297,7 +1297,7 @@ body.dark-mode .notebook-nav-btn:hover i {
     font-size: 13px;
     font-weight: 600;
     color: var(--notebook-text);
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
     outline: none;
     transition: all var(--notebook-transition);
     appearance: none;
@@ -1353,7 +1353,7 @@ body.dark-mode .notebook-filter-select {
     border-radius: 24px;
     corner-shape: squircle;
     padding: 0;
-    cursor: default;
+    cursor: var(--f-cursor-default);
     transition: all var(--notebook-transition);
     position: relative;
     overflow: hidden;
@@ -1367,7 +1367,7 @@ body.dark-mode .notebook-card {
 
 .notebook-card-content {
     padding: 20px;
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
     flex: 1;
 }
 
@@ -1398,7 +1398,7 @@ body.dark-mode .notebook-card-actions-quick {
     border: none;
     background: transparent;
     color: var(--notebook-text-muted);
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1483,7 +1483,7 @@ body.dark-mode .card-action-btn:hover {
     border-radius: 8px;
     font-size: 12px;
     color: var(--notebook-text-secondary);
-    cursor: pointer;
+    cursor: var(--f-cursor-pointer);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1548,7 +1548,7 @@ body.dark-mode .notebook-card-action:hover {
    ================================================ */
 
 .notebook-editor.view-mode {
-    cursor: default;
+    cursor: var(--f-cursor-default);
     background: transparent;
 }
 

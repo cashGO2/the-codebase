@@ -1,6 +1,17 @@
 [
     {
         "branch": "stable",
+        "version": "4.8.1.0",
+        "build": "26/03/2026",
+        "logs": [
+            "Introducing MCP Conneectors in ChatGPT and Claude",
+            "Addressing critical CDN issue where 1-4 semester resources were falsely flagged as not found",
+            "Topic selector select first value by default (User request)",
+            "Bug fixes and performance improvements."
+        ]
+    },
+    {
+        "branch": "stable",
         "version": "4.8.0.0",
         "build": "08/02/2026",
         "logs": [

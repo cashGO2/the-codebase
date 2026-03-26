@@ -51,7 +51,7 @@ The Materio MCP connector gives your AI assistant five capabilities:
 
 ## The Library It Has Access To
 
-This isn't a small dataset. The Materio library currently spans Semester 1 through 6 totaling over 700+ PDFs, covering subjects like DBMS, Operating Systems, Computer Networks, Java, Python, Machine Learning, Compiler Design, MEAN Stack, AWS, Software Engineering, and more.
+This isn't a small dataset. The Materio library currently spans Semester 1 through 6 totaling over 800+ PDFs, covering subjects like DBMS, Operating Systems, Computer Networks, Java, Python, Machine Learning, Compiler Design, MEAN Stack, AWS, Software Engineering, and more.
 
 For many subjects, the library goes beyond just chapter notes. It includes multiple question banks, previous year exam papers going back several years, lab manuals, assignments with solutions, lecture notes, and reference books.
 
@@ -65,39 +65,12 @@ Every PDF in Materio has a **Share** button. Clicking it gives you two options a
  
 The AI then uses the MCP connector to pull up that exact resource and picks up right where you left off. No copy-pasting, no context-setting, no tab switching. You're reading, you have a question, you click, and the AI already knows what you're working on.
 
+![continuous-context](/assets/img/post-content/62s3dsi90.webp)
+
 
 ## How to Connect It
 
-### ChatGPT
-
-The easiest way. Materio is available as a custom GPT directly in the GPT Store — no configuration needed.
-
-Search for **"Materio"** in the GPT Store, or open it directly:
-
-[Materio GPT](https://chatgpt.com/g/g-69b90f449ff08191a3d32d3c0bec0591-materio)
-
-### Claude
-
-> [!NOTE] Claude's remote MCP connectors are currently in beta and not available to everyone yet. Free tier users are also limited to one active connector. The MCP connector requires the **Claude Desktop app** to be installed.
-
-To make setup as smooth as possible, we built a one-click configurator. Open your terminal and run:
-
-**Windows:**
-```
-irm https://materiomcp.vercel.app/scripts/claude.js | node --input-type=module
-```
-
-**macOS:**
-```
-curl -s https://materiomcp.vercel.app/scripts/claude.js | node --input-type=module
-```
-
-This auto-configures the Materio MCP server in your Claude Desktop setup. No manual JSON editing required.
- 
-If you prefer to configure it manually, you can edit the Claude Desktop config file directly (`claude_desktop_config.json`) and add the Materio MCP server entry there.
- 
-Once connected, Claude will use Materio automatically whenever your questions call for it.
- 
+We have written a detailed guide on how to connect Materio to Claude and ChatGPT. You can find it here: [Setting Up Materio MCP for Claude and ChatGPT](/docs/mcp/)
 
 
 ## What's Next

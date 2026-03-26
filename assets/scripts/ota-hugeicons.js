@@ -174,10 +174,60 @@
         fetch('/assets/data/releases.json')
             .then(response => response.json())
             .then(releases => {
-                // Find beta branch
+                // Find latest stable and beta branches
+                // Assuming releases.json is ordered by newest first
+                const stableRelease = releases.find(r => r.branch.toLowerCase() === 'stable');
                 const betaRelease = releases.find(r => r.branch.toLowerCase() === 'beta');
 
-                if (betaRelease) {
+                if (!betaRelease && !stableRelease) return;
+
+                // Version comparison helper (e.g. 4.8.0.0 vs 4.7.0.0)
+                const parseVersion = (v) => (v || "").split('.').map(n => parseInt(n) || 0);
+                
+                // Date comparison helper (DD/MM/YYYY)
+                const parseDate = (d) => {
+                    if (!d) return 0;
+                    const parts = d.split('/');
+                    if (parts.length !== 3) return 0;
+                    // Return as YYYYMMDD integer for comparison
+                    return parseInt(parts[2] + parts[1].padStart(2, '0') + parts[0].padStart(2, '0'));
+                };
+
+                let displayRelease = betaRelease;
+                let isBeta = true;
+
+                if (stableRelease && betaRelease) {
+                    const stableVer = parseVersion(stableRelease.version);
+                    const betaVer = parseVersion(betaRelease.version);
+                    const stableDate = parseDate(stableRelease.build);
+                    const betaDate = parseDate(betaRelease.build);
+
+                    // Compare versions
+                    let isStableNewer = false;
+                    for (let i = 0; i < Math.max(stableVer.length, betaVer.length); i++) {
+                        const s = stableVer[i] || 0;
+                        const b = betaVer[i] || 0;
+                        if (s > b) { isStableNewer = true; break; }
+                        if (b > s) { isStableNewer = false; break; }
+                    }
+
+                    // If versions are equal, compare build dates
+                    if (!isStableNewer && stableRelease.version === betaRelease.version) {
+                        if (stableDate > betaDate) {
+                            isStableNewer = true;
+                        }
+                    }
+
+                    if (isStableNewer) {
+                        displayRelease = stableRelease;
+                        isBeta = false;
+                    }
+                } else if (stableRelease) {
+                    displayRelease = stableRelease;
+                    isBeta = false;
+                }
+
+                if (displayRelease) {
                     // Wait a bit for DOM to be ready
                     setTimeout(() => {
                         const versionElem = document.getElementById("versionInfoText");
@@ -185,14 +235,14 @@
                         const logElem = document.getElementById("changeLogContent");
 
                         if (versionElem) {
-                            versionElem.textContent = "Version: " + betaRelease.version + " (Beta)";
+                            versionElem.textContent = "Version: " + displayRelease.version + (isBeta ? " (Beta)" : "");
                         }
                         if (buildElem) {
-                            buildElem.textContent = "Build: " + betaRelease.build;
+                            buildElem.textContent = "Build: " + displayRelease.build;
                         }
-                        if (logElem && Array.isArray(betaRelease.logs)) {
+                        if (logElem && Array.isArray(displayRelease.logs)) {
                             let html = "";
-                            betaRelease.logs.forEach(log => {
+                            displayRelease.logs.forEach(log => {
                                 html += "<p>" + log + "</p>";
                             });
                             logElem.innerHTML = html;

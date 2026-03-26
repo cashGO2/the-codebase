@@ -520,7 +520,7 @@ function buildApiPdfFallbackUrl(pdfUrl) {
       return null;
     }
 
-    return `/api/pdfs/${relativePdfPath}`;
+    return `https://cdn-materioa.vercel.app/api/pdfs/${relativePdfPath}`;
   } catch (error) {
     return null;
   }
@@ -1185,6 +1185,10 @@ document.addEventListener("DOMContentLoaded", function () {
             categorySelect.disabled = false;
             if (defaultSet) {
               categorySelect.dispatchEvent(new Event("change"));
+            } else if (categoriesArr.length > 0) {
+              // Fallback: select the first category if "chapters" not found
+              categorySelect.selectedIndex = 1;
+              categorySelect.dispatchEvent(new Event("change"));
             }
           }
         });
@@ -1219,6 +1223,11 @@ document.addEventListener("DOMContentLoaded", function () {
               topicSelect.appendChild(option);
             });
             topicSelect.disabled = false;
+            // Default to first topic
+            if (topics.length > 0) {
+              topicSelect.selectedIndex = 1;
+              topicSelect.dispatchEvent(new Event("change"));
+            }
           }
         });
 
@@ -1561,10 +1570,11 @@ function loadResourcesData(restoreSemester = null) {
       if (currentSemester && data[currentSemester]) {
         finalSemesterSelect.value = currentSemester;
       } else {
-        // Leave unselected to show "Latest from Insightroom"
-        finalSemesterSelect.value = "";
+        // Default to semester 6
+        finalSemesterSelect.value = "6";
       }
 
+      // Chain listeners for automated selection
       finalSemesterSelect.addEventListener("change", function () {
         clearSelect("subjectSelect", "Select Subject");
         clearSelect("categorySelect", "Select Category");
@@ -1580,6 +1590,81 @@ function loadResourcesData(restoreSemester = null) {
           subjectSelect.appendChild(option);
         }
         subjectSelect.disabled = false;
+      });
+
+      document.getElementById("subjectSelect").addEventListener("change", function () {
+          clearSelect("categorySelect", "Select Category");
+          clearSelect("topicSelect", "Select Topic");
+          const semKey = document.getElementById("semesterSelect").value;
+          const subjectKey = this.value;
+          if (!subjectKey) return;
+
+          let categoriesArr;
+
+          // Special handling for Vault (semester 9999)
+          if (semKey === "9999") {
+            // Get Vault array directly
+            categoriesArr = data[semKey].Vault;
+          } else {
+            // Normal semester handling
+            categoriesArr = data[semKey][subjectKey];
+          }
+
+          const categorySelect = document.getElementById("categorySelect");
+          if (categoriesArr && categoriesArr.length) {
+            let defaultSet = false;
+            categoriesArr.forEach((catObj, idx) => {
+              const option = document.createElement("option");
+              option.value = idx;
+              option.textContent = catObj.type;
+              if (catObj.type.trim().toLowerCase() === "chapters") {
+                option.selected = true;
+                defaultSet = true;
+              }
+              categorySelect.appendChild(option);
+            });
+            categorySelect.disabled = false;
+            if (defaultSet) {
+              categorySelect.dispatchEvent(new Event("change"));
+            } else if (categoriesArr.length > 0) {
+              categorySelect.selectedIndex = 1;
+              categorySelect.dispatchEvent(new Event("change"));
+            }
+          }
+      });
+
+      document.getElementById("categorySelect").addEventListener("change", function () {
+          clearSelect("topicSelect", "Select Topic");
+          const semKey = document.getElementById("semesterSelect").value;
+          const subjectKey = document.getElementById("subjectSelect").value;
+          const categoryIndex = this.value;
+          if (categoryIndex === "") return;
+
+          let catObj;
+
+          // Special handling for Vault (semester 9999)
+          if (semKey === "9999") {
+            // Get category from Vault array
+            catObj = data[semKey].Vault[categoryIndex];
+          } else {
+            // Normal semester handling
+            catObj = data[semKey][subjectKey][categoryIndex];
+          }
+
+          const topics = catObj.content;
+          const topicSelect = document.getElementById("topicSelect");
+          if (topics && topics.length > 0) {
+            topics.forEach((topic) => {
+              const option = document.createElement("option");
+              option.value = topic;
+              option.textContent = topic;
+              topicSelect.appendChild(option);
+            });
+            topicSelect.disabled = false;
+            // Default select first topic
+            topicSelect.selectedIndex = 1;
+            topicSelect.dispatchEvent(new Event("change"));
+          }
       });
 
       function clearSelect(selectId, placeholderText) {
@@ -1607,186 +1692,7 @@ function loadResourcesData(restoreSemester = null) {
 // Initial load
 loadResourcesData();
 
-const libUrl =
-  window.MaterioLocalCDN?.transformUrl(
-    "https://cdn-materioa.vercel.app/databases/beta/resource.lib.json",
-  ) || "https://cdn-materioa.vercel.app/databases/beta/resource.lib.json";
-fetch(libUrl)
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.json();
-  })
-  .then((data) => {
-    if (!data || typeof data !== "object") {
-      throw new Error("Invalid data format received");
-    }
-    const semesterMapping = {
-      9: "Additional Resources",
-    };
 
-    const semesterSelect = document.getElementById("semesterSelect");
-    semesterSelect.innerHTML = "";
-    const placeholder = document.createElement("option");
-    placeholder.value = "";
-    placeholder.textContent = "Select Semester";
-    semesterSelect.appendChild(placeholder);
-
-    for (let sem in data) {
-      const option = document.createElement("option");
-      option.value = sem;
-      option.textContent = semesterMapping[sem]
-        ? semesterMapping[sem]
-        : "Semester " + sem;
-      semesterSelect.appendChild(option);
-    }
-
-    semesterSelect.value = "";
-    if (semesterSelect.value) {
-      semesterSelect.dispatchEvent(new Event("change"));
-    }
-
-    semesterSelect.addEventListener("change", function () {
-      clearSelect("subjectSelect", "Select Subject");
-      clearSelect("categorySelect", "Select Category");
-      clearSelect("topicSelect", "Select Topic");
-      const semKey = this.value;
-      if (!semKey) return;
-      const subjects = data[semKey];
-      const subjectSelect = document.getElementById("subjectSelect");
-      for (let subject in subjects) {
-        const option = document.createElement("option");
-        option.value = subject;
-        option.textContent = subject;
-        subjectSelect.appendChild(option);
-      }
-      subjectSelect.disabled = false;
-    });
-    function clearSelect(selectId, placeholderText) {
-      const select = document.getElementById(selectId);
-      select.innerHTML = "";
-      const option = document.createElement("option");
-      option.value = "";
-      option.textContent = placeholderText;
-      select.appendChild(option);
-      select.disabled = true;
-    }
-  })
-  .catch((err) => {
-    // Error loading initial resource data
-    // Only show alert when online (offline is expected to fail)
-    if (navigator.onLine) {
-      const roasts = [
-        {
-          message:
-            "The page is missing a few ingredients. Bro cooked without onions AND salt. Refresh before the dish reports YOU.",
-          button: "Chef moment",
-        },
-        {
-          message:
-            "Resources didn’t load. The page said ‘nah I’m on break.’ Try again before it unionizes.",
-          button: "I'll negotiate",
-        },
-        {
-          message:
-            "The page tried to fetch files but the internet said ‘skill issue.’ Refresh and pray.",
-          button: "True…",
-        },
-        {
-          message:
-            "Some ingredients refused to spawn. RNG is trash today. Reload for better loot.",
-          button: "Reroll",
-        },
-        {
-          message:
-            "The page lagged out mid-load like it’s running on hostel WiFi. Refresh to revive.",
-          button: "Revive pls",
-        },
-        {
-          message:
-            "Something didn’t load. The resources are probably hiding in creative mode.",
-          button: "Teleport them",
-        },
-        {
-          message:
-            "Page assets dipped without notice. They said ‘brb’ and never came back.",
-          button: "Ghosted 💔",
-        },
-        {
-          message: "Resources missing. Bro tried to cook Maggi without Maggi.",
-          button: "Valid",
-        },
-        {
-          message:
-            "The page ingredients clipped through the map. Reload to respawn them.",
-          button: "Respawn",
-        },
-        {
-          message:
-            "Resources refused to load because the syllabus stress aura is too strong.",
-          button: "My bad aura",
-        },
-        {
-          message:
-            "The page couldn’t load stuff. Probably buffering its life choices.",
-          button: "Same tbh",
-        },
-        {
-          message:
-            "Missing ingredients? This page is rawer than a cooking show disaster.",
-          button: "Gordon who?",
-        },
-        {
-          message:
-            "The page tried to load but tripped over its own assets. Reload to help it up.",
-          button: "I'll help",
-        },
-        {
-          message:
-            "Some resources froze like a Windows XP moment. Refresh before it plays the startup sound.",
-          button: "Reboot",
-        },
-        {
-          message:
-            "The page is missing files because the network rage-quit mid-load.",
-          button: "Unrage pls",
-        },
-        {
-          message:
-            "Resources didn’t load. They’re probably respawning in another timeline.",
-          button: "Multiverse moment",
-        },
-        {
-          message:
-            "The page pulled a Thanos snap and half the assets vanished.",
-          button: "Bring them back",
-        },
-        {
-          message:
-            "Something didn’t load. The internet looked at your request and said ‘nah.’",
-          button: "Understandable",
-        },
-        {
-          message:
-            "Ingredients missing. The page is cooking vibes only, no content.",
-          button: "Vibes accepted",
-        },
-        {
-          message:
-            "The page tried to load resources but forgot its own ingredients list. Reload to remind it.",
-          button: "I'll remind it",
-        },
-      ];
-      const randomRoast = roasts[Math.floor(Math.random() * roasts.length)];
-
-      materioAlert(randomRoast.message, {
-        title: "Resource Load Error",
-        type: "error",
-        buttonText: randomRoast.button,
-      });
-    }
-  });
 
 // Load licenses content
 document.addEventListener("DOMContentLoaded", function () {
@@ -2183,7 +2089,10 @@ document.addEventListener("DOMContentLoaded", function () {
   if (readingForm) {
     readingForm.reset();
     // Also manually reset selects to be sure (browser might persist values)
-    if (semesterSelect) semesterSelect.value = "";
+    if (semesterSelect) {
+      semesterSelect.value = "6";
+      semesterSelect.dispatchEvent(new Event("change"));
+    }
     if (subjectSelect) subjectSelect.value = "";
     if (categorySelect) categorySelect.value = "";
     if (topicSelect) topicSelect.value = "";

@@ -138,7 +138,7 @@ layout: base
           {% unless page.hide_listen %}
           <!-- Listen to Post Component -->
           <div id="listen-component" class="listen-pill"
-            style="display: flex; align-items: center; background: rgba(0,0,0,0.05); border-radius: 20px; padding: 0.3rem 0.6rem; cursor: pointer; transition: all 0.2s ease;"
+            style="display: flex; align-items: center; background: rgba(0,0,0,0.05); border-radius: 20px; padding: 0.3rem 0.6rem; cursor: var(--f-cursor-pointer); transition: all 0.2s ease;"
             onclick="console.log('Listen clicked'); toggleListen();">
             <i id="listen-icon" class="fa-solid fa-play"
               style="font-size: 12px; margin-right: 0.4rem; color: #333;"></i>
@@ -160,26 +160,26 @@ layout: base
           <div id="seek-controls" class="seek-controls"
             style="display: none; align-items: center; gap: 0.3rem; margin-left: 0.5rem;">
             <button onclick="seekBackward()" class="seek-btn" title="Go back 5 seconds"
-              style="background: none; border: none; color: #666; cursor: pointer; padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
+              style="background: none; border: none; color: #666; cursor: var(--f-cursor-pointer); padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
               <i class="fa-solid fa-backward" style="font-size: 10px;"></i>
             </button>
             <button onclick="seekForward()" class="seek-btn" title="Skip forward 5 seconds"
-              style="background: none; border: none; color: #666; cursor: pointer; padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
+              style="background: none; border: none; color: #666; cursor: var(--f-cursor-pointer); padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
               <i class="fa-solid fa-forward" style="font-size: 10px;"></i>
             </button>
             <button onclick="stopAudio()" class="seek-btn stop-btn" title="Stop"
-              style="background: none; border: none; color: #d32f2f; cursor: pointer; padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
+              style="background: none; border: none; color: #d32f2f; cursor: var(--f-cursor-pointer); padding: 0.2rem; border-radius: 50%; transition: all 0.2s ease;">
               <i class="fa-solid fa-stop" style="font-size: 10px;"></i>
             </button>
           </div>
 
           {% unless page.hide_share %}
           <i class="fa-regular fa-link-simple" onclick="sharePost()"
-            style="transform: rotate(-45deg); font-size: 14px; cursor: pointer; color: var(--text);" title="Share"></i>
+            style="transform: rotate(-45deg); font-size: 14px; cursor: var(--f-cursor-pointer); color: var(--text);" title="Share"></i>
           {% endunless %}
           {% unless page.hide_print %}
           <i class="fa-regular fa-print" onclick="printPost()"
-            style="font-size: 14px; cursor: pointer; color: var(--text);" title="Print"></i>
+            style="font-size: 14px; cursor: var(--f-cursor-pointer); color: var(--text);" title="Print"></i>
           {% endunless %}
         </div>
       </div>
@@ -191,7 +191,7 @@ layout: base
     <div id="ai-summary-section" class="ai-summary-section"
       style="border-radius: 12px; padding: 1.5rem; margin: 2rem auto; display: none;">
       <div id="summary-header"
-        style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none;"
+        style="display: flex; align-items: center; justify-content: space-between; cursor: var(--f-cursor-pointer); user-select: none;"
         onclick="toggleSummary()">
         <div style="display: flex; align-items: center;">
           <i class="fa-solid fa-wand-magic-sparkles" style="margin-right: 0.5rem; font-size: 18px;"></i>
@@ -220,7 +220,7 @@ layout: base
                 style="flex: 1; border: none; background: transparent; font-size: 14px; outline: none;"
                 onkeypress="handleFollowupKeypress(event)">
               <button onclick="askFollowupQuestion()" id="followup-btn"
-                style="position: absolute; right: 4px; width: 32px; height: 32px; background: #ff8200; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;">
+                style="position: absolute; right: 4px; width: 32px; height: 32px; background: #ff8200; color: white; border: none; border-radius: 50%; cursor: var(--f-cursor-pointer); font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;">
                 <i class="fa-solid fa-arrow-up" style="font-size: 12px;"></i>
               </button>
             </div>
