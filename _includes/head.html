@@ -85,13 +85,34 @@
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
+            // Wait for session ID initialized in main.js if needed, or get it directly
+            const sessionId = sessionStorage.getItem('materio_session_id');
+            
             navigator.serviceWorker.register('/sw.js')
                 .then(function (registration) {
-                    // console.log('SW registered: ', registration);
+                    if (registration.active) {
+                       registration.active.postMessage({ type: 'SET_SESSION', sessionId: sessionId });
+                    }
+                    // Handle case where SW is still installing or waiting
+                    registration.addEventListener('updatefound', function() {
+                      const newWorker = registration.installing;
+                      newWorker.addEventListener('statechange', function() {
+                        if (newWorker.state === 'activated') {
+                          newWorker.postMessage({ type: 'SET_SESSION', sessionId: sessionId });
+                        }
+                      });
+                    });
                 })
                 .catch(function (registrationError) {
-                    console.log('SW registration failed: ', registrationError);
+                    console.error('SW registration failed: ', registrationError);
                 });
+            
+            // Periodically check if we need to sync session ID
+            setTimeout(() => {
+              if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({ type: 'SET_SESSION', sessionId: sessionId });
+              }
+            }, 1000);
         });
     }
 </script>

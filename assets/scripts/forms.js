@@ -1128,8 +1128,8 @@ async function submitDynamicForm() {
         } else if (currentFormType === 'bug-report') {
             // Bug reports go to the health API /report endpoint (MongoDB)
             // Fire-and-forget: show success immediately, submit in background
-            const sessionId = sessionStorage.getItem('materio_session_id') || crypto.randomUUID();
-            sessionStorage.setItem('materio_session_id', sessionId);
+            const sessionId = window.materioSessionId || sessionStorage.getItem('materio_session_id');
+
 
             const payload = JSON.stringify({
                 title: formData.title,

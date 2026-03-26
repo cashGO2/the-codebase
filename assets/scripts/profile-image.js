@@ -373,6 +373,16 @@ window.handleLogout = function () {
   document.cookie = LOCAL_STORAGE_TOKEN_KEY + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   document.cookie = LOCAL_STORAGE_USER_KEY + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
+  // Clear session-bound identifiers and storage
+  const sessionId = sessionStorage.getItem('materio_session_id');
+  if (sessionId && navigator.serviceWorker && navigator.serviceWorker.controller) {
+    // Notify Service Worker to clear session assets immediately if possible
+    navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_SESSION_ASSETS', sessionId: sessionId });
+  }
+  sessionStorage.removeItem('materio_session_id');
+  sessionStorage.clear();
+
+
   if (window.MaterioHaptics) {
     window.MaterioHaptics.vibrate('success');
   }

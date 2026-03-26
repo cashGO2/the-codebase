@@ -7,8 +7,8 @@ description: >- # this means to ignore newlines until "baseurl:"
 # Set to `true` to temporarily disable the service worker registration
 # and trigger client-side unregistration/cleanup. Set back to `false`
 # to resume normal service-worker behavior.
-disable_service_worker: true
-enable_experimental_filters: true
+disable_service_worker: false
+enable_experimental_filters: false
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jekyllrb

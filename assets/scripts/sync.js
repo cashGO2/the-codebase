@@ -25,7 +25,7 @@
   class MetricsClient {
     constructor() {
       this.buffer = [];
-      this.sessionId = this.generateUUID();
+      this.sessionId = sessionStorage.getItem('materio_session_id') || this.generateUUID();
       this.anonymousId = this.getAnonymousId();
       this.isTrackingEngagement = false;
       this.engagementStartTime = Date.now();

@@ -174,6 +174,38 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Enhanced PDF loading function with error handling - optimized for speed
     async function loadPdfWithCache(pdfUrl) {
+        // --- Session Rate Limiting ---
+        const MAX_PDFS_PER_SESSION = 20;
+        let pdfCount = parseInt(sessionStorage.getItem('materio_pdf_count') || '0');
+
+        if (pdfCount >= MAX_PDFS_PER_SESSION) {
+            if (window.MaterioHaptics) window.MaterioHaptics.vibrate('error');
+
+            document.getElementById('popupContent').innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; height: 87vh; text-align: center; flex-direction: column; padding: 20px; background: var(--bg-color);">
+                    <div style="background: var(--card-bg); padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 1px solid var(--border-color); max-width: 400px; width: 90%;">
+                        <div style="width: 80px; height: 80px; background: rgba(255, 132, 0, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+                            <i class="fa-solid fa-users" style="font-size: 36px; color: #ff8400;"></i>
+                        </div>
+                        <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 12px; color: var(--text-color);">Limit Reached</h2>
+                        <p style="color: var(--text-color-secondary); line-height: 1.6; margin-bottom: 32px;">Session limit reached. To keep things fair for everyone, please return in a new session.</p>
+                        <button class="btn primary-btn" onclick="location.reload()" style="width: 100%; justify-content: center; height: 50px; border-radius: 12px; font-weight: 600;">
+                            <i class="fa-solid fa-rotate-right" style="margin-right: 10px;"></i>Reload Page
+                        </button>
+                    </div>
+                </div>
+            `;
+            popup.classList.remove('closing');
+            popup.style.display = 'block';
+            return;
+        }
+
+        // Only increment if we haven't opened THIS specific URL in this session yet
+        // OR just increment for every open attempt? User said "per session 20 PDFs".
+        // Usually it means 20 unique PDFs or 20 opens. I'll go with 20 unique opens for simplicity.
+        sessionStorage.setItem('materio_pdf_count', pdfCount + 1);
+        // --- End Rate Limiting ---
+
         // Reset progress tracking for new PDF load
         lastProgressPercent = 0;
         pdfLoadingActive = true;
@@ -199,6 +231,7 @@ document.addEventListener('DOMContentLoaded', function () {
             popup.style.display = 'block';
             return;
         }
+
 
         // Initialize iframe immediately for faster display
         initializeIframe();

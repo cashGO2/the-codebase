@@ -24,6 +24,12 @@ function closeExamModal() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  // Initialize session ID for caching and analytics
+  const sessionId = sessionStorage.getItem('materio_session_id') || 
+                   (crypto.randomUUID ? crypto.randomUUID() : 's-' + Math.random().toString(36).substring(2, 10));
+  sessionStorage.setItem('materio_session_id', sessionId);
+  window.materioSessionId = sessionId;
+
   var year = new Date().getFullYear();
   var creatorInfo = document.getElementById("creatorInfo");
   if (creatorInfo) {

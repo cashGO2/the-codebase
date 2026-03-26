@@ -65,69 +65,102 @@ if (document.readyState === 'loading') {
     setTimeout(loadAndDisplayExamCard, 1500);
 }
 
+let isExamDataLoading = false;
+let hasExamDataProcessed = false;
+
 async function loadAndDisplayExamCard() {
+    // 1. Prevent overlapping loads
+    if (isExamDataLoading || hasExamDataProcessed) return;
+
+    // 2. Check if exam card containers even exist on this page
+    if (!document.getElementById('examCard') && !document.getElementById('examCardDefault')) {
+        return;
+    }
+
+    // 3. Check if we've already determined exams are over for today
+    const now = Date.now();
+    const lastCheck = localStorage.getItem('materio_exam_last_check');
+    const skipUntil = localStorage.getItem('materio_exam_skip_until');
+    
+    if (skipUntil && now < parseInt(skipUntil)) {
+        hideExamCards();
+        hasExamDataProcessed = true;
+        return;
+    }
+
     try {
+        isExamDataLoading = true;
         // Add cache busting to ensure we get the latest data
         const timestamp = new Date().getTime();
         const response = await fetch(`https://cdn-materioa.vercel.app/databases/beta/examdata.json?t=${timestamp}`);
 
         if (!response.ok) {
-
+            isExamDataLoading = false;
             return;
         }
 
         examData = await response.json();
-
+        isExamDataLoading = false;
+        hasExamDataProcessed = true;
 
         // Get current semester from user selection or default
         const currentSemester = getCurrentUserSemester();
 
-
         // Find matching semester data
         currentSemesterData = findSemesterData(examData, currentSemester);
-
 
         if (currentSemesterData) {
             const shouldDisplay = shouldDisplayExamCard(examData, currentSemesterData);
             if (shouldDisplay) {
                 displayExamCard(examData, currentSemesterData);
+                // Clear skip flag if we are showing it
+                localStorage.removeItem('materio_exam_skip_until');
             } else {
                 hideExamCards();
+                // If exams are disabled or over, skip checking for 24 hours
+                localStorage.setItem('materio_exam_skip_until', now + (24 * 60 * 60 * 1000));
             }
         } else {
             hideExamCards();
+            // If no data found for current context, skip for 12 hours
+            localStorage.setItem('materio_exam_skip_until', now + (12 * 60 * 60 * 1000));
         }
 
-        // Listen for semester/subject changes
-        const semesterSelect = document.getElementById('semesterSelect');
-        const subjectSelect = document.getElementById('subjectSelect');
-
-        function updateExamCard() {
-            const newSemester = getCurrentUserSemester();
-
-            currentSemesterData = findSemesterData(examData, newSemester);
-
-            if (currentSemesterData && shouldDisplayExamCard(examData, currentSemesterData)) {
-                displayExamCard(examData, currentSemesterData);
-            } else {
-                hideExamCards();
-            }
-        }
-
-        if (semesterSelect) {
-            semesterSelect.addEventListener('change', updateExamCard);
-        }
-        if (subjectSelect) {
-            subjectSelect.addEventListener('change', updateExamCard);
-        }
-
-        // Also listen for custom semesterChanged event
-        document.addEventListener('semesterChanged', updateExamCard);
+        // Listen for semester/subject changes (keep existing listeners)
+        setupSemesterListeners(examData);
 
     } catch (error) {
         console.error('[ExamCard] Error loading exam data:', error);
+        isExamDataLoading = false;
     }
 }
+
+function setupSemesterListeners(data) {
+    const semesterSelect = document.getElementById('semesterSelect');
+    const subjectSelect = document.getElementById('subjectSelect');
+
+    function updateExamCard() {
+        const newSemester = getCurrentUserSemester();
+        currentSemesterData = findSemesterData(data, newSemester);
+        if (currentSemesterData && shouldDisplayExamCard(data, currentSemesterData)) {
+            displayExamCard(data, currentSemesterData);
+            localStorage.removeItem('materio_exam_skip_until');
+        } else {
+            hideExamCards();
+        }
+    }
+
+    if (semesterSelect && !semesterSelect.dataset.examListener) {
+        semesterSelect.addEventListener('change', updateExamCard);
+        semesterSelect.dataset.examListener = 'true';
+    }
+    if (subjectSelect && !subjectSelect.dataset.examListener) {
+        subjectSelect.addEventListener('change', updateExamCard);
+        subjectSelect.dataset.examListener = 'true';
+    }
+    document.addEventListener('semesterChanged', updateExamCard);
+}
+
 
 function getCurrentUserSemester() {
     // Try to get semester from the dropdown first (most accurate)

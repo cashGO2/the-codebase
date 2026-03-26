@@ -224,21 +224,164 @@ function updateNotificationBadge(notifications) {
  * @returns {Promise<Array>}
  */
 async function fetchNotifications() {
-  const notifyUrl = window.MaterioLocalCDN?.transformUrl(
-    'https://cdn-materioa.vercel.app/notifications.json'
-  ) || 'https://cdn-materioa.vercel.app/notifications.json';
-
+  const notifyUrl = 'https://cdn-materioa.vercel.app/notifications.json';
   try {
-    const response = await fetch(notifyUrl);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    const response = await fetch(notifyUrl + '?t=' + Date.now());
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     return await response.json();
   } catch (error) {
     console.error('Error loading notifications:', error);
     return [];
   }
 }
+
+/**
+ * Fetch latest posts from InsightRoom
+ */
+async function fetchInsightRoomPosts() {
+  try {
+    const response = await fetch('https://insightroom.vercel.app/api/posts?t=' + Date.now());
+    if (!response.ok) return [];
+    return await response.json();
+  } catch (error) {
+    return [];
+  }
+}
+
+/**
+ * Fetch latest releases
+ */
+async function fetchReleases() {
+  try {
+    const response = await fetch('/assets/data/releases.json?t=' + Date.now());
+    if (!response.ok) return [];
+    return await response.json();
+  } catch (error) {
+    return [];
+  }
+}
+
+/**
+ * Shows a native browser notification via Service Worker (Proper PWA Implementation)
+ */
+function sendNativeNotification(title, message, url, image = null) {
+  if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+  const favicon = '/favicon.ico'; // General favicon for icon
+
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({
+      type: 'SHOW_NOTIFICATION',
+      title: title,
+      message: message,
+      url: url,
+      icon: favicon,
+      image: image // Large cover image (optional)
+    });
+  } else {
+    // Fallback
+    new Notification(title, {
+      body: message,
+      icon: favicon,
+      image: image,
+      data: { url: url }
+    }).onclick = (e) => {
+      e.preventDefault();
+      window.open(url, '_blank');
+    };
+  }
+}
+
+/**
+ * Fetch latest 'What's New' posts from site (Jekyll-generated)
+ */
+async function fetchWhatsNewPosts() {
+  try {
+    const response = await fetch('/assets/data/posts.json?t=' + Date.now());
+    if (!response.ok) return [];
+    return await response.json();
+  } catch (error) {
+    return [];
+  }
+}
+
+/**
+ * Check for new items across all sources and notify
+ */
+async function checkForNewContent() {
+  if ("Notification" in window && Notification.permission === "default") {
+    await Notification.requestPermission();
+  }
+
+  const now = new Date();
+  const lastCheck = localStorage.getItem('materio_last_notif_check') || (now.getTime() - 24 * 60 * 60 * 1000);
+  const lastCheckDate = new Date(parseInt(lastCheck));
+
+  // Fetch all sources
+  const [systemNotifs, resources, updates, releases] = await Promise.all([
+    fetchNotifications(),
+    fetchInsightRoomPosts(), // Educational Resources
+    fetchWhatsNewPosts(),    // Platform Updates
+    fetchReleases()
+  ]);
+
+  // Helper to normalize dates for comparison (just YYYY-MM-DD)
+  const toYMD = (d) => new Date(d).toISOString().split('T')[0];
+
+  // 1. Check System Notifications (New PDFs)
+  systemNotifs.forEach(n => {
+    if (new Date(n.date) > lastCheckDate) {
+      sendNativeNotification('New Resource Added', n.title, n.links?.[0]?.url || '/');
+    }
+  });
+
+  // 2. Check InsightRoom Posts (Education Resources)
+  resources.forEach(p => {
+    if (new Date(p.date) > lastCheckDate) {
+      const body = p.excerpt ? (p.excerpt.length > 100 ? p.excerpt.slice(0, 97) + '...' : p.excerpt) : p.title;
+      sendNativeNotification('New Resource', body, p.link || '/', p.imgUrl);
+    }
+  });
+
+  // 3. Check 'What's New' Posts (Platform Updates)
+  updates.forEach(p => {
+    if (new Date(p.date) > lastCheckDate) {
+      const body = p.excerpt ? (p.excerpt.length > 100 ? p.excerpt.slice(0, 97) + '...' : p.excerpt) : p.title;
+      sendNativeNotification('New Update', body, p.url || '/', p.image);
+    }
+  });
+
+  // 4. Check Releases (Version Bumps)
+  if (releases.length > 0) {
+    const latest = releases[0];
+    const parts = latest.build.split('/');
+    const bDate = new Date(parts[2], parts[1] - 1, parts[0]);
+    const bDateYMD = toYMD(bDate);
+    
+    if (bDate > lastCheckDate) {
+      const lastVer = localStorage.getItem('materio_last_ver');
+      if (lastVer !== latest.version) {
+        // --- Intelligent Changelog Linking ---
+        // Find if a 'What's New' post exists with the same date as this release
+        const releasePost = updates.find(p => toYMD(p.date) === bDateYMD);
+        const changelogUrl = releasePost ? releasePost.url : '/changelog';
+        const coverImage = releasePost ? releasePost.image : null;
+        
+        sendNativeNotification(
+           'Materio Updated', 
+           `Materio was updated to V${latest.version}. Check the changelog for details.`, 
+           changelogUrl || '/changelog',
+           coverImage
+        );
+        localStorage.setItem('materio_last_ver', latest.version);
+      }
+    }
+  }
+
+  localStorage.setItem('materio_last_notif_check', now.getTime().toString());
+}
+
+
 
 /**
  * Setup tab click handlers for badge removal
@@ -301,7 +444,11 @@ async function init() {
   displayNotifications(globalNotifications);
   updateNotificationBadge(globalNotifications);
   setupTabClickHandlers();
+
+  // Check for new content for native notifications
+  checkForNewContent();
 }
+
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
