@@ -510,7 +510,7 @@ body::after {
 }
 
 .navbar a {
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
     text-decoration: none;
     padding: var(--spacing-md);
     width: 100%;
@@ -2061,7 +2061,7 @@ body.dark-mode #changeLogDetails[open] {
 
 /* Profile icon image styling */
 .profile-icon img {
-    border: 2px solid var(--color-primary-alt);
+    /* border: 2px solid var(--color-primary-alt); */
     border-radius: var(--radius-circle);
     width: 26px;
     height: 26px;
@@ -2073,7 +2073,7 @@ body.dark-mode #changeLogDetails[open] {
 
 .profile-icon img:hover {
     transform: scale(1.05);
-    border-color: var(--color-primary);
+    border: 2px solid var(--color-primary);
 }
 
 .profile-icon img:active {
@@ -2081,7 +2081,7 @@ body.dark-mode #changeLogDetails[open] {
 }
 
 .profile-icon i {
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
     font-size: var(--font-size-xl);
 }
 
@@ -2890,158 +2890,6 @@ body.dark-mode #notices a {
     color: #e0e0e0 !important;
 }
 
-/* Splash Screen for PWA */
-#splash-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    background: linear-gradient(135deg, var(--color-primary-alt), #ffb366);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    animation: splashFadeOut 3s ease-in-out forwards;
-}
-
-.splash-content {
-    text-align: center;
-    color: white;
-}
-
-.splash-logo {
-    width: 80px;
-    height: 80px;
-    animation: logoFloat 2s ease-in-out infinite alternate;
-    margin-bottom: 20px;
-    background-image: url("/assets/img/materio_new_wh.svg");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.splash-loader {
-    margin: 20px 0;
-}
-
-.loader-ring {
-    width: 40px;
-    height: 40px;
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    border-top: 3px solid white;
-    border-radius: 50%;
-    margin: 0 auto;
-    animation: spin 1s linear infinite;
-}
-
-.splash-text {
-    font-size: 24px;
-    font-weight: 600;
-    margin: 20px 0;
-    animation: textGlow 2s ease-in-out infinite alternate;
-    font-family: "Manrope", sans-serif;
-}
-
-@keyframes logoFloat {
-    0% {
-        transform: translateY(0px) scale(1);
-    }
-
-    100% {
-        transform: translateY(-10px) scale(1.05);
-    }
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-@keyframes textGlow {
-    0% {
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-    }
-
-    100% {
-        text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
-    }
-}
-
-@keyframes splashFadeOut {
-    0% {
-        opacity: 1;
-        visibility: visible;
-    }
-
-    85% {
-        opacity: 1;
-        visibility: visible;
-    }
-
-    100% {
-        opacity: 0;
-        visibility: hidden;
-    }
-}
-
-@keyframes splashSlideUp {
-    0% {
-        transform: translateY(0);
-        opacity: 1;
-    }
-
-    100% {
-        transform: translateY(-100%);
-        opacity: 0;
-    }
-}
-
-/* Respect reduced motion preferences */
-@media (prefers-reduced-motion: reduce) {
-    #splash-screen {
-        animation: none;
-    }
-
-    .splash-logo {
-        animation: none;
-    }
-
-    .loader-ring {
-        animation: spin 2s linear infinite;
-    }
-
-    .splash-text {
-        animation: none;
-    }
-}
-
-/* Promotions */
-.site-button {
-    background-color: rgba(255, 132, 0, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-family: "Manrope", sans-serif;
-    font-size: 14px;
-    cursor: var(--f-cursor-pointer);
-    transition: background-color 0.3s ease;
-    display: inline-block;
-    margin-top: 10px;
-}
-
-.site-button:hover {
-    background-color: #8dac49;
-}
-
 .promo-modal-overlay {
     position: fixed;
     top: 0;
@@ -3710,50 +3558,6 @@ body.dark-mode .promo-checkbox-label {
     }
 }
 
-.users-card {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    align-items: right;
-    padding: 8px 14px;
-    border-radius: 10px;
-    background-color: rgba(255, 245, 223, 0.5);
-    color: #000000;
-    font-weight: 500;
-    font-size: 14px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-}
-
-.users-card.dark-mode {
-    color: #ffffff;
-    background-color: rgb(51, 51, 51, 0.5);
-}
-
-.user-count,
-.user-label {
-    font-weight: bold;
-}
-
-.users-card .emoji {
-    font-size: 16px;
-}
-
-#realtime-users-card {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    transition: opacity 0.3s ease;
-    opacity: 1;
-}
-
-@media (max-width: 768px) {
-    #realtime-users-card {
-        display: block;
-        margin-top: 10px;
-    }
-}
-
 /* Promo Modal Action Buttons */
 .promo-actions {
     display: flex;
@@ -4031,15 +3835,6 @@ body.dark-mode .shimmer-button {
     color: var(--color-primary-alt);
     text-decoration: none;
 }
-
-/*
-.dropdown-item:focus {
-    outline: none;
-    background: rgba(255, 130, 0, 0.15);
-    color: #ff8200;
-} */
-
-/* Removed :first-child and :last-child radius overrides - items use their own 24px radius */
 
 .dropdown-item i {
     font-size: 14px !important;
@@ -4513,28 +4308,7 @@ body.dark-mode .video-control-btn:hover {
 
 /* Dynamic wallpaper specific styles */
 .dynamic-preview {
-    background: linear-gradient(135deg,
-            #ff9a56 0%,
-            #ffad56 25%,
-            #a8e6cf 50%,
-            #667eea 75%,
-            #764ba2 100%);
     position: relative;
-    animation: dynamicGradient 10s ease-in-out infinite;
-}
-
-@keyframes dynamicGradient {
-    0% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
-
-    100% {
-        background-position: 0% 50%;
-    }
 }
 
 .dynamic-time {
@@ -8190,7 +7964,7 @@ body.dark-mode .paper-texture-item.selected {
 
 /* Keyboard shortcuts button in navbar - standalone styling matching .navbar a */
 .keyboard-shortcuts-btn {
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
     text-decoration: none;
     padding: var(--spacing-md);
     width: 100%;
@@ -8204,7 +7978,7 @@ body.dark-mode .paper-texture-item.selected {
 }
 
 .keyboard-shortcuts-btn i {
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
     transition: color var(--transition-normal);
 }
 
@@ -8254,7 +8028,7 @@ body.dark-mode .keyboard-shortcuts-btn:hover i {
 
 /* Changelog button in navbar - matches keyboard-shortcuts-btn */
 .changelog-btn {
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
     text-decoration: none;
     padding: var(--spacing-md);
     width: 100%;
@@ -8268,7 +8042,7 @@ body.dark-mode .keyboard-shortcuts-btn:hover i {
 }
 
 .changelog-btn i {
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
     transition: color var(--transition-normal);
 }
 
@@ -8867,7 +8641,7 @@ body.dark-mode .shortcuts-divider {
 
 /* MCP Connectors Modal & Banner */
 .ai-connectors-banner {
-    background-color: #e0e0e0;
+    background-color: #f0eee6;
     /* Solid light gray */
     border: none;
     border-bottom-right-radius: var(--radius-md);
@@ -8884,10 +8658,6 @@ body.dark-mode .shortcuts-divider {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.ai-connectors-banner:hover {
-    background-color: #d5d5d5;
 }
 
 .ai-banner-content {
@@ -8948,12 +8718,8 @@ body.dark-mode .shortcuts-divider {
 }
 
 body.dark-mode .ai-connectors-banner {
-    background-color: #383838;
+    background-color: #30302e;
     /* Solid gray */
-}
-
-body.dark-mode .ai-connectors-banner:hover {
-    background-color: #404040;
 }
 
 .mcp-connect-card {
