@@ -1,204 +1,496 @@
-document.addEventListener('DOMContentLoaded', function() {
-  const inviteForm = document.getElementById('inviteForm');
-  const signupForm = document.getElementById('signupForm');
-  const inviteStep = document.getElementById('inviteStep');
-  const signupStep = document.getElementById('signupStep');
-  const profilePictureInput = document.getElementById('profilePicture');
-  const picturePreview = document.getElementById('picturePreview');
-  const uploadButton = document.getElementById('uploadButton');
-    let validatedInviteCode = null;
+document.addEventListener('DOMContentLoaded', function () {
+    const signupForm = document.getElementById('signupForm');
+    const getOtpBtn = document.getElementById('getOtpBtn');
+    const emailInput = document.getElementById('email');
 
-  // Step 1: Handle invite code validation
-  if (inviteForm) {
-    inviteForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const inviteCode = document.getElementById('inviteCodeInput').value.trim();
-      
-      if (!inviteCode) {
-        showNotification('Please enter an invite code', 'error');
-        return;
-      }      try {
-        // Validate invite code with the server
-        const response = await fetch('/api/v2/invites/validate', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ inviteCode })
+    // --- Interactive Avatar System ---
+    const mainAvatarRoot = document.getElementById('mainAvatarRoot');
+    const displayNameInput = document.getElementById('displayName');
+    const selectedVariantInput = document.getElementById('selectedVariant');
+    const uploadBtn = document.getElementById('uploadAvatarBtn');
+    const shuffleBtn = document.getElementById('shuffleAvatarBtn');
+    const removeAvatarBtn = document.getElementById('removeAvatarBtn');
+    const customInput = document.getElementById('customAvatarInput');
+
+    let currentStyleIndex = 0;
+    let shuffleCounter = 0;
+    const STYLES = ['character', 'shape', 'face'];
+    let isCustomUpload = false;
+
+    function renderMainAvatar(seed = 'User') {
+        if (isCustomUpload) return;
+
+        const AvvComponent = window.Avvvatars || (window.AvvvatarsReactAlt && window.AvvvatarsReactAlt.Avvvatars) || window.AvvvatarsReactAlt;
+        const FinalComp = (AvvComponent && AvvComponent.default) ? AvvComponent.default : AvvComponent;
+
+        if (!mainAvatarRoot || !window.React || !window.ReactDOM || !FinalComp) return;
+
+        const variant = STYLES[currentStyleIndex];
+        selectedVariantInput.value = variant;
+
+        // Use "Student" or any other word to avoid constant "US"
+        const cleanSeed = (seed.trim() === '' || seed === 'User') ? 'Student' : seed;
+        const finalSeed = shuffleCounter > 0 ? `${cleanSeed}-${shuffleCounter}` : cleanSeed;
+
+        const root = createRootIfNotExists(mainAvatarRoot);
+        root.render(React.createElement(FinalComp, {
+            value: finalSeed,
+            style: variant === 'face' ? 'shape' : variant,
+            type: variant === 'face' ? 'face' : undefined,
+            size: 70,
+            radius: 35,
+            shadow: true
+        }));
+    }
+
+    // Shuffle functionality
+    if (shuffleBtn) {
+        shuffleBtn.addEventListener('click', () => {
+            isCustomUpload = false;
+            if (removeAvatarBtn) removeAvatarBtn.classList.add('hidden');
+            shuffleCounter++;
+            currentStyleIndex = (currentStyleIndex + 1) % STYLES.length;
+            renderMainAvatar(displayNameInput.value || 'User');
+        });
+    }
+
+    // Upload functionality
+    if (uploadBtn && customInput) {
+        uploadBtn.addEventListener('click', () => customInput.click());
+
+        customInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    isCustomUpload = true;
+                    if (removeAvatarBtn) removeAvatarBtn.classList.remove('hidden');
+                    selectedVariantInput.value = 'custom';
+                    
+                    // Render custom image via React to maintain root integrity
+                    const root = createRootIfNotExists(mainAvatarRoot);
+                    root.render(React.createElement('img', {
+                        src: ev.target.result,
+                        id: "picturePreview",
+                        style: { width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }
+                    }));
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    if (removeAvatarBtn) {
+        removeAvatarBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            isCustomUpload = false;
+            removeAvatarBtn.classList.add('hidden');
+            renderMainAvatar(displayNameInput ? displayNameInput.value || 'User' : 'User');
+        });
+    }
+
+    // Helper to manage React roots
+    const rootsMap = new WeakMap();
+    function createRootIfNotExists(el) {
+        if (!rootsMap.has(el)) {
+            rootsMap.set(el, ReactDOM.createRoot(el));
+        }
+        return rootsMap.get(el);
+    }
+
+    // Update avatars when display name changes
+    if (displayNameInput) {
+        displayNameInput.addEventListener('input', (e) => {
+            renderMainAvatar(e.target.value || 'User');
+        });
+    }
+
+    // Initial render when loaded
+    window.addEventListener('avvvatars-loaded', () => {
+        renderMainAvatar(displayNameInput ? displayNameInput.value || 'User' : 'User');
+    });
+
+    if (window.Avvvatars) {
+        renderMainAvatar('User');
+    }
+
+    function validatePhase1() {
+        const username = document.getElementById('username').value.trim();
+        const displayName = document.getElementById('displayName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (!username || !displayName || !email || !password) {
+            showFieldMsg('form', 'Please fill all required fields');
+            return false;
+        }
+
+        if (!email.endsWith('@paruluniversity.ac.in')) {
+            showFieldMsg('email', 'Use your university email address');
+            return false;
+        }
+
+        if (password.length < 8) {
+            showFieldMsg('password', 'Password must be at least 8 characters');
+            return false;
+        }
+
+        if (password !== confirmPassword) {
+            showFieldMsg('confirmPassword', 'Passwords do not match');
+            return false;
+        }
+
+        return true;
+    }
+
+    function showFieldMsg(fieldId, message, type = 'error') {
+        let msgEl = document.getElementById(`msg-${fieldId}`);
+        if (!msgEl) msgEl = document.getElementById('msg-form');
+
+        if (msgEl) {
+            msgEl.textContent = message;
+            msgEl.className = `field-msg ${type}`;
+            msgEl.style.display = 'block';
+            msgEl.style.marginTop = '4px';
+
+            setTimeout(() => {
+                if (msgEl.textContent === message) {
+                    msgEl.style.display = 'none';
+                    msgEl.style.marginTop = '0';
+                    msgEl.textContent = '';
+                }
+            }, 5000);
+        }
+    }
+
+    // Phase Transitions
+    const nextToOtpBtn = document.getElementById('nextToOtp');
+    const backToStep1Btn = document.getElementById('backToStep1');
+
+    if (nextToOtpBtn) {
+        nextToOtpBtn.addEventListener('click', async function () {
+            if (validatePhase1()) {
+                const emailValue = document.getElementById('email').value.trim();
+
+                // Set the display email IMMEDIATELY so user sees it even while loading
+                const displayEl = document.getElementById('displayEmail');
+                if (displayEl) displayEl.textContent = emailValue;
+
+                try {
+                    this.disabled = true;
+                    this.textContent = 'SENDING...';
+
+                    // Use the correct API V2 endpoint
+                    const res = await fetch('/api/v2/auth?action=otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: emailValue, type: 'signup' })
+                    });
+
+                    if (res.ok) {
+                        document.getElementById('registration-phase').style.display = 'none';
+                        document.getElementById('verification-phase').style.display = 'block';
+                        showFieldMsg('otp', 'Code sent to your university email!', 'success');
+                    } else {
+                        const err = await res.json();
+                        showFieldMsg('email', err.error || 'Failed to send OTP. Try again.');
+                    }
+                } catch (err) {
+                    console.error('OTP Send Error:', err);
+                    showFieldMsg('email', 'Connection error. Check your internet.');
+                } finally {
+                    this.disabled = false;
+                    this.textContent = 'SEND VERIFICATION CODE';
+                }
+            }
+        });
+    }
+
+    const resendBtn = document.getElementById('resendOtpBtn');
+    if (resendBtn) {
+        resendBtn.addEventListener('click', async function () {
+            const emailValue = document.getElementById('email').value.trim();
+            try {
+                this.classList.add('requesting');
+                const res = await fetch('/api/v2/auth?action=otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailValue, type: 'signup' })
+                });
+                if (res.ok) {
+                    showFieldMsg('otp', 'New code sent!', 'success');
+                }
+            } catch (err) { }
+            finally { this.classList.remove('requesting'); }
+        });
+    }
+
+    if (backToStep1Btn) {
+        backToStep1Btn.addEventListener('click', function () {
+            document.getElementById('verification-phase').style.display = 'none';
+            document.getElementById('registration-phase').style.display = 'block';
+        });
+    }
+
+    // --- OTP Block Interaction Logic ---
+    const otpInputs = document.querySelectorAll('.otp-input');
+    otpInputs.forEach((input, index) => {
+        input.addEventListener('input', (e) => {
+            const val = e.target.value;
+            // Only numbers
+            if (!/^\d$/.test(val)) {
+                e.target.value = '';
+                return;
+            }
+            if (val && index < otpInputs.length - 1) {
+                otpInputs[index + 1].focus();
+            }
         });
 
-        const data = await response.json();if (response.ok && data.valid) {
-          // Store the validated invite code
-          validatedInviteCode = inviteCode;
-          
-          // Hide invite step and show signup step
-          inviteStep.style.display = 'none';
-          signupStep.style.display = 'block';
-          
-          showNotification(data.message || 'Invite code validated! Complete your registration.', 'success');
-          
-          // Set up reservation timeout warning
-          if (data.reservedUntil) {
-            const reservationTime = new Date(data.reservedUntil);
-            const timeUntilExpiry = reservationTime.getTime() - Date.now();
-            
-            // Warn user 1 minute before expiry
-            if (timeUntilExpiry > 60000) {
-              setTimeout(() => {
-                showNotification('Your invite code reservation expires in 1 minute. Please complete registration soon.', 'warning');
-              }, timeUntilExpiry - 60000);
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                otpInputs[index - 1].focus();
             }
-          }
-        } else {
-          showNotification(data.message || 'Invalid or used invite code', 'error');
-        }
-      } catch (error) {
-        console.error('Error validating invite code:', error);
-        showNotification('Error validating invite code. Please try again.', 'error');
-      }
-    });
-  }
+        });
 
-  // Handle file input for profile picture
-  if (profilePictureInput && picturePreview) {
-    profilePictureInput.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        if (!file.type.startsWith('image/')) {
-          showNotification('Please select an image file', 'error');
-          return;
-        }
-        
-        if (file.size > 5 * 1024 * 1024) { // 5MB max
-          showNotification('Image size should be less than 5MB', 'error');
-          return;
-        }
-        
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          picturePreview.src = event.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
+        // Handle Paste
+        input.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const data = e.clipboardData.getData('text').slice(0, 6);
+            if (!/^\d+$/.test(data)) return;
+
+            data.split('').forEach((char, i) => {
+                if (otpInputs[i]) otpInputs[i].value = char;
+            });
+            otpInputs[Math.min(data.length, otpInputs.length - 1)].focus();
+        });
     });
-    
-    // Trigger file selection when the upload button is clicked
-    if (uploadButton) {
-      uploadButton.addEventListener('click', function() {
-        profilePictureInput.click();
-      });
+
+    // Final Submission
+    if (signupForm) {
+        signupForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const otpCode = Array.from(otpInputs).map(i => i.value).join('');
+            if (otpCode.length < 6) {
+                showFieldMsg('otp', 'Please enter 6-digit code');
+                return;
+            }
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            data.otp = otpCode;
+
+            const avatarSeed = isCustomUpload ? 'custom' : (shuffleCounter > 0 ? `${displayNameInput.value || 'User'}-${shuffleCounter}` : displayNameInput.value || 'User');
+            data.avatarSeed = avatarSeed;
+            data.isCustomAvatar = isCustomUpload;
+
+            // --- AVATAR CAPTURE LOGIC (Composited) ---
+            if (!isCustomUpload) {
+                const parentDiv = mainAvatarRoot.querySelector('div');
+                const svgEl = mainAvatarRoot.querySelector('svg');
+
+                if (parentDiv && svgEl) {
+                    // Extract styles from the React-rendered component
+                    const styles = window.getComputedStyle(parentDiv);
+                    const bgColor = styles.backgroundColor;
+                    const fgColor = window.getComputedStyle(svgEl.parentElement).color; // Avvvatars specific color token
+
+                    // Create a flattened SVG that includes the background circle
+                    const flattenedSvg = `
+                        <svg width="70" height="70" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="35" cy="35" r="35" fill="${bgColor}" />
+                            <g transform="translate(17.5, 17.5)" color="${fgColor}">
+                                ${svgEl.innerHTML}
+                            </g>
+                        </svg>
+                    `.trim();
+
+                    const svgBase64 = btoa(unescape(encodeURIComponent(flattenedSvg)));
+                    data.profilePicture = `data:image/svg+xml;base64,${svgBase64}`;
+                }
+            } else {
+                const previewImg = mainAvatarRoot.querySelector('img');
+                if (previewImg) data.profilePicture = previewImg.src;
+            }
+
+            try {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Joining...';
+
+                const res = await fetch('/api/v2/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    showFieldMsg('form', 'Welcome to Materio! Redirecting...', 'success');
+                    setTimeout(() => window.location.href = '/account/profile', 1500);
+                } else {
+                    const err = await res.json();
+                    showFieldMsg('form', err.error || 'Registration failed. Check details.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Count Me In';
+                }
+            } catch (err) {
+                showFieldMsg('form', 'Network error. Please try again.');
+                this.querySelector('button[type="submit"]').disabled = false;
+                this.querySelector('button[type="submit"]').textContent = 'Count Me In';
+            }
+        });
     }
-  }
 
-  // Step 2: Handle main signup form
-  if (signupForm) {
-    signupForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      if (!validatedInviteCode) {
-        showNotification('Please validate your invite code first', 'error');
-        return;
-      }
-      
-      const username = document.getElementById('username').value.trim();
-      const displayName = document.getElementById('displayName').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const confirmPassword = document.getElementById('confirmPassword').value;
-      const termsAgreed = document.getElementById('terms').checked;
-      
-      // Basic validation
-      if (!username || !displayName || !email || !password) {
-        showNotification('Please fill in all required fields', 'error');
-        return;
-      }
-      
-      if (password !== confirmPassword) {
-        showNotification('Passwords do not match', 'error');
-        return;
-      }
-      
-      if (password.length < 8) {
-        showNotification('Password must be at least 8 characters long', 'error');
-        return;
-      }
-      
-      if (!termsAgreed) {
-        showNotification('Please agree to the terms and conditions', 'error');
-        return;
-      }
-      
-      try {
-        // Show loading state
-        const submitButton = this.querySelector('button[type="submit"]');
-        const originalText = submitButton.textContent;
-        submitButton.disabled = true;
-        submitButton.textContent = 'SIGNING UP...';        
-        // Prepare data for API request
-        const signupData = {
-          inviteCode: validatedInviteCode,
-          username,
-          displayName,
-          email,
-          password
-        };
-        
-        // Add profile picture if uploaded
-        if (picturePreview && picturePreview.src && !picturePreview.src.includes('default-avatar.svg')) {
-          signupData.profilePicture = picturePreview.src;
+    // --- Phase Navigation ---
+    const registrationPhase = document.getElementById('registration-phase');
+    const verificationPhase = document.getElementById('verification-phase');
+    const nextBtn = document.getElementById('nextToOtp');
+    const backBtn = document.getElementById('backToStep1');
+
+    function validatePhase1() {
+        const username = document.getElementById('username').value.trim();
+        const displayName = document.getElementById('displayName').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const currentYear = document.getElementById('currentYear').value;
+        const specialization = document.getElementById('specialization').value;
+
+        if (!username || !displayName || !password || !currentYear || !specialization) {
+            showFieldMsg('form', 'Please fill all fields');
+            return false;
         }
-        
-        // Make signup API request
-        const response = await makeApiRequest('signup', 'POST', signupData);        // Handle successful signup
-        if (response && response.token) {
-          setAuthToken(response.token);
-          
-          // Show success notification with recovery key and plus benefits
-          let successMessage = response.message || 'Account created successfully!';
-          
-          if (response.user && response.user.grantedPlusFromInvite) {
-            successMessage += ' 🌟 You have been granted Plus benefits from your invite code!';
-          }
-          
-          if (response.user && response.user.recoveryKey) {
-            successMessage += ` Your recovery key is: ${response.user.recoveryKey}. Please save this in a secure place.`;
-          }
-          
-          showNotification(successMessage, 'success');
-          
-          // Redirect to profile page after a short delay
-          setTimeout(() => {
-            redirectToProfile();
-          }, 5000);  // Longer delay so user can see the recovery key
+        if (password.length < 8) {
+            showFieldMsg('password', 'Min 8 characters');
+            return false;
         }
-      } catch (error) {
-        console.error('Signup error:', error);
-        showNotification(error.message || 'Failed to create account. Please try again.', 'error');
-        
-        // Reset button state
-        const submitButton = this.querySelector('button[type="submit"]');
-        submitButton.disabled = false;
-        submitButton.textContent = 'SIGN UP';
-      }
-    });
-  }
-  // Enable social signup buttons if needed (currently just UI placeholders)
-  const socialButtons = document.querySelectorAll('.btn-social');
-  socialButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      showNotification('Social signup is not available at this time', 'info');
-    });
-  });
-});
+        if (password !== confirmPassword) {
+            showFieldMsg('confirmPassword', 'Passwords do not match');
+            return false;
+        }
+        return true;
+    }
 
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            if (validatePhase1()) {
+                registrationPhase.style.display = 'none';
+                verificationPhase.style.display = 'block';
+                showFieldMsg('form', 'Verify your email.', 'success');
+            }
+        });
+    }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const params = new URLSearchParams(window.location.search);
-    const inviteCode = params.get("code");
-    if (inviteCode) {
-        document.getElementById("inviteCodeInput").value = inviteCode;
+    if (backBtn) {
+        backBtn.addEventListener('click', () => {
+            verificationPhase.style.display = 'none';
+            registrationPhase.style.display = 'block';
+        });
+    }
+
+    // Handle main signup form submission
+    if (signupForm) {
+        signupForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const email = emailInput.value.trim();
+            const otp = document.getElementById('otp').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const displayName = document.getElementById('displayName').value.trim();
+            const currentYear = document.getElementById('currentYear').value;
+            const passoutYear = document.getElementById('passoutYear').value;
+            const specialization = document.getElementById('specialization').value;
+            const avatarVariant = document.getElementById('selectedVariant').value;
+            const password = document.getElementById('password').value;
+            const termsAgreed = document.getElementById('terms').checked;
+
+            if (!otp) {
+                showFieldMsg('otp', 'Verification code required');
+                return;
+            }
+
+            if (!termsAgreed) {
+                showFieldMsg('form', 'Agree to terms');
+                return;
+            }
+
+            try {
+                const submitBtn = signupForm.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'FINALIZING...';
+
+                const signupData = {
+                    email,
+                    otp,
+                    username,
+                    displayName,
+                    branch: 'Computer Science and Engineering',
+                    currentYear: parseInt(currentYear),
+                    passoutYear: parseInt(passoutYear),
+                    specialization,
+                    avatarVariant,
+                    avatarSeed: isCustomUpload ? 'custom' : (shuffleCounter > 0 ? `${displayName}-${shuffleCounter}` : displayName),
+                    isCustomAvatar: isCustomUpload,
+                    password
+                };
+
+                const response = await makeApiRequest('signup', 'POST', signupData);
+
+                if (response && response.token) {
+                    setAuthToken(response.token);
+                    showFieldMsg('form', 'Account created! Redirecting...', 'success');
+
+                    if (response.user && response.user.recoveryKey) {
+                        setTimeout(() => {
+                            alert(`IMPORTANT: RECOVERY KEY: ${response.user.recoveryKey}`);
+                        }, 500);
+                    }
+
+                    setTimeout(() => window.location.href = '/account/profile', 1500);
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                showFieldMsg('form', error.message || 'Signup failed');
+                const submitButton = this.querySelector('button[type="submit"]');
+                submitButton.disabled = false;
+                submitButton.textContent = 'FINALIZE ACCOUNT';
+            }
+        });
+    }
+
+    // --- Bulletproof Toggle Password Visibility ---
+    document.addEventListener('click', function (e) {
+        const trigger = e.target.closest('.password-toggle-trigger');
+        if (trigger) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const wrapper = trigger.closest('.password-wrapper');
+            const input = wrapper.querySelector('input');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                trigger.classList.add('is-visible');
+            } else {
+                input.type = 'password';
+                trigger.classList.remove('is-visible');
+            }
+        }
+    });
+
+    // --- Auto-calculate Passout Year ---
+    const yearSelect = document.getElementById('currentYear');
+    const passoutInput = document.getElementById('passoutYear');
+    if (yearSelect && passoutInput) {
+        yearSelect.addEventListener('change', (e) => {
+            const currentYearValue = parseInt(e.target.value);
+            if (!isNaN(currentYearValue)) {
+                // Calculation: Current Year (e.g., 2026) + (4 - Study Year)
+                const calculatedYear = new Date().getFullYear() + (4 - currentYearValue);
+                passoutInput.value = calculatedYear;
+                showFieldMsg('form', `Estimated graduation: ${calculatedYear}`, 'success');
+            }
+        });
     }
 });
-
-

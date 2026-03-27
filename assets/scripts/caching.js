@@ -172,37 +172,118 @@ document.addEventListener('DOMContentLoaded', function () {
     let lastProgressPercent = 0;
     let pdfLoadingActive = false;
 
+    // Rate Limiting Logic (Internal Helpers)
+    function getUserTier() {
+        try {
+            const userData = localStorage.getItem('materio_user');
+            if (!userData) return 'normal';
+            const user = JSON.parse(userData);
+            if (user.hasAdminPrivileges) return 'super';
+            if (user.isPlusUser) return 'pro';
+            return 'normal';
+        } catch (e) { return 'normal'; }
+    }
+
+    function getMaxPdfs() {
+        const tier = getUserTier();
+        if (tier === 'super') return 100;
+        if (tier === 'pro') return 40;
+        return 20;
+    }
+
+    function showRateLimitScreen(resetTimestamp, lastPdfUrl) {
+        if (window.MaterioHaptics) window.MaterioHaptics.vibrate('error');
+
+        const updateTimer = () => {
+            const now = Date.now();
+            const remain = resetTimestamp - now;
+            const btn = document.getElementById('rateLimitActionBtn');
+            const timerSpan = document.getElementById('rateLimitTimer');
+
+            if (remain <= 0) {
+                // Clear limits
+                sessionStorage.removeItem('materio_pdf_count');
+                localStorage.removeItem('materio_rate_limit_reset');
+                
+                if (btn) {
+                    btn.innerHTML = 'Resume';
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.style.cursor = 'pointer';
+                    btn.onclick = () => {
+                        if (typeof window.loadPdfWithCache === 'function') {
+                            window.loadPdfWithCache(lastPdfUrl);
+                        }
+                    };
+                    
+                    // Simple completion haptic
+                    if (window.MaterioHaptics) window.MaterioHaptics.vibrate('success');
+                }
+                return;
+            }
+
+            const minutes = Math.floor(remain / 60000);
+            const seconds = Math.floor((remain % 60000) / 1000);
+            if (timerSpan) {
+                timerSpan.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        };
+
+        document.getElementById('popupContent').innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: center; height: 87vh; text-align: center; flex-direction: column; padding: 20px;">
+                <i class="fa-regular fa-hourglass-end" style="font-size: 72px; color:#ff8400; margin-bottom: 24px;"></i>
+                <p class="popup-message" style="font-weight:600;">You've earned a break</p>
+                <p class="popup-errcode">status: 429 rate limited</p>
+                <p style="font-size:14px; color: var(--text-color-secondary); margin-bottom: 32px; max-width: 400px; line-height: 1.6;">
+                    Looks like you've been grinding. Come back in a bit, we're not going anywhere.
+                </p>
+                <button id="rateLimitActionBtn" class="btn primary-btn" disabled style="corner-shape: squircle; border-radius: 25px; min-width: 220px; opacity: 0.6; cursor: not-allowed; transition: all 0.3s ease;">
+                    Limits reset in <span id="rateLimitTimer" style="font-family: 'Space Mono', monospace; font-weight: 700; margin-left: 8px;">--:--</span>
+                </button>
+            </div>
+        `;
+
+        updateTimer();
+        const intervalId = setInterval(updateTimer, 1000);
+
+        // Clear interval on modal close/popup change
+        const checkVisible = setInterval(() => {
+            if (!document.getElementById('rateLimitTimer')) {
+                clearInterval(intervalId);
+                clearInterval(checkVisible);
+            }
+        }, 1000);
+
+        popup.classList.remove('closing');
+        popup.style.display = 'block';
+    }
+
     // Enhanced PDF loading function with error handling - optimized for speed
     async function loadPdfWithCache(pdfUrl) {
-        // --- Session Rate Limiting ---
-        const MAX_PDFS_PER_SESSION = 20;
+        // --- Session Rate Limiting & Lockdown Check ---
+        const resetTimeStr = localStorage.getItem('materio_rate_limit_reset');
+        if (resetTimeStr) {
+            const resetTime = parseInt(resetTimeStr);
+            if (Date.now() < resetTime) {
+                showRateLimitScreen(resetTime, pdfUrl);
+                return;
+            } else {
+                localStorage.removeItem('materio_rate_limit_reset');
+                sessionStorage.removeItem('materio_pdf_count');
+            }
+        }
+
+        const maxPdfs = getMaxPdfs();
         let pdfCount = parseInt(sessionStorage.getItem('materio_pdf_count') || '0');
 
-        if (pdfCount >= MAX_PDFS_PER_SESSION) {
-            if (window.MaterioHaptics) window.MaterioHaptics.vibrate('error');
-
-            document.getElementById('popupContent').innerHTML = `
-                <div style="display: flex; align-items: center; justify-content: center; height: 87vh; text-align: center; flex-direction: column; padding: 20px; background: var(--bg-color);">
-                    <div style="background: var(--card-bg); padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 1px solid var(--border-color); max-width: 400px; width: 90%;">
-                        <div style="width: 80px; height: 80px; background: rgba(255, 132, 0, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
-                            <i class="fa-solid fa-users" style="font-size: 36px; color: #ff8400;"></i>
-                        </div>
-                        <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 12px; color: var(--text-color);">Limit Reached</h2>
-                        <p style="color: var(--text-color-secondary); line-height: 1.6; margin-bottom: 32px;">Session limit reached. To keep things fair for everyone, please return in a new session.</p>
-                        <button class="btn primary-btn" onclick="location.reload()" style="width: 100%; justify-content: center; height: 50px; border-radius: 12px; font-weight: 600;">
-                            <i class="fa-solid fa-rotate-right" style="margin-right: 10px;"></i>Reload Page
-                        </button>
-                    </div>
-                </div>
-            `;
-            popup.classList.remove('closing');
-            popup.style.display = 'block';
+        if (pdfCount >= maxPdfs) {
+            const resetTime = Date.now() + (30 * 60 * 1000);
+            localStorage.setItem('materio_rate_limit_reset', resetTime.toString());
+            showRateLimitScreen(resetTime, pdfUrl);
             return;
         }
 
         // Only increment if we haven't opened THIS specific URL in this session yet
-        // OR just increment for every open attempt? User said "per session 20 PDFs".
-        // Usually it means 20 unique PDFs or 20 opens. I'll go with 20 unique opens for simplicity.
         sessionStorage.setItem('materio_pdf_count', pdfCount + 1);
         // --- End Rate Limiting ---
 
@@ -278,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <i class="fa-solid fa-server" style="font-size: 72px; color:#ff8400;"></i>
     <p class="popup-message" style="font-weight:600;">Something went wrong</p>
     <p class="popup-errcode">status: ${getStatusText(headResponse.status)}</p>
-    <button class="btn primary-btn" onclick="location.reload()">
+    <button class="btn primary-btn" onclick="location.reload()" style="corner-shape: squircle; border-radius: 25px;">
         <i class="fa-solid fa-rotate-right" style="margin-right:10px;"></i>Refresh
     </button>
     <p style="font-size:12px; font-weight:600; max-width: 400px; word-wrap: break-word;">
@@ -292,7 +373,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <i class="fa-solid fa-triangle-exclamation" style="font-size: 72px; color:#ff8400;"></i>
     <p class="popup-message" style="font-weight:600;">Looks like this one's missing</p>
     <p class="popup-errcode">status: ${getStatusText(headResponse.status)}</p>
-    <button class="btn primary-btn" onclick="openDynamicForm('contribution', true)">
+    <button class="btn primary-btn" onclick="openDynamicForm('contribution', true)" style="corner-shape: squircle; border-radius: 25px;">
         <i class="fa-regular fa-circle-plus" style="margin-right:10px;"></i>Contribute
     </button>
     <p style="font-size:12px; font-weight:600; max-width: 400px; word-wrap: break-word;">

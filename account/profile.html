@@ -10,6 +10,30 @@
   <link rel="stylesheet" href="/account/css/styles.css">
    <link rel="stylesheet" href="/account/css/profile.css">
   <link rel="stylesheet" href="/account/css/redesigned-styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://materioa.github.io/kit/6a787c7335.js" crossorigin="anonymous"></script>
+
+  <!-- React Identity System -->
+  <script type="importmap">
+  {
+    "imports": {
+      "react": "https://esm.sh/react@18",
+      "react-dom": "https://esm.sh/react-dom@18",
+      "react-dom/client": "https://esm.sh/react-dom@18/client"
+    }
+  }
+  </script>
+  <script type="module">
+    import React from 'react';
+    import ReactDOM from 'react-dom/client';
+    import Avvvatars from 'https://esm.sh/avvvatars-react-alt@0.4.8?external=react,react-dom';
+
+    window.React = React;
+    window.ReactDOM = ReactDOM;
+    window.Avvvatars = Avvvatars;
+
+    window.dispatchEvent(new Event('avvvatars-loaded'));
+  </script>
  
   <script>
     // Check for dark mode cookie
@@ -320,17 +344,24 @@
             <div class="form-divider"></div>
 
             <div class="form-section">
-              <h4 class="form-section-title">Profile Picture</h4>
+              <h4 class="form-section-title">Identity & Avatar</h4>
               <div class="form-group">
-                <div class="profile-picture-input horizontal">
-                  <div class="profile-picture-preview">
-                    <img id="picturePreview" src="/assets/img/default-avatar.svg" alt="Profile Preview">
+                <div class="avatar-col" style="display: flex; flex-direction: column; align-items: center; gap: 12px; max-width: 120px;">
+                  <div id="avatarPreviewContainer" class="main-avatar-container" style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; background: #f8fafc; border: 2px solid var(--border-color); display: flex; align-items: center; justify-content: center;">
+                    <div id="mainAvatarRoot">
+                        <img id="picturePreview" src="/assets/img/default-avatar.svg" alt="Profile Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
                   </div>
-                  <div class="picture-actions">
-                    <input type="file" id="profilePicture" name="profilePicture" accept="image/*"
-                      style="display: none;">
-                    <button type="button" id="uploadButton" class="btn btn-outline">Change Picture</button>
+                  <div class="avatar-tools-row" style="display: flex; gap: 8px;">
+                    <button type="button" id="uploadButton" class="avatar-tool-btn" title="Upload Image" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-color); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-dim); transition: all 0.2s;">
+                      <i class="fas fa-camera" style="font-size: 12px;"></i>
+                    </button>
+                    <button type="button" id="shuffleAvatarBtn" class="avatar-tool-btn" title="Shuffle Style" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-color); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-dim); transition: all 0.2s;">
+                      <i class="fas fa-random" style="font-size: 12px;"></i>
+                    </button>
                   </div>
+                  <input type="file" id="profilePicture" name="profilePicture" accept="image/*" style="display: none;">
+                  <input type="hidden" id="selectedVariant" value="character">
                 </div>
               </div>
             </div>
@@ -371,6 +402,17 @@
 
             <button type="submit" class="btn">UPDATE PASSWORD</button>
           </form>
+        </div>
+        <div class="card-one">
+          <h3>Redeem Gift Code</h3>
+          <div class="form-section">
+            <p class="form-help">Enter an invite or gift code to unlock Pro/Super perks for your account.</p>
+            <div class="redeem-group" style="display: flex; gap: 10px;">
+              <input type="text" id="redeemCode" placeholder="Enter code (e.g. EXTRA-PLUS-PERKS)" style="flex: 1;">
+              <button type="button" id="redeemButton" class="btn-otp" style="padding: 0 20px; border-radius: 12px;">REDEEM</button>
+            </div>
+            <p class="form-help" id="redeemStatus" style="font-size: 0.8rem; margin-top: 5px;"></p>
+          </div>
         </div>
         <div class="card-one">
           <h3>Recovery Key</h3>

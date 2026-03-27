@@ -49,11 +49,16 @@ module.exports = async (req, res) => {
     const isSharelinkEndpoint = pathAction === 'sharelink' || url.pathname.includes('/sharelink') || bodyAction === 'sharelink';
     const isSharelinkInfoEndpoint = pathAction === 'sharelink-info' || url.pathname.includes('/sharelink-info');
     const isDynamicInviteEndpoint = pathAction === 'dynamic' || url.pathname.includes('/invites/dynamic') || req.query.inviteCode;
+    const isRedeemEndpoint = pathAction === 'redeem' || url.pathname.includes('/invites/redeem') || bodyAction === 'redeem' || req.query.action === 'redeem';
 
     // Route to appropriate handler
     if (isValidateEndpoint && req.method === 'POST') {
       return await validateInvite(req, res, origin);
-    } 
+    }
+
+    if (isRedeemEndpoint && req.method === 'POST') {
+      return await handleRedeem(req, res, origin);
+    }
     
     if (isDiagnosticEndpoint && req.method === 'POST') {
       return await diagnosticInvite(req, res, origin);
@@ -717,6 +722,97 @@ async function handleDynamicInvite(req, res, origin) {
   } catch (error) {
     console.error('Dynamic invite error:', error);
     return res.status(500).send('Internal Server Error');
+  }
+}
+
+async function handleRedeem(req, res, origin) {
+  try {
+    const token = getTokenFromHeaders(req.headers);
+    if (!token) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    const decoded = verifyToken(token);
+    if (!decoded) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+
+    const { inviteCode } = req.body;
+    if (!inviteCode) {
+      return res.status(400).json({ error: 'Gift code is required' });
+    }
+
+    // 1. Validate Invite Code
+    const { data: invite, error: inviteError } = await supabaseAdmin
+      .from('invites')
+      .select('*')
+      .eq('code', inviteCode.trim())
+      .single();
+
+    if (inviteError || !invite) {
+      return res.status(404).json({ error: 'Gift code not found' });
+    }
+
+    if (invite.redeemed) {
+      return res.status(400).json({ error: 'Gift code has already been redeemed' });
+    }
+
+    const now = new Date();
+    if (new Date(invite.expires_at) < now) {
+      return res.status(400).json({ error: 'Gift code has expired' });
+    }
+
+    // 2. Fetch User to check if they already have perks
+    const { data: user, error: userError } = await supabaseAdmin
+      .from('users')
+      .select('id, is_plus_user')
+      .eq('id', decoded.id)
+      .single();
+
+    if (userError || !user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // 3. Apply Perks (assuming plus perks for now)
+    const updates = {};
+    if (invite.contains_plus_perks) {
+      updates.is_plus_user = true;
+    }
+
+    // 4. Update Tables (Atomic-ish)
+    const { error: inviteUpdateError } = await supabaseAdmin
+      .from('invites')
+      .update({
+        redeemed: true,
+        redeemed_by: user.id,
+        redeemed_date: now.toISOString()
+      })
+      .eq('id', invite.id);
+
+    if (inviteUpdateError) {
+      return res.status(500).json({ error: 'Failed to redeem code' });
+    }
+
+    if (Object.keys(updates).length > 0) {
+      const { error: userUpdateError } = await supabaseAdmin
+        .from('users')
+        .update(updates)
+        .eq('id', user.id);
+
+      if (userUpdateError) {
+        return res.status(500).json({ error: 'Failed to update user perks' });
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Gift code redeemed successfully! Enjoy your perks.',
+      perks: updates
+    });
+
+  } catch (error) {
+    console.error('Redeem API error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
 

@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
 /* Base Styles */
 :root {
   --primary-color: #ff5400;
@@ -18,8 +19,8 @@
   --font-family: "Manrope", sans-serif;
   --shadow: 0px 4px 18px rgba(75, 70, 92, 0.1);
   --border-radius: 6px;
-  --outer-radius : 40px;
-  --inner-radius : 24px;
+  --outer-radius: 40px;
+  --inner-radius: 24px;
 }
 
 * {
@@ -37,7 +38,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
 }
 
 .container {
@@ -56,14 +56,16 @@ a:hover {
 }
 
 /* Card Styles */
-.auth-card, .profile-card {
+.auth-card,
+.profile-card {
   background-color: var(--card-color);
   border-radius: var(--outer-radius);
   overflow: hidden;
   corner-shape: squircle;
 }
 
-.auth-header, .profile-header {
+.auth-header,
+.profile-header {
   padding: 1.5rem 1.5rem 0;
   text-align: center;
 }
@@ -73,13 +75,15 @@ a:hover {
   margin-bottom: 1rem;
 }
 
-.auth-header h2, .profile-header h2 {
+.auth-header h2,
+.profile-header h2 {
   color: var(--text-color);
   margin-bottom: 0.5rem;
   font-weight: 600;
 }
 
-.auth-header p, .profile-header p {
+.auth-header p,
+.profile-header p {
   color: var(--text-light-color);
   margin-bottom: 1.5rem;
   font-size: 0.875rem;
@@ -98,7 +102,8 @@ a:hover {
 }
 
 /* Form Styles */
-.auth-form, .tab-content {
+.auth-form,
+.tab-content {
   padding: 1.5rem;
 }
 
@@ -122,7 +127,7 @@ input[type="password"] {
   corner-shape: squircle;
   border-radius: var(--outer-radius);
   font-size: 0.875rem;
-  font-family:var(--font-family);
+  font-family: var(--font-family);
   color: var(--text-color);
   transition: border-color 0.2s ease;
 }
@@ -160,13 +165,15 @@ input[type="file"] {
   margin-bottom: 1.5rem;
 }
 
-.remember-me, .terms-agreement {
+.remember-me,
+.terms-agreement {
   display: flex;
   align-items: center;
   font-size: 0.875rem;
 }
 
-.remember-me input, .terms-agreement input {
+.remember-me input,
+.terms-agreement input {
   margin-right: 0.5rem;
 }
 
@@ -181,7 +188,7 @@ input[type="file"] {
   padding: 0.75rem;
   background: none;
   border: none;
-    corner-shape: squircle;
+  corner-shape: squircle;
   border-radius: var(--border-radius);
   font-weight: 500;
   font-family: var(--font-family);
@@ -424,7 +431,7 @@ input[type="file"] {
 }
 
 .recovery-key-display input {
-  font-family:  "Space Mono", monospace;
+  font-family: "Space Mono", monospace;
   flex: 1;
   background-color: #f5f5f5;
   cursor: default;
@@ -647,17 +654,49 @@ input[type="file"] {
   justify-content: center;
 }
 
-.file-type-icon.pdf { color: #dc3545; }
-.file-type-icon.doc { color: #2b579a; }
-.file-type-icon.docx { color: #2b579a; }
-.file-type-icon.ppt { color: #d24726; }
-.file-type-icon.pptx { color: #d24726; }
-.file-type-icon.xls { color: #217346; }
-.file-type-icon.xlsx { color: #217346; }
-.file-type-icon.zip { color: #6c757d; }
-.file-type-icon.rar { color: #6c757d; }
-.file-type-icon.txt { color: #6c757d; }
-.file-type-icon.default { color: var(--text-light-color); }
+.file-type-icon.pdf {
+  color: #dc3545;
+}
+
+.file-type-icon.doc {
+  color: #2b579a;
+}
+
+.file-type-icon.docx {
+  color: #2b579a;
+}
+
+.file-type-icon.ppt {
+  color: #d24726;
+}
+
+.file-type-icon.pptx {
+  color: #d24726;
+}
+
+.file-type-icon.xls {
+  color: #217346;
+}
+
+.file-type-icon.xlsx {
+  color: #217346;
+}
+
+.file-type-icon.zip {
+  color: #6c757d;
+}
+
+.file-type-icon.rar {
+  color: #6c757d;
+}
+
+.file-type-icon.txt {
+  color: #6c757d;
+}
+
+.file-type-icon.default {
+  color: var(--text-light-color);
+}
 
 .file-name-edit {
   border: none;
@@ -704,12 +743,12 @@ input[type="file"] {
   transition: all 0.3s ease;
 }
 
-.checkbox-label input[type="checkbox"]:checked + .checkmark {
+.checkbox-label input[type="checkbox"]:checked+.checkmark {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
 }
 
-.checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+.checkbox-label input[type="checkbox"]:checked+.checkmark::after {
   content: '';
   position: absolute;
   left: 6px;
@@ -737,12 +776,12 @@ input[type="file"] {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 0.75rem;
   }
-  
+
   .file-preview-card {
     min-height: 150px;
     padding: 0.75rem;
   }
-  
+
   .file-type-icon {
     font-size: 2.5rem;
   }
@@ -901,44 +940,46 @@ body.dark-mode .invite-description {
   color: #b0b0b0;
 }
 
-        .users-card {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            align-items: right;
-            padding: 8px 14px;
-            border-radius: 10px;
-            background-color: rgba(255, 245, 223, 0.5);
-            color: #000000;
-            font-weight: 500;
-            font-size: 14px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
+.users-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-items: right;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background-color: rgba(255, 245, 223, 0.5);
+  color: #000000;
+  font-weight: 500;
+  font-size: 14px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
 
-        .users-card.dark-mode {
-            color: #ffffff;
-            background-color: rgb(51, 51, 51, 0.5);
-        }
-        .user-count, .user-label {
-           font-weight: bold;
-        }
+.users-card.dark-mode {
+  color: #ffffff;
+  background-color: rgb(51, 51, 51, 0.5);
+}
 
-        .users-card .emoji {
-            font-size: 16px;
-        }
+.user-count,
+.user-label {
+  font-weight: bold;
+}
 
-        #realtime-users-card {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            transition: opacity 0.3s ease;
-            opacity: 1;
-        }
+.users-card .emoji {
+  font-size: 16px;
+}
 
-        @media (max-width: 768px) {
-            #realtime-users-card {
-                display: block;
-                margin-top: 10px;
-            }
-        }
+#realtime-users-card {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  transition: opacity 0.3s ease;
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  #realtime-users-card {
+    display: block;
+    margin-top: 10px;
+  }
+}

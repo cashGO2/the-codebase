@@ -5,6 +5,10 @@ const {
   generateRecoveryKey 
 } = require('./_utils');
 
+/**
+ * API Endpoint: /api/v2/signup
+ * Handles university-exclusive signup with OTP verification.
+ */
 module.exports = async (req, res) => {
   // Only allow POST requests
   if (req.method !== 'POST') {
@@ -12,29 +16,68 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { username, displayName, email, password, profilePicture, inviteCode } = req.body;
+    const { 
+      username, 
+      displayName, 
+      email, 
+      password, 
+      profilePicture, 
+      otp,
+      avatarVariant = 'beam', // beam, marble, pixel, sunset, bauhaus, ring
+      inviteCode, // Optional gift code
+      branch = 'Computer Science and Engineering',
+      currentYear,
+      passoutYear,
+      specialization
+    } = req.body;
 
-    // Validate inputs
-    if (!username || !displayName || !email || !password || !inviteCode) {
-      return res.status(400).json({ error: 'Missing required fields including invite code' });
-    }    // STEP 1: Validate invite exists and is not expired (simple check)
-    // Use case-insensitive comparison to handle URL normalization
-    const { data: invite, error: inviteError } = await supabase
-      .from('invites')
-      .select('id, redeemed, expires_at, contains_plus_perks')
-      .ilike('code', inviteCode)
+    // Validate inputs (inviteCode is optional)
+    if (!username || !displayName || !email || !password || !otp) {
+      return res.status(400).json({ error: 'Missing required fields including verification code' });
+    }
+
+    // University email validation during signup
+    const universityRegex = /^(\d{2})\d{7}(\d{4})@paruluniversity\.ac\.in$/;
+    const emailMatch = email.match(universityRegex);
+    if (!emailMatch) {
+      return res.status(400).json({ error: 'Only Parul University emails are allowed (@paruluniversity.ac.in)' });
+    }
+
+    // STEP 1: Verify OTP
+    const { data: otpRecord, error: otpError } = await supabase
+      .from('otps')
+      .select('*')
+      .eq('email', email)
+      .eq('otp', otp)
+      .eq('type', 'signup')
+      .gt('expires_at', new Date().toISOString())
+      .order('created_at', { ascending: false })
+      .limit(1)
       .single();
 
-    if (inviteError || !invite) {
-      return res.status(400).json({ error: 'Invalid invite code' });
+    if (otpError || !otpRecord) {
+      return res.status(400).json({ error: 'Invalid or expired verification code' });
     }
 
-    if (invite.redeemed) {
-      return res.status(400).json({ error: 'Invite code has already been used' });
-    }
+    // STEP 1.5: Validate Optional Invite Code (Gift Code)
+    let isPlusUser = false;
+    let validInvite = null;
 
-    if (new Date(invite.expires_at) < new Date()) {
-      return res.status(400).json({ error: 'Invite code has expired' });
+    if (inviteCode) {
+      const { data: invite, error: inviteError } = await supabase
+        .from('invites')
+        .select('*')
+        .eq('code', inviteCode.trim())
+        .eq('redeemed', false)
+        .gt('expires_at', new Date().toISOString())
+        .maybeSingle();
+
+      if (inviteError || !invite) {
+        return res.status(400).json({ error: 'Invalid or expired gift code' });
+      }
+      
+      validInvite = invite;
+      isPlusUser = !!invite.contains_plus_perks;
     }
 
     // STEP 2: Check if user already exists
@@ -42,7 +85,7 @@ module.exports = async (req, res) => {
       .from('users')
       .select('email')
       .eq('email', email)
-      .single();
+      .maybeSingle();
 
     if (existingUserByEmail) {
       return res.status(409).json({ error: 'Email already exists' });
@@ -52,18 +95,18 @@ module.exports = async (req, res) => {
       .from('users')
       .select('username')
       .eq('username', username)
-      .single();
+      .maybeSingle();
 
     if (existingUserByUsername) {
       return res.status(409).json({ error: 'Username already taken' });
     }
 
-    // STEP 3: Create user first
+    // STEP 3: Create user
     const recoveryKey = generateRecoveryKey();
     const hashedPassword = await hashPassword(password);
     
-    // Set plus user status based on invite type
-    const isPlusUser = invite.contains_plus_perks || false;
+    // Default avatar if none provided (Boring Avatars - user selected variant)
+    const boringAvatarUrl = `https://source.boringavatars.com/${avatarVariant}/120/${encodeURIComponent(username)}?colors=264653,2a9d8f,e9c46a,f4a261,e76f51`;
     
     const userData = {
       username,
@@ -73,6 +116,12 @@ module.exports = async (req, res) => {
       recovery_key: recoveryKey,
       has_admin_privileges: false,
       is_plus_user: isPlusUser,
+      branch: branch,
+      current_year: currentYear,
+      passout_year: passoutYear,
+      specialization: specialization,
+      university_roll_no: email.split('@')[0], // Entire numeric string
+      profile_picture: boringAvatarUrl,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
@@ -87,32 +136,25 @@ module.exports = async (req, res) => {
       return res.status(500).json({ error: 'Failed to create user', details: userError });
     }
 
-    // STEP 4: Redeem invite using database function (this handles race conditions and RLS)
-    const { data: redeemResult, error: redeemError } = await supabase
-      .rpc('redeem_invite_code', {
-        invite_code: inviteCode,
-        user_id: newUser.id
-      });
-
-    if (redeemError || !redeemResult?.success) {
-      // If invite redemption fails, we need to clean up the user
+    // STEP 3.5: Mark Invite as Redeemed if used
+    if (validInvite) {
       await supabase
-        .from('users')
-        .delete()
-        .eq('id', newUser.id);
-        
-      const errorMessage = redeemResult?.error || redeemError?.message || 'Failed to redeem invite code';
-      return res.status(400).json({ error: errorMessage });
+        .from('invites')
+        .update({
+          redeemed: true,
+          redeemed_by: newUser.id,
+          redeemed_date: new Date().toISOString()
+        })
+        .eq('id', validInvite.id);
     }
 
-    // STEP 5: Handle profile picture upload if provided
-    let profilePicUrl = null;
+    // STEP 4: Handle profile picture upload if provided (replaces boring avatar)
+    let finalProfilePic = boringAvatarUrl;
     if (profilePicture && profilePicture.startsWith('data:image')) {
       try {
         const base64Data = profilePicture.split(',')[1];
-        const fileExt = profilePicture.split(';')[0].split('/')[1];
+        const fileExt = profilePicture.split(';')[0].split('/')[1] || 'png';
         const fileName = `${newUser.id}/profile.${fileExt}`;
-        
         const bufferData = Buffer.from(base64Data, 'base64');
         
         const { data: uploadData, error: uploadError } = await supabase
@@ -129,17 +171,19 @@ module.exports = async (req, res) => {
             .from('profile-pictures')
             .getPublicUrl(fileName);
 
-          profilePicUrl = publicUrl;
-
+          finalProfilePic = publicUrl;
           await supabase
             .from('users')
-            .update({ profile_picture: profilePicUrl })
+            .update({ profile_picture: finalProfilePic })
             .eq('id', newUser.id);
         }
       } catch (error) {
         console.error('Profile picture upload error:', error);
       }
     }
+
+    // STEP 5: Clean up OTP
+    await supabase.from('otps').delete().eq('id', otpRecord.id);
 
     // STEP 6: Generate JWT token
     const token = generateToken({ 
@@ -149,12 +193,8 @@ module.exports = async (req, res) => {
     });
 
     // STEP 7: Return success
-    const successMessage = isPlusUser 
-      ? 'User created successfully with Plus benefits!' 
-      : 'User created successfully';
-      
     return res.status(201).json({
-      message: successMessage,
+      message: 'User created successfully',
       token,
       user: {
         id: newUser.id,
@@ -163,9 +203,8 @@ module.exports = async (req, res) => {
         email: newUser.email,
         hasAdminPrivileges: newUser.has_admin_privileges,
         isPlusUser: newUser.is_plus_user,
-        profilePicture: profilePicUrl,
-        recoveryKey,
-        grantedPlusFromInvite: isPlusUser && invite.contains_plus_perks
+        profilePicture: finalProfilePic,
+        recoveryKey
       }
     });
 

@@ -4,10 +4,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Materio</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  <link rel="stylesheet" href="/account/css/styles.css">
-  <link rel="stylesheet" href="/account/css/redesigned-styles.css">
+  <title>Login | Materio</title>
+
+  <!-- Open Graph / SEO -->
+  <meta property="og:title" content="Materio - Login">
+  <meta property="og:description" content="Official materials you trust, in a way you love — Reach your university account to explore organized study materials.">
+  <meta property="og:image" content="https://materioa.vercel.app/assets/img/open-graph.png">
+  <meta property="og:url" content="https://materioa.vercel.app/account">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#333333">
+
+  <!-- Favicon and Icons -->
+  <link rel="icon" href="/assets/img/favico.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="/assets/img/favicon.png" sizes="128x128" type="image/png">
+  <link rel="icon" type="image/x-icon" href="/assets/img/favicon.svg" sizes="32x32" type="image/svg">
+  <link rel="icon" href="/assets/img/i16.svg" sizes="16x16" type="image/svg">
+  <link rel="icon" href="/assets/img/favico.svg" sizes="128x128" type="image/svg">
+
+  <link rel="stylesheet" href="/account/css/auth-redesign.css">
+  <script src="https://materioa.github.io/kit/6a787c7335.js" crossorigin="anonymous"></script>
+  <script>
+    // Theme sync - Immediate application
+    (function () {
+      const theme = document.cookie.match(/theme=([^;]+)/)?.[1] ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      if (theme === 'dark') document.documentElement.classList.add('dark-mode');
+    })();
+  </script>
   <script>
     // Check for dark mode cookie
     document.addEventListener('DOMContentLoaded', function () {
@@ -21,26 +45,21 @@
 
       if (tokenRow) {
         const authToken = tokenRow.split('=')[1];
-        // Parse URL params specifically for this immediate check
         const urlParams = new URLSearchParams(window.location.search);
         const redirectUrl = urlParams.get('callback');
 
         if (redirectUrl) {
-          // Check for redirect loop: if referrer matches the redirect target
           const referrer = document.referrer;
           const targetUrl = new URL(redirectUrl, window.location.origin);
 
           if (referrer && (referrer.includes(targetUrl.pathname) || targetUrl.href.includes(referrer))) {
             console.warn('Redirect loop detected. Clearing invalid token.');
-            // Clear cookie and storage to break loop
             document.cookie = 'materio_auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
             localStorage.removeItem('materio_auth_token');
-            // Do not redirect, let form show
             return;
           }
 
           console.log('Creating handoff for existing user...');
-          // For already logged-in users, create a handoff code via API
           fetch('/api/v2/login', {
             method: 'POST',
             headers: {
@@ -51,33 +70,23 @@
             .then(response => response.json())
             .then(data => {
               if (data.handoffCode) {
-                // Redirect with the handoff code
                 targetUrl.searchParams.set('handoff', data.handoffCode);
-                console.log('Redirecting with handoff code to:', targetUrl.toString());
                 window.location.replace(targetUrl.toString());
               } else {
-                // Fallback: redirect without code (receiving site should check localStorage)
-                console.warn('Could not create handoff code, redirecting anyway');
                 window.location.replace(redirectUrl);
               }
             })
             .catch(error => {
               console.error('Handoff creation failed:', error);
-              // Fallback redirect
               window.location.replace(redirectUrl);
             });
-          return; // Stop further execution
+          return;
         } else {
-          // Only redirect to profile if NOT on a redirect loop
-          // But first check if we just came from profile (logout or error)
           if (document.referrer && document.referrer.includes('/account/profile')) {
-            console.log('Came from profile, assuming logout/expire. Clearing token.');
             document.cookie = 'materio_auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
             localStorage.removeItem('materio_auth_token');
             return;
           }
-
-          console.log('Redirecting existing user to profile');
           window.location.replace('/account/profile');
           return;
         }
@@ -87,55 +96,138 @@
 </head>
 
 <body>
-  <div class="container">
-    <div class="card-one">
-      <div class="auth-form">
-        <form id="loginForm">
-          <div class="form-group">
-            <label for="username">Username or Email</label>
-            <input type="text" id="username" name="username" placeholder="Enter your username or email" required>
-          </div>
+  <script>
+    (function () {
+      const themeCookie = document.cookie.split('; ').find(row => row.startsWith('theme='));
+      if (themeCookie) {
+        if (themeCookie.split('=')[1] === 'dark') document.body.classList.add('dark-mode');
+      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+  <div class="auth-container">
+    <!-- Duplicate Logo for Mobile (Hidden on Desktop) -->
+    <div class="auth-logo mobile-only">
+      <img src="/assets/img/sticker.png" alt="materio.">
+    </div>
 
-          <div class="form-group">
-            <label for="password">Password</label>
-            <div class="password-input">
-              <input type="password" id="password" name="password" placeholder="Enter your password" required>
-              <i class="fas fa-eye toggle-password" data-target="password"></i>
-            </div>
-          </div>
-
-          <div class="form-actions">
-            <div class="remember-me">
-              <input type="checkbox" id="remember" name="remember">
-              <label for="remember">Remember Me</label>
-            </div>
-            <a href="/account/forgot-password" class="forgot-link">Forgot Password?</a>
-          </div>
-
-          <button type="submit" class="btn">SIGN IN</button>
-
-          <div class="form-footer">
-            <p>Have an Invite ? <a href="/account/signup">Create an account</a> to try out newest features first!</p>
-          </div>
-        </form>
+    <!-- Left side: Illustration -->
+    <div class="auth-illustration">
+      <div class="illustration-inner">
+        <img src="/assets/img/covers/to_webp/302ee339-9e23-430f-a32a-0372af4ffff5.webp" alt="Materio"
+          class="illustration-image">
       </div>
     </div>
 
-    <div class="card-layout">
-      <div style="text-align: center;">
-        <p><i class="fas fa-arrow-left"></i> <a href="/#">Back to Materio</a></p>
+    <!-- Right side: Form -->
+    <div class="auth-form-side">
+      <div class="form-content-wrapper">
+        <div class="auth-logo desktop-only">
+          <img src="/assets/img/sticker.png" alt="materio.">
+        </div>
+
+        <div class="auth-header">
+          <h1>Welcome back.</h1>
+          <p>Login to your account to continue.</p>
+        </div>
+
+        <form id="loginForm">
+          <div id="passwordPhase">
+            <div class="form-group">
+              <label for="username">Username or Email</label>
+              <div class="input-with-icon">
+                <i class="fa-regular fa-user"></i>
+                <input type="text" id="username" name="username" class="form-control"
+                  placeholder="23xxxxxxxxxxxx@paruluniversity.ac.in" required autofocus>
+              </div>
+              <div class="field-msg" id="msg-username"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password</label>
+              <div class="input-with-icon">
+                <i class="fa-regular fa-lock"></i>
+                <div class="password-wrapper">
+                  <input type="password" id="password" name="password" class="form-control" placeholder="••••••••"
+                    required autocomplete="current-password">
+                  <span class="password-toggle-trigger" data-target="password">
+                    <i class="fa-regular fa-eye"></i>
+                    <i class="fa-regular fa-eye-slash"></i>
+                  </span>
+                </div>
+              </div>
+              <div class="field-msg" id="msg-password"></div>
+            </div>
+
+            <div class="auth-options">
+              <div class="remember-me">
+                <input type="checkbox" id="remember" name="remember" checked>
+                <label for="remember">Keep me signed in</label>
+              </div>
+              <a href="/account/forgot-password" class="forgot-link">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn-primary">Log In</button>
+            <button type="button" class="btn-secondary-ghost" id="otpLoginBtn">
+              <i class="fa-regular fa-key"></i>
+              Login with OTP
+            </button>
+          </div>
+        </form>
+
+        <!-- OTP PHASE (Isolated to prevent form validation conflicts) -->
+        <div id="otpPhase" class="hidden">
+          <!-- Phase 1: Identity -->
+          <div id="otpPhase-1">
+            <div class="form-group">
+              <label>Account Email</label>
+              <div class="input-with-icon">
+                <i class="fa-regular fa-envelope"></i>
+                <input type="email" id="otpEmail" class="form-control" placeholder="your@email.com">
+              </div>
+            </div>
+            <button type="button" id="sendOtpBtn" class="btn-primary" style="margin-top: 10px;">
+              <span class="btn-text">Send Code</span>
+            </button>
+          </div>
+
+          <!-- Phase 2: Proof -->
+          <div id="otpPhase-2" class="hidden">
+            <div class="form-group">
+              <label>Enter OTP</label>
+              <div class="otp-container"
+                style="display: flex; gap: 10px; justify-content: center; margin-bottom: 24px;">
+                <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+                <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+                <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+                <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+                <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+                <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+              </div>
+            </div>
+            <button type="button" id="verifyOtpBtn" class="btn-primary">Verify & Login</button>
+          </div>
+
+          <p style="text-align: center; margin-top: 24px;">
+            <button type="button" id="backToPasswordBtn" class="btn-ghost"
+              style="font-size: 0.8rem; color: var(--text-dim); border: none; background: transparent; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+              <i class="fa-regular fa-arrow-left"></i> Use password instead
+            </button>
+          </p>
+        </div>
+
+        <div class="field-msg" id="msg-form" style="text-align: center; margin-top: 10px;"></div>
+
+        <div class="auth-footer">
+          <p>New here? <a href="/account/signup">Create an account</a></p>
+        </div>
+        </form>
       </div>
     </div>
   </div>
 
   <!-- Notification component -->
-  <div id="notification" class="notification">
-    <div class="notification-content">
-      <i class="notification-icon"></i>
-      <div class="notification-message"></div>
-    </div>
-    <button class="notification-close">&times;</button>
-  </div>
 
   <script>
     // Check for dark mode when page loads
@@ -187,6 +279,161 @@
 
     // Run on page load
     checkAndApplyDarkMode();
+
+    // --- LOGIN PHASE TOGGLING ---
+    const passwordPhase = document.getElementById('passwordPhase');
+    const otpPhase = document.getElementById('otpPhase');
+    const otpPhase1 = document.getElementById('otpPhase-1');
+    const otpPhase2 = document.getElementById('otpPhase-2');
+
+    const otpLoginBtn = document.getElementById('otpLoginBtn');
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+    const backToPasswordBtn = document.getElementById('backToPasswordBtn');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+
+    if (otpLoginBtn) {
+      otpLoginBtn.addEventListener('click', () => {
+        passwordPhase.classList.add('hidden');
+        otpPhase.classList.remove('hidden');
+        otpPhase1.classList.remove('hidden');
+        otpPhase2.classList.add('hidden');
+
+        // Remove required from hidden inputs to fix browser validation
+        if (usernameInput) usernameInput.required = false;
+        if (passwordInput) passwordInput.required = false;
+      });
+    }
+
+    if (sendOtpBtn) {
+      sendOtpBtn.addEventListener('click', async () => {
+        const email = document.getElementById('otpEmail').value.trim();
+        const feedback = document.getElementById('msg-form');
+
+        if (!email) {
+          if (feedback) feedback.textContent = 'Account email required';
+          return;
+        }
+
+        try {
+          // Set Loading UI
+          const btnText = sendOtpBtn.querySelector('.btn-text');
+          const originalText = btnText.textContent;
+          btnText.textContent = 'Sending...';
+          sendOtpBtn.disabled = true;
+
+          const response = await fetch('/api/v2/auth?action=otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, type: 'login' })
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            otpPhase1.classList.add('hidden');
+            otpPhase2.classList.remove('hidden');
+            if (feedback) feedback.textContent = '';
+          } else {
+            if (feedback) feedback.textContent = data.error || 'Identity not found';
+          }
+        } catch (err) {
+          if (feedback) feedback.textContent = 'Connection lost. Try again.';
+        } finally {
+          const btnText = sendOtpBtn.querySelector('.btn-text');
+          if (btnText) btnText.textContent = 'Send Code';
+          sendOtpBtn.disabled = false;
+        }
+      });
+    }
+
+    if (verifyOtpBtn) {
+      verifyOtpBtn.addEventListener('click', async () => {
+        const email = document.getElementById('otpEmail').value.trim();
+        const otp = Array.from(otpInputs).map(i => i.value).join('');
+        const feedback = document.getElementById('msg-form');
+
+        if (otp.length < 6) {
+          if (feedback) feedback.textContent = 'Please enter the 6-digit code';
+          return;
+        }
+
+        try {
+          verifyOtpBtn.disabled = true;
+          verifyOtpBtn.textContent = 'Verifying...';
+
+          const response = await fetch('/api/v2/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: email, otp, method: 'otp' })
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.token) {
+            // Standard success path from login.js
+            if (typeof setAuthToken === 'function') {
+              setAuthToken(data.token);
+            } else {
+              // Fallback direct set
+              document.cookie = `materio_auth_token=${data.token}; path=/; max-age=86400; SameSite=Lax`;
+              localStorage.setItem('materio_auth_token', data.token);
+            }
+
+            if (feedback) {
+              feedback.textContent = 'Login successful! Redirecting...';
+              feedback.style.color = '#10b981';
+            }
+
+            setTimeout(() => {
+              window.location.replace('/account/profile');
+            }, 1500);
+          } else {
+            if (feedback) feedback.textContent = data.error || 'Invalid verification code';
+            verifyOtpBtn.disabled = false;
+            verifyOtpBtn.textContent = 'Verify & Login';
+          }
+        } catch (err) {
+          if (feedback) feedback.textContent = 'Verification failed. Try again.';
+          verifyOtpBtn.disabled = false;
+          verifyOtpBtn.textContent = 'Verify & Login';
+        }
+      });
+    }
+
+    if (backToPasswordBtn) {
+      backToPasswordBtn.addEventListener('click', () => {
+        otpPhase.classList.add('hidden');
+        passwordPhase.classList.remove('hidden');
+      });
+    }
+
+    // --- OTP GRID AUTOMATION ---
+    const otpInputs = document.querySelectorAll('.otp-input');
+    otpInputs.forEach((input, index) => {
+      input.addEventListener('input', (e) => {
+        if (e.target.value && index < otpInputs.length - 1) {
+          otpInputs[index + 1].focus();
+        }
+      });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !e.target.value && index > 0) {
+          otpInputs[index - 1].focus();
+        }
+      });
+
+      // Handle Paste
+      input.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const pasteData = (e.clipboardData || window.clipboardData).getData('text').slice(0, 6);
+        pasteData.split('').forEach((char, i) => {
+          if (otpInputs[i]) {
+            otpInputs[i].value = char;
+            if (i < otpInputs.length - 1) otpInputs[i + 1].focus();
+          }
+        });
+      });
+    });
   </script>
 
   <script src="/account/js/auth.js"></script>

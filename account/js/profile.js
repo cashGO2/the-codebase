@@ -30,39 +30,74 @@ document.addEventListener('DOMContentLoaded', function () {
   const dashboardUsername = document.getElementById('dashboard-username');
   const uploadButton = document.getElementById('uploadButton');
 
-  if (profilePictureInput && picturePreview) {
-    // Ensure file input is hidden but functional
-    if (uploadButton) {
-      uploadButton.addEventListener('click', function () {
-        profilePictureInput.click();
+  // --- IDENTITY STUDIO LOGIC ---
+  const shuffleBtn = document.getElementById('shuffleAvatarBtn');
+  const mainAvatarRoot = document.getElementById('mainAvatarRoot');
+  const selectedVariantInput = document.getElementById('selectedVariant');
+  let currentStyleIndex = 0;
+  let shuffleCounter = 0;
+  let isCustomUpload = false;
+  const STYLES = ['character', 'shape', 'face'];
+
+  function renderMainAvatar(seed = 'User') {
+      if (isCustomUpload) return;
+      
+      const AvvComponent = window.Avvvatars || (window.AvvvatarsReactAlt && window.AvvvatarsReactAlt.Avvvatars) || window.AvvvatarsReactAlt;
+      const FinalComp = (AvvComponent && AvvComponent.default) ? AvvComponent.default : AvvComponent;
+      
+      if (!mainAvatarRoot || !window.React || !window.ReactDOM || !FinalComp) return;
+      
+      const variant = STYLES[currentStyleIndex];
+      if (selectedVariantInput) selectedVariantInput.value = variant;
+      
+      const finalSeed = shuffleCounter > 0 ? `${seed}-${shuffleCounter}` : seed;
+
+      const root = window.reactRoot || (window.ReactDOM.createRoot(mainAvatarRoot));
+      window.reactRoot = root;
+
+      root.render(window.React.createElement(FinalComp, {
+          value: finalSeed,
+          style: variant === 'face' ? 'shape' : variant,
+          type: variant === 'face' ? 'face' : undefined,
+          size: 100,
+          shadow: true
+      }));
+  }
+
+  if (shuffleBtn) {
+      shuffleBtn.addEventListener('click', () => {
+          isCustomUpload = false;
+          currentStyleIndex = (currentStyleIndex + 1) % STYLES.length;
+          shuffleCounter++;
+          const nameValue = document.getElementById('displayName').value || document.getElementById('username').value || 'User';
+          renderMainAvatar(nameValue);
       });
+  }
+
+  if (profilePictureInput && picturePreview) {
+    if (uploadButton) {
+      uploadButton.addEventListener('click', () => profilePictureInput.click());
     }
 
     profilePictureInput.addEventListener('change', function (e) {
       const file = e.target.files[0];
       if (file) {
-        if (!file.type.startsWith('image/')) {
-          showNotification('Please select an image file', 'error');
-          return;
-        }
-
-        if (file.size > 5 * 1024 * 1024) { // 5MB max
-          showNotification('Image size should be less than 5MB', 'error');
-          return;
-        }
-
+        isCustomUpload = true;
         const reader = new FileReader();
         reader.onload = function (event) {
-          picturePreview.src = event.target.result;
-          // Also update the dashboard profile image preview
-          if (dashboardProfileImage) {
-            dashboardProfileImage.src = event.target.result;
+          // Replace Avvvatars with image
+          if (window.reactRoot) {
+              window.reactRoot.unmount();
+              window.reactRoot = null;
           }
+          mainAvatarRoot.innerHTML = `<img id="picturePreview" src="${event.target.result}" style="width: 100%; height: 100%; object-fit: cover;">`;
+          if (dashboardProfileImage) dashboardProfileImage.src = event.target.result;
         };
         reader.readAsDataURL(file);
       }
     });
-  }    // Admin invite card reference
+  }
+    // Admin invite card reference
   const adminInviteCard = document.getElementById('adminInviteCard');
 
   // Function to extract username from URL or session storage
@@ -298,81 +333,74 @@ document.addEventListener('DOMContentLoaded', function () {
   if (profileForm) {
     profileForm.addEventListener('submit', async function (e) {
       e.preventDefault();
+      
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData.entries());
+      
+      // Filter out the file object if it hasn't changed to avoid serialization errors
+      if (!(data.profilePicture instanceof File) || data.profilePicture.size === 0) {
+          delete data.profilePicture;
+      }
 
-      const username = document.getElementById('username').value.trim();
-      const displayName = document.getElementById('displayName').value.trim();
-
-      if (!username || !displayName) {
-        showNotification('Username and display name are required', 'error');
-        return;
+      // --- AVATAR CAPTURE LOGIC (Composited) ---
+      if (!isCustomUpload) {
+          const parentDiv = mainAvatarRoot.querySelector('div');
+          const svgEl = mainAvatarRoot.querySelector('svg');
+          
+          if (parentDiv && svgEl) {
+              const styles = window.getComputedStyle(parentDiv);
+              const bgColor = styles.backgroundColor;
+              const fgColor = window.getComputedStyle(svgEl.parentElement).color;
+              
+              const flattenedSvg = `
+                  <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="50" cy="50" r="50" fill="${bgColor}" />
+                      <g transform="translate(25, 25)" color="${fgColor}">
+                          ${svgEl.innerHTML}
+                      </g>
+                  </svg>
+              `.trim();
+              
+              const svgBase64 = btoa(unescape(encodeURIComponent(flattenedSvg)));
+              data.profilePicture = `data:image/svg+xml;base64,${svgBase64}`;
+          }
+      } else {
+          // If it was a custom upload, grab from the img inside mainAvatarRoot
+          const previewImg = mainAvatarRoot.querySelector('img');
+          if (previewImg) data.profilePicture = previewImg.src;
       }
 
       try {
-        // Show loading state
-        const submitButton = this.querySelector('button[type="submit"]');
-        const originalText = submitButton.textContent;
-        submitButton.disabled = true;
-        submitButton.textContent = 'SAVING...';
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'SAVING...';
 
-        // Prepare update data
-        const updateData = {
-          username,
-          displayName
-        };
-
-        // Add profile picture if changed
-        if (picturePreview && picturePreview.src && !picturePreview.src.includes('default-avatar.svg')
-          && !picturePreview.src.includes('http')) {
-          updateData.profilePicture = picturePreview.src;
-        }        // Make profile update API request
-        const response = await makeApiRequest('profile', 'PUT', updateData, true);
-
-        if (response && response.message) {
-          showNotification(response.message, 'success');
-
-          // Update the stored user data in localStorage
-          const userDataStr = localStorage.getItem('materio_user');
-          if (userDataStr) {
-            try {
-              const userData = JSON.parse(userDataStr);
-              const updatedUser = {
-                ...userData,
-                username,
-                displayName
-              };
-
-              // Update profile picture if it was changed
-              if (updateData.profilePicture) {
-                updatedUser.profilePicture = updateData.profilePicture;
-              }
-
-              // Save updated user data
-              localStorage.setItem('materio_user', JSON.stringify(updatedUser));
-
-              // Update dashboard profile card
-              if (dashboardProfileImage && updateData.profilePicture) {
-                dashboardProfileImage.src = updateData.profilePicture;
-              }
-
-              if (dashboardDisplayName) {
-                dashboardDisplayName.textContent = displayName;
-              }
-
-              if (dashboardUsername) {
-                dashboardUsername.textContent = '@' + username;
-              }
-            } catch (err) {
-              console.error('Error updating local user data:', err);
+        const response = await makeApiRequest('profile', 'PUT', data, true);
+        if (response) {
+            showNotification('Profile updated successfully!', 'success');
+            
+            // Sync dashboard & localStorage
+            if (response.user) {
+                const user = response.user;
+                localStorage.setItem('materio_user', JSON.stringify(user));
+                
+                if (dashboardProfileImage && user.profilePicture) {
+                    dashboardProfileImage.src = user.profilePicture;
+                }
+                if (dashboardDisplayName) {
+                    dashboardDisplayName.textContent = user.displayName || user.username;
+                }
+                if (dashboardUsername) {
+                    dashboardUsername.textContent = '@' + user.username;
+                }
             }
-          }
         }
-      } catch (error) {
-        console.error('Profile update error:', error);
-        showNotification(error.message || 'Failed to update profile', 'error');
+      } catch (err) {
+          showNotification(err.message || 'Failed to update profile', 'error');
       } finally {
-        // Reset button state
-        submitButton.disabled = false;
-        submitButton.textContent = originalText;
+          const submitBtn = this.querySelector('button[type="submit"]');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'SAVE CHANGES';
       }
     });
   }
@@ -619,6 +647,57 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   // Initialize password toggles on page load
   initializePasswordToggles();
+
+  // Redeem Gift Code
+  const redeemButton = document.getElementById('redeemButton');
+  const redeemCodeInput = document.getElementById('redeemCode');
+  const redeemStatus = document.getElementById('redeemStatus');
+
+  if (redeemButton && redeemCodeInput) {
+    redeemButton.addEventListener('click', async function () {
+      const code = redeemCodeInput.value.trim();
+      if (!code) {
+        showNotification('Please enter a gift code', 'error');
+        return;
+      }
+
+      try {
+        this.disabled = true;
+        const originalText = this.textContent;
+        this.textContent = 'REDEEMING...';
+        if (redeemStatus) {
+            redeemStatus.textContent = 'Checking code...';
+            redeemStatus.style.color = '#64748b';
+        }
+
+        const response = await makeApiRequest('invites?action=redeem', 'POST', { inviteCode: code }, true);
+
+        if (response && response.success) {
+          showNotification(response.message, 'success');
+          if (redeemStatus) {
+            redeemStatus.textContent = 'Successfully redeemed!';
+            redeemStatus.style.color = '#10b981';
+          }
+          redeemCodeInput.value = '';
+
+          // Reload profile to show updated perks
+          setTimeout(() => {
+            loadUserProfile();
+          }, 1500);
+        }
+      } catch (error) {
+        console.error('Redeem error:', error);
+        if (redeemStatus) {
+            redeemStatus.textContent = error.message || 'Failed to redeem code';
+            redeemStatus.style.color = '#ef4444';
+        }
+        showNotification(error.message || 'Failed to redeem code', 'error');
+      } finally {
+        this.disabled = false;
+        this.textContent = 'REDEEM';
+      }
+    });
+  }
 });
 
 // Google Drive functionality

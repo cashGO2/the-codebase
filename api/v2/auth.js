@@ -1,5 +1,6 @@
 const {
   supabase,
+  supabaseAdmin,
   hashPassword,
   generateToken,
   verifyToken,
@@ -7,6 +8,8 @@ const {
   corsHeaders,
   addCorsHeaders
 } = require('./_utils');
+const { sendOTPEmail } = require('../_utils_shared/mailer');
+const { getOTPTemplate } = require('../_utils_shared/otp_template');
 const cors = require('./cors');
 
 module.exports = async (req, res) => {
@@ -23,12 +26,14 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const action = req.query.action;
+  const action = req.query.action || (req.body && req.body.action);
 
   if (action === 'forgot-password') {
     return handleForgotPassword(req, res);
   } else if (action === 'admin-recovery') {
     return handleAdminRecovery(req, res);
+  } else if (action === 'otp') {
+    return handleOTP(req, res);
   } else {
     return res.status(400).json({ error: 'Invalid action' });
   }
@@ -36,11 +41,19 @@ module.exports = async (req, res) => {
 
 async function handleForgotPassword(req, res) {
   try {
-    const { email, recoveryKey, newPassword } = req.body;
+    const { email, recoveryKey, recoveryCode, otp, newPassword } = req.body;
+ 
+    // Alias recoveryCode to recoveryKey for consistency with frontend naming
+    const finalRecoveryKey = recoveryKey || recoveryCode;
 
     // Validate inputs
-    if (!email || !recoveryKey) {
-      return res.status(400).json({ error: 'Email and recovery key are required' });
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    // Must have at least one method of verification
+    if (!finalRecoveryKey && !otp) {
+      return res.status(400).json({ error: 'Verification method (OTP or Recovery Key) is required' });
     }
 
     // Find user by email
@@ -48,15 +61,39 @@ async function handleForgotPassword(req, res) {
       .from('users')
       .select('*')
       .eq('email', email)
-      .single();
+      .maybeSingle();
 
     if (error || !user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Verify recovery key
-    if (user.recovery_key !== recoveryKey) {
-      return res.status(401).json({ error: 'Invalid recovery key' });
+    // Verify method
+    let isVerified = false;
+
+    if (otp) {
+      // Check OTP in Supabase otps table
+      const { data: otpRecord, error: otpError } = await supabase
+        .from('otps')
+        .select('*')
+        .eq('email', email)
+        .eq('otp', otp)
+        .eq('type', 'recovery')
+        .gt('expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+      
+      if (!otpError && otpRecord) {
+        isVerified = true;
+        // Clean up OTP
+        await supabase.from('otps').delete().eq('id', otpRecord.id);
+      }
+    } else if (finalRecoveryKey) {
+      isVerified = (user.recovery_key === finalRecoveryKey);
+    }
+
+    if (!isVerified) {
+      return res.status(401).json({ error: 'Verification failed. Incorrect code or key.' });
     }
 
     // Only proceed if newPassword is provided
@@ -65,12 +102,14 @@ async function handleForgotPassword(req, res) {
       const hashedPassword = await hashPassword(newPassword);
 
       // Update user password
-      const { error: updateError } = await supabase
-        .from('users')
-        .update({
+      const updateData = {
           password: hashedPassword,
           updated_at: new Date().toISOString()
-        })
+      };
+
+      const { error: updateError } = await supabase
+        .from('users')
+        .update(updateData)
         .eq('id', user.id);
 
       if (updateError) {
@@ -84,10 +123,10 @@ async function handleForgotPassword(req, res) {
         token: token
       });
     } else {
-      // Just verifying the key
+      // Just verifying the key/OTP
       return res.status(200).json({
         verified: true,
-        message: 'Recovery key valid'
+        message: 'Verification successful'
       });
     }
 
@@ -176,5 +215,74 @@ async function handleAdminRecovery(req, res) {
       error: 'Internal server error during account recovery',
       details: error.message
     });
+  }
+}
+
+async function handleOTP(req, res) {
+  try {
+    const { email, type } = req.body; // type: 'signup' or 'recovery'
+
+    if (!email || !type) {
+      return res.status(400).json({ error: 'Email and type are required' });
+    }
+
+    // Signup restricted to university email
+    if (type === 'signup') {
+      const universityRegex = /^\d{13}@paruluniversity\.ac\.in$/;
+      if (!universityRegex.test(email)) {
+        return res.status(400).json({ 
+          error: 'Restricted Signup', 
+          message: 'Only students with @paruluniversity.ac.in emails are allowed to create an account.' 
+        });
+      }
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // 10 minutes
+
+    // Store in Supabase otps table
+    const { error: dbError } = await supabaseAdmin
+      .from('otps')
+      .insert({
+        email,
+        otp,
+        type,
+        expires_at: expiresAt
+      });
+
+    if (dbError) {
+      console.error('OTP Save Error:', {
+        message: dbError.message,
+        details: dbError.details,
+        hint: dbError.hint,
+        code: dbError.code
+      });
+      return res.status(500).json({ error: 'Failed to generate verification code', details: dbError.message });
+    }
+
+    // Render Template
+    const html = getOTPTemplate(otp, type, email);
+
+    // Send Email
+    const emailResult = await sendOTPEmail({
+      to: email,
+      otp,
+      type,
+      html
+    });
+
+    if (!emailResult.success) {
+      return res.status(500).json({ error: 'Failed to send verification email', details: emailResult.error });
+    }
+
+    return res.status(200).json({ 
+      success: true, 
+      message: `A verification code has been sent to ${email}. It expires in 10 minutes.` 
+    });
+
+  } catch (error) {
+    console.error('OTP Handler Error:', error);
+    return res.status(500).json({ error: 'Internal server error', details: error.message });
   }
 }

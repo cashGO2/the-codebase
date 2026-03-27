@@ -1,17 +1,37 @@
 document.addEventListener('DOMContentLoaded', function () {
   const loginForm = document.getElementById('loginForm');
 
-  if (loginForm) {
-    loginForm.addEventListener('submit', async function (e) {
-      e.preventDefault();
+    function showFieldMsg(fieldId, message, type = 'error') {
+    let msgEl = document.getElementById(`msg-${fieldId}`);
+    if (!msgEl) msgEl = document.getElementById('msg-form');
+    
+    if (msgEl) {
+      msgEl.textContent = message;
+      msgEl.className = `field-msg ${type}`;
+      msgEl.style.display = 'block';
+      msgEl.style.marginTop = '4px';
+      
+      setTimeout(() => { 
+        if (msgEl.textContent === message) {
+          msgEl.style.display = 'none';
+          msgEl.style.marginTop = '0';
+          msgEl.textContent = '';
+        }
+      }, 5000);
+    }
+  }
 
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
-      const rememberMe = document.getElementById('remember').checked;
-      if (!username || !password) {
-        showNotification('Please enter both username and password', 'error');
-        return;
-      }
+    if (loginForm) {
+      loginForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        const rememberMe = document.getElementById('remember').checked;
+        if (!username || !password) {
+          showFieldMsg('form', 'Please enter your credentials');
+          return;
+        }
 
       // Define submitButton outside the try block so it's accessible in the catch block
       const submitButton = this.querySelector('button[type="submit"]');
@@ -37,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
             localStorage.setItem('materio_user', JSON.stringify(response.user));
           }
 
-          showNotification('Login successful! Redirecting...', 'success');
+          showFieldMsg('form', 'Login successful! Redirecting...', 'success');
 
           // Redirect to profile page after a short delay
           // Redirect to profile page after a short delay
@@ -59,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       } catch (error) {
         console.error('Login error:', error);
-        showNotification(error.message || 'Failed to sign in. Please check your credentials.', 'error');
+        showFieldMsg('form', error.message || 'Failed to sign in. Check credentials.');
 
         // Reset button state
         submitButton.disabled = false;
@@ -75,4 +95,24 @@ document.addEventListener('DOMContentLoaded', function () {
       showNotification('Social login is not available at this time', 'info');
     });
   });
+
+    // --- Bulletproof Toggle Password Visibility ---
+    document.addEventListener('click', function(e) {
+      const trigger = e.target.closest('.password-toggle-trigger');
+      if (trigger) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const wrapper = trigger.closest('.password-wrapper');
+        const input = wrapper.querySelector('input');
+        
+        if (input.type === 'password') {
+          input.type = 'text';
+          trigger.classList.add('is-visible');
+        } else {
+          input.type = 'password';
+          trigger.classList.remove('is-visible');
+        }
+      }
+    });
 });

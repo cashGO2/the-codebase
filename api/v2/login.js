@@ -121,18 +121,27 @@ module.exports = async (req, res) => {
       });
     }
 
-    // 3. TRADITIONAL LOGIN (Case: has username and password)
+    // 3. TRADITIONAL OR OTP LOGIN (Case: has username and (password OR otp))
     const normalizedUsername = (username || '').trim();
+    const method = req.body.method || 'password';
 
-    if (!normalizedUsername || !password) {
-      return res.status(400).json({ error: 'Username and password are required' });
+    if (!normalizedUsername) {
+      return res.status(400).json({ error: 'Username or email is required' });
+    }
+
+    if (method === 'password' && !password) {
+      return res.status(400).json({ error: 'Password is required' });
+    }
+
+    if (method === 'otp' && !req.body.otp) {
+      return res.status(400).json({ error: 'Verification code is required' });
     }
 
     // Check if username is an email
     const isEmail = /\S+@\S+\.\S+/.test(normalizedUsername);
     const field = isEmail ? 'email' : 'username';
 
-    // Find user by username or email (case-insensitive to avoid unexpected auth failures)
+    // Find user by username or email
     const { data: user, error } = await supabase
       .from('users')
       .select('*')
@@ -140,13 +149,32 @@ module.exports = async (req, res) => {
       .maybeSingle();
 
     if (error || !user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: 'Identity not found' });
     }
 
-    // Compare provided password with stored hash
-    const isPasswordValid = await comparePassword(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    // VERIFY METHOD
+    if (method === 'otp') {
+      const { data: otpRecord, error: otpError } = await supabase
+        .from('otps')
+        .select('*')
+        .eq('email', user.email)
+        .eq('otp', req.body.otp)
+        .eq('type', 'login')
+        .gt('expires_at', new Date().toISOString())
+        .single();
+      
+      if (otpError || !otpRecord) {
+        return res.status(401).json({ error: 'Invalid or expired verification code' });
+      }
+
+      // Cleanup
+      await supabase.from('otps').delete().eq('id', otpRecord.id);
+    } else {
+      // Traditional Password Login
+      const isPasswordValid = await comparePassword(password, user.password);
+      if (!isPasswordValid) {
+        return res.status(401).json({ error: 'Invalid credentials' });
+      }
     }
 
     // Generate JWT token

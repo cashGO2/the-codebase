@@ -181,22 +181,28 @@ async function handleUpdateProfile(req, res) {
       updateData.recovery_key = recoveryKey;
     }
 
-    // Update profile picture if provided
-    if (profilePicture && profilePicture.startsWith('data:image')) {
+    // Update profile picture if provided (must be a base64 string)
+    if (profilePicture && typeof profilePicture === 'string' && profilePicture.startsWith('data:image')) {
       try {
-        // Extract base64 data
+        // Extract base64 and determine mime/extension
+        const mimeType = profilePicture.match(/data:(.*?);base64/)?.[1] || 'image/jpeg';
         const base64Data = profilePicture.split(',')[1];
         const buffer = Buffer.from(base64Data, 'base64');
 
-        // Upload to Supabase storage
-        const fileName = `profile-${Date.now()}.jpg`;
+        // Determine correct extension
+        let extension = 'jpg';
+        if (mimeType.includes('svg')) extension = 'svg';
+        else if (mimeType.includes('png')) extension = 'png';
+        else if (mimeType.includes('webp')) extension = 'webp';
+
+        const fileName = `profile-${Date.now()}.${extension}`;
 
         // Upload to storage bucket
         const { data: upload, error: uploadError } = await supabase
           .storage
           .from('profile-pictures')
           .upload(`${decoded.id}/${fileName}`, buffer, {
-            contentType: 'image/jpeg',
+            contentType: mimeType,
             upsert: false
           });
 

@@ -4,154 +4,294 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Try out new features first! - Materio</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/redesigned-styles.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap"
-    rel="stylesheet">
-  <style>
-    body {
-      background-image: url('/assets/img/events/invite_bg.webp');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-    }
+  <title>Create Account | Materio</title>
 
-    .invite-heading {
-      font-family: 'Libre Baskerville', serif;
-      font-size: 1.8rem;
-      text-align: center;
-      margin-bottom: 0.5rem;
-      color: var(--invite-text-color);
-    }
+  <!-- Open Graph / SEO -->
+  <meta property="og:title" content="Materio - Join us">
+  <meta property="og:description" content="Explore organized university materials, notes, and peer assistance. Join Materio today.">
+  <meta property="og:image" content="https://materioa.vercel.app/assets/img/open-graph.png">
+  <meta property="og:url" content="https://materioa.vercel.app/account/signup">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#333333">
 
-    .invite-heading em {
-      font-style: italic;
-    }
+  <!-- Favicon and Icons -->
+  <link rel="icon" href="/assets/img/favico.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="/assets/img/favicon.png" sizes="128x128" type="image/png">
+  <link rel="icon" type="image/x-icon" href="/assets/img/favicon.svg" sizes="32x32" type="image/svg">
+  <link rel="icon" href="/assets/img/i16.svg" sizes="16x16" type="image/svg">
+  <link rel="icon" href="/assets/img/favico.svg" sizes="128x128" type="image/svg">
 
-    .invite-description {
-      font-family: 'Manrope', sans-serif;
-      text-align: center;
-      margin-bottom: 1.5rem;
-      color: var(--invite-text-color);
-      font-size: 0.95rem;
+  <link rel="stylesheet" href="/account/css/auth-redesign.css">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://materioa.github.io/kit/6a787c7335.js" crossorigin="anonymous"></script>
+  <script>
+    // Theme Sync
+    (function () {
+      const theme = document.cookie.match(/theme=([^;]+)/)?.[1] ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      if (theme === 'dark') document.documentElement.classList.add('dark-mode');
+    })();
+  </script>
+  <!-- React Identity System -->
+  <script type="importmap">
+  {
+    "imports": {
+      "react": "https://esm.sh/react@18",
+      "react-dom": "https://esm.sh/react-dom@18",
+      "react-dom/client": "https://esm.sh/react-dom@18/client"
     }
-  </style>
+  }
+  </script>
+  <script type="module">
+    import React from 'react';
+    import ReactDOM from 'react-dom/client';
+    import Avvvatars from 'https://esm.sh/avvvatars-react-alt@0.4.8?external=react,react-dom';
+
+    window.React = React;
+    window.ReactDOM = ReactDOM;
+    window.Avvvatars = Avvvatars;
+
+    window.dispatchEvent(new Event('avvvatars-loaded'));
+  </script>
 </head>
 
 <body>
-  <div class="container">
-    <!-- Step 1: Invite Code Validation -->
-    <div class="card-one" id="inviteStep">
-      <div class="auth-form">
-        <h2 class="invite-heading">Do you have an <em>Invite</em>?</h2>
-        <p class="invite-description">Enter the invite code to access new features first</p>
-
-        <form id="inviteForm">
-          <div class="form-group">
-            <input type="text" id="inviteCodeInput" name="inviteCode" placeholder="Enter your invite code" required>
-          </div>
-          <button type="submit" class="btn">Continue</button>
-        </form>
-
-        <div class="form-footer">
-          <p><i class="fas fa-arrow-left"></i> <a href="/account">Back to Login</a></p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Step 2: Main Signup Form (hidden initially) -->
-    <div class="card-one" id="signupStep" style="display: none;">
-      <div class="auth-form">
-        <h2>Complete Your Registration</h2>
-        <form id="signupForm">
-          <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" id="username" name="username" placeholder="Enter your username" required>
-          </div>
-
-          <div class="form-group">
-            <label for="displayName">Display Name</label>
-            <input type="text" id="displayName" name="displayName" placeholder="Enter your display name" required>
-          </div>
-
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="Enter your email" required>
-          </div>
-
-          <div class="form-group">
-            <label for="password">Password</label>
-            <div class="password-input">
-              <input type="password" id="password" name="password" placeholder="Enter your password" required>
-              <i class="fas fa-eye toggle-password" data-target="password"></i>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="confirmPassword">Confirm Password</label>
-            <div class="password-input">
-              <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password"
-                required>
-              <i class="fas fa-eye toggle-password" data-target="confirmPassword"></i>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="profilePicture">Profile Picture</label>
-            <div class="profile-picture-input">
-              <input type="file" id="profilePicture" name="profilePicture" accept="image/*">
-              <div class="profile-picture-preview">
-                <img id="picturePreview" src="/assets/img/default-avatar.svg" alt="Profile Preview">
-                <button type="button" id="uploadButton" class="btn btn-outline">Upload</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-actions">
-            <div class="terms-agreement">
-              <input type="checkbox" id="terms" name="terms" required>
-              <label for="terms">I agree to <a href="/privacy" target="_blank">privacy policy & terms</a></label>
-            </div>
-          </div>
-
-          <button type="submit" class="btn">SIGN UP</button>
-
-          <div class="form-footer">
-            <p>Already have an account? <a href="/account">Sign in instead</a></p>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <div class="card-layout">
-      <div style="text-align: center;">
-        <p><i class="fas fa-arrow-left"></i> <a href="/#">Back to Home</a></p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Notification component -->
-  <div id="notification" class="notification">
-    <div class="notification-content">
-      <i class="notification-icon"></i>
-      <div class="notification-message"></div>
-    </div>
-    <button class="notification-close">&times;</button>
-  </div>
   <script>
-    // Auto-detect and apply dark mode based on cookie
-    document.addEventListener('DOMContentLoaded', function () {
-      const darkModeCookie = document.cookie.split('; ').find(row => row.startsWith('darkMode='));
-      if (darkModeCookie && darkModeCookie.split('=')[1] === 'true') {
+    (function() {
+      const themeCookie = document.cookie.split('; ').find(row => row.startsWith('theme='));
+      if (themeCookie) {
+        if (themeCookie.split('=')[1] === 'dark') document.body.classList.add('dark-mode');
+      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.body.classList.add('dark-mode');
       }
-    });
+    })();
   </script>
+  <div class="auth-container">
+    <!-- Mobile-First Branding Preamble -->
+    <div class="auth-logo mobile-only">
+      <img src="/assets/img/sticker.png" alt="materio.">
+    </div>
+
+    <!-- Left side: Illustration -->
+    <div class="auth-illustration">
+      <div class="illustration-inner">
+        <img src="/assets/img/covers/to_webp/302ee339-9e23-430f-a32a-0372af4ffff5.webp" alt="Join Materio"
+          class="illustration-image">
+      </div>
+    </div>
+
+    <!-- Right side: Form Container -->
+    <div class="auth-form-side">
+      <div class="form-content-wrapper">
+        <div class="auth-logo desktop-only">
+          <img src="/assets/img/sticker.png" alt="materio.">
+        </div>
+
+        <div class="auth-header">
+          <h1>Create an Account</h1>
+          <p>Complete your registration.</p>
+        </div>
+
+        <form id="signupForm">
+          <!-- STEP 1: Registration Data -->
+          <div id="registration-phase">
+            <div class="identity-group">
+              <div class="avatar-col">
+                <div id="avatarPreviewContainer" class="main-avatar-container">
+                  <div id="mainAvatarRoot"></div>
+                  <!-- Removal Overlay -->
+                  <button type="button" id="removeAvatarBtn" class="avatar-remove-overlay hidden" title="Remove Image">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+                <div class="avatar-tools-row">
+                  <button type="button" id="uploadAvatarBtn" class="avatar-tool-btn" title="Upload Image">
+                    <i class="fas fa-camera"></i>
+                  </button>
+                  <button type="button" id="shuffleAvatarBtn" class="avatar-tool-btn" title="Shuffle Style">
+                    <i class="fas fa-random"></i>
+                  </button>
+                </div>
+                <input type="file" id="customAvatarInput" style="display: none;" accept="image/*">
+              </div>
+
+              <div class="names-col">
+                <div class="form-group">
+                  <label for="displayName">Enter your name</label>
+                  <div class="input-with-icon">
+                    <i class="fa-regular fa-user"></i>
+                    <input type="text" id="displayName" name="displayName" class="form-control" placeholder="John Doe"
+                      required>
+                  </div>
+                  <div class="field-msg" id="msg-displayName"></div>
+                </div>
+                <div class="form-group">
+                  <label for="username">Username</label>
+                  <div class="input-with-icon">
+                    <i class="fa-regular fa-at"></i>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="johndoe"
+                      required>
+                  </div>
+                  <div class="field-msg" id="msg-username"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="branch">Major</label>
+              <div class="input-with-icon">
+                <i class="fa-regular fa-building"></i>
+                <input type="text" id="branch" value="Computer Science and Engineering" class="form-control" readonly style="cursor: not-allowed;">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="currentYear">Current Year</label>
+                <div class="input-with-icon">
+                  <i class="fa-regular fa-calendar-alt"></i>
+                  <select id="currentYear" name="currentYear" class="form-control" required
+                    style="corner-shape: squircle;">
+                    <option value="" disabled selected>Select</option>
+                    <option value="1">1st Year</option>
+                    <option value="2">2nd Year</option>
+                    <option value="3">3rd Year</option>
+                    <option value="4">4th Year</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="passoutYear">Passout Year</label>
+                <div class="input-with-icon">
+                  <i class="fa-regular fa-clock"></i>
+                  <input type="number" id="passoutYear" name="passoutYear" class="form-control" placeholder="2027"
+                    required>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="specialization">Specialization</label>
+              <div class="input-with-icon">
+                <i class="fa-regular fa-briefcase"></i>
+                <select id="specialization" name="specialization" class="form-control" required
+                  style="corner-shape: squircle;">
+                  <option value="" disabled selected>Select Specialization</option>
+                  <option value="Core">Core</option>
+                  <option value="AI">Artificial Intelligence</option>
+                  <option value="AI & ML">AI & ML</option>
+                  <option value="Big Data Analytics">Big Data Analytics</option>
+                  <option value="Cyber">Cyber Security</option>
+                  <option value="Block chain">Blockchain</option>
+                  <option value="Cloud computing">Cloud Computing</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="email">University Email</label>
+              <div class="input-with-icon">
+                <i class="fa-regular fa-envelope"></i>
+                <input type="email" id="email" name="email" class="form-control"
+                  placeholder="23...001@paruluniversity.ac.in" required>
+              </div>
+              <div class="field-msg" id="msg-email"></div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-with-icon">
+                  <i class="fa-regular fa-lock"></i>
+                  <div class="password-wrapper">
+                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••"
+                      required>
+                    <span class="password-toggle-trigger" data-target="password">
+                      <i class="fa-regular fa-eye"></i>
+                      <i class="fa-regular fa-eye-slash"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="field-msg" id="msg-password"></div>
+              </div>
+              <div class="form-group">
+                <label for="confirmPassword">Confirm</label>
+                <div class="input-with-icon">
+                  <i class="fa-regular fa-shield"></i>
+                  <div class="password-wrapper">
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-control"
+                      placeholder="••••••••" required>
+                    <span class="password-toggle-trigger" data-target="confirmPassword">
+                      <i class="fa-regular fa-eye"></i>
+                      <i class="fa-regular fa-eye-slash"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="field-msg" id="msg-confirmPassword"></div>
+              </div>
+            </div>
+
+            <button type="button" id="nextToOtp" class="btn-primary" style="margin-top: 10px;">Send Verification
+              Code</button>
+          </div>
+
+          <!-- STEP 2: Verification -->
+          <div id="verification-phase" style="display: none;">
+            <div class="verification-info" style="text-align: center; margin-bottom: 24px;">
+              <p style="font-size: 13px; color: var(--text-dim); margin-bottom: 8px;">Verification code sent to:</p>
+              <p id="displayEmail"
+                style="font-weight: 800; color: var(--text-main); font-size: 15px; margin-bottom: 12px;"></p>
+              <button type="button" id="backToStep1" class="back-link-btn"
+                style="background: none; border: none; color: var(--primary-color); font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: underline;">Incorrect
+                email? Go back</button>
+            </div>
+
+            <div class="form-group">
+              <label style="display: block; text-align: center; margin-bottom: 16px;">Enter 6-digit code</label>
+              <div class="otp-container"
+                style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
+                <input type="text" class="otp-input" maxlength="1" data-index="0">
+                <input type="text" class="otp-input" maxlength="1" data-index="1">
+                <input type="text" class="otp-input" maxlength="1" data-index="2">
+                <input type="text" class="otp-input" maxlength="1" data-index="3">
+                <input type="text" class="otp-input" maxlength="1" data-index="4">
+                <input type="text" class="otp-input" maxlength="1" data-index="5">
+              </div>
+              <div class="field-msg" id="msg-otp" style="text-align: center;"></div>
+
+              <div style="text-align: center; margin-top: 16px;">
+                <button type="button" id="resendOtpBtn"
+                  style="background: none; border: none; color: var(--text-dim); font-size: 12px; cursor: pointer;">Didn't
+                  get it? <span style="color: var(--primary-color); font-weight: 700;">Resend</span></button>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 24px;">
+              <div class="remember-me">
+                <input type="checkbox" id="terms" name="terms" required checked>
+                <label for="terms" style="font-size: 13px; font-weight: 500;">Agree to <a href="/terms"
+                    style="color: var(--primary-color);">Terms</a> & <a href="/privacy"
+                    style="color: var(--primary-color);">Privacy</a></label>
+              </div>
+            </div>
+
+            <div class="auth-footer-actions" style="margin-top: 24px;">
+              <button type="submit" class="btn-primary">Count Me In</button>
+              <div class="field-msg" id="msg-form" style="text-align: center; margin-top: 10px;"></div>
+            </div>
+          </div>
+          <input type="hidden" id="selectedVariant" value="character">
+
+          <div class="auth-footer">
+            <p>Already have an account? <a href="/account/">Log in instead</a></p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
   <script src="js/auth.js"></script>
   <script src="js/signup.js"></script>
   <script src="js/ux-enhancers.js"></script>

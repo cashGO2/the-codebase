@@ -85,6 +85,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Bug Report Tooltip Logic
   initBugTooltip();
+
+  // Simple Notification Permission Request (For Push Notifications)
+  if ('Notification' in window && Notification.permission === 'default') {
+    // We don't want to nag users, but we need to at least have the capability ready
+    // if the user chooses to enable it. We'll just check permission here.
+    // actual prompt usually happens on a user action, which is better.
+  }
 });
 
 let popupShareTooltipTimer = null;
