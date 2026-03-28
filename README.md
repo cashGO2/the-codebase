@@ -1,5 +1,7 @@
 
-<img width="228" height="49" alt="materio" src="https://github.com/user-attachments/assets/c7b2116a-26ea-42b3-a8f1-b16df7e0d6fa" />
+<!-- <img width="228" height="49" alt="materio" src="https://github.com/user-attachments/assets/c7b2116a-26ea-42b3-a8f1-b16df7e0d6fa" /> -->
+
+<img width="228" height="54" alt="sticker2" src="https://github.com/user-attachments/assets/c7803403-32a9-4a61-904e-4bf2a2db8c73" />
 
 -----
 
