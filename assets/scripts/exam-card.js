@@ -49,6 +49,7 @@ window.getFakeDate = function () {
 // Constants
 const VIEW_ROTATION_INTERVAL = 15000; // 15 seconds shuffle as default
 const SHOW_BEFORE_DAYS = 7; // Show card 7 days before exam starts
+const SHOW_BEFORE_DAYS_VIVA = 3; // Show viva exams 3 days before
 
 // Load exam data when script loads
 if (document.readyState === 'loading') {
@@ -67,6 +68,225 @@ if (document.readyState === 'loading') {
 
 let isExamDataLoading = false;
 let hasExamDataProcessed = false;
+
+let vivaData = null; // Cached viva.csv data
+let vivaDivisions = []; // Cached divisions list from viva.csv
+const USER_DIV_LS_KEY = 'user_div';
+
+async function loadVivaData() {
+    if (vivaData) return vivaData;
+    try {
+        const response = await fetch('/assets/data/viva.csv');
+        if (!response.ok) throw new Error('Viva CSV not found');
+        const text = await response.text();
+        const lines = text.trim().split(/\r?\n/);
+        const headers = lines[0].split(',').map(h => h.trim());
+        vivaData = [];
+        for (let i = 1; i < lines.length; i++) {
+            const values = lines[i].split(',');
+            if (values.length >= headers.length) {
+                const row = {};
+                headers.forEach((h, idx) => {
+                    row[h] = (values[idx] || '').trim();
+                });
+                vivaData.push(row);
+            }
+        }
+        vivaDivisions = [...new Set(vivaData.map(row => row.Division).filter(Boolean))].sort((a, b) => {
+            return String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: 'base' });
+        });
+        return vivaData;
+    } catch (e) {
+        console.error('[ExamCard] Error loading viva.csv:', e);
+        return null;
+    }
+}
+
+async function populateClassroomSelector() {
+    const input = document.getElementById('classroomSelect');
+    const datalist = document.getElementById('classroomOptions');
+    const selectorWrap = document.getElementById('classroomSelector');
+    const clearBtn = document.getElementById('clearDivisionBtn');
+    if (!input || !datalist) return;
+
+    const data = await loadVivaData();
+    if (!data) return;
+
+    vivaDivisions = [...new Set(data.map(row => row.Division).filter(Boolean))].sort((a, b) => {
+        return String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: 'base' });
+    });
+
+    datalist.innerHTML = '';
+    vivaDivisions.forEach(division => {
+        const option = document.createElement('option');
+        option.value = String(division);
+        datalist.appendChild(option);
+    });
+
+    if (selectorWrap) {
+        selectorWrap.style.display = 'block';
+    }
+
+    const savedDivision = localStorage.getItem(USER_DIV_LS_KEY) || localStorage.getItem('selectedDivision') || localStorage.getItem('selectedClassroom');
+    if (savedDivision) {
+        const bestSavedMatch = findBestMatchingDivision(savedDivision, vivaDivisions);
+        input.value = bestSavedMatch || savedDivision;
+    }
+    updateDivisionClearButtonVisibility();
+
+    const applyBestMatch = (rawValue) => {
+        const selectedDivision = findBestMatchingDivision(rawValue, vivaDivisions) || '';
+
+        if (selectedDivision) {
+            input.value = selectedDivision;
+            localStorage.setItem(USER_DIV_LS_KEY, selectedDivision);
+            localStorage.setItem('selectedDivision', selectedDivision);
+            localStorage.removeItem('selectedClassroom');
+        } else {
+            input.value = '';
+            localStorage.removeItem(USER_DIV_LS_KEY);
+            localStorage.removeItem('selectedDivision');
+            localStorage.removeItem('selectedClassroom');
+        }
+        generateExamTimeline();
+        refreshMiniTimelineForCurrentState();
+        updateDivisionClearButtonVisibility();
+    };
+
+    if (!input.dataset.classroomBound) {
+        input.addEventListener('change', function () {
+            applyBestMatch(this.value);
+        });
+
+        input.addEventListener('blur', function () {
+            if (!this.value.trim()) {
+                localStorage.removeItem(USER_DIV_LS_KEY);
+                localStorage.removeItem('selectedDivision');
+                localStorage.removeItem('selectedClassroom');
+                generateExamTimeline();
+                refreshMiniTimelineForCurrentState();
+                updateDivisionClearButtonVisibility();
+                return;
+            }
+            applyBestMatch(this.value);
+        });
+
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                applyBestMatch(this.value);
+            }
+        });
+
+        input.dataset.classroomBound = 'true';
+    }
+
+    if (clearBtn && !clearBtn.dataset.clearBound) {
+        clearBtn.addEventListener('click', function () {
+            clearSavedDivisionSelection();
+        });
+        clearBtn.dataset.clearBound = 'true';
+    }
+}
+
+function normalizeClassroomValue(value) {
+    return String(value || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '');
+}
+
+function findBestMatchingDivision(query, divisions) {
+    if (!query || !Array.isArray(divisions) || divisions.length === 0) return '';
+
+    const raw = String(query).trim();
+    if (!raw) return '';
+
+    const exact = divisions.find(div => div.toLowerCase() === raw.toLowerCase());
+    if (exact) return exact;
+
+    const normalizedQuery = normalizeClassroomValue(raw);
+    if (!normalizedQuery) return '';
+
+    const scored = divisions
+        .map(div => {
+            const normalizedClass = normalizeClassroomValue(div);
+            let score = 0;
+
+            if (normalizedClass.startsWith(normalizedQuery)) score += 4;
+            if (normalizedClass.includes(normalizedQuery)) score += 3;
+            if (normalizedQuery.includes(normalizedClass)) score += 2;
+
+            // Give small preference to shorter/focused classroom IDs
+            score -= Math.abs(normalizedClass.length - normalizedQuery.length) * 0.05;
+
+            return { div, score };
+        })
+        .sort((a, b) => b.score - a.score);
+
+    return scored.length > 0 && scored[0].score > 0 ? scored[0].div : '';
+}
+
+function getSelectedDivision() {
+    const classroomInput = document.getElementById('classroomSelect');
+    const inputValue = classroomInput ? classroomInput.value : '';
+    const savedValue = localStorage.getItem(USER_DIV_LS_KEY) || localStorage.getItem('selectedDivision') || localStorage.getItem('selectedClassroom') || '';
+    const rawValue = inputValue || savedValue;
+
+    if (!rawValue) return '';
+
+    // If division list isn't ready yet, keep working with the saved raw value.
+    if (!Array.isArray(vivaDivisions) || vivaDivisions.length === 0) {
+        return rawValue;
+    }
+
+    const best = findBestMatchingDivision(rawValue, vivaDivisions) || '';
+    if (best) {
+        if (classroomInput && classroomInput.value !== best) classroomInput.value = best;
+        if (localStorage.getItem(USER_DIV_LS_KEY) !== best) localStorage.setItem(USER_DIV_LS_KEY, best);
+    }
+    return best;
+}
+
+function updateDivisionClearButtonVisibility() {
+    const clearBtn = document.getElementById('clearDivisionBtn');
+    const input = document.getElementById('classroomSelect');
+    if (!clearBtn || !input) return;
+
+    clearBtn.style.display = input.value && input.value.trim() ? 'inline-flex' : 'none';
+}
+
+function clearSavedDivisionSelection() {
+    const input = document.getElementById('classroomSelect');
+    if (input) input.value = '';
+
+    localStorage.removeItem(USER_DIV_LS_KEY);
+    localStorage.removeItem('selectedDivision');
+    localStorage.removeItem('selectedClassroom');
+
+    updateDivisionClearButtonVisibility();
+    generateExamTimeline();
+    refreshMiniTimelineForCurrentState();
+}
+
+function refreshMiniTimelineForCurrentState() {
+    if (!currentSemesterData || !currentSemesterData.exams) return;
+    if (currentExamView !== 2) return;
+
+    const sortedExams = [...currentSemesterData.exams].sort((a, b) => new Date(a.date) - new Date(b.date));
+    showTimelineView(sortedExams, false);
+    showTimelineView(sortedExams, true);
+}
+
+function getEffectiveCardExams(exams) {
+    const isVivaExam = Array.isArray(exams) && exams.some(e => e.type === 'viva');
+    if (!isVivaExam || !vivaData) return exams;
+
+    const selectedDivision = getSelectedDivision();
+    if (!selectedDivision) return exams;
+
+    const divisionExams = buildVivaTimelineEntries(selectedDivision);
+    return divisionExams.length > 0 ? divisionExams : exams;
+}
 
 async function loadAndDisplayExamCard() {
     // 1. Prevent overlapping loads
@@ -92,14 +312,29 @@ async function loadAndDisplayExamCard() {
         isExamDataLoading = true;
         // Add cache busting to ensure we get the latest data
         const timestamp = new Date().getTime();
-        const response = await fetch(`https://cdn-materioa.vercel.app/databases/beta/examdata.json?t=${timestamp}`);
+        const candidateUrls = [
+            `/assets/data/examdata.json?t=${timestamp}`,
+            `https://cdn-materioa.vercel.app/databases/beta/examdata.json?t=${timestamp}`
+        ];
 
-        if (!response.ok) {
+        let loaded = false;
+        for (const url of candidateUrls) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) continue;
+                examData = await response.json();
+                loaded = true;
+                break;
+            } catch (err) {
+                // Try the next source.
+            }
+        }
+
+        if (!loaded || !examData) {
             isExamDataLoading = false;
             return;
         }
 
-        examData = await response.json();
         isExamDataLoading = false;
         hasExamDataProcessed = true;
 
@@ -217,7 +452,6 @@ function findSemesterData(data, semester) {
     if (semester === null) {
         const now = getCurrentDate();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const showBeforeDays = data.showBeforeDays || SHOW_BEFORE_DAYS;
 
 
 
@@ -229,6 +463,11 @@ function findSemesterData(data, semester) {
 
             const daysUntilExam = Math.ceil((startDateOnly - today) / (1000 * 60 * 60 * 24));
 
+            // Check if this is a viva/practical exam type
+            const isVivaExam = semData.exams && semData.exams.some(e => e.type === 'viva');
+            const showBeforeDays = isVivaExam 
+                ? (data.showBeforeDaysViva || SHOW_BEFORE_DAYS_VIVA) 
+                : (data.showBeforeDays || SHOW_BEFORE_DAYS);
 
 
             // Check if this semester's exams are within display window
@@ -270,7 +509,12 @@ function shouldDisplayExamCard(data, semesterData) {
 
     // Calculate days until exam starts
     const daysUntilExam = Math.ceil((startDateOnly - today) / (1000 * 60 * 60 * 24));
-    const showBeforeDays = data.showBeforeDays || SHOW_BEFORE_DAYS;
+    
+    // Check if this is a viva/practical exam type
+    const isVivaExam = semesterData.exams && semesterData.exams.some(e => e.type === 'viva');
+    const showBeforeDays = isVivaExam 
+        ? (data.showBeforeDaysViva || SHOW_BEFORE_DAYS_VIVA) 
+        : (data.showBeforeDays || SHOW_BEFORE_DAYS);
 
 
 
@@ -359,6 +603,24 @@ function displayExamCard(data, semesterData) {
     // Get sorted exams
     const sortedExams = [...semesterData.exams].sort((a, b) => new Date(a.date) - new Date(b.date));
 
+    if (sortedExams.some(e => e.type === 'viva')) {
+        loadVivaData().then(() => {
+            // Initialize saved division and options even before modal open.
+            populateClassroomSelector();
+            refreshMiniTimelineForCurrentState();
+
+            // Refresh pre-exam card block once division-aware viva data is ready.
+            if (currentSemesterData === semesterData) {
+                const nowLocal = getCurrentDate();
+                const startDateLocal = new Date(semesterData.examPeriod.startDate);
+                if (nowLocal < startDateLocal) {
+                    showPreExamView(sortedExams, data, false);
+                    showPreExamView(sortedExams, data, true);
+                }
+            }
+        });
+    }
+
 
 
     // Show the exam cards with !important to override any CSS issues
@@ -415,9 +677,19 @@ function showPreExamView(exams, data, isDefault = false) {
 
     preexamView.style.display = 'flex';
 
+    const isVivaExam = currentSemesterData?.exams?.some(e => e.type === 'viva');
+    if (isVivaExam && !vivaData) {
+        loadVivaData().then(() => {
+            showPreExamView(exams, data, isDefault);
+        });
+        return;
+    }
+
+    const effectiveExams = getEffectiveCardExams(exams);
+
     // Get first upcoming exam, or filter by selected subject if one is selected
     const now = new Date();
-    const upcomingExams = exams.filter(e => new Date(e.date) >= now);
+    const upcomingExams = effectiveExams.filter(e => new Date(e.date) >= now);
 
     // Check if a specific subject is selected
     const selectedSubject = getSelectedSubjectName();
@@ -463,7 +735,7 @@ function showPreExamView(exams, data, isDefault = false) {
 
     // Fallback to first upcoming exam
     if (!targetExam) {
-        targetExam = upcomingExams[0] || exams[0];
+        targetExam = upcomingExams[0] || effectiveExams[0];
     }
     if (targetExam) {
         // Update exam info
@@ -514,10 +786,16 @@ function showPreExamView(exams, data, isDefault = false) {
         if (dateEl) dateEl.textContent = formatDate(targetExam.date);
 
         // Show syllabus topics for this exam - stable if locked in
-        if (syllabusEl && targetExam.syllabus && targetExam.syllabus.length > 0) {
+        if (syllabusEl && isVivaExam) {
+            syllabusEl.style.display = 'none';
+        } else if (syllabusEl && targetExam.syllabus && targetExam.syllabus.length > 0) {
+            syllabusEl.style.display = '';
             const isLocked = daysUntilStart <= 3;
             const topics = isLocked ? targetExam.syllabus.slice(0, 2) : getRandomItems(targetExam.syllabus, 2);
             syllabusEl.innerHTML = `<span>Topics: ${topics.join(', ')}</span>`;
+        } else if (syllabusEl) {
+            syllabusEl.style.display = '';
+            syllabusEl.innerHTML = '';
         }
     }
 }
@@ -572,6 +850,13 @@ function showOngoingView(todayExam, tomorrowExam, nextExam, allExams, isDefault 
     const subjectEl = document.getElementById('examTodaySubject' + suffix);
     const dateEl = document.getElementById('examTodayDate' + suffix);
     const syllabusEl = document.getElementById('ongoingSyllabus' + suffix);
+    const isVivaExam = currentSemesterData?.exams?.some(e => e.type === 'viva');
+
+    if (syllabusEl && isVivaExam) {
+        syllabusEl.style.display = 'none';
+    } else if (syllabusEl) {
+        syllabusEl.style.display = '';
+    }
 
     // Determine which exam to show
     const displayExam = todayExam || tomorrowExam || nextExam;
@@ -588,7 +873,7 @@ function showOngoingView(todayExam, tomorrowExam, nextExam, allExams, isDefault 
                 subjectEl.textContent = subject.toLowerCase().endsWith('exam') ? subject : subject + " exam";
             }
             if (dateEl) dateEl.textContent = formatDate(todayExam.date);
-            if (syllabusEl && todayExam.syllabus) {
+            if (!isVivaExam && syllabusEl && todayExam.syllabus) {
                 const topics = todayExam.syllabus.slice(0, 2); // Stable for ongoing
                 syllabusEl.innerHTML = `<span>Topics: ${topics.join(', ')}</span>`;
             }
@@ -601,7 +886,7 @@ function showOngoingView(todayExam, tomorrowExam, nextExam, allExams, isDefault 
                 subjectEl.textContent = subject.toLowerCase().endsWith('exam') ? subject : subject + " exam";
             }
             if (dateEl) dateEl.textContent = formatDate(tomorrowExam.date);
-            if (syllabusEl && tomorrowExam.syllabus) {
+            if (!isVivaExam && syllabusEl && tomorrowExam.syllabus) {
                 const topics = tomorrowExam.syllabus.slice(0, 2); // Stable for ongoing
                 syllabusEl.innerHTML = `<span>Topics: ${topics.join(', ')}</span>`;
             }
@@ -617,7 +902,7 @@ function showOngoingView(todayExam, tomorrowExam, nextExam, allExams, isDefault 
                 subjectEl.textContent = subject.toLowerCase().endsWith('exam') ? subject : subject + " exam";
             }
             if (dateEl) dateEl.textContent = formatDate(nextExam.date);
-            if (syllabusEl && nextExam.syllabus) {
+            if (!isVivaExam && syllabusEl && nextExam.syllabus) {
                 const topics = nextExam.syllabus.slice(0, 2); // Stable for ongoing
                 syllabusEl.innerHTML = `<span>Topics: ${topics.join(', ')}</span>`;
             }
@@ -639,8 +924,23 @@ function showTimelineView(exams, isDefault = false) {
     const now = getCurrentDate();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
+    const isVivaExam = exams.some(e => e.type === 'viva');
+    let sourceExams = exams;
+
+    if (isVivaExam) {
+        if (!vivaData) {
+            loadVivaData().then(() => {
+                showTimelineView(exams, isDefault);
+            });
+            return;
+        }
+
+        const selectedDivision = getSelectedDivision();
+        sourceExams = selectedDivision && vivaData ? buildVivaTimelineEntries(selectedDivision) : [];
+    }
+
     // Filter to show ONLY today's (if not finished) and upcoming exams
-    const relevantExams = exams.filter(e => {
+    const relevantExams = sourceExams.filter(e => {
         const examDate = new Date(e.date);
         const examDateOnly = new Date(examDate.getFullYear(), examDate.getMonth(), examDate.getDate());
 
@@ -677,6 +977,17 @@ function showTimelineView(exams, isDefault = false) {
             </div>
         `;
     });
+
+    if (!timelineHTML && isVivaExam) {
+        timelineHTML = `
+            <div class="exam-mini-item upcoming">
+                <div class="exam-mini-content">
+                    <div class="exam-mini-subject">Select division</div>
+                    <div class="exam-mini-date">Saved in browser as user_div</div>
+                </div>
+            </div>
+        `;
+    }
 
     timelineContainer.innerHTML = timelineHTML;
 }
@@ -801,10 +1112,17 @@ function updatePreExamWithSubject(exam, isDefault = false) {
     }
     if (dateEl) dateEl.textContent = formatDate(exam.date);
 
-    if (syllabusEl && exam.syllabus) {
+    const isVivaExam = currentSemesterData?.exams?.some(e => e.type === 'viva');
+    if (syllabusEl && isVivaExam) {
+        syllabusEl.style.display = 'none';
+    } else if (syllabusEl && exam.syllabus) {
+        syllabusEl.style.display = '';
         const isLocked = daysUntilStart <= 3 || daysUntilStart <= 0;
         const topics = isLocked ? exam.syllabus.slice(0, 2) : getRandomItems(exam.syllabus, 2);
         syllabusEl.innerHTML = `<span>Topics: ${topics.join(', ')}</span>`;
+    } else if (syllabusEl) {
+        syllabusEl.style.display = '';
+        syllabusEl.innerHTML = '';
     }
 }
 
@@ -904,10 +1222,25 @@ function openExamModal() {
     // Generate timeline
     generateExamTimeline();
 
-    // Auto-load saved enrollment for seating lookup
+    // Populate classroom selector for viva exams
+    const isVivaExam = currentSemesterData.exams && currentSemesterData.exams.some(e => e.type === 'viva');
+    if (isVivaExam) {
+        populateClassroomSelector();
+    } else {
+        const selectorWrap = document.getElementById('classroomSelector');
+        if (selectorWrap) selectorWrap.style.display = 'none';
+    }
+
+    // Keep enrollment-based lookup behavior available when seating data is provided.
     if (typeof initSeatingLookup === 'function') {
         initSeatingLookup();
     }
+
+    const slider = document.getElementById('examModalSlider');
+    if (slider) {
+        slider.classList.remove('show-syllabus');
+    }
+    setSyllabusPageAccessibility(false);
 
     // Show modal
     modal.style.display = 'flex';
@@ -975,6 +1308,7 @@ function closeExamModal() {
             if (slider) {
                 setTimeout(() => {
                     slider.classList.remove('show-syllabus');
+                    setSyllabusPageAccessibility(false);
                 }, 300);
             }
 
@@ -999,11 +1333,12 @@ function closeExamModal() {
             modal.classList.remove('show');
             document.body.classList.remove('modal-open');
             if (slider) slider.classList.remove('show-syllabus');
+            setSyllabusPageAccessibility(false);
         }
     }
 }
 
-function generateExamTimeline() {
+async function generateExamTimeline() {
     const timelineContainer = document.getElementById('examModalTimeline');
     if (!timelineContainer || !currentSemesterData || !currentSemesterData.exams) return;
 
@@ -1011,16 +1346,31 @@ function generateExamTimeline() {
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const sortedExams = [...currentSemesterData.exams].sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    let timelineHTML = '';
-    let foundFirstUpcoming = false; // Track if we've found the first upcoming exam
+    // Check if this is a viva exam and get selected classroom
+    const isVivaExam = currentSemesterData.exams.some(e => e.type === 'viva');
+    if (isVivaExam && !vivaData) {
+        await loadVivaData();
+    }
 
-    sortedExams.forEach((exam, index) => {
+    const selectedDivision = isVivaExam ? getSelectedDivision() : '';
+    const timelineExams = isVivaExam ? buildVivaTimelineEntries(selectedDivision) : sortedExams;
+
+    updateDivisionClearButtonVisibility();
+
+    if (isVivaExam && !selectedDivision) {
+        timelineContainer.innerHTML = '<div class="exam-timeline-empty">Enter division to view your exam schedule</div>';
+        return;
+    }
+
+    let timelineHTML = '';
+    let foundFirstUpcoming = false;
+
+    timelineExams.forEach((exam, index) => {
         const examDate = new Date(exam.date);
         const examDateOnly = new Date(examDate.getFullYear(), examDate.getMonth(), examDate.getDate());
 
         const isPastDate = examDateOnly < today;
         const isToday = examDateOnly.toDateString() === today.toDateString();
-        // Check if today's exam has actually finished (start time + duration passed)
         const isFinished = isToday && isExamFinished(exam, now);
         const isCompleted = isPastDate || isFinished;
 
@@ -1028,19 +1378,18 @@ function generateExamTimeline() {
         if (isCompleted) {
             statusClass = 'completed';
         } else if (isToday) {
-            // Today's exam is still in progress - active blinking indicator
             statusClass = 'today active';
-            foundFirstUpcoming = true; // Today counts as "found"
+            foundFirstUpcoming = true;
         } else if (!foundFirstUpcoming) {
-            // First upcoming exam (after today or after last completed) gets active indicator
-            // This shows blinking even on gap days between exams
             statusClass = 'upcoming active';
             foundFirstUpcoming = true;
         }
 
-        // Generate syllabus HTML with truncation
+        let subjectDisplay = exam.subject;
+
+        // No syllabus for viva exams
         let syllabusHTML = '';
-        if (exam.syllabus && exam.syllabus.length > 0) {
+        if (!isVivaExam && exam.syllabus && exam.syllabus.length > 0) {
             const displayLimit = 2;
             const hasMore = exam.syllabus.length > displayLimit;
             const shownItems = exam.syllabus.slice(0, displayLimit);
@@ -1060,7 +1409,7 @@ function generateExamTimeline() {
             <div class="exam-timeline-item ${statusClass}" data-exam-id="${exam.id || index}">
                 <div class="exam-timeline-dot"></div>
                 <div class="exam-timeline-content">
-                    <div class="exam-timeline-subject">${exam.subject}${exam.code ? ` (${exam.code})` : ''}</div>
+                    <div class="exam-timeline-subject">${subjectDisplay}${exam.code ? ` (${exam.code})` : ''}</div>
                     <div class="exam-timeline-date">${formatDateLong(exam.date)}${exam.time ? ` at ${exam.time}` : ''}</div>
                     ${syllabusHTML}
                 </div>
@@ -1068,7 +1417,61 @@ function generateExamTimeline() {
         `;
     });
 
+    if (timelineHTML === '') {
+        timelineHTML = '<div class="exam-timeline-empty">No upcoming exam found for this division right now</div>';
+    }
+
     timelineContainer.innerHTML = timelineHTML;
+}
+
+function buildVivaTimelineEntries(selectedDivision) {
+    if (!vivaData || !selectedDivision) return [];
+
+    const normalizedSelected = normalizeClassroomValue(selectedDivision);
+    const filtered = vivaData.filter(row => normalizeClassroomValue(row.Division) === normalizedSelected);
+    if (filtered.length === 0) return [];
+
+    const byDate = new Map();
+    filtered.forEach(row => {
+        const dateKey = row.Date;
+        if (!dateKey) return;
+
+        if (!byDate.has(dateKey)) {
+            byDate.set(dateKey, {
+                date: dateKey,
+                subjectSet: new Set(),
+                codeSet: new Set()
+            });
+        }
+
+        const day = byDate.get(dateKey);
+        if (row['Subject Name']) day.subjectSet.add(row['Subject Name']);
+        if (row['Subject Code']) day.codeSet.add(row['Subject Code']);
+    });
+
+    return [...byDate.values()]
+        .sort((a, b) => new Date(a.date) - new Date(b.date))
+        .map((day, idx) => ({
+            id: `viva-${idx + 1}`,
+            subject: [...day.subjectSet].join(', '),
+            code: [...day.codeSet].join(', '),
+            date: day.date,
+            time: '09:00',
+            duration: 'full day',
+            type: 'viva'
+        }));
+}
+
+function hasVivaExamOnDate(dateStr, classroom) {
+    if (!vivaData) return false;
+    const targetDate = dateStr.split('T')[0];
+    return vivaData.some(row => row.Date === targetDate && row.Classroom === classroom);
+}
+
+function getVivaExamsForDate(dateStr, classroom) {
+    if (!vivaData) return [];
+    const targetDate = dateStr.split('T')[0];
+    return vivaData.filter(row => row.Date === targetDate && row.Classroom === classroom);
 }
 
 // Syllabus View Functions
@@ -1109,6 +1512,7 @@ function showExamSyllabus(examId) {
 
     // Slide to syllabus page
     slider.classList.add('show-syllabus');
+    setSyllabusPageAccessibility(true);
 
     // Reset scroll
     contentEl.scrollTop = 0;
@@ -1125,10 +1529,37 @@ function showExamTimeline() {
 
     // Slide back to timeline
     slider.classList.remove('show-syllabus');
+    setSyllabusPageAccessibility(false);
 
     // Haptic feedback
     if (window.MaterioHaptics) {
         window.MaterioHaptics.vibrate('light');
+    }
+}
+
+function setSyllabusPageAccessibility(isVisible) {
+    const syllabusPage = document.getElementById('examModalSyllabusPage');
+    if (!syllabusPage) return;
+
+    const backBtn = syllabusPage.querySelector('.syllabus-back-btn');
+
+    if (isVisible) {
+        syllabusPage.removeAttribute('aria-hidden');
+        if ('inert' in syllabusPage) {
+            syllabusPage.inert = false;
+        }
+        if (backBtn) {
+            backBtn.tabIndex = 0;
+        }
+        return;
+    }
+
+    syllabusPage.setAttribute('aria-hidden', 'true');
+    if ('inert' in syllabusPage) {
+        syllabusPage.inert = true;
+    }
+    if (backBtn) {
+        backBtn.tabIndex = -1;
     }
 }
 
@@ -1194,6 +1625,10 @@ document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
         closeExamModal();
     }
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    setSyllabusPageAccessibility(false);
 });
 
 // Expose functions globally

@@ -2,7 +2,129 @@
     "enabled": true,
     "viewRotationInterval": 15000,
     "showBeforeDays": 9,
+    "showBeforeDaysViva": 3,
     "semesters": [
+        {
+            "semester": 6,
+            "examPeriod": {
+                "name": "Viva/Practical",
+                "shortName": "Viva",
+                "startDate": "2026-04-06T09:00:00",
+                "endDate": "2026-04-11T17:00:00"
+            },
+            "exams": [
+                {
+                    "id": 101,
+                    "subject": "Viva/Practical",
+                    "type": "viva",
+                    "code": "303105000",
+                    "date": "2026-04-06",
+                    "time": "09:00",
+                    "duration": "full day"
+                },
+                {
+                    "id": 102,
+                    "subject": "Viva/Practical",
+                    "type": "viva",
+                    "code": "303105000",
+                    "date": "2026-04-07",
+                    "time": "09:00",
+                    "duration": "full day"
+                },
+                {
+                    "id": 103,
+                    "subject": "Viva/Practical",
+                    "type": "viva",
+                    "code": "303105000",
+                    "date": "2026-04-08",
+                    "time": "09:00",
+                    "duration": "full day"
+                },
+                {
+                    "id": 104,
+                    "subject": "Viva/Practical",
+                    "type": "viva",
+                    "code": "303105000",
+                    "date": "2026-04-09",
+                    "time": "09:00",
+                    "duration": "full day"
+                },
+                {
+                    "id": 105,
+                    "subject": "Viva/Practical",
+                    "type": "viva",
+                    "code": "303105000",
+                    "date": "2026-04-10",
+                    "time": "09:00",
+                    "duration": "full day"
+                },
+                {
+                    "id": 106,
+                    "subject": "Viva/Practical",
+                    "type": "viva",
+                    "code": "303105000",
+                    "date": "2026-04-11",
+                    "time": "09:00",
+                    "duration": "full day"
+                }
+            ]
+        },
+        {
+            "semester": 6,
+            "examPeriod": {
+                "name": "End Semester",
+                "shortName": "End Sem",
+                "startDate": "2026-04-15T14:00:00",
+                "endDate": "2026-04-27T16:30:00"
+            },
+            "exams": [
+                {
+                    "id": 201,
+                    "subject": "Compiler Design",
+                    "type": "theory",
+                    "code": "303105349",
+                    "date": "2026-04-15",
+                    "time": "14:00",
+                    "duration": "150 mins"
+                },
+                {
+                    "id": 202,
+                    "subject": "Machine Learning",
+                    "type": "theory",
+                    "code": "303105353",
+                    "date": "2026-04-20",
+                    "time": "14:00",
+                    "duration": "150 mins"
+                },
+                {
+                    "id": 203,
+                    "subject": "MEA(R)N Stack Web Development",
+                    "type": "theory",
+                    "code": "303105385",
+                    "date": "2026-04-22",
+                    "time": "14:00",
+                    "duration": "150 mins"
+                },
+                {
+                    "id": 204,
+                    "subject": "Mobile App Development",
+                    "type": "theory",
+                    "code": "303105379",
+                    "date": "2026-04-24",
+                    "time": "14:00",
+                    "duration": "150 mins"
+                },
+                {
+                    "id": 205,
+                    "subject": "Quant and Reasoning",
+                    "type": "theory",
+                    "code": "303105311",
+                    "date": "2026-04-27",
+                    "time": "14:00",
+                    "duration": "150 mins"
+                }
+            ]
+        },
         {
             "semester": 6,
             "examPeriod": {

@@ -329,22 +329,19 @@ body.dark-mode .btn-secondary-ghost:hover {
 }
 
 .main-avatar-container {
-  width: 70px;
-  height: 70px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  background: white;
-  border: 1px solid var(--border-color);
+  background: #f8fafc;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 2px solid var(--primary-color);
+  padding: 2px;
+  position: relative;
   overflow: hidden;
+  cursor: pointer;
   box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-}
-
-.avatar-quick-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
 }
 
 /* Identity-Name Row Group */
@@ -363,26 +360,14 @@ body.dark-mode .btn-secondary-ghost:hover {
   gap: 10px;
 }
 
-.main-avatar-container {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: #f8fafc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid var(--primary-color);
-  padding: 2px;
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-}
-
 #mainAvatarRoot, #mainAvatarRoot img {
   width: 100%;
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .avatar-remove-overlay {

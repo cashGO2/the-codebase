@@ -341,7 +341,7 @@ header {
 
 .content {
     flex: 1;
-    padding: var(--spacing-xl);
+    padding: 0 var(--spacing-xl) var(--spacing-xl);
     overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -858,7 +858,7 @@ p {
 
 .content {
     flex: 1;
-    padding: 20px;
+    padding: 0 20px 20px;
 }
 
 .card-one {
@@ -6988,6 +6988,8 @@ body.dark-mode .attachments-empty {
 .exam-schedule-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 12px;
 }
@@ -6995,6 +6997,63 @@ body.dark-mode .attachments-empty {
 .exam-schedule-header .exam-schedule-heading {
     margin-bottom: 0;
     white-space: nowrap;
+}
+
+.classroom-selector {
+    flex: 0 1 230px;
+    min-width: 160px;
+    position: relative;
+}
+
+.classroom-select {
+    width: 100%;
+    padding: 6px 34px 6px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: inherit;
+    background: rgba(0, 0, 0, 0.05);
+    color: #333;
+    outline: none;
+    cursor: text;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.classroom-select:focus {
+    border-color: rgba(255, 130, 0, 0.3);
+    box-shadow: 0 0 0 2px rgba(255, 130, 0, 0.08);
+}
+
+.classroom-select::placeholder {
+    color: #8d8d8d;
+}
+
+.clear-division-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    border: 0;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.14);
+    color: #555;
+    cursor: var(--f-cursor-pointer);
+    padding: 0;
+}
+
+.clear-division-btn i {
+    font-size: 10px;
+    line-height: 1;
+}
+
+.clear-division-btn:hover {
+    background: rgba(0, 0, 0, 0.22);
 }
 
 .seating-lookup {
@@ -7299,6 +7358,13 @@ body.dark-mode .seating-clear-btn {
     margin-bottom: 6px;
 }
 
+.exam-timeline-empty {
+    text-align: center;
+    padding: 30px 20px;
+    color: #888;
+    font-size: 14px;
+}
+
 .exam-timeline-syllabus {
     margin-top: 8px;
     padding: 10px 12px;
@@ -7585,6 +7651,25 @@ body.dark-mode .exam-schedule-heading {
     color: #aaa;
 }
 
+body.dark-mode .classroom-select {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.07);
+    color: #d9d9d9;
+}
+
+body.dark-mode .classroom-select::placeholder {
+    color: #9f9f9f;
+}
+
+body.dark-mode .clear-division-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: #d7d7d7;
+}
+
+body.dark-mode .clear-division-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
 body.dark-mode .exam-timeline-date {
     color: #888;
 }
@@ -7676,6 +7761,20 @@ body.dark-mode .exam-timeline-item.upcoming.active .exam-timeline-dot::after {
 
     .exam-timeline-syllabus-item {
         font-size: 11px;
+    }
+
+    .exam-schedule-header {
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .exam-schedule-header .exam-schedule-heading {
+        width: 100%;
+    }
+
+    .classroom-selector {
+        flex: 1 1 100%;
+        min-width: 0;
     }
 }
 
