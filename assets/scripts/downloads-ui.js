@@ -25,18 +25,65 @@ document.addEventListener('DOMContentLoaded', function () {
     // Clear all downloads button
     if (clearAllBtn) {
         clearAllBtn.addEventListener('click', async function () {
-            if (!confirm('Are you sure you want to delete all downloaded PDFs? This action cannot be undone.')) {
-                return;
+            let shouldClear = false;
+            if (typeof window.materioConfirm === 'function') {
+                shouldClear = await window.materioConfirm('Delete all downloaded PDFs? This action cannot be undone.', {
+                    title: 'Clear Downloads',
+                    type: 'danger',
+                    iconClass: 'fa-trash-can',
+                    confirmText: 'Clear',
+                    cancelText: 'Cancel',
+                    danger: true
+                });
+            } else {
+                shouldClear = confirm('Are you sure you want to delete all downloaded PDFs? This action cannot be undone.');
             }
+
+            if (!shouldClear) return;
+
+            const originalHtml = clearAllBtn.innerHTML;
+            clearAllBtn.disabled = true;
 
             try {
                 await window.pdfDownloadManager.clearAllDownloads();
                 loadDownloads();
-                showNotification('All downloads cleared', 'success');
+                playClearButtonFeedback(clearAllBtn, true);
+                clearAllBtn.innerHTML = '<i class="fas fa-check"></i> Cleared';
+                setTimeout(() => {
+                    clearAllBtn.innerHTML = originalHtml;
+                }, 850);
             } catch (error) {
                 console.error('Error clearing downloads:', error);
+                playClearButtonFeedback(clearAllBtn, false);
                 showNotification('Failed to clear downloads', 'error');
+            } finally {
+                setTimeout(() => {
+                    clearAllBtn.disabled = false;
+                }, 250);
             }
+        });
+    }
+
+    function playClearButtonFeedback(button, isSuccess) {
+        if (!button || typeof button.animate !== 'function') return;
+
+        const animationFrames = isSuccess
+            ? [
+                { transform: 'scale(1)', filter: 'brightness(1)' },
+                { transform: 'scale(0.96)', filter: 'brightness(0.95)' },
+                { transform: 'scale(1.04)', filter: 'brightness(1.08)' },
+                { transform: 'scale(1)', filter: 'brightness(1)' }
+            ]
+            : [
+                { transform: 'translateX(0)' },
+                { transform: 'translateX(-4px)' },
+                { transform: 'translateX(4px)' },
+                { transform: 'translateX(0)' }
+            ];
+
+        button.animate(animationFrames, {
+            duration: isSuccess ? 360 : 280,
+            easing: 'ease-out'
         });
     }
 

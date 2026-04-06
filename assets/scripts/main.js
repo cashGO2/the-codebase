@@ -3652,7 +3652,12 @@ window.collapseSearchResults = collapseSearchResults;
  */
 function materioAlert(message, options = {}) {
   return new Promise((resolve) => {
-    const { title = "Notice", type = "info", buttonText = "OK" } = options;
+    const {
+      title = "Notice",
+      type = "info",
+      buttonText = "OK",
+      iconClass,
+    } = options;
 
     // Create overlay
     const overlay = document.createElement("div");
@@ -3660,7 +3665,7 @@ function materioAlert(message, options = {}) {
     overlay.innerHTML = `
             <div class="materio-modal" role="alertdialog" aria-modal="true" aria-labelledby="materio-modal-title">
                 <div class="materio-modal-icon ${type}">
-                    <i class="fa-solid ${getIconForType(type)}"></i>
+                  <i class="fa-solid ${iconClass || getIconForType(type)}"></i>
                 </div>
                 <h3 class="materio-modal-title" id="materio-modal-title">${escapeHtml(title)}</h3>
                 <p class="materio-modal-message">${escapeHtml(message)}</p>
@@ -3723,6 +3728,7 @@ function materioConfirm(message, options = {}) {
       confirmText = "Confirm",
       cancelText = "Cancel",
       danger = false,
+      iconClass,
     } = options;
 
     // Create overlay
@@ -3731,7 +3737,7 @@ function materioConfirm(message, options = {}) {
     overlay.innerHTML = `
             <div class="materio-modal" role="alertdialog" aria-modal="true" aria-labelledby="materio-modal-title">
                 <div class="materio-modal-icon ${type}">
-                    <i class="fa-solid ${getIconForType(type)}"></i>
+                  <i class="fa-solid ${iconClass || getIconForType(type)}"></i>
                 </div>
                 <h3 class="materio-modal-title" id="materio-modal-title">${escapeHtml(title)}</h3>
                 <p class="materio-modal-message">${escapeHtml(message)}</p>

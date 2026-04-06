@@ -6,6 +6,7 @@ let examData = null;
 let currentSemesterData = null;
 let examViewRotationTimer = null;
 let currentExamView = 0; // 0 = preexam, 1 = ongoing, 2 = timeline
+let hasAutoFocusedExamCard = false;
 
 // Debug: Fake date for testing (set via console)
 let _fakeDate = null;
@@ -50,20 +51,15 @@ window.getFakeDate = function () {
 const VIEW_ROTATION_INTERVAL = 15000; // 15 seconds shuffle as default
 const SHOW_BEFORE_DAYS = 7; // Show card 7 days before exam starts
 const SHOW_BEFORE_DAYS_VIVA = 3; // Show viva exams 3 days before
+const EXAM_DATA_CACHE_KEY = 'materio_exam_data_cache';
 
 // Load exam data when script loads
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
         loadAndDisplayExamCard();
-        // Re-run after a delay to catch any late DOM modifications
-        setTimeout(loadAndDisplayExamCard, 500);
-        setTimeout(loadAndDisplayExamCard, 1500);
     });
 } else {
     loadAndDisplayExamCard();
-    // Re-run after a delay to catch any late DOM modifications
-    setTimeout(loadAndDisplayExamCard, 500);
-    setTimeout(loadAndDisplayExamCard, 1500);
 }
 
 let isExamDataLoading = false;
@@ -288,6 +284,24 @@ function getEffectiveCardExams(exams) {
     return divisionExams.length > 0 ? divisionExams : exams;
 }
 
+function getCachedExamData() {
+    try {
+        const cached = sessionStorage.getItem(EXAM_DATA_CACHE_KEY);
+        if (!cached) return null;
+        return JSON.parse(cached);
+    } catch (error) {
+        return null;
+    }
+}
+
+function cacheExamData(data) {
+    try {
+        sessionStorage.setItem(EXAM_DATA_CACHE_KEY, JSON.stringify(data));
+    } catch (error) {
+        // Ignore session storage write failures.
+    }
+}
+
 async function loadAndDisplayExamCard() {
     // 1. Prevent overlapping loads
     if (isExamDataLoading || hasExamDataProcessed) return;
@@ -310,27 +324,36 @@ async function loadAndDisplayExamCard() {
 
     try {
         isExamDataLoading = true;
-        // Add cache busting to ensure we get the latest data
-        const timestamp = new Date().getTime();
-        const candidateUrls = [
-            `/assets/data/examdata.json?t=${timestamp}`,
-            `https://cdn-materioa.vercel.app/databases/beta/examdata.json?t=${timestamp}`
+
+        // Use session cache first for near-instant UI, then refresh from network.
+        const cachedData = getCachedExamData();
+        if (cachedData && !examData) {
+            examData = cachedData;
+        }
+
+        const candidateRequests = [
+            { url: '/assets/data/examdata.json', options: { cache: 'force-cache' } },
+            { url: 'https://cdn-materioa.vercel.app/databases/beta/examdata.json', options: { cache: 'no-store' } }
         ];
 
         let loaded = false;
-        for (const url of candidateUrls) {
+        for (const request of candidateRequests) {
             try {
-                const response = await fetch(url);
+                const response = await fetch(request.url, request.options);
                 if (!response.ok) continue;
-                examData = await response.json();
-                loaded = true;
-                break;
+                const freshData = await response.json();
+                if (freshData) {
+                    examData = freshData;
+                    cacheExamData(freshData);
+                    loaded = true;
+                    break;
+                }
             } catch (err) {
                 // Try the next source.
             }
         }
 
-        if (!loaded || !examData) {
+        if (!loaded && !examData) {
             isExamDataLoading = false;
             return;
         }
@@ -639,6 +662,12 @@ function displayExamCard(data, semesterData) {
             recommendedPosts.style.removeProperty('display');
             if (getComputedStyle(recommendedPosts).display === 'none') {
                 recommendedPosts.style.display = 'flex';
+            }
+
+            // If the card appears after horizontal scrolling, bring it into view once.
+            if (!hasAutoFocusedExamCard && recommendedPosts.scrollLeft > 8) {
+                recommendedPosts.scrollTo({ left: 0, behavior: 'smooth' });
+                hasAutoFocusedExamCard = true;
             }
         }
     }
@@ -983,7 +1012,7 @@ function showTimelineView(exams, isDefault = false) {
             <div class="exam-mini-item upcoming">
                 <div class="exam-mini-content">
                     <div class="exam-mini-subject">Select division</div>
-                    <div class="exam-mini-date">Saved in browser as user_div</div>
+                    <div class="exam-mini-date">To see your exams</div>
                 </div>
             </div>
         `;

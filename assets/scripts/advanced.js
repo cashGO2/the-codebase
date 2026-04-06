@@ -304,8 +304,84 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Custom Upload Wallpaper Functions
+    const CUSTOM_WALLPAPER_ACTIVE_KEY = 'materio_custom_wallpaper';
+    const CUSTOM_WALLPAPER_COLLECTION_KEY = 'materio_custom_wallpapers';
+    const MAX_CUSTOM_WALLPAPERS = 8;
+    let customWallpaperStoreModal = null;
+
+    function readCustomWallpaperCollection() {
+        try {
+            const raw = localStorage.getItem(CUSTOM_WALLPAPER_COLLECTION_KEY);
+            if (!raw) return [];
+            const parsed = JSON.parse(raw);
+            if (!Array.isArray(parsed)) return [];
+            return parsed.filter(item => item && typeof item.id === 'string' && typeof item.dataUrl === 'string');
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function writeCustomWallpaperCollection(collection) {
+        localStorage.setItem(CUSTOM_WALLPAPER_COLLECTION_KEY, JSON.stringify(collection));
+    }
+
+    function migrateLegacyCustomWallpaper() {
+        const legacyWallpaper = localStorage.getItem(CUSTOM_WALLPAPER_ACTIVE_KEY);
+        if (!legacyWallpaper) return;
+
+        const wallpapers = readCustomWallpaperCollection();
+        const alreadyExists = wallpapers.some(item => item.dataUrl === legacyWallpaper);
+        if (!alreadyExists) {
+            wallpapers.unshift({
+                id: `cw_${Date.now().toString(36)}`,
+                name: 'Custom Wallpaper',
+                dataUrl: legacyWallpaper,
+                createdAt: Date.now()
+            });
+            try {
+                writeCustomWallpaperCollection(wallpapers);
+            } catch (e) {
+                return;
+            }
+        }
+    }
+
+    function getActiveCustomWallpaperData() {
+        return localStorage.getItem(CUSTOM_WALLPAPER_ACTIVE_KEY);
+    }
+
+    function addCustomWallpaperToCollection(dataUrl, name) {
+        const trimmedName = (name || 'Custom Wallpaper').slice(0, 48);
+        const wallpapers = readCustomWallpaperCollection();
+        const existing = wallpapers.find(item => item.dataUrl === dataUrl);
+        if (existing) {
+            return existing;
+        }
+
+        const nextWallpapers = [
+            {
+                id: `cw_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`,
+                name: trimmedName,
+                dataUrl,
+                createdAt: Date.now()
+            },
+            ...wallpapers
+        ].slice(0, MAX_CUSTOM_WALLPAPERS);
+
+        writeCustomWallpaperCollection(nextWallpapers);
+        return nextWallpapers[0];
+    }
+
+    function updateCustomWallpaperCardBadge() {
+        const customName = document.querySelector('#customWallpaperCard .wallpaper-name');
+        if (!customName) return;
+
+        const count = readCustomWallpaperCollection().length;
+        customName.textContent = count > 0 ? `Custom (${count})` : 'Custom Store';
+    }
+
     function applyCustomWallpaper() {
-        const customWallpaperData = localStorage.getItem('materio_custom_wallpaper');
+        const customWallpaperData = getActiveCustomWallpaperData();
         if (customWallpaperData) {
             homeElem.style.setProperty("--bg-img", `url('${customWallpaperData}')`);
         } else {
@@ -316,7 +392,193 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    function applySelectedCustomWallpaper(dataUrl) {
+        localStorage.setItem(CUSTOM_WALLPAPER_ACTIVE_KEY, dataUrl);
+        updateCustomWallpaperUI(dataUrl);
+        setWallpaperAsBackground('custom');
+
+        wallpaperCards.forEach(c => c.classList.remove('selected'));
+        const customWallpaperCard = document.getElementById('customWallpaperCard');
+        if (customWallpaperCard) {
+            customWallpaperCard.classList.add('selected');
+        }
+        setCookie("selectedWallpaper", 'custom', 30);
+    }
+
+    function ensureCustomWallpaperStoreModal() {
+        if (customWallpaperStoreModal) return customWallpaperStoreModal;
+
+        customWallpaperStoreModal = document.getElementById('customWallpaperStoreModal');
+        if (!customWallpaperStoreModal) return null;
+
+        customWallpaperStoreModal.addEventListener('click', (e) => {
+            if (e.target === customWallpaperStoreModal) {
+                closeCustomWallpaperStoreModal();
+            }
+        });
+
+        if (!window.__customWallpaperEscBound) {
+            window.__customWallpaperEscBound = true;
+            document.addEventListener('keydown', (e) => {
+                if (e.key !== 'Escape') return;
+                const modal = document.getElementById('customWallpaperStoreModal');
+                if (modal && modal.classList.contains('show')) {
+                    closeCustomWallpaperStoreModal();
+                }
+            });
+        }
+
+        return customWallpaperStoreModal;
+    }
+
+    function closeCustomWallpaperStoreModal() {
+        const modal = ensureCustomWallpaperStoreModal();
+        if (!modal) return;
+
+        modal.classList.remove('show');
+        document.body.classList.remove('modal-open');
+        setTimeout(() => {
+            if (!modal.classList.contains('show')) {
+                modal.style.display = 'none';
+                modal.setAttribute('aria-hidden', 'true');
+            }
+        }, 220);
+    }
+
+    window.closeCustomWallpaperStoreModal = closeCustomWallpaperStoreModal;
+
+    async function renderCustomWallpaperStore() {
+        const modal = ensureCustomWallpaperStoreModal();
+        if (!modal) return;
+
+        const grid = modal.querySelector('#customWallpaperStoreGrid');
+        const wallpapers = readCustomWallpaperCollection();
+        const activeWallpaper = getActiveCustomWallpaperData();
+
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        const customWallpaperInput = document.getElementById('customWallpaperInput');
+
+        // Add card (same visual language as settings wallpaper cards)
+        const addCard = document.createElement('div');
+        addCard.className = 'wallpaper-preview-card wallpaper-upload-card';
+        addCard.innerHTML = `
+            <div class="wallpaper-preview custom-preview">
+                <div class="wallpaper-upload-content">
+                    <i class="fa-solid fa-plus"></i>
+                    <span class="wallpaper-upload-text">Add</span>
+                </div>
+            </div>
+        `;
+        addCard.addEventListener('click', () => {
+            if (customWallpaperInput) customWallpaperInput.click();
+        });
+        grid.appendChild(addCard);
+
+        wallpapers.forEach((wallpaper) => {
+            const tile = document.createElement('div');
+            tile.className = 'wallpaper-preview-card';
+            if (wallpaper.dataUrl === activeWallpaper) {
+                tile.classList.add('selected');
+            }
+
+            const preview = document.createElement('div');
+            preview.className = 'wallpaper-preview';
+            preview.style.backgroundImage = `url('${wallpaper.dataUrl}')`;
+            preview.addEventListener('click', () => {
+                applySelectedCustomWallpaper(wallpaper.dataUrl);
+                renderCustomWallpaperStore();
+            });
+
+            const overlay = document.createElement('div');
+            overlay.className = 'wallpaper-overlay custom-wallpaper-overlay';
+
+            const remove = document.createElement('button');
+            remove.type = 'button';
+            remove.className = 'custom-wallpaper-remove';
+            remove.title = 'Remove wallpaper';
+            remove.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            remove.addEventListener('click', async (e) => {
+                e.stopPropagation();
+
+                let shouldDelete = true;
+                if (typeof window.materioConfirm === 'function') {
+                    shouldDelete = await window.materioConfirm('Delete this saved wallpaper?', {
+                        title: 'Delete Wallpaper',
+                        type: 'danger',
+                        iconClass: 'fa-trash-can',
+                        confirmText: 'Delete',
+                        cancelText: 'Cancel',
+                        danger: true
+                    });
+                }
+                if (!shouldDelete) return;
+
+                const remaining = readCustomWallpaperCollection().filter(item => item.id !== wallpaper.id);
+                writeCustomWallpaperCollection(remaining);
+
+                const activeData = getActiveCustomWallpaperData();
+                if (activeData === wallpaper.dataUrl) {
+                    if (remaining.length > 0) {
+                        applySelectedCustomWallpaper(remaining[0].dataUrl);
+                    } else {
+                        localStorage.removeItem(CUSTOM_WALLPAPER_ACTIVE_KEY);
+                        const customWallpaperCard = document.getElementById('customWallpaperCard');
+                        if (customWallpaperCard) {
+                            customWallpaperCard.classList.remove('has-image', 'selected');
+                        }
+                        const customPreview = document.getElementById('customPreview');
+                        const customWallpaperOverlay = customPreview?.querySelector('.custom-wallpaper-overlay');
+                        const uploadContent = customPreview?.querySelector('.wallpaper-upload-content');
+                        if (customPreview) customPreview.style.backgroundImage = '';
+                        if (customWallpaperOverlay) customWallpaperOverlay.style.display = 'none';
+                        if (uploadContent) uploadContent.style.display = 'flex';
+
+                        setCookie("selectedWallpaper", 'dynamic', 30);
+                        setWallpaperAsBackground('dynamic');
+                        wallpaperCards.forEach(c => c.classList.remove('selected'));
+                        const dynamicCard = document.querySelector('[data-wallpaper="dynamic"]');
+                        if (dynamicCard) dynamicCard.classList.add('selected');
+                    }
+                }
+
+                updateCustomWallpaperCardBadge();
+                renderCustomWallpaperStore();
+            });
+
+            overlay.appendChild(remove);
+            preview.appendChild(overlay);
+            tile.appendChild(preview);
+            grid.appendChild(tile);
+        });
+
+        if (wallpapers.length === 0) {
+            const emptyHint = document.createElement('div');
+            emptyHint.className = 'paper-mode-description';
+            emptyHint.style.gridColumn = '1 / -1';
+            emptyHint.style.marginTop = '4px';
+            emptyHint.textContent = 'No saved wallpapers yet. Click Add to upload.';
+            grid.appendChild(emptyHint);
+        }
+    }
+
+    function openCustomWallpaperStore() {
+        const modal = ensureCustomWallpaperStoreModal();
+        if (!modal) return;
+
+        renderCustomWallpaperStore();
+        modal.style.display = 'flex';
+        modal.setAttribute('aria-hidden', 'false');
+        requestAnimationFrame(() => {
+            modal.classList.add('show');
+            document.body.classList.add('modal-open');
+        });
+    }
+
     function initializeCustomWallpaper() {
+        migrateLegacyCustomWallpaper();
+
         const customWallpaperCard = document.getElementById('customWallpaperCard');
         const customWallpaperInput = document.getElementById('customWallpaperInput');
         const customPreview = document.getElementById('customPreview');
@@ -325,32 +587,20 @@ document.addEventListener('DOMContentLoaded', function () {
         const uploadContent = customPreview?.querySelector('.wallpaper-upload-content');
 
         // Check if a custom wallpaper is already saved
-        const savedCustomWallpaper = localStorage.getItem('materio_custom_wallpaper');
+        const savedCustomWallpaper = getActiveCustomWallpaperData();
         if (savedCustomWallpaper && customWallpaperCard) {
             updateCustomWallpaperUI(savedCustomWallpaper);
         }
+        updateCustomWallpaperCardBadge();
 
         // Handle click on custom wallpaper card
-        if (customWallpaperCard && customWallpaperInput) {
+        if (customWallpaperCard) {
             customWallpaperCard.addEventListener('click', function (e) {
-                // Don't trigger file input if clicking on remove button
+                // Don't trigger modal if clicking on remove button
                 if (e.target.closest('.custom-wallpaper-remove')) {
                     return;
                 }
-
-                const hasCustomImage = localStorage.getItem('materio_custom_wallpaper');
-                if (hasCustomImage) {
-                    // If already has custom image, just apply it
-                    setWallpaperAsBackground('custom');
-
-                    // Update selection UI
-                    wallpaperCards.forEach(c => c.classList.remove('selected'));
-                    customWallpaperCard.classList.add('selected');
-                    setCookie("selectedWallpaper", 'custom', 30);
-                } else {
-                    // Open file picker
-                    customWallpaperInput.click();
-                }
+                openCustomWallpaperStore();
             });
         }
 
@@ -379,18 +629,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         // Save to localStorage
                         try {
-                            localStorage.setItem('materio_custom_wallpaper', dataUrl);
+                            const savedWallpaper = addCustomWallpaperToCollection(dataUrl, file.name || 'Custom Wallpaper');
+                            localStorage.setItem(CUSTOM_WALLPAPER_ACTIVE_KEY, savedWallpaper.dataUrl);
 
                             // Update UI
-                            updateCustomWallpaperUI(dataUrl);
+                            updateCustomWallpaperUI(savedWallpaper.dataUrl);
+                            updateCustomWallpaperCardBadge();
 
                             // Apply wallpaper
-                            setWallpaperAsBackground('custom');
-
-                            // Update selection
-                            wallpaperCards.forEach(c => c.classList.remove('selected'));
-                            customWallpaperCard.classList.add('selected');
-                            setCookie("selectedWallpaper", 'custom', 30);
+                            applySelectedCustomWallpaper(savedWallpaper.dataUrl);
+                            renderCustomWallpaperStore();
 
                             // Haptic feedback
                             if (window.MaterioHaptics) {
@@ -421,8 +669,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 e.stopPropagation();
                 e.preventDefault();
 
-                // Remove from localStorage
-                localStorage.removeItem('materio_custom_wallpaper');
+                const activeWallpaper = getActiveCustomWallpaperData();
+                if (activeWallpaper) {
+                    const remaining = readCustomWallpaperCollection().filter(item => item.dataUrl !== activeWallpaper);
+                    writeCustomWallpaperCollection(remaining);
+                }
+
+                // Remove active wallpaper
+                localStorage.removeItem(CUSTOM_WALLPAPER_ACTIVE_KEY);
 
                 // Reset UI
                 if (customPreview) {
@@ -433,6 +687,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (customWallpaperCard) {
                     customWallpaperCard.classList.remove('has-image', 'selected');
                 }
+
+                updateCustomWallpaperCardBadge();
 
                 // Switch to default/dynamic wallpaper
                 const defaultCard = document.querySelector('[data-wallpaper="dynamic"]');
@@ -468,6 +724,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (customWallpaperCard) {
             customWallpaperCard.classList.add('has-image');
         }
+
+        updateCustomWallpaperCardBadge();
     }
 
     // Initialize Christmas preview on load

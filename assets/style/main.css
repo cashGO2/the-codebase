@@ -4423,7 +4423,7 @@ body.dark-mode .wallpaper-preview-card.selected {
     background: linear-gradient(135deg,
             rgba(255, 130, 0, 0.1) 0%,
             rgba(255, 130, 0, 0.05) 100%);
-    border: 2px dashed rgba(255, 130, 0, 0.4);
+    border: none;
     border-radius: 23px;
     corner-shape: squircle;
     transition: all 0.3s ease;
@@ -4506,7 +4506,7 @@ body.dark-mode .wallpaper-upload-card .wallpaper-preview {
     background: linear-gradient(135deg,
             rgba(255, 130, 0, 0.15) 0%,
             rgba(255, 130, 0, 0.08) 100%);
-    border-color: rgba(255, 130, 0, 0.5);
+    border: none;
 }
 
 body.dark-mode .wallpaper-upload-card:hover .wallpaper-preview {
@@ -5503,6 +5503,22 @@ body.dark-mode .search-result-item:hover {
     margin: 0 0 24px;
     line-height: 1.5;
     white-space: pre-line;
+    text-align: center;
+}
+
+/* Normalize Add card appearance inside wallpaper store modal */
+.wallpaper-store-modal .wallpaper-upload-card .wallpaper-preview {
+    margin: 0;
+    height: 100%;
+    border-radius: 23px;
+}
+
+.wallpaper-store-modal .wallpaper-upload-card {
+    box-shadow: none;
+}
+
+.wallpaper-store-modal .wallpaper-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 /* Modal buttons container */

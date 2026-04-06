@@ -620,6 +620,21 @@
             </div>
         </div>
 
+        <!-- Custom Wallpaper Store Modal (Promo Modal Style) -->
+        <div class="promo-modal-overlay" id="customWallpaperStoreModal" role="dialog" aria-hidden="true" style="display: none;">
+            <div class="promo-modal dynamic-form-modal wallpaper-store-modal">
+                <i class="fas fa-times promo-close-btn" onclick="closeCustomWallpaperStoreModal()"></i>
+
+                <div class="promo-content dynamic-form-content-wrapper">
+                    <div class="paper-mode-info" style="margin-bottom: 14px;">
+                        <div class="paper-mode-title">Custom Wallpaper Store</div>
+                    </div>
+
+                    <div class="wallpaper-grid" id="customWallpaperStoreGrid"></div>
+                </div>
+            </div>
+        </div>
+
         <script>
         function openMcpModal() {
             const modal = document.getElementById('mcpConnectorsModal');
@@ -1223,8 +1238,8 @@
                                 id="customWallpaperCard">
                                 <div class="wallpaper-preview custom-preview" id="customPreview">
                                     <div class="wallpaper-upload-content">
-                                        <i class="fa-solid fa-plus"></i>
-                                        <span class="wallpaper-upload-text">Upload</span>
+                                        <i class="fa-solid fa-store"></i>
+                                        <span class="wallpaper-upload-text">Store</span>
                                     </div>
                                     <div class="wallpaper-overlay custom-wallpaper-overlay" style="display: none;">
                                         <span class="wallpaper-name">Custom</span>
