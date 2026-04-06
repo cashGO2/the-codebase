@@ -401,6 +401,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Initialize PDF Share
   checkSharedPdf();
+  checkCustomPdfOpen();
   const shareBtn = document.getElementById("sharePdfButton");
   if (shareBtn) {
     shareBtn.addEventListener("click", handlePdfShareClick);
@@ -1088,6 +1089,59 @@ async function checkSharedPdf() {
   }
 }
 
+// Open custom PDF from URL parameter (?open= or ?file=)
+async function checkCustomPdfOpen() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const customUrl = urlParams.get("open") || urlParams.get("file");
+  if (!customUrl) return;
+
+  try {
+    const popup = document.getElementById("popup");
+    const decodedUrl = decodeURIComponent(customUrl);
+    
+    // For custom/external URLs, skip loadPdfWithCache (which does HEAD validation)
+    // and load directly in iframe to avoid CORS issues with validation
+    // The viewer.html will handle the PDF loading directly
+    
+    const initializeIframe = () => {
+      let pdfIframe = document.getElementById('pdf-iframe');
+      
+      if (!pdfIframe) {
+        pdfIframe = document.createElement('iframe');
+        pdfIframe.id = 'pdf-iframe';
+        pdfIframe.style.border = 'none';
+        pdfIframe.style.width = '100%';
+        pdfIframe.style.height = 'calc(100% - 17px)';
+        pdfIframe.style.borderRadius = '10px';
+        pdfIframe.style.marginTop = '22px';
+        pdfIframe.setAttribute('scrolling', 'no');
+        pdfIframe.setAttribute('allowfullscreen', '');
+        pdfIframe.setAttribute('webkitallowfullscreen', '');
+        document.getElementById('popupContent').innerHTML = '';
+        document.getElementById('popupContent').appendChild(pdfIframe);
+      }
+      
+      // Load viewer with custom PDF URL - bypass caching validation
+      pdfIframe.src = `/oread/web/viewer.html?file=${encodeURIComponent(decodedUrl)}`;
+    };
+    
+    initializeIframe();
+    
+    if (popup) {
+      popup.classList.remove("closing");
+      popup.style.display = "block";
+      showPopupShareTooltip();
+    }
+
+    // Clean URL
+    const newUrl = window.location.origin + window.location.pathname;
+    window.history.replaceState({}, document.title, newUrl);
+  } catch (e) {
+    console.error("Failed to open custom PDF:", e);
+    window.materioAlert("Could not open the PDF. Please check the URL.", { type: "error" });
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   const libUrl =
     window.MaterioLocalCDN?.transformUrl(
@@ -1371,64 +1425,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-const themeToggle = document.getElementById("themeToggle");
-themeToggle.addEventListener("change", function () {
-  // Existing elements
-  const elements = [
-    document.body,
-    document.querySelector("header"),
-    document.querySelector(".navbar"),
-    document.querySelector(".content"),
-    document.getElementById("themeCard"),
-    document.getElementById("popup"),
-    document.getElementById("versionInfo"),
-    document.getElementById("reading"),
-    document.getElementById("notices"),
-    document.getElementById("notificationBoard"),
-    document.getElementById("about"),
-    document.getElementById("blogs"),
-    document.getElementById("blogPostsContent"),
-  ];
-
-  // Append all notification cards (they all share id "notify")
-  const notifyCards = document.querySelectorAll("#notify");
-  notifyCards.forEach((card) => elements.push(card));
-
-  // Append all dynamically created insight cards
-  const insightCards = document.querySelectorAll(".insight-card");
-  insightCards.forEach((item) => elements.push(item));
-
-  elements.forEach((el) => {
-    if (el) {
-      this.checked
-        ? el.classList.add("dark-mode")
-        : el.classList.remove("dark-mode");
-    }
-  });
-});
-
-if (
-  window.matchMedia &&
-  window.matchMedia("(prefers-color-scheme: dark)").matches
-) {
-  themeToggle.checked = true;
-  const elements = [
-    document.body,
-    document.querySelector("header"),
-    document.querySelector(".navbar"),
-    document.querySelector(".content"),
-    document.getElementById("themeCard"),
-    document.getElementById("popup"),
-    document.getElementById("versionInfo"),
-    document.getElementById("reading"),
-    document.getElementById("notices"),
-    document.getElementById("about"),
-    document.getElementById("notificationBoard"),
-    document.getElementById("blogs"),
-    document.getElementById("blogPostsContent"),
-  ];
-  elements.forEach((el) => el.classList.add("dark-mode"));
-}
+// Theme is managed by assets/scripts/theme.js via bundle.js.
+// Legacy inline toggling here was causing conflicts with saved theme preferences.
 
 document.addEventListener("DOMContentLoaded", function () {
   const isDark =
@@ -1446,18 +1444,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-// Apply dark mode to dynamically loaded insight cards when they're loaded
-window.addEventListener("insightroomPostsLoaded", function () {
-  const isDark =
-    document.body.classList.contains("dark-mode") ||
-    (window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches);
-
-  if (isDark) {
-    const insightCards = document.querySelectorAll(".insight-card");
-    insightCards.forEach((item) => item.classList.add("dark-mode"));
-  }
-});
+// No per-card class sync needed; CSS uses body.dark-mode selectors.
 
 // Fullscreen management - prevent ESC from exiting, only Shift+F or button can toggle
 const fullscreenButton = document.getElementById("fullscreenButton");
@@ -2183,48 +2170,35 @@ document.addEventListener("DOMContentLoaded", function () {
           hasAdminPrivileges = userData.user?.hasAdminPrivileges || false;
           isProUser = userData.user?.isPlusUser || false;
           isLiteUser = userData.user?.isLiteUser || false;
-        } else {
-          if (blogsCard) {
-            blogsCard.style.display = "none";
-          }
-          return;
         }
       } catch (error) {
-        if (blogsCard) {
-          blogsCard.style.display = "none";
-        }
-        return;
+        // Keep defaults when profile lookup fails; visibility is controlled by user toggle.
       }
     }
 
-    // Show blogs card only if user is pro user OR admin AND InsightRoom toggle is enabled
+    // Show/hide blogs card by InsightRoom toggle preference.
+    // Access flags still control private content filtering below.
     if (blogsCard) {
-      if (isProUser || hasAdminPrivileges) {
-        // Check if InsightRoom is enabled from saved cookie (read directly to avoid scope issues)
-        let isInsightroomEnabled = true; // default
-        const settingsCookie = getCookie("insightroomSettings");
-        if (settingsCookie) {
+      let isInsightroomEnabled = true; // default
+      const settingsCookie = getCookie("insightroomSettings");
+      if (settingsCookie) {
+        try {
+          // Handle both encoded and non-encoded cookie values
+          let decoded = settingsCookie;
           try {
-            // Handle both encoded and non-encoded cookie values
-            let decoded = settingsCookie;
-            try {
-              decoded = decodeURIComponent(settingsCookie);
-            } catch (e) {
-              // Already decoded or not encoded
-            }
-            const settings = JSON.parse(decoded);
-            if (Array.isArray(settings) && settings.length === 2) {
-              isInsightroomEnabled = settings[0];
-            }
+            decoded = decodeURIComponent(settingsCookie);
           } catch (e) {
-            // ignore parse errors, use default
+            // Already decoded or not encoded
           }
+          const settings = JSON.parse(decoded);
+          if (Array.isArray(settings) && settings.length === 2) {
+            isInsightroomEnabled = settings[0];
+          }
+        } catch (e) {
+          // ignore parse errors, use default
         }
-        blogsCard.style.display = isInsightroomEnabled ? "block" : "none";
-      } else {
-        blogsCard.style.display = "none";
-        return;
       }
+      blogsCard.style.display = isInsightroomEnabled ? "block" : "none";
     }
 
     // Hide private posts in default listing if no admin privileges or pro membership
@@ -2397,9 +2371,8 @@ document.addEventListener("DOMContentLoaded", function () {
       attachmentsPillsContainer.style.display = "flex";
       if (attachmentsEmpty) attachmentsEmpty.style.display = "none";
 
-      // Render pills
+      // Render all matched pills; vertical scroll handles long lists.
       attachmentsPillsContainer.innerHTML = filteredAttachments
-        .slice(0, 15) // Limit to 15 attachments to prevent overflow
         .map((att) => createAttachmentPillHTML(att))
         .join("");
     } else {

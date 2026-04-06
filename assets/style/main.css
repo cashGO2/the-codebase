@@ -11,9 +11,9 @@
        ============================================ */
 
     --materio-orange: #ff5400;
-    --white-bg: #fcfcf9;
+    --white-bg: #faf9f5;
     --jetblack-bg: #121212;
-    --off-white-blur: rgba(205, 205, 197, 0.2);
+    --off-white-blur: rgba(242, 241, 233, 0.55);
     --space-grey-blur: rgba(33, 33, 33, 0.5);
     --jetblack-blur: rgba(57, 55, 55, 0.5);
     /*not in use yet*/
@@ -28,6 +28,12 @@
     --color-primary-hover: #e67300;
     --color-primary-light: rgba(255, 130, 0, 0.1);
     --color-primary-lighter: rgba(255, 130, 0, 0.05);
+    --smart-rec-card-width: 260px;
+    --smart-rec-card-height: 300px;
+    --smart-rec-card-width-tablet: 240px;
+    --smart-rec-card-height-tablet: 280px;
+    --smart-rec-card-width-mobile: 240px;
+    --smart-rec-card-height-mobile: 260px;
     --color-primary-alt: #ff8200;
     --color-primary-dark: #df7800;
 
@@ -42,55 +48,41 @@
     --color-danger-glow: rgba(239, 68, 68, 0.4);
     --color-info: #007bff;
 
-    /* Neutral Colors - Light Mode */
     --color-text-primary: #333333;
     --color-text-secondary: #666666;
     --color-text-tertiary: #888888;
     --color-text-muted: #999999;
     --color-text-light: #aaaaaa;
     --color-text-placeholder: #bbbbbb;
-
-    /* Background Colors - Light Mode */
     --color-bg-body: #faf9f5;
-    --color-bg-card: #f3f3ee;
-    --color-bg-card-alt: #f5f5f5;
-    --color-bg-overlay: rgb(240 238 230 / 30%);
-    --frame-overlay-color: rgba(231, 231, 221, 0.2);
-    --color-bg-overlay-light: rgba(231, 231, 221, 0.3);
+    --color-bg-card: #f2f1e9;
+    --color-bg-card-alt: #faf6e9;
+    --color-bg-overlay: rgba(232, 230, 220, 0.55);
+    --frame-overlay-color: var(--color-bg-overlay);
+    --color-bg-overlay-light: rgba(242, 241, 233, 0.45);
     --color-bg-white: #ffffff;
-    --color-bg-input: rgba(255, 255, 255, 0.3);
-
-    /* Border Colors - Light Mode */
+    --color-bg-input: rgba(242, 241, 233, 0.55);
     --color-border-light: #e0e0e0;
     --color-border-medium: #d1d1d1;
     --color-border-dark: #cccccc;
-
-    /* Dark Mode Colors */
     --color-dark-bg-body: #121212;
     --color-dark-bg-card: #282828;
     --color-dark-bg-card-alt: #2a2a2a;
     --color-dark-bg-overlay: rgba(33, 33, 33, 0.5);
     --color-dark-bg-overlay-alt: rgba(34, 34, 34, 0.5);
     --color-dark-bg-input: #444444;
-
     --color-dark-text-primary: #ffffff;
     --color-dark-text-secondary: #e0e0e0;
     --color-dark-text-tertiary: #b0b0b0;
     --color-dark-text-muted: #888888;
-
     --color-dark-border-light: #555555;
     --color-dark-border-medium: #444444;
-
     /* Special Colors */
     --color-verified-admin: #800020;
     --color-verified-plus: #d4af37;
     --color-verified-pro: #ad4446;
     --color-slider-track: #ccc;
     --color-tooltip-bg: #444444;
-
-    /* ============================================
-       TYPOGRAPHY
-       ============================================ */
 
     /* Font Families */
     --font-primary: "Manrope", sans-serif;
@@ -106,7 +98,6 @@
     --font-size-xl: 22px;
     --font-size-2xl: 24px;
 
-    /* Font Weights */
     --font-weight-normal: 400;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
@@ -118,9 +109,9 @@
     --line-height-relaxed: 1.5;
     --line-height-loose: 1.6;
 
-    /* ============================================
-       SPACING
-       ============================================ */
+     /* ============================================
+         SPACING SCALE
+         ============================================ */
 
     --spacing-xs: 4px;
     --spacing-sm: 8px;
@@ -146,9 +137,9 @@
     --radius-pill: 999px;
     --radius-circle: 50%;
 
-    /* ============================================
-       SHADOWS
-       ============================================ */
+     /* ============================================
+         SHADOWS
+         ============================================ */
 
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -156,9 +147,9 @@
     --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.2);
     --shadow-primary: 0 4px 15px rgba(255, 130, 0, 0.3);
 
-    /* ============================================
-       TRANSITIONS
-       ============================================ */
+     /* ============================================
+         TRANSITIONS
+         ============================================ */
 
     --transition-fast: 0.15s ease;
     --transition-normal: 0.2s ease;
@@ -197,8 +188,8 @@
        ============================================ */
 
     --blur-sm: blur(5px);
-    --blur-md: blur(10px);
-    --blur-lg: blur(25px);
+    --blur-md: blur(40px);
+    --blur-lg: blur(50px);
 
     /* ============================================
        ANIMATION DURATIONS
@@ -296,6 +287,19 @@ textarea,
 .grab:active,
 [draggable="true"]:active {
     cursor: var(--f-cursor-grabbed);
+}
+
+/* Keep button labels non-selectable/non-callout across devices */
+button,
+[role="button"],
+.btn,
+.shimmer-button,
+.icon-button,
+.view-more-btn,
+.blog-fold-chevron {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
 }
 
 ::selection {
@@ -406,9 +410,14 @@ header {
     right: calc(-1 * var(--frame-corner-size));
     width: var(--frame-corner-size);
     height: var(--frame-corner-size);
-    background: radial-gradient(circle at 100% 100%,
+        background-color: var(--frame-overlay-color);
+        --frame-corner-mask: radial-gradient(circle at 100% 100%,
             transparent var(--frame-corner-size),
-            var(--frame-overlay-color) var(--frame-corner-size));
+            #000 calc(var(--frame-corner-size) + 1px));
+        -webkit-mask-image: var(--frame-corner-mask);
+        mask-image: var(--frame-corner-mask);
+    backdrop-filter: var(--blur-md);
+    -webkit-backdrop-filter: var(--blur-md);
     pointer-events: none;
 }
 
@@ -416,14 +425,19 @@ header {
 header::after {
     content: "";
     position: absolute;
-    bottom: -20px;
-    right: 5px;
+    bottom: calc(-1 * var(--frame-corner-size));
+    right: var(--frame-strip-width);
     /* shifted left by strip width */
-    width: 20px;
-    height: 20px;
-    background: radial-gradient(circle at 0% 100%,
+    width: var(--frame-corner-size);
+    height: var(--frame-corner-size);
+        background-color: var(--frame-overlay-color);
+        --frame-corner-mask: radial-gradient(circle at 0% 100%,
             transparent var(--frame-corner-size),
-            var(--frame-overlay-color) var(--frame-corner-size));
+            #000 calc(var(--frame-corner-size) + 1px));
+        -webkit-mask-image: var(--frame-corner-mask);
+        mask-image: var(--frame-corner-mask);
+    backdrop-filter: var(--blur-md);
+    -webkit-backdrop-filter: var(--blur-md);
     pointer-events: none;
 }
 
@@ -431,15 +445,20 @@ header::after {
 body::before {
     content: "";
     position: fixed;
-    bottom: 5px;
+    bottom: var(--frame-strip-width);
     /* shifted up by strip height */
-    left: 50px;
+    left: var(--navbar-width);
     /* navbar width */
-    width: 20px;
-    height: 20px;
-    background: radial-gradient(circle at 100% 0%,
+    width: var(--frame-corner-size);
+    height: var(--frame-corner-size);
+        background-color: var(--frame-overlay-color);
+        --frame-corner-mask: radial-gradient(circle at 100% 0%,
             transparent var(--frame-corner-size),
-            var(--frame-overlay-color) var(--frame-corner-size));
+            #000 calc(var(--frame-corner-size) + 1px));
+        -webkit-mask-image: var(--frame-corner-mask);
+        mask-image: var(--frame-corner-mask);
+    backdrop-filter: var(--blur-md);
+    -webkit-backdrop-filter: var(--blur-md);
     pointer-events: none;
     z-index: 999;
 }
@@ -448,17 +467,35 @@ body::before {
 body::after {
     content: "";
     position: fixed;
-    bottom: 5px;
+    bottom: var(--frame-strip-width);
     /* shifted up by strip height */
-    right: 5px;
+    right: var(--frame-strip-width);
     /* shifted left by strip width */
-    width: 20px;
-    height: 20px;
-    background: radial-gradient(circle at 0% 0%,
+    width: var(--frame-corner-size);
+    height: var(--frame-corner-size);
+        background-color: var(--frame-overlay-color);
+        --frame-corner-mask: radial-gradient(circle at 0% 0%,
             transparent var(--frame-corner-size),
-            var(--frame-overlay-color) var(--frame-corner-size));
+            #000 calc(var(--frame-corner-size) + 1px));
+        -webkit-mask-image: var(--frame-corner-mask);
+        mask-image: var(--frame-corner-mask);
+    backdrop-filter: var(--blur-md);
+    -webkit-backdrop-filter: var(--blur-md);
     pointer-events: none;
     z-index: 999;
+}
+
+/* Keep all desktop frame corners identical and seam-free */
+.navbar::after,
+header::after,
+body::before,
+body::after {
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-position: center;
+    mask-position: center;
 }
 
 /* =============================================
@@ -1230,27 +1267,19 @@ header.dark-mode {
 
 /* Dark mode inner corners - all 4 corners */
 .navbar.dark-mode::after {
-    background: radial-gradient(circle at 100% 100%,
-            transparent 20px,
-            var(--frame-overlay-color) 20px);
+    background-color: var(--frame-overlay-color);
 }
 
 header.dark-mode::after {
-    background: radial-gradient(circle at 0% 100%,
-            transparent 20px,
-            var(--frame-overlay-color) 20px);
+    background-color: var(--frame-overlay-color);
 }
 
 body.dark-mode::before {
-    background: radial-gradient(circle at 100% 0%,
-            transparent 20px,
-            var(--frame-overlay-color) 20px);
+    background-color: var(--frame-overlay-color);
 }
 
 body.dark-mode::after {
-    background: radial-gradient(circle at 0% 0%,
-            transparent 20px,
-            var(--frame-overlay-color) 20px);
+    background-color: var(--frame-overlay-color);
 }
 
 /* Dark mode frame strips */
@@ -1430,9 +1459,14 @@ body.dark-mode #gh .contribute-button span {
         left: var(--frame-strip-width);
         width: var(--frame-corner-size);
         height: var(--frame-corner-size);
-        background: radial-gradient(circle at 100% 100%,
-                transparent var(--frame-corner-size),
-                var(--frame-overlay-color) var(--frame-corner-size));
+        background-color: var(--frame-overlay-color);
+        --frame-corner-mask: radial-gradient(circle at 100% 100%,
+            transparent var(--frame-corner-size),
+            #000 calc(var(--frame-corner-size) + 1px));
+        -webkit-mask-image: var(--frame-corner-mask);
+        mask-image: var(--frame-corner-mask);
+        backdrop-filter: var(--blur-md);
+        -webkit-backdrop-filter: var(--blur-md);
         pointer-events: none;
         z-index: var(--z-header);
     }
@@ -1445,9 +1479,14 @@ body.dark-mode #gh .contribute-button span {
         right: var(--frame-strip-width);
         width: var(--frame-corner-size);
         height: var(--frame-corner-size);
-        background: radial-gradient(circle at 0% 100%,
-                transparent var(--frame-corner-size),
-                var(--frame-overlay-color) var(--frame-corner-size));
+        background-color: var(--frame-overlay-color);
+        --frame-corner-mask: radial-gradient(circle at 0% 100%,
+            transparent var(--frame-corner-size),
+            #000 calc(var(--frame-corner-size) + 1px));
+        -webkit-mask-image: var(--frame-corner-mask);
+        mask-image: var(--frame-corner-mask);
+        backdrop-filter: var(--blur-md);
+        -webkit-backdrop-filter: var(--blur-md);
         pointer-events: none;
         z-index: var(--z-header);
     }
@@ -1460,9 +1499,14 @@ body.dark-mode #gh .contribute-button span {
         left: var(--frame-strip-width);
         width: var(--frame-corner-size);
         height: var(--frame-corner-size);
-        background: radial-gradient(circle at 100% 0%,
-                transparent var(--frame-corner-size),
-                var(--frame-overlay-color) var(--frame-corner-size));
+        background-color: var(--frame-overlay-color);
+        --frame-corner-mask: radial-gradient(circle at 100% 0%,
+            transparent var(--frame-corner-size),
+            #000 calc(var(--frame-corner-size) + 1px));
+        -webkit-mask-image: var(--frame-corner-mask);
+        mask-image: var(--frame-corner-mask);
+        backdrop-filter: var(--blur-md);
+        -webkit-backdrop-filter: var(--blur-md);
         pointer-events: none;
         z-index: var(--z-header);
     }
@@ -1475,11 +1519,29 @@ body.dark-mode #gh .contribute-button span {
         right: var(--frame-strip-width);
         width: var(--frame-corner-size);
         height: var(--frame-corner-size);
-        background: radial-gradient(circle at 0% 0%,
-                transparent var(--frame-corner-size),
-                var(--frame-overlay-color) var(--frame-corner-size));
+        background-color: var(--frame-overlay-color);
+        --frame-corner-mask: radial-gradient(circle at 0% 0%,
+            transparent var(--frame-corner-size),
+            #000 calc(var(--frame-corner-size) + 1px));
+        -webkit-mask-image: var(--frame-corner-mask);
+        mask-image: var(--frame-corner-mask);
+        backdrop-filter: var(--blur-md);
+        -webkit-backdrop-filter: var(--blur-md);
         pointer-events: none;
         z-index: var(--z-header);
+    }
+
+    /* Keep all mobile frame corners identical and seam-free */
+    .mobile-corner-tl,
+    .mobile-corner-tr,
+    .mobile-corner-bl,
+    .mobile-corner-br {
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-size: 100% 100%;
+        mask-size: 100% 100%;
+        -webkit-mask-position: center;
+        mask-position: center;
     }
 
     /* Dark mode for mobile frame strips and corners */
@@ -1490,41 +1552,37 @@ body.dark-mode #gh .contribute-button span {
     }
 
     body.dark-mode .mobile-corner-tl {
-        background: radial-gradient(circle at 100% 100%,
-                transparent var(--frame-corner-size),
-                var(--frame-overlay-color) var(--frame-corner-size));
+        background-color: var(--frame-overlay-color);
     }
 
     body.dark-mode .mobile-corner-tr {
-        background: radial-gradient(circle at 0% 100%,
-                transparent var(--frame-corner-size),
-                var(--frame-overlay-color) var(--frame-corner-size));
+        background-color: var(--frame-overlay-color);
     }
 
     body.dark-mode .mobile-corner-bl {
-        background: radial-gradient(circle at 100% 0%,
-                transparent var(--frame-corner-size),
-                var(--frame-overlay-color) var(--frame-corner-size));
+        background-color: var(--frame-overlay-color);
     }
 
     body.dark-mode .mobile-corner-br {
-        background: radial-gradient(circle at 0% 0%,
-                transparent var(--frame-corner-size),
-                var(--frame-overlay-color) var(--frame-corner-size));
+        background-color: var(--frame-overlay-color);
     }
 
     /* Adjust container padding for mobile frame strips */
     .container {
-        padding-top: 60px !important;
+        padding-top: 5px !important;
         padding-left: 5px !important;
         padding-right: 5px !important;
         padding-bottom: 5px !important;
     }
 
     .content {
-        padding: 15px;
-        padding-bottom: 70px;
-        /* extra space for floating navbar */
+        margin-top: calc(var(--header-height) - 20px);
+        padding: 8px 15px 70px;
+        /* reduce extra top gap while preserving side symmetry */
+    }
+
+    #reading.card-one {
+        margin-top: 0 !important;
     }
 
     .btn {
@@ -5869,7 +5927,7 @@ body.dark-mode .ai-mcp-hint a:hover {
     text-decoration: none;
     color: inherit;
     flex: 0 0 auto;
-    width: 260px;
+    width: var(--smart-rec-card-width);
     scroll-snap-align: start;
 }
 
@@ -5877,7 +5935,7 @@ body.dark-mode .ai-mcp-hint a:hover {
 .insight-card {
     --card-bg: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff9a9e 100%);
     width: 100%;
-    height: 300px;
+    height: var(--smart-rec-card-height);
     background: var(--color-bg-white);
     border-radius: var(--radius-4xl);
     corner-shape: squircle;
@@ -6015,11 +6073,11 @@ body.dark-mode .insight-card-date {
     }
 
     .insight-card-link {
-        width: 240px;
+        width: var(--smart-rec-card-width-tablet);
     }
 
     .insight-card {
-        height: 280px;
+        height: var(--smart-rec-card-height-tablet);
         border-radius: 24px;
     }
 
@@ -6042,11 +6100,11 @@ body.dark-mode .insight-card-date {
     }
 
     .insight-card-link {
-        width: 240px;
+        width: var(--smart-rec-card-width-mobile);
     }
 
     .insight-card {
-        height: 260px;
+        height: var(--smart-rec-card-height-mobile);
         border-radius: 20px;
     }
 
@@ -6222,33 +6280,26 @@ body.dark-mode .blog-fold-chevron:hover {
 /* Attachments card - blog card shaped */
 .attachments-card {
     flex: 0 0 auto;
-    width: 260px;
-    min-height: 280px;
-    max-height: 300px;
-    background: linear-gradient(145deg,
-            rgba(255, 255, 255, 0.95) 0%,
-            rgba(248, 248, 248, 0.9) 100%);
+    width: var(--smart-rec-card-width);
+    height: var(--smart-rec-card-height);
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.7);
     border-radius: var(--radius-4xl);
     corner-shape: squircle;
     padding: var(--spacing-lg);
     display: flex;
     flex-direction: column;
     gap: 14px;
-    backdrop-filter: var(--blur-md);
-    -webkit-backdrop-filter: var(--blur-md);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.6);
     scroll-snap-align: start;
     overflow: hidden;
-    transition:
-        transform var(--transition-medium),
-        box-shadow var(--transition-medium);
+    transition: none;
 }
 
 .attachments-card:hover {
-    transform: translateY(-2px);
-    box-shadow:
-        0 12px 40px rgba(0, 0, 0, 0.12),
-        0 4px 12px rgba(0, 0, 0, 0.06);
+    border-color: rgba(255, 255, 255, 0.6);
 }
 
 /* Header */
@@ -6505,19 +6556,12 @@ body.dark-mode .blog-fold-chevron:hover {
 
 /* Dark mode */
 body.dark-mode .attachments-card {
-    background: linear-gradient(145deg,
-            rgba(42, 42, 42, 0.95) 0%,
-            rgba(35, 35, 35, 0.9) 100%);
+    background: rgba(42, 42, 42, 0.7);
     border-color: rgba(255, 255, 255, 0.08);
-    box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.3),
-        0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 body.dark-mode .attachments-card:hover {
-    box-shadow:
-        0 12px 40px rgba(0, 0, 0, 0.4),
-        0 4px 12px rgba(0, 0, 0, 0.25);
+    border-color: rgba(255, 255, 255, 0.08);
 }
 
 body.dark-mode .attachments-card-header {
@@ -6603,9 +6647,8 @@ body.dark-mode .attachments-empty {
 /* Responsive */
 @media (max-width: 768px) {
     .attachments-card {
-        width: 240px;
-        min-height: 260px;
-        max-height: 280px;
+        width: var(--smart-rec-card-width-tablet);
+        height: var(--smart-rec-card-height-tablet);
         padding: 16px;
         border-radius: 24px;
     }
@@ -6626,9 +6669,8 @@ body.dark-mode .attachments-empty {
 
 @media (max-width: 480px) {
     .attachments-card {
-        width: 240px;
-        min-height: 240px;
-        max-height: 260px;
+        width: var(--smart-rec-card-width-mobile);
+        height: var(--smart-rec-card-height-mobile);
         padding: 14px;
         border-radius: 20px;
     }
@@ -6665,9 +6707,9 @@ body.dark-mode .attachments-empty {
 /* Exam card - blog card shaped, similar to attachments-card */
 .exam-card {
     flex: 0 0 auto;
-    width: 260px;
-    min-height: 280px;
-    max-height: 300px;
+    width: var(--smart-rec-card-width);
+    height: var(--smart-rec-card-height);
+    box-sizing: border-box;
     background: rgba(255, 255, 255, 0.7);
     border-radius: var(--radius-4xl);
     corner-shape: squircle;
@@ -7713,9 +7755,8 @@ body.dark-mode .exam-timeline-item.upcoming.active .exam-timeline-dot::after {
 /* Responsive styles */
 @media (max-width: 768px) {
     .exam-card {
-        width: 240px;
-        min-height: 260px;
-        max-height: 280px;
+        width: var(--smart-rec-card-width-tablet);
+        height: var(--smart-rec-card-height-tablet);
         padding: 16px;
         border-radius: 24px;
     }
@@ -7790,9 +7831,8 @@ body.dark-mode .exam-timeline-item.upcoming.active .exam-timeline-dot::after {
 
 @media (max-width: 480px) {
     .exam-card {
-        width: 220px;
-        min-height: 220px;
-        max-height: 260px;
+        width: var(--smart-rec-card-width-mobile);
+        height: var(--smart-rec-card-height-mobile);
         padding: 14px;
         border-radius: 20px;
     }

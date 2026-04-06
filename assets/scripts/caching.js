@@ -277,6 +277,16 @@ document.addEventListener('DOMContentLoaded', function () {
         let pdfCount = parseInt(sessionStorage.getItem('materio_pdf_count') || '0');
 
         if (pdfCount >= maxPdfs) {
+            // Track rate limit hit for metrics
+            if (window.MetricsClient) {
+                window.MetricsClient.push('rate_limit_hit', {
+                    pdfCount: pdfCount,
+                    maxPdfs: maxPdfs,
+                    userTier: getUserTier()
+                });
+                window.MetricsClient.flush();
+            }
+
             const resetTime = Date.now() + (30 * 60 * 1000);
             localStorage.setItem('materio_rate_limit_reset', resetTime.toString());
             showRateLimitScreen(resetTime, pdfUrl);
