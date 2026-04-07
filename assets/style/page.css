@@ -1,7 +1,7 @@
 body {
   margin: 0;
   font-family: "Manrope", sans-serif;
-  background-color: #fffffe;
+  background-color: var(--color-bg-body, #fffffe);
   color: #000;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -21,7 +21,7 @@ header {
   right: 0;
   height: 60px;
   z-index: 1000;
-  background-color: rgba(231,231,221, 0.5);
+  background-color: var(--color-bg-overlay, rgba(231, 231, 221, 0.5));
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   display: flex;

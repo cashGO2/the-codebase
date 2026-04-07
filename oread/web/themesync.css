@@ -21,6 +21,17 @@ body {
   cursor: var(--f-cursor-default);
 }
 
+html,
+body,
+#outerContainer,
+#mainContainer,
+#viewerContainerContainer,
+#viewerContainer,
+#sidebarContainer,
+#sidebarContent {
+  cursor: var(--f-cursor-default) !important;
+}
+
 a,
 button,
 [role="button"],
@@ -43,6 +54,10 @@ textarea,
 /* Hand Tool Support */
 .grab-to-pan-grab,
 .grab-to-pan-grab * {
+  cursor: var(--f-cursor-grab) !important;
+}
+
+.grab-to-pan-grab *:not(input):not(textarea):not(button):not(select):not(:link) {
   cursor: var(--f-cursor-grab) !important;
 }
 
@@ -96,6 +111,31 @@ body.dark-mode {
 /* Apply theme variables to elements */
 #viewerContainer {
   background-color: var(--viewer-bg-color);
+  cursor: var(--f-cursor-default) !important;
+}
+
+/* Scrollable regions in viewer should keep custom cursor coverage */
+#viewerContainer,
+#sidebarContent {
+  cursor: var(--f-cursor-default) !important;
+}
+
+#viewerContainer::-webkit-scrollbar,
+#viewerContainer::-webkit-scrollbar-track,
+#viewerContainer::-webkit-scrollbar-thumb,
+#viewerContainerContainer::-webkit-scrollbar,
+#viewerContainerContainer::-webkit-scrollbar-track,
+#viewerContainerContainer::-webkit-scrollbar-thumb,
+#mainContainer::-webkit-scrollbar,
+#mainContainer::-webkit-scrollbar-track,
+#mainContainer::-webkit-scrollbar-thumb,
+#outerContainer::-webkit-scrollbar,
+#outerContainer::-webkit-scrollbar-track,
+#outerContainer::-webkit-scrollbar-thumb,
+#sidebarContent::-webkit-scrollbar,
+#sidebarContent::-webkit-scrollbar-track,
+#sidebarContent::-webkit-scrollbar-thumb {
+  cursor: var(--f-cursor-pointer) !important;
 }
 
 #outerContainer {

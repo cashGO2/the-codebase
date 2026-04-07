@@ -313,13 +313,13 @@ async function loadAndDisplayExamCard() {
 
     // 3. Check if we've already determined exams are over for today
     const now = Date.now();
-    const lastCheck = localStorage.getItem('materio_exam_last_check');
-    const skipUntil = localStorage.getItem('materio_exam_skip_until');
-    
-    if (skipUntil && now < parseInt(skipUntil)) {
+    const skipUntilRaw = localStorage.getItem('materio_exam_skip_until');
+    const skipUntil = Number(skipUntilRaw);
+
+    // Avoid hard lockouts: keep the card hidden briefly but continue evaluation now.
+    if (Number.isFinite(skipUntil) && now < skipUntil) {
         hideExamCards();
-        hasExamDataProcessed = true;
-        return;
+        // Do not return; continue to fetch/re-evaluate immediately.
     }
 
     try {
@@ -375,13 +375,13 @@ async function loadAndDisplayExamCard() {
                 localStorage.removeItem('materio_exam_skip_until');
             } else {
                 hideExamCards();
-                // If exams are disabled or over, skip checking for 24 hours
-                localStorage.setItem('materio_exam_skip_until', now + (24 * 60 * 60 * 1000));
+                // Keep retries frequent enough so new/updated schedules appear quickly.
+                localStorage.setItem('materio_exam_skip_until', now + (20 * 60 * 1000));
             }
         } else {
             hideExamCards();
-            // If no data found for current context, skip for 12 hours
-            localStorage.setItem('materio_exam_skip_until', now + (12 * 60 * 60 * 1000));
+            // If no matching context, retry soon (semester/subject data may load later).
+            localStorage.setItem('materio_exam_skip_until', now + (10 * 60 * 1000));
         }
 
         // Listen for semester/subject changes (keep existing listeners)

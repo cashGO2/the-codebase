@@ -312,6 +312,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function applyTheme(isDark) {
     const elements = [
+      document.documentElement,
       document.body,
       document.querySelector('header'),
       document.querySelector('.site-header')
