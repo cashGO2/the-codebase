@@ -53,6 +53,9 @@ const SHOW_BEFORE_DAYS = 7; // Show card 7 days before exam starts
 const SHOW_BEFORE_DAYS_VIVA = 3; // Show viva exams 3 days before
 const EXAM_DATA_CACHE_KEY = 'materio_exam_data_cache';
 
+let isExamDataLoading = false;
+let hasExamDataProcessed = false;
+
 // Load exam data when script loads
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
@@ -61,9 +64,6 @@ if (document.readyState === 'loading') {
 } else {
     loadAndDisplayExamCard();
 }
-
-let isExamDataLoading = false;
-let hasExamDataProcessed = false;
 
 let vivaData = null; // Cached viva.csv data
 let vivaDivisions = []; // Cached divisions list from viva.csv
