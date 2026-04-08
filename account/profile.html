@@ -170,6 +170,52 @@
               </div>
             </div>
           </div>
+
+          <div id="admin-analytics-section" class="dashboard-section admin-analytics-section" style="display: none; margin-top: 20px;">
+            <h4><i class="fas fa-chart-line"></i> Admin Reading Insights</h4>
+            <div class="admin-tables-grid">
+              <div class="admin-table-card">
+                <div class="admin-table-title">Top PDFs Read</div>
+                <div class="admin-table-tools">
+                  <input id="admin-pdf-search" type="search" placeholder="Search by filename..." aria-label="Search PDFs by filename" />
+                </div>
+                <div class="admin-table-wrap admin-table-wrap-scroll">
+                  <table class="admin-analytics-table" aria-label="Top PDFs Read">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>PDF</th>
+                        <th>Reads</th>
+                        <th>Readers</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admin-top-pdfs-body">
+                      <tr><td colspan="4" class="admin-empty-cell">Loading...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="admin-table-card">
+                <div class="admin-table-title">Top Users by Reading Time</div>
+                <div class="admin-table-wrap admin-table-wrap-scroll">
+                  <table class="admin-analytics-table" aria-label="Top Users by Reading Time">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>User</th>
+                        <th>Reading Time</th>
+                        <th>PDF Reads</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admin-top-users-body">
+                      <tr><td colspan="4" class="admin-empty-cell">Loading...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Referral Card -->
@@ -325,45 +371,44 @@
           <h3>Profile Information</h3>
           <form id="profileForm">
             <div class="form-section">
-              <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" placeholder="Enter your username">
-              </div>
-
-              <div class="form-group">
-                <label for="displayName">Display Name</label>
-                <input type="text" id="displayName" name="displayName" placeholder="Enter your display name">
-              </div>
-
-              <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email" readonly>
-              </div>
-            </div>
-
-            <div class="form-divider"></div>
-
-            <div class="form-section">
               <h4 class="form-section-title">Identity & Avatar</h4>
-              <div class="form-group">
-                <div class="avatar-col" style="display: flex; flex-direction: column; align-items: center; gap: 12px; max-width: 120px;">
-                  <div id="avatarPreviewContainer" class="main-avatar-container" style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; background: #f8fafc; border: 2px solid var(--border-color); display: flex; align-items: center; justify-content: center;">
+              <div class="identity-editor-grid">
+                <div class="identity-avatar-col">
+                  <div id="avatarPreviewContainer" class="main-avatar-container profile-avatar-ring">
                     <div id="mainAvatarRoot">
-                        <img id="picturePreview" src="/assets/img/default-avatar.svg" alt="Profile Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                      <img id="picturePreview" src="/assets/img/default-avatar.svg" alt="Profile Preview" class="profile-avatar-preview">
                     </div>
                   </div>
-                  <div class="avatar-tools-row" style="display: flex; gap: 8px;">
-                    <button type="button" id="uploadButton" class="avatar-tool-btn" title="Upload Image" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-color); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-dim); transition: all 0.2s;">
-                      <i class="fas fa-camera" style="font-size: 12px;"></i>
+                  <div class="avatar-tools-row">
+                    <button type="button" id="uploadButton" class="avatar-tool-btn" title="Upload Image">
+                      <i class="fas fa-camera"></i>
                     </button>
-                    <button type="button" id="shuffleAvatarBtn" class="avatar-tool-btn" title="Shuffle Style" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-color); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-dim); transition: all 0.2s;">
-                      <i class="fas fa-random" style="font-size: 12px;"></i>
+                    <button type="button" id="shuffleAvatarBtn" class="avatar-tool-btn" title="Shuffle Style">
+                      <i class="fas fa-random"></i>
                     </button>
                   </div>
-                  <input type="file" id="profilePicture" name="profilePicture" accept="image/*" style="display: none;">
-                  <input type="hidden" id="selectedVariant" value="character">
+                </div>
+
+                <div class="identity-fields-col">
+                  <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="displayName">Display Name</label>
+                    <input type="text" id="displayName" name="displayName" placeholder="Enter your display name">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" class="readonly-input" placeholder="Enter your email" readonly aria-readonly="true">
+                  </div>
                 </div>
               </div>
+
+              <input type="file" id="profilePicture" name="profilePicture" accept="image/*" style="display: none;">
+              <input type="hidden" id="selectedVariant" value="character">
             </div>
 
             <button type="submit" class="btn">SAVE CHANGES</button>

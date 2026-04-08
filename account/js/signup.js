@@ -43,6 +43,50 @@ document.addEventListener('DOMContentLoaded', function () {
         }));
     }
 
+    function normalizeHexColor(value, fallback) {
+        if (!value || typeof value !== 'string') return fallback;
+        const color = value.trim();
+        if (color.startsWith('#')) return color;
+        if (/^[0-9a-fA-F]{3}$/.test(color) || /^[0-9a-fA-F]{6}$/.test(color)) return `#${color}`;
+        return color;
+    }
+
+    function serializeAvatarFromRoot(rootEl, outputSize = 100) {
+        if (!rootEl) return null;
+
+        const avatarHost = rootEl.querySelector('div[size][color]');
+        const avatarShape = avatarHost ? avatarHost.querySelector('span[size][color]') : null;
+        const avatarSvg = avatarShape ? avatarShape.querySelector('svg') : rootEl.querySelector('svg');
+        if (!avatarSvg) return null;
+
+        const hostSize = Number.parseFloat(avatarHost?.getAttribute('size')) || Number.parseFloat(avatarSvg.getAttribute('width')) || 70;
+        const shapeSize = Number.parseFloat(avatarShape?.getAttribute('size')) || Number.parseFloat(avatarSvg.getAttribute('width')) || (hostSize * 0.5);
+
+        const bgColor = normalizeHexColor(avatarHost?.getAttribute('color'), '#94a3b8');
+        const fgColor = normalizeHexColor(avatarShape?.getAttribute('color'), '#e2e8f0');
+
+        const ratio = hostSize > 0 ? Math.max(0.3, Math.min(0.95, shapeSize / hostSize)) : 0.5;
+        const iconSize = outputSize * ratio;
+        const iconOffset = (outputSize - iconSize) / 2;
+
+        const viewBox = avatarSvg.getAttribute('viewBox');
+        const vb = viewBox ? viewBox.split(/\s+/).map(Number) : [0, 0, 32, 32];
+        const vbWidth = vb[2] || 32;
+        const vbHeight = vb[3] || 32;
+
+        const innerMarkup = avatarSvg.innerHTML;
+        const compositedSvg = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="${outputSize}" height="${outputSize}" viewBox="0 0 ${outputSize} ${outputSize}" preserveAspectRatio="xMidYMid meet">
+                <circle cx="${outputSize / 2}" cy="${outputSize / 2}" r="${outputSize / 2}" fill="${bgColor}" />
+                <g transform="translate(${iconOffset}, ${iconOffset}) scale(${iconSize / vbWidth}, ${iconSize / vbHeight})" color="${fgColor}" fill="${fgColor}" stroke="${fgColor}">
+                    ${innerMarkup}
+                </g>
+            </svg>
+        `.trim();
+
+        return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(compositedSvg)))}`;
+    }
+
     // Shuffle functionality
     if (shuffleBtn) {
         shuffleBtn.addEventListener('click', () => {
@@ -286,30 +330,10 @@ document.addEventListener('DOMContentLoaded', function () {
             data.avatarSeed = avatarSeed;
             data.isCustomAvatar = isCustomUpload;
 
-            // --- AVATAR CAPTURE LOGIC (Composited) ---
+            // --- AVATAR CAPTURE LOGIC (Exact SVG serialization to preserve scale/alignment) ---
             if (!isCustomUpload) {
-                const parentDiv = mainAvatarRoot.querySelector('div');
-                const svgEl = mainAvatarRoot.querySelector('svg');
-
-                if (parentDiv && svgEl) {
-                    // Extract styles from the React-rendered component
-                    const styles = window.getComputedStyle(parentDiv);
-                    const bgColor = styles.backgroundColor;
-                    const fgColor = window.getComputedStyle(svgEl.parentElement).color; // Avvvatars specific color token
-
-                    // Create a flattened SVG that includes the background circle
-                    const flattenedSvg = `
-                        <svg width="70" height="70" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="35" cy="35" r="35" fill="${bgColor}" />
-                            <g transform="translate(17.5, 17.5)" color="${fgColor}">
-                                ${svgEl.innerHTML}
-                            </g>
-                        </svg>
-                    `.trim();
-
-                    const svgBase64 = btoa(unescape(encodeURIComponent(flattenedSvg)));
-                    data.profilePicture = `data:image/svg+xml;base64,${svgBase64}`;
-                }
+                const serializedSvgDataUri = serializeAvatarFromRoot(mainAvatarRoot, 100);
+                if (serializedSvgDataUri) data.profilePicture = serializedSvgDataUri;
             } else {
                 const previewImg = mainAvatarRoot.querySelector('img');
                 if (previewImg) data.profilePicture = previewImg.src;
@@ -339,122 +363,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 showFieldMsg('form', 'Network error. Please try again.');
                 this.querySelector('button[type="submit"]').disabled = false;
                 this.querySelector('button[type="submit"]').textContent = 'Count Me In';
-            }
-        });
-    }
-
-    // --- Phase Navigation ---
-    const registrationPhase = document.getElementById('registration-phase');
-    const verificationPhase = document.getElementById('verification-phase');
-    const nextBtn = document.getElementById('nextToOtp');
-    const backBtn = document.getElementById('backToStep1');
-
-    function validatePhase1() {
-        const username = document.getElementById('username').value.trim();
-        const displayName = document.getElementById('displayName').value.trim();
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-        const currentYear = document.getElementById('currentYear').value;
-        const specialization = document.getElementById('specialization').value;
-
-        if (!username || !displayName || !password || !currentYear || !specialization) {
-            showFieldMsg('form', 'Please fill all fields');
-            return false;
-        }
-        if (password.length < 8) {
-            showFieldMsg('password', 'Min 8 characters');
-            return false;
-        }
-        if (password !== confirmPassword) {
-            showFieldMsg('confirmPassword', 'Passwords do not match');
-            return false;
-        }
-        return true;
-    }
-
-    if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
-            if (validatePhase1()) {
-                registrationPhase.style.display = 'none';
-                verificationPhase.style.display = 'block';
-                showFieldMsg('form', 'Verify your email.', 'success');
-            }
-        });
-    }
-
-    if (backBtn) {
-        backBtn.addEventListener('click', () => {
-            verificationPhase.style.display = 'none';
-            registrationPhase.style.display = 'block';
-        });
-    }
-
-    // Handle main signup form submission
-    if (signupForm) {
-        signupForm.addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            const email = emailInput.value.trim();
-            const otp = document.getElementById('otp').value.trim();
-            const username = document.getElementById('username').value.trim();
-            const displayName = document.getElementById('displayName').value.trim();
-            const currentYear = document.getElementById('currentYear').value;
-            const passoutYear = document.getElementById('passoutYear').value;
-            const specialization = document.getElementById('specialization').value;
-            const avatarVariant = document.getElementById('selectedVariant').value;
-            const password = document.getElementById('password').value;
-            const termsAgreed = document.getElementById('terms').checked;
-
-            if (!otp) {
-                showFieldMsg('otp', 'Verification code required');
-                return;
-            }
-
-            if (!termsAgreed) {
-                showFieldMsg('form', 'Agree to terms');
-                return;
-            }
-
-            try {
-                const submitBtn = signupForm.querySelector('button[type="submit"]');
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'FINALIZING...';
-
-                const signupData = {
-                    email,
-                    otp,
-                    username,
-                    displayName,
-                    branch: 'Computer Science and Engineering',
-                    currentYear: parseInt(currentYear),
-                    passoutYear: parseInt(passoutYear),
-                    specialization,
-                    avatarVariant,
-                    avatarSeed: isCustomUpload ? 'custom' : (shuffleCounter > 0 ? `${displayName}-${shuffleCounter}` : displayName),
-                    isCustomAvatar: isCustomUpload,
-                    password
-                };
-
-                const response = await makeApiRequest('signup', 'POST', signupData);
-
-                if (response && response.token) {
-                    setAuthToken(response.token);
-                    showFieldMsg('form', 'Account created! Redirecting...', 'success');
-
-                    if (response.user && response.user.recoveryKey) {
-                        setTimeout(() => {
-                            alert(`IMPORTANT: RECOVERY KEY: ${response.user.recoveryKey}`);
-                        }, 500);
-                    }
-
-                    setTimeout(() => window.location.href = '/account/profile', 1500);
-                }
-            } catch (error) {
-                console.error('Signup error:', error);
-                showFieldMsg('form', error.message || 'Signup failed');
-                const submitButton = this.querySelector('button[type="submit"]');
-                submitButton.disabled = false;
-                submitButton.textContent = 'FINALIZE ACCOUNT';
             }
         });
     }

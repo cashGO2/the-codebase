@@ -10,6 +10,62 @@ const {
 } = require('./_utils');
 const cors = require('./cors');
 
+const PROFILE_PICTURE_RETENTION_DAYS = Number(process.env.PROFILE_PICTURE_RETENTION_DAYS || 14);
+const PROFILE_PICTURES_PUBLIC_SEGMENT = '/storage/v1/object/public/profile-pictures/';
+
+function extractProfilePicturePath(publicUrl) {
+  if (!publicUrl || typeof publicUrl !== 'string' || publicUrl.startsWith('data:')) return null;
+  const markerIndex = publicUrl.indexOf(PROFILE_PICTURES_PUBLIC_SEGMENT);
+  if (markerIndex === -1) return null;
+  const rawPath = publicUrl
+    .slice(markerIndex + PROFILE_PICTURES_PUBLIC_SEGMENT.length)
+    .split('?')[0];
+  return decodeURIComponent(rawPath);
+}
+
+async function cleanupExpiredProfilePictures(userId, activeProfilePictureUrl) {
+  try {
+    const retentionMs = PROFILE_PICTURE_RETENTION_DAYS * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    const activePath = extractProfilePicturePath(activeProfilePictureUrl);
+    const activeFileName = activePath && activePath.startsWith(`${userId}/`)
+      ? activePath.slice(`${userId}/`.length)
+      : null;
+
+    const { data: files, error: listError } = await supabase
+      .storage
+      .from('profile-pictures')
+      .list(userId);
+
+    if (listError || !Array.isArray(files) || files.length === 0) return;
+
+    const removableFiles = files
+      .filter((file) => {
+        if (!file || !file.name) return false;
+        if (activeFileName && file.name === activeFileName) return false;
+
+        const fileDate = Date.parse(file.updated_at || file.created_at || '');
+        if (Number.isNaN(fileDate)) return false;
+
+        return now - fileDate >= retentionMs;
+      })
+      .map((file) => `${userId}/${file.name}`);
+
+    if (removableFiles.length === 0) return;
+
+    const { error: removeError } = await supabase
+      .storage
+      .from('profile-pictures')
+      .remove(removableFiles);
+
+    if (removeError) {
+      console.error('Profile picture retention cleanup failed:', removeError);
+    }
+  } catch (error) {
+    console.error('Profile picture retention cleanup error:', error);
+  }
+}
+
 module.exports = async (req, res) => {
   // Add CORS headers to all responses
   addCorsHeaders(res, req.headers.origin);
@@ -67,6 +123,8 @@ async function handleGetProfile(req, res) {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    await cleanupExpiredProfilePictures(user.id, user.profile_picture);
+
     // Return user profile
     return res.status(200).json({
       user: {
@@ -113,6 +171,8 @@ async function handleUpdateProfile(req, res) {
       generateNewRecoveryKey,
       profilePicture
     } = req.body;
+
+    const isProfilePictureUpdateRequest = typeof profilePicture === 'string' && profilePicture.length > 0;
 
     // Get current user data for validation
     const { data: user, error: userError } = await supabase
@@ -181,12 +241,19 @@ async function handleUpdateProfile(req, res) {
       updateData.recovery_key = recoveryKey;
     }
 
-    // Update profile picture if provided (must be a base64 string)
-    if (profilePicture && typeof profilePicture === 'string' && profilePicture.startsWith('data:image')) {
+    // Update profile picture if provided (must be a data URI)
+    if (isProfilePictureUpdateRequest && !profilePicture.startsWith('data:image')) {
+      return res.status(400).json({ error: 'Invalid profile picture format' });
+    }
+
+    if (isProfilePictureUpdateRequest && profilePicture.startsWith('data:image')) {
       try {
         // Extract base64 and determine mime/extension
         const mimeType = profilePicture.match(/data:(.*?);base64/)?.[1] || 'image/jpeg';
         const base64Data = profilePicture.split(',')[1];
+        if (!base64Data) {
+          return res.status(400).json({ error: 'Invalid profile picture payload' });
+        }
         const buffer = Buffer.from(base64Data, 'base64');
 
         // Determine correct extension
@@ -208,6 +275,7 @@ async function handleUpdateProfile(req, res) {
 
         if (uploadError) {
           console.error('Profile picture upload error:', uploadError);
+          return res.status(500).json({ error: 'Failed to upload profile picture', details: uploadError.message || uploadError });
         } else {
           // Get public URL for the uploaded file
           const { data: { publicUrl } } = supabase
@@ -215,10 +283,15 @@ async function handleUpdateProfile(req, res) {
             .from('profile-pictures')
             .getPublicUrl(`${decoded.id}/${fileName}`);
 
+          if (!publicUrl) {
+            return res.status(500).json({ error: 'Failed to resolve uploaded profile picture URL' });
+          }
+
           updateData.profile_picture = publicUrl;
         }
       } catch (error) {
         console.error('Profile picture processing error:', error);
+        return res.status(500).json({ error: 'Profile picture processing failed', details: error.message });
       }
     }
 
@@ -244,7 +317,11 @@ async function handleUpdateProfile(req, res) {
 
     if (fetchError) {
       return res.status(500).json({ error: 'Failed to fetch updated profile', details: fetchError });
-    } return res.status(200).json({
+    }
+
+    await cleanupExpiredProfilePictures(decoded.id, updatedUser.profile_picture);
+
+    return res.status(200).json({
       message: 'Profile updated successfully',
       user: {
         id: updatedUser.id,

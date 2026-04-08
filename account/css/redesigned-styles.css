@@ -986,6 +986,108 @@ body.dark-mode .form-divider {
     margin-bottom: 20px;
 }
 
+.identity-editor-grid {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.identity-avatar-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.identity-fields-col {
+    display: grid;
+    gap: 14px;
+}
+
+.profile-avatar-ring {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f5f7fb;
+    border: 2px solid rgba(148, 163, 184, 0.35);
+    box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#mainAvatarRoot,
+#mainAvatarRoot img,
+.profile-avatar-preview {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-tools-row {
+    display: flex;
+    gap: 8px;
+}
+
+.avatar-tool-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    transition: all 0.2s;
+}
+
+.avatar-tool-btn i {
+    font-size: 12px;
+}
+
+.avatar-tool-btn:hover {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.readonly-input,
+input[readonly].readonly-input {
+    background: #eceff3 !important;
+    border-color: #d5dbe5 !important;
+    color: #8892a1 !important;
+    cursor: not-allowed;
+}
+
+body.dark-mode .profile-avatar-ring {
+    background: #121212;
+    border-color: rgba(71, 85, 105, 0.55);
+    box-shadow: inset 0 0 0 4px rgba(30, 41, 59, 0.45);
+}
+
+body.dark-mode .avatar-tool-btn {
+    background: #1a1a1a;
+    color: #fff;
+    border-color: #2a2a2a;
+}
+
+body.dark-mode .avatar-tool-btn:hover {
+    background: #2a2a2a;
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+body.dark-mode .readonly-input,
+body.dark-mode input[readonly].readonly-input {
+    background: #0f141c !important;
+    border-color: #242d3a !important;
+    color: #64748b !important;
+}
+
 /* Update card spacing */
 .card-one {
     margin-bottom: 30px;
@@ -1068,6 +1170,15 @@ body.dark-mode .form-section-title {
     .profile-image-container img {
         width: 60px;
         height: 60px;
+    }
+
+    .identity-editor-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .identity-avatar-col {
+        align-items: flex-start;
     }
 }
 

@@ -2587,6 +2587,106 @@
       gap: 20px;
     }
 
+    .admin-analytics-section {
+      background: var(--background-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .admin-tables-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .admin-table-card {
+      background: var(--background-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .admin-table-title {
+      padding: 12px 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .admin-table-tools {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--background-secondary);
+    }
+
+    #admin-pdf-search {
+      width: 100%;
+      border: 1px solid var(--border-color);
+      background: var(--background-primary);
+      color: var(--text-primary);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    #admin-pdf-search:focus {
+      border-color: #ff8200;
+      box-shadow: 0 0 0 2px rgba(255, 130, 0, 0.15);
+    }
+
+    .admin-table-wrap {
+      overflow-x: auto;
+    }
+
+    .admin-table-wrap-scroll {
+      max-height: 262px;
+      overflow-y: auto;
+    }
+
+    .admin-analytics-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .admin-analytics-table th,
+    .admin-analytics-table td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+
+    .admin-analytics-table th {
+      color: var(--text-secondary);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .admin-analytics-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .admin-empty-cell {
+      text-align: center;
+      color: var(--text-secondary) !important;
+      font-style: italic;
+    }
+
+    .admin-pdf-name,
+    .admin-user-name {
+      max-width: 210px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
     .dashboard-section h4 {
       margin: 0 0 16px 0;
       font-size: 1rem;
@@ -2671,6 +2771,10 @@
     /* Responsive */
     @media (max-width: 600px) {
       .dashboard-sections-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-tables-grid {
         grid-template-columns: 1fr;
       }
 

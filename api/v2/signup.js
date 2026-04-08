@@ -31,6 +31,8 @@ module.exports = async (req, res) => {
       specialization
     } = req.body;
 
+    const hasInlineProfilePicture = typeof profilePicture === 'string' && profilePicture.startsWith('data:image');
+
     // Validate inputs (inviteCode is optional)
     if (!username || !displayName || !email || !password || !otp) {
       return res.status(400).json({ error: 'Missing required fields including verification code' });
@@ -121,7 +123,8 @@ module.exports = async (req, res) => {
       passout_year: passoutYear,
       specialization: specialization,
       university_roll_no: email.split('@')[0], // Entire numeric string
-      profile_picture: boringAvatarUrl,
+      // Keep the user's selected avatar immediately and replace with storage URL once upload succeeds.
+      profile_picture: hasInlineProfilePicture ? profilePicture : boringAvatarUrl,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
@@ -149,11 +152,16 @@ module.exports = async (req, res) => {
     }
 
     // STEP 4: Handle profile picture upload if provided (replaces boring avatar)
-    let finalProfilePic = boringAvatarUrl;
-    if (profilePicture && profilePicture.startsWith('data:image')) {
+    let finalProfilePic = userData.profile_picture;
+    if (hasInlineProfilePicture) {
       try {
         const base64Data = profilePicture.split(',')[1];
-        const fileExt = profilePicture.split(';')[0].split('/')[1] || 'png';
+        const mimeType = profilePicture.match(/data:(.*?);base64/)?.[1] || 'image/png';
+        let fileExt = 'png';
+        if (mimeType.includes('svg')) fileExt = 'svg';
+        else if (mimeType.includes('jpeg')) fileExt = 'jpeg';
+        else if (mimeType.includes('jpg')) fileExt = 'jpg';
+        else if (mimeType.includes('webp')) fileExt = 'webp';
         const fileName = `${newUser.id}/profile.${fileExt}`;
         const bufferData = Buffer.from(base64Data, 'base64');
         
@@ -161,7 +169,7 @@ module.exports = async (req, res) => {
           .storage
           .from('profile-pictures')
           .upload(fileName, bufferData, {
-            contentType: `image/${fileExt}`,
+            contentType: mimeType,
             upsert: true
           });
 

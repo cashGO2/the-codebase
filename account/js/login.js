@@ -52,8 +52,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (response && response.token) {
           setAuthToken(response.token);
 
-          // Store user data if needed
-          if (rememberMe && response.user) {
+          // Always store user data for analytics and profile features.
+          // The rememberMe flag controls token persistence, not user data.
+          if (response.user) {
             localStorage.setItem('materio_user', JSON.stringify(response.user));
           }
 

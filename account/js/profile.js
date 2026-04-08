@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let currentStyleIndex = 0;
   let shuffleCounter = 0;
   let isCustomUpload = false;
+  let avatarDirty = false;
   const STYLES = ['character', 'shape', 'face'];
 
   function renderMainAvatar(seed = 'User') {
@@ -59,13 +60,106 @@ document.addEventListener('DOMContentLoaded', function () {
           value: finalSeed,
           style: variant === 'face' ? 'shape' : variant,
           type: variant === 'face' ? 'face' : undefined,
-          size: 100,
-          shadow: true
+          size: 92,
+          radius: 46,
+          shadow: false
       }));
   }
 
+          function normalizeHexColor(value, fallback) {
+            if (!value || typeof value !== 'string') return fallback;
+            const color = value.trim();
+            if (color.startsWith('#')) return color;
+            if (/^[0-9a-fA-F]{3}$/.test(color) || /^[0-9a-fA-F]{6}$/.test(color)) return `#${color}`;
+            return color;
+          }
+
+          function serializeAvatarFromRoot(rootEl, outputSize = 100) {
+            if (!rootEl) return null;
+
+            const avatarHost = rootEl.querySelector('div[size][color]');
+            const avatarShape = avatarHost ? avatarHost.querySelector('span[size][color]') : null;
+              const avatarSvg = avatarShape ? avatarShape.querySelector('svg') : rootEl.querySelector('[role="img"] svg, svg');
+            if (!avatarSvg) return null;
+
+            const hostSize = Number.parseFloat(avatarHost?.getAttribute('size')) || Number.parseFloat(avatarSvg.getAttribute('width')) || 92;
+            const shapeSize = Number.parseFloat(avatarShape?.getAttribute('size')) || Number.parseFloat(avatarSvg.getAttribute('width')) || (hostSize * 0.5);
+
+            const bgColor = normalizeHexColor(avatarHost?.getAttribute('color'), '#94a3b8');
+            const fgColor = normalizeHexColor(avatarShape?.getAttribute('color'), '#e2e8f0');
+
+            const ratio = hostSize > 0 ? Math.max(0.3, Math.min(0.95, shapeSize / hostSize)) : 0.5;
+            const iconSize = outputSize * ratio;
+            const iconOffset = (outputSize - iconSize) / 2;
+
+            const viewBox = avatarSvg.getAttribute('viewBox');
+            const vb = viewBox ? viewBox.split(/\s+/).map(Number) : [0, 0, 32, 32];
+            const vbWidth = vb[2] || 32;
+            const vbHeight = vb[3] || 32;
+
+            const innerMarkup = avatarSvg.innerHTML;
+            const compositedSvg = `
+              <svg xmlns="http://www.w3.org/2000/svg" width="${outputSize}" height="${outputSize}" viewBox="0 0 ${outputSize} ${outputSize}" preserveAspectRatio="xMidYMid meet">
+                <circle cx="${outputSize / 2}" cy="${outputSize / 2}" r="${outputSize / 2}" fill="${bgColor}" />
+                <g transform="translate(${iconOffset}, ${iconOffset}) scale(${iconSize / vbWidth}, ${iconSize / vbHeight})" color="${fgColor}" fill="${fgColor}" stroke="${fgColor}">
+                  ${innerMarkup}
+                </g>
+              </svg>
+            `.trim();
+
+            return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(compositedSvg)))}`;
+          }
+
+            function serializeAvatarFallback(rootEl, outputSize = 100) {
+              if (!rootEl) return null;
+                const svgEl = rootEl.querySelector('[role="img"] svg, svg');
+              if (!svgEl) return null;
+
+              const avatarSurface = svgEl.parentElement || rootEl;
+              const surfaceStyles = window.getComputedStyle(avatarSurface);
+              const bgColor = surfaceStyles.backgroundColor || '#94a3b8';
+              const fgColor = surfaceStyles.color || '#e2e8f0';
+
+              const svgRect = svgEl.getBoundingClientRect();
+              const surfaceRect = avatarSurface.getBoundingClientRect();
+              const ratio = surfaceRect.width > 0 ? Math.max(0.3, Math.min(0.95, svgRect.width / surfaceRect.width)) : 0.5;
+              const iconSize = outputSize * ratio;
+              const iconOffset = (outputSize - iconSize) / 2;
+
+              const viewBox = svgEl.getAttribute('viewBox');
+              const vb = viewBox ? viewBox.split(/\s+/).map(Number) : [0, 0, 32, 32];
+              const vbWidth = vb[2] || 32;
+              const vbHeight = vb[3] || 32;
+
+              const innerMarkup = svgEl.innerHTML;
+              const compositedSvg = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="${outputSize}" height="${outputSize}" viewBox="0 0 ${outputSize} ${outputSize}" preserveAspectRatio="xMidYMid meet">
+                  <circle cx="${outputSize / 2}" cy="${outputSize / 2}" r="${outputSize / 2}" fill="${bgColor}" />
+                  <g transform="translate(${iconOffset}, ${iconOffset}) scale(${iconSize / vbWidth}, ${iconSize / vbHeight})" color="${fgColor}" fill="${fgColor}" stroke="${fgColor}">
+                    ${innerMarkup}
+                  </g>
+                </svg>
+              `.trim();
+
+              return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(compositedSvg)))}`;
+            }
+
+              async function captureCurrentAvatarDataUri(outputSize = 100) {
+                let serialized = serializeAvatarFromRoot(mainAvatarRoot, outputSize) || serializeAvatarFallback(mainAvatarRoot, outputSize);
+                if (serialized) return serialized;
+
+                const nameValue = document.getElementById('displayName')?.value || document.getElementById('username')?.value || 'User';
+                renderMainAvatar(nameValue);
+                await new Promise((resolve) => requestAnimationFrame(resolve));
+                await new Promise((resolve) => requestAnimationFrame(resolve));
+
+                serialized = serializeAvatarFromRoot(mainAvatarRoot, outputSize) || serializeAvatarFallback(mainAvatarRoot, outputSize);
+                return serialized;
+              }
+
   if (shuffleBtn) {
       shuffleBtn.addEventListener('click', () => {
+        avatarDirty = true;
           isCustomUpload = false;
           currentStyleIndex = (currentStyleIndex + 1) % STYLES.length;
           shuffleCounter++;
@@ -83,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const file = e.target.files[0];
       if (file) {
         isCustomUpload = true;
+        avatarDirty = true;
         const reader = new FileReader();
         reader.onload = function (event) {
           // Replace Avvvatars with image
@@ -90,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
               window.reactRoot.unmount();
               window.reactRoot = null;
           }
-          mainAvatarRoot.innerHTML = `<img id="picturePreview" src="${event.target.result}" style="width: 100%; height: 100%; object-fit: cover;">`;
+          mainAvatarRoot.innerHTML = `<img id="picturePreview" src="${event.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
           if (dashboardProfileImage) dashboardProfileImage.src = event.target.result;
         };
         reader.readAsDataURL(file);
@@ -134,6 +229,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Store user data for future use
         localStorage.setItem('materio_user', JSON.stringify(user));
+        window.dispatchEvent(new CustomEvent('materio-profile-loaded', { detail: { user } }));
         // Fill form fields with user data
         document.getElementById('username').value = user.username || '';
         document.getElementById('displayName').value = user.displayName || '';
@@ -342,32 +438,26 @@ document.addEventListener('DOMContentLoaded', function () {
           delete data.profilePicture;
       }
 
-      // --- AVATAR CAPTURE LOGIC (Composited) ---
-      if (!isCustomUpload) {
-          const parentDiv = mainAvatarRoot.querySelector('div');
-          const svgEl = mainAvatarRoot.querySelector('svg');
-          
-          if (parentDiv && svgEl) {
-              const styles = window.getComputedStyle(parentDiv);
-              const bgColor = styles.backgroundColor;
-              const fgColor = window.getComputedStyle(svgEl.parentElement).color;
-              
-              const flattenedSvg = `
-                  <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                      <circle cx="50" cy="50" r="50" fill="${bgColor}" />
-                      <g transform="translate(25, 25)" color="${fgColor}">
-                          ${svgEl.innerHTML}
-                      </g>
-                  </svg>
-              `.trim();
-              
-              const svgBase64 = btoa(unescape(encodeURIComponent(flattenedSvg)));
-              data.profilePicture = `data:image/svg+xml;base64,${svgBase64}`;
-          }
-      } else {
-          // If it was a custom upload, grab from the img inside mainAvatarRoot
-          const previewImg = mainAvatarRoot.querySelector('img');
-          if (previewImg) data.profilePicture = previewImg.src;
+        // --- AVATAR CAPTURE LOGIC (Exact SVG serialization to preserve scale/alignment) ---
+          if (avatarDirty) {
+            if (!isCustomUpload) {
+                const serializedSvgDataUri = await captureCurrentAvatarDataUri(100);
+              if (!serializedSvgDataUri) {
+                showNotification('Failed to capture selected avatar. Please shuffle once and try again.', 'error');
+                return;
+              }
+              data.profilePicture = serializedSvgDataUri;
+            } else {
+              // If it was a custom upload, grab from the img inside mainAvatarRoot
+              const previewImg = mainAvatarRoot.querySelector('img');
+              if (!previewImg || !previewImg.src || !previewImg.src.startsWith('data:image')) {
+                showNotification('Invalid uploaded image. Please upload again.', 'error');
+                return;
+              }
+              data.profilePicture = previewImg.src;
+            }
+          } else {
+            delete data.profilePicture;
       }
 
       try {
@@ -378,6 +468,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const response = await makeApiRequest('profile', 'PUT', data, true);
         if (response) {
             showNotification('Profile updated successfully!', 'success');
+          avatarDirty = false;
             
             // Sync dashboard & localStorage
             if (response.user) {
