@@ -133,8 +133,108 @@ function getAlertTemplate(subject, message, severity = 'minor') {
   `;
 }
 
+/**
+ * Contribution arrival notification template
+ */
+function getContributionNotificationTemplate(contribution) {
+  const LOGO_CID = 'materio-logo';
+    const {
+        cid,
+        contributor,
+        submittedAt,
+        semester,
+        subject,
+        category,
+        files,
+        commitSha,
+    } = contribution;
+
+    const safeFiles = Array.isArray(files) ? files : [];
+    const fileRows = safeFiles
+        .map((file) => {
+            const filename = escapeHtml(file.filename || file.name || 'unknown.pdf');
+            const size = Number(file.size || 0);
+            const sizeLabel = size > 0 ? `${(size / 1024 / 1024).toFixed(2)} MB` : 'N/A';
+            return `
+              <tr>
+                <td style="padding:8px 0;border-bottom:1px solid #f3f4f6;font-size:13px;color:#1f2937;">${filename}</td>
+                <td style="padding:8px 0;border-bottom:1px solid #f3f4f6;font-size:12px;color:#6b7280;text-align:right;">${sizeLabel}</td>
+              </tr>
+            `;
+        })
+        .join('');
+
+    return `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f9fafb;color:#1f2937;">
+  <div style="max-width:620px;margin:24px auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">
+    <div style="padding:18px 24px 8px;background:#ffffff;border-bottom:1px solid #f3f4f6;">
+      <img src="cid:${LOGO_CID}" alt="materio" width="150" style="display:block;height:auto;" />
+    </div>
+    <div style="background:#ff8200;padding:20px 24px;color:#ffffff;">
+      <div style="font-size:12px;text-transform:uppercase;letter-spacing:1px;opacity:0.92;margin-bottom:8px;font-weight:700;">New Contribution Received</div>
+      <h1 style="margin:0;font-size:20px;font-weight:700;line-height:1.35;">Contribution Notification</h1>
+    </div>
+
+    <div style="padding:24px;">
+      <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:12px 14px;margin-bottom:18px;">
+        <div style="font-size:12px;color:#9a3412;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;">CID</div>
+        <div style="font-size:16px;color:#7c2d12;font-weight:800;letter-spacing:0.6px;margin-top:4px;">${escapeHtml(cid || 'N/A')}</div>
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;">
+        <tr>
+          <td style="padding:10px 0;width:140px;font-size:13px;color:#6b7280;border-bottom:1px solid #f3f4f6;">Contributor</td>
+          <td style="padding:10px 0;font-size:14px;border-bottom:1px solid #f3f4f6;"><strong>${escapeHtml(contributor || 'Anonymous')}</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;font-size:13px;color:#6b7280;border-bottom:1px solid #f3f4f6;">Submitted At</td>
+          <td style="padding:10px 0;font-size:14px;border-bottom:1px solid #f3f4f6;">${escapeHtml(submittedAt || 'N/A')}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;font-size:13px;color:#6b7280;border-bottom:1px solid #f3f4f6;">Semester</td>
+          <td style="padding:10px 0;font-size:14px;border-bottom:1px solid #f3f4f6;">${escapeHtml(semester || 'N/A')}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;font-size:13px;color:#6b7280;border-bottom:1px solid #f3f4f6;">Subject</td>
+          <td style="padding:10px 0;font-size:14px;border-bottom:1px solid #f3f4f6;">${escapeHtml(subject || 'N/A')}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;font-size:13px;color:#6b7280;border-bottom:1px solid #f3f4f6;">Category</td>
+          <td style="padding:10px 0;font-size:14px;border-bottom:1px solid #f3f4f6;">${escapeHtml(category || 'N/A')}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;font-size:13px;color:#6b7280;border-bottom:1px solid #f3f4f6;">Commit SHA</td>
+          <td style="padding:10px 0;font-size:14px;border-bottom:1px solid #f3f4f6;"><code>${escapeHtml(commitSha || 'N/A')}</code></td>
+        </tr>
+      </table>
+
+      <div style="margin-top:20px;">
+        <h3 style="margin:0 0 10px;font-size:13px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Uploaded Files</h3>
+        <div style="background:#f8fafc;padding:12px;border-radius:8px;border:1px solid #e2e8f0;">
+          <table style="width:100%;border-collapse:collapse;">
+            <tbody>
+              ${fileRows || '<tr><td style="padding:8px 0;font-size:13px;color:#6b7280;">No file details available</td></tr>'}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#f9fafb;padding:14px 18px;text-align:center;font-size:12px;color:#9ca3af;border-top:1px solid #e5e7eb;">
+      Materio Contributions Insights
+    </div>
+  </div>
+</body>
+</html>
+  `;
+}
+
 module.exports = {
     getBugReportTemplate,
     getAlertTemplate,
+    getContributionNotificationTemplate,
     escapeHtml
 };

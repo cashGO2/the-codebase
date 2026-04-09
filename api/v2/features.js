@@ -10,6 +10,10 @@ const {
   supabase,
 } = require("./_utils");
 const { getFormsCollection, getMongoDb } = require("../_config_shared/mongodb");
+const { sendAlertEmail, ALERT_EMAIL } = require("../_utils_shared/mailer");
+const {
+  getContributionNotificationTemplate,
+} = require("../_utils_shared/email-templates");
 const { ObjectId } = require("mongodb");
 require("dotenv").config();
 const Razorpay = require("razorpay");
@@ -1241,6 +1245,29 @@ const CONTRIB_REPO_OWNER = "Materioa";
 const CONTRIB_REPO_NAME = "static";
 const CONTRIB_BRANCH = "main";
 
+function generateContributionCid(date = new Date()) {
+  const y = date.getUTCFullYear();
+  const m = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(date.getUTCDate()).padStart(2, "0");
+  const hh = String(date.getUTCHours()).padStart(2, "0");
+  const mm = String(date.getUTCMinutes()).padStart(2, "0");
+  const ss = String(date.getUTCSeconds()).padStart(2, "0");
+  const suffix = crypto.randomBytes(2).toString("hex").toUpperCase();
+  return `CID-${y}${m}${d}-${hh}${mm}${ss}-${suffix}`;
+}
+
+function formatContributionTimestamp(date = new Date()) {
+  try {
+    return new Intl.DateTimeFormat("en-IN", {
+      dateStyle: "full",
+      timeStyle: "medium",
+      timeZone: "Asia/Kolkata",
+    }).format(date);
+  } catch (_) {
+    return date.toISOString();
+  }
+}
+
 async function handleContribute(req, res) {
   const { Octokit } = await import("@octokit/rest");
   const origin = req.headers.origin || req.headers.Origin;
@@ -1386,12 +1413,16 @@ async function handleContribute(req, res) {
 
     console.log("Contribution uploaded:", newCommit.sha);
 
+    const submittedAt = new Date();
+    const contributionCid = generateContributionCid(submittedAt);
+
     // Log to MongoDB
     try {
       const collection = await getFormsCollection();
       await collection.insertOne({
+        contributionCid,
         formType: "contribution",
-        submittedAt: new Date(),
+        submittedAt,
         user: {
           type: userType,
           username,
@@ -1409,6 +1440,55 @@ async function handleContribute(req, res) {
         },
         status: "uploaded",
       });
+
+      // Notify admin mailbox for SLA tracking (under 48h review policy).
+      const mailText = [
+        "New contribution received",
+        `CID: ${contributionCid}`,
+        `Contributor: ${contributor}`,
+        `Submitted At: ${submittedAt.toISOString()}`,
+        `Semester: ${semester}`,
+        `Subject: ${subject}`,
+        `Category: ${category}`,
+        `Files: ${uploadedFiles.map((f) => f.filename).join(", ")}`,
+        `Commit: ${newCommit.sha}`,
+      ].join("\n");
+
+      const mailHtml = getContributionNotificationTemplate({
+        cid: contributionCid,
+        contributor,
+        submittedAt: formatContributionTimestamp(submittedAt),
+        semester,
+        subject,
+        category,
+        files: uploadedFiles,
+        commitSha: newCommit.sha,
+      });
+
+      const contributionMailAttachments = [];
+      const logoPath = path.join(process.cwd(), "assets", "img", "sticker.png");
+      if (fs.existsSync(logoPath)) {
+        contributionMailAttachments.push({
+          filename: "sticker.png",
+          path: logoPath,
+          cid: "materio-logo",
+        });
+      }
+
+      const mailResult = await sendAlertEmail({
+        to: ALERT_EMAIL,
+        subject: `[Contribution Received] ${contributionCid} | ${subject}`,
+        text: mailText,
+        html: mailHtml,
+        attachments: contributionMailAttachments,
+      });
+
+      if (!mailResult.success) {
+        console.warn(
+          "Contribution notification email failed:",
+          mailResult.error,
+        );
+      }
     } catch (mongoError) {
       console.error("MongoDB logging error:", mongoError.message);
     }
@@ -1416,6 +1496,7 @@ async function handleContribute(req, res) {
     return res.status(200).json({
       success: true,
       message: `Successfully uploaded ${uploadedFiles.length} file(s)`,
+      contributionCid,
       commitSha: newCommit.sha,
       files: uploadedFiles,
     });

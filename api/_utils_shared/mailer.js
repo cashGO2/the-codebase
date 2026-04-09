@@ -143,7 +143,7 @@ async function sendIncidentEmail(incidentData) {
 /**
  * Send a generic alert email.
  */
-async function sendAlertEmail({ to, subject, text, html }) {
+async function sendAlertEmail({ to, subject, text, html, attachments = [] }) {
   const transporter = getTransporter();
   if (!transporter) return { success: false, error: 'SMTP not configured' };
 
@@ -154,6 +154,7 @@ async function sendAlertEmail({ to, subject, text, html }) {
       subject,
       text,
       html: html || undefined,
+      attachments,
     });
     return { success: true, messageId: info.messageId };
   } catch (err) {
