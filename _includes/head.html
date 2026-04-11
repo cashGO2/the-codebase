@@ -121,7 +121,13 @@
             {% if site.force_clear_cache %}
             const CLEAR_VERSION = "{{ site.time | date: '%s' }}"; 
             if (localStorage.getItem('m_last_force_clear') !== CLEAR_VERSION) {
-                localStorage.clear();
+                // Targeted clear to avoid refresh loops
+                const preserveKeys = ['m_last_force_clear'];
+                const keys = Object.keys(localStorage);
+                keys.forEach(k => {
+                    if (!preserveKeys.includes(k)) localStorage.removeItem(k);
+                });
+                
                 localStorage.setItem('m_last_force_clear', CLEAR_VERSION);
                 
                 if (window.caches && caches.keys) {
@@ -129,7 +135,7 @@
                         names.forEach(function (name) { caches.delete(name); });
                     });
                 }
-                console.log('One-time force cache clear executed for version: ' + CLEAR_VERSION);
+                console.log('Targeted force cache clear executed for version: ' + CLEAR_VERSION);
             }
             {% endif %}
 
