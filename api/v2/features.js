@@ -8,6 +8,7 @@ const {
   corsHeaders,
   getTokenFromHeaders,
   supabase,
+  supabaseAdmin,
 } = require("./_utils");
 const { getFormsCollection, getMongoDb } = require("../_config_shared/mongodb");
 const { sendAlertEmail, ALERT_EMAIL } = require("../_utils_shared/mailer");
@@ -115,6 +116,10 @@ module.exports = async (req, res) => {
       "pathParam:",
       pathParam,
     );
+
+    if (action === "analytics") {
+      return await handleAnalytics(req, res);
+    }
 
     if (isInsights || action === "insights" || pathParam.includes("insights")) {
       return await handleInsights(req, res);
@@ -1807,5 +1812,42 @@ async function handlePdfShare(req, res, url) {
     return res
       .status(503)
       .json({ error: "Database error", details: error.message });
+  }
+}
+
+/**
+ * Handle Analytics Ingestion (Proxy to Supabase)
+ * @param {import('vercel').VercelRequest} req
+ * @param {import('vercel').VercelResponse} res
+ */
+async function handleAnalytics(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  try {
+    const data = req.body;
+    if (!data || !data.p_anon_id) {
+      return res.status(400).json({ error: "Missing required payload" });
+    }
+
+    // Enrich payload with server-side metadata if not present
+    const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+    if (data.p_usermeta_diff && data.p_usermeta_diff.session) {
+      data.p_usermeta_diff.session.ip = ip;
+    }
+
+    // Proxy specifically to the atomic merger RPC
+    const { error } = await supabaseAdmin.rpc("merge_daily_stats", data);
+
+    if (error) {
+      console.error("Supabase Analytics Error:", error);
+      return res.status(500).json({ error: "Upstream failure", details: error.message });
+    }
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Analytics Handler Error:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 }
