@@ -9,6 +9,186 @@ import { setCookie, getCookie, formatDateTime } from './utils.js';
 
 // Module state
 let globalNotifications = [];
+const NOTIFICATION_PREF_KEY = 'materio_notifications_enabled';
+const WEB_PUSH_API_BASE = '/api/v2/features?action=web-push';
+let cachedVapidPublicKey = null;
+
+function isNotificationsEnabled() {
+  const stored = localStorage.getItem(NOTIFICATION_PREF_KEY);
+  if (stored === 'false') return false;
+  if (stored === 'true') return true;
+
+  const cookieValue = getCookie('notificationsEnabled');
+  if (cookieValue === 'false') return false;
+  if (cookieValue === 'true') return true;
+
+  return true;
+}
+
+function setNotificationsEnabled(enabled) {
+  const value = enabled ? 'true' : 'false';
+  localStorage.setItem(NOTIFICATION_PREF_KEY, value);
+  setCookie('notificationsEnabled', value, 365);
+}
+
+async function syncServiceWorkerNotificationPreference(enabled) {
+  if (!('serviceWorker' in navigator)) return;
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    if (registration.active) {
+      registration.active.postMessage({
+        type: 'SET_NOTIFICATIONS_ENABLED',
+        enabled: !!enabled
+      });
+    }
+  } catch (error) {
+  }
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+
+  return outputArray;
+}
+
+async function getVapidPublicKey() {
+  if (cachedVapidPublicKey) return cachedVapidPublicKey;
+
+  const response = await fetch(`${WEB_PUSH_API_BASE}&subAction=public-key`, {
+    method: 'GET',
+    credentials: 'same-origin'
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch VAPID public key');
+  }
+
+  const data = await response.json();
+  if (!data?.publicKey) {
+    throw new Error('VAPID public key missing in response');
+  }
+
+  cachedVapidPublicKey = data.publicKey;
+  return cachedVapidPublicKey;
+}
+
+async function registerSubscriptionOnServer(subscription) {
+  const payload = {
+    subscription: typeof subscription.toJSON === 'function' ? subscription.toJSON() : subscription
+  };
+
+  await fetch(`${WEB_PUSH_API_BASE}&subAction=subscribe`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'same-origin',
+    body: JSON.stringify(payload)
+  });
+}
+
+async function unregisterSubscriptionOnServer(endpoint) {
+  if (!endpoint) return;
+
+  await fetch(`${WEB_PUSH_API_BASE}&subAction=unsubscribe`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'same-origin',
+    body: JSON.stringify({ endpoint })
+  });
+}
+
+async function unsubscribeBrowserPush() {
+  if (!('serviceWorker' in navigator)) return;
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+    if (subscription) {
+      await unregisterSubscriptionOnServer(subscription.endpoint);
+      await subscription.unsubscribe();
+    }
+  } catch (error) {
+  }
+}
+
+async function setupNotificationsToggle() {
+  const notificationsToggle = document.getElementById('notificationsToggle');
+  const enabled = isNotificationsEnabled();
+
+  await syncServiceWorkerNotificationPreference(enabled);
+
+  if (!notificationsToggle) {
+    if (enabled) {
+      await ensureAutomaticNotificationSubscription();
+    }
+    return;
+  }
+
+  notificationsToggle.checked = enabled;
+
+  notificationsToggle.addEventListener('change', async function () {
+    const isEnabled = this.checked;
+    setNotificationsEnabled(isEnabled);
+    await syncServiceWorkerNotificationPreference(isEnabled);
+
+    if (isEnabled) {
+      await ensureAutomaticNotificationSubscription();
+      await requestServiceWorkerContentCheck();
+    } else {
+      await unsubscribeBrowserPush();
+    }
+  });
+
+  if (enabled) {
+    await ensureAutomaticNotificationSubscription();
+  }
+}
+
+async function ensureAutomaticNotificationSubscription() {
+  if (!isNotificationsEnabled()) return;
+  if (!('Notification' in window)) return;
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+
+  if (Notification.permission === 'default') {
+    try {
+      await Notification.requestPermission();
+    } catch (error) {
+    }
+  }
+
+  if (Notification.permission !== 'granted') {
+    return;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    const existingSubscription = await registration.pushManager.getSubscription();
+
+    if (existingSubscription) {
+      await registerSubscriptionOnServer(existingSubscription);
+      return;
+    }
+
+    const publicKey = await getVapidPublicKey();
+    const applicationServerKey = urlBase64ToUint8Array(publicKey);
+
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey
+    });
+
+    await registerSubscriptionOnServer(subscription);
+  } catch (error) {
+    console.warn('Web push auto-subscription failed:', error);
+  }
+}
 
 /**
  * Generate fake notifications for testing
@@ -265,6 +445,7 @@ async function fetchReleases() {
  * Shows a native browser notification via Service Worker (Proper PWA Implementation)
  */
 function sendNativeNotification(title, message, url, image = null) {
+  if (!isNotificationsEnabled()) return;
   if (!("Notification" in window) || Notification.permission !== "granted") return;
 
   const favicon = '/favicon.ico'; // General favicon for icon
@@ -293,6 +474,55 @@ function sendNativeNotification(title, message, url, image = null) {
 }
 
 /**
+ * Ask service worker to check for new content and notify.
+ * Falls back to in-page check if SW is not available.
+ */
+async function requestServiceWorkerContentCheck() {
+  if (!isNotificationsEnabled()) {
+    await syncServiceWorkerNotificationPreference(false);
+    return;
+  }
+
+  if (!('serviceWorker' in navigator)) {
+    await checkForNewContent();
+    return;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+
+    if ('sync' in registration) {
+      registration.sync.register('materio-content-check').catch(() => {});
+    }
+
+    if ('periodicSync' in registration) {
+      try {
+        let hasPermission = true;
+        if (navigator.permissions && navigator.permissions.query) {
+          const status = await navigator.permissions.query({ name: 'periodic-background-sync' });
+          hasPermission = status.state === 'granted';
+        }
+
+        if (hasPermission) {
+          await registration.periodicSync.register('materio-content-check', {
+            minInterval: 6 * 60 * 60 * 1000
+          });
+        }
+      } catch (error) {
+      }
+    }
+
+    if (registration.active) {
+      registration.active.postMessage({ type: 'CHECK_NEW_CONTENT' });
+      return;
+    }
+  } catch (error) {
+  }
+
+  await checkForNewContent();
+}
+
+/**
  * Fetch latest 'What's New' posts from site (Jekyll-generated)
  */
 async function fetchWhatsNewPosts() {
@@ -309,8 +539,16 @@ async function fetchWhatsNewPosts() {
  * Check for new items across all sources and notify
  */
 async function checkForNewContent() {
+  if (!isNotificationsEnabled()) {
+    return;
+  }
+
   if ("Notification" in window && Notification.permission === "default") {
     await Notification.requestPermission();
+  }
+
+  if (!("Notification" in window) || Notification.permission !== 'granted') {
+    return;
   }
 
   const now = new Date();
@@ -435,6 +673,8 @@ function generateTestNotifications(count) {
  * Initialize notifications module
  */
 async function init() {
+  await setupNotificationsToggle();
+
   if (!window.devMode) {
     globalNotifications = await fetchNotifications();
   } else {
@@ -446,7 +686,19 @@ async function init() {
   setupTabClickHandlers();
 
   // Check for new content for native notifications
-  checkForNewContent();
+  requestServiceWorkerContentCheck();
+
+  // Keep polling while app is open.
+  setInterval(requestServiceWorkerContentCheck, 10 * 60 * 1000);
+
+  // Re-check when user returns or network comes back.
+  window.addEventListener('focus', requestServiceWorkerContentCheck);
+  window.addEventListener('online', requestServiceWorkerContentCheck);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      requestServiceWorkerContentCheck();
+    }
+  });
 }
 
 

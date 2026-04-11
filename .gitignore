@@ -39,7 +39,7 @@ devdocs.md
 
 # New !
 insightroom/*
-analytics-api/*
+analytics-api/* 
 _site/
 _drafts/*
 .private

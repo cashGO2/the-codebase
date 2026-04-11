@@ -4,6 +4,7 @@ const {
   getTokenFromHeaders,
   corsHeaders
 } = require('./_utils');
+const { sendWebPushToAll } = require('../_utils_shared/webpush');
 const formidable = require('formidable');
 const fs = require('fs');
 
@@ -688,6 +689,7 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
     // Prepare all files and database updates for upload in a single tree
     const treeItems = [];
     const uploadedFiles = [];
+    let pushPayload = null;
 
     // Add course files to tree by creating blobs first
     for (const file of fileList) {
@@ -825,6 +827,12 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
         links: []
       };
 
+      pushPayload = {
+        title: notification.title,
+        message: notification.message,
+        url: '/'
+      };
+
       notifications.unshift(notification);
 
       // Add to tree - JSON content should be stored directly, not base64 encoded
@@ -865,6 +873,14 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
     });
 
     console.log('All files uploaded successfully:', newCommit.sha);
+
+    if (autoPushNotify && pushPayload) {
+      try {
+        await sendWebPushToAll(pushPayload);
+      } catch (error) {
+        console.error('Web push broadcast failed:', error.message);
+      }
+    }
 
     return res.status(200).json({
       message: `Successfully uploaded ${uploadedFiles.length} files`,
@@ -1003,6 +1019,7 @@ async function commitStagedFiles(req, octokit, owner, repo, origin, res) {
     }
 
     const { stagedFiles, stagedJsonFiles, autoPushNotify } = body;
+    let pushPayload = null;
 
     // Allow commit with just staged JSON files
     const hasFiles = stagedFiles && Array.isArray(stagedFiles) && stagedFiles.length > 0;
@@ -1248,6 +1265,12 @@ async function commitStagedFiles(req, octokit, owner, repo, origin, res) {
         links: []
       };
 
+      pushPayload = {
+        title: notification.title,
+        message: notification.message,
+        url: '/'
+      };
+
       notifications.unshift(notification);
 
       treeItems.push({
@@ -1302,6 +1325,14 @@ async function commitStagedFiles(req, octokit, owner, repo, origin, res) {
     });
 
     console.log('All files committed successfully:', newCommit.sha);
+
+    if (autoPushNotify && pushPayload) {
+      try {
+        await sendWebPushToAll(pushPayload);
+      } catch (error) {
+        console.error('Web push broadcast failed:', error.message);
+      }
+    }
 
     const totalItems = fileCount + jsonCount;
     return res.status(200).json({

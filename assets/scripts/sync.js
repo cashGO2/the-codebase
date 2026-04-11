@@ -1,16 +1,14 @@
 /**
- * Materio Analytics/Metrics Client v2
- * Handles data collection: Page Views, PDF Reads, Engagement Time
- * Integrates with /collect and /identify endpoints
+ * Materio Analytics/Metrics Client v3
  * 
- * v2 Fixes:
- *  - Batch timer now actually runs (was a no-op)
- *  - user_id read from materio_user.id (not JWT decode)
- *  - Active reading time (subtracts hidden/background time)
- *  - PDF engagement tracking (scroll, page nav, clicks inside iframe)
- *  - PDF URL validation — no junk data
- *  - Persistent device fingerprint (survives storage clear)
- *  - sendBeacon doesn't clear buffer before confirmation
+ * v3 Changes:
+ *  - FIXED: pdf_close now fires reliably via classList observer + beforeunload
+ *  - Events are slim: only { type, ts, data:{...minimal} }
+ *  - Session metadata (user_agent, referrer, url, ip, device_fingerprint) sent
+ *    once per session via a session_init event, not on every event
+ *  - Maintains a pdfs_read map: { "Title": count } — incremented on each pdf_open
+ *  - reading_time_seconds accumulates sum of all (close_ts - open_ts) durations
+ *  - Active reading time still subtracts hidden/background time
  */
 
 (function () {
@@ -23,42 +21,30 @@
   const CONFIG = {
     DATA_PUSH: `${API_BASE}/sync`,
     DATA_VERIFY: `${API_BASE}/client`,
-    BATCH_INTERVAL: 30000,       // Flush every 30 seconds
-    MIN_ENGAGEMENT_TIME: 2000,   // 2 seconds minimum to count engagement
+    BATCH_INTERVAL: 30000,
+    MIN_ENGAGEMENT_TIME: 2000,
     STORAGE_KEY_V1: 'm_v1_store',
     STORAGE_KEY_ID: 'm_u_id',
     STORAGE_KEY_DEVICE: 'm_device_fp',
     STORAGE_KEY_TOKEN: 'materio_auth_token',
     STORAGE_KEY_USER: 'materio_user',
+    STORAGE_KEY_SESSION_META: 'm_session_meta_sent',
     MAX_BUFFER_SIZE: 50,
-    PDF_URL_RETRY_DELAY: 1200,   // ms to wait before retrying PDF URL extraction
-    PDF_ENGAGEMENT_THROTTLE: 5000 // Throttle PDF engagement events to one per 5s
+    PDF_URL_RETRY_DELAY: 1200,
+    PDF_ENGAGEMENT_THROTTLE: 5000
   };
 
   // ─── Device fingerprint (persistent across storage clears) ───
   function generateDeviceFingerprint() {
     try {
       const components = [];
-
-      // Screen dimensions
       components.push(`${screen.width}x${screen.height}x${screen.colorDepth}`);
-
-      // Timezone offset
       components.push(Intl.DateTimeFormat().resolvedOptions().timeZone || String(new Date().getTimezoneOffset()));
-
-      // Language
       components.push(navigator.language || navigator.userLanguage || 'unknown');
-
-      // Platform
       components.push(navigator.platform || 'unknown');
-
-      // Hardware concurrency
       components.push(String(navigator.hardwareConcurrency || 0));
-
-      // Device memory (Chrome only)
       components.push(String(navigator.deviceMemory || 0));
 
-      // Canvas fingerprint
       try {
         const canvas = document.createElement('canvas');
         canvas.width = 200;
@@ -77,7 +63,6 @@
         components.push('no-canvas');
       }
 
-      // WebGL renderer
       try {
         const glCanvas = document.createElement('canvas');
         const gl = glCanvas.getContext('webgl') || glCanvas.getContext('experimental-webgl');
@@ -91,18 +76,15 @@
         components.push('no-webgl');
       }
 
-      // Touch support
       components.push(String('ontouchstart' in window));
 
-      // Hash all components into a stable fingerprint
       const raw = components.join('|');
       let hash = 0;
       for (let i = 0; i < raw.length; i++) {
         const char = raw.charCodeAt(i);
         hash = ((hash << 5) - hash) + char;
-        hash |= 0; // to 32bit integer
+        hash |= 0;
       }
-      // Convert to hex and pad
       return 'dfp_' + (hash >>> 0).toString(16).padStart(8, '0');
     } catch (e) {
       return 'dfp_fallback_' + Date.now().toString(36);
@@ -115,7 +97,6 @@
     const invalid = ['unknown', 'about:blank', 'null', 'undefined', ''];
     if (invalid.includes(url.toLowerCase())) return false;
     if (url.startsWith('blob:')) return false;
-    // Reject bare viewer URLs without a resolved file
     if (url.includes('viewer.html') && !url.includes('.pdf')) return false;
     return true;
   }
@@ -130,25 +111,32 @@
       this.isTrackingEngagement = false;
       this.engagementStartTime = Date.now();
       this.pdfStartTime = null;
-      this.pdfActiveTime = 0;        // Tracks only active (visible) time during PDF read
-      this.pdfWasHiddenAt = null;     // Timestamp when tab became hidden during PDF read
+      this.pdfActiveTime = 0;
+      this.pdfWasHiddenAt = null;
       this.currentPdf = null;
       this.currentPdfTitle = null;
       this.hasIdentified = false;
       this.pendingPdfTitle = null;
       this._batchTimerRef = null;
-      this._lastPdfEngagementAt = 0;  // Throttle PDF engagement events
+      this._lastPdfEngagementAt = 0;
+
+      // Session-level tracking
+      this.pdfsRead = {};               // { "Title": count }
+      this.totalReadingTimeSec = 0;     // Accumulated reading time in seconds
+      this._sessionMetaSent = sessionStorage.getItem(CONFIG.STORAGE_KEY_SESSION_META) === '1';
 
       // Initial setup
       this._loadBuffer();
       this._setupEventListeners();
       this._startBatchTimer();
 
-      // Track initial page view
+      // Send session metadata once per session
+      this._sendSessionMeta();
+
+      // Track initial page view (slim — no device fingerprint per-event)
       this.push('page_view', {
         title: document.title,
-        path: window.location.pathname,
-        deviceFingerprint: this.deviceFingerprint
+        path: window.location.pathname
       });
 
       // Attempt user verification
@@ -183,23 +171,16 @@
       return fp;
     }
 
-    /**
-     * Get user_id from materio_user in localStorage (primary)
-     * Falls back to JWT decode only as a last resort
-     */
     getUserId() {
-      // 1. Primary: materio_user localStorage object → .id
       try {
         const userStr = localStorage.getItem(CONFIG.STORAGE_KEY_USER);
         if (userStr) {
           const user = JSON.parse(userStr);
           if (user && user.id) return user.id;
-          // fallback field names
           if (user && (user.userId || user.user_id)) return user.userId || user.user_id;
         }
       } catch (e) { /* ignore parse errors */ }
 
-      // 2. Fallback: decode JWT token
       try {
         const token = localStorage.getItem(CONFIG.STORAGE_KEY_TOKEN);
         if (!token) return null;
@@ -215,6 +196,24 @@
       } catch (e) {
         return null;
       }
+    }
+
+    // ─── Session Metadata (sent once per session) ───
+
+    _sendSessionMeta() {
+      if (this._sessionMetaSent) return;
+
+      this.push('session_init', {
+        user_agent: navigator.userAgent,
+        referrer: document.referrer,
+        url: window.location.href,
+        deviceFingerprint: this.deviceFingerprint,
+        screen: `${screen.width}x${screen.height}`,
+        language: navigator.language
+      });
+
+      this._sessionMetaSent = true;
+      sessionStorage.setItem(CONFIG.STORAGE_KEY_SESSION_META, '1');
     }
 
     // ─── Server Communication ───
@@ -263,16 +262,14 @@
     }
 
     // ─── Event Buffer ───
+    // v3: Events are slim — no url, referrer, deviceFingerprint per event
 
     push(eventName, properties = {}) {
       const event = {
         type: eventName,
+        ts: new Date().toISOString(),
         data: properties,
-        timestamp: new Date().toISOString(),
-        sessionId: this.sessionId,
-        url: window.location.href,
-        referrer: document.referrer,
-        deviceFingerprint: this.deviceFingerprint
+        sessionId: this.sessionId
       };
 
       this.buffer.push(event);
@@ -305,28 +302,28 @@
 
       const eventsToSend = [...this.buffer];
 
-      // Build payload
       const payload = {
         anonymousId: this.anonymousId,
         userId: this.getUserId(),
         deviceFingerprint: this.deviceFingerprint,
+        // Include session-level accumulated data
+        sessionMeta: {
+          pdfs_read: this.pdfsRead,
+          reading_time_seconds: this.totalReadingTimeSec
+        },
         events: eventsToSend
       };
 
-      // For background/hidden state, use sendBeacon (fire-and-forget)
       if (navigator.sendBeacon && document.visibilityState === 'hidden') {
         const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
         const sent = navigator.sendBeacon(CONFIG.DATA_PUSH, blob);
         if (sent) {
-          // Only clear buffer after successful sendBeacon enqueue
           this.buffer = [];
           this._saveBuffer();
         }
-        // If sendBeacon returns false, keep events in buffer for next attempt
         return;
       }
 
-      // For foreground, use fetch with error recovery
       try {
         const response = await fetch(CONFIG.DATA_PUSH, {
           method: 'POST',
@@ -335,7 +332,6 @@
         });
 
         if (response.ok || response.status === 207) {
-          // Clear only the events we successfully sent
           this.buffer = this.buffer.slice(eventsToSend.length);
           this._saveBuffer();
         } else {
@@ -343,11 +339,10 @@
         }
       } catch (e) {
         // Keep events in buffer — they'll be retried on next flush
-        // No need to re-add since we never cleared them
       }
     }
 
-    // ─── Batch Timer (FIXED — was a no-op) ───
+    // ─── Batch Timer ───
 
     _startBatchTimer() {
       if (this._batchTimerRef) clearInterval(this._batchTimerRef);
@@ -371,7 +366,7 @@
         }
       });
 
-      // Before unload — final flush
+      // Before unload — final flush with pdf_close
       window.addEventListener('beforeunload', () => {
         this._stopEngagement();
         if (this.currentPdf) {
@@ -380,7 +375,7 @@
         this.flush();
       });
 
-      // PDF tracking
+      // PDF tracking — the core fix for pdf_close
       this._setupPdfTracking();
 
       // Dropdown selection capture
@@ -426,18 +421,14 @@
 
     _handlePdfHidden() {
       if (this.currentPdf && !this.pdfWasHiddenAt) {
-        // Tab went hidden during PDF read — pause active time
         this.pdfWasHiddenAt = Date.now();
       }
     }
 
     _handlePdfVisible() {
       if (this.currentPdf && this.pdfWasHiddenAt) {
-        // Tab came back — accumulate the visible time from BEFORE hiding
-        // into pdfActiveTime, then start a new visible segment
         this.pdfActiveTime += (this.pdfWasHiddenAt - this.pdfStartTime);
         this.pdfWasHiddenAt = null;
-        // Reset the start for the NEW visible segment
         this.pdfStartTime = Date.now();
       }
     }
@@ -446,10 +437,8 @@
       if (!this.pdfStartTime) return this.pdfActiveTime;
       const now = Date.now();
       if (this.pdfWasHiddenAt) {
-        // Currently hidden — only count up to when we went hidden
         return this.pdfActiveTime + (this.pdfWasHiddenAt - this.pdfStartTime);
       }
-      // Currently visible — count up to now
       return this.pdfActiveTime + (now - this.pdfStartTime);
     }
 
@@ -488,28 +477,63 @@
       }
     }
 
+    /**
+     * v3 FIX: Dual-observer approach for reliable pdf_close detection.
+     * 
+     * The old v2 observer only watched for style attribute changes on #popup.
+     * Problem: The close flow is popup.classList.add('closing') → animation → 
+     * popup.style.display='none'. The MutationObserver fires on the style change,
+     * but by then the animation has already run. More critically, if the observer
+     * misses the exact style change (race with multiple listeners in caching.js),
+     * pdf_close never fires.
+     * 
+     * v3 Fix: We observe BOTH attributes AND classList changes. When 'closing' 
+     * class is added, we immediately fire pdf_close (the user has initiated close).
+     * We also keep the display='none' check as a safety net.
+     */
     _setupPdfTracking() {
       const popup = document.getElementById('popup');
       const popupContent = document.getElementById('popupContent');
 
       if (!popup) return;
 
+      // Track whether we've already fired close for this session to prevent double-fire
+      let closeHandled = false;
+
       const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+        for (const mutation of mutations) {
+          if (mutation.type !== 'attributes') continue;
+
+          // Check 1: 'closing' class added → user clicked close
+          if (mutation.attributeName === 'class') {
+            if (popup.classList.contains('closing') && this.currentPdf && !closeHandled) {
+              closeHandled = true;
+              this._handlePdfClose();
+            }
+            // 'closing' class removed + popup visible → new PDF opened
+            if (!popup.classList.contains('closing') && 
+                popup.style.display !== 'none' && popup.style.display !== '') {
+              closeHandled = false;
+            }
+          }
+
+          // Check 2: style.display changed (safety net)
+          if (mutation.attributeName === 'style') {
             const isVisible = popup.style.display !== 'none' && popup.style.display !== '';
 
             if (isVisible && !this.currentPdf) {
+              closeHandled = false;
               this._captureDropdownSelection();
               this._handlePdfOpen(popupContent);
-            } else if (!isVisible && this.currentPdf) {
+            } else if (!isVisible && this.currentPdf && !closeHandled) {
+              closeHandled = true;
               this._handlePdfClose();
             }
           }
-        });
+        }
       });
 
-      observer.observe(popup, { attributes: true });
+      observer.observe(popup, { attributes: true, attributeFilter: ['style', 'class'] });
     }
 
     _extractPdfUrl(container) {
@@ -532,20 +556,17 @@
           if (iframe.src) extractedUrl = iframe.src;
         }
 
-        // Try data attributes if URL is still missing
         if (!isValidPdfUrl(extractedUrl)) {
           const attrUrl = iframe.getAttribute('data-src') || iframe.getAttribute('data-file-url');
           if (attrUrl && isValidPdfUrl(attrUrl)) extractedUrl = attrUrl;
         }
       }
 
-      // Try container attributes
       if (!isValidPdfUrl(extractedUrl)) {
         const containerUrl = container.getAttribute('data-pdf-url') || container.getAttribute('data-filename');
         if (containerUrl) extractedUrl = containerUrl;
       }
 
-      // Try global current PDF URL (from caching.js)
       if (!isValidPdfUrl(extractedUrl) && window.materioCurrentPdfUrl) {
         extractedUrl = window.materioCurrentPdfUrl;
       }
@@ -568,12 +589,10 @@
       setTimeout(() => {
         pdfUrl = this._extractPdfUrl(container);
 
-        // Attempt 3: check global variable from caching.js
         if (!isValidPdfUrl(pdfUrl) && window.materioCurrentPdfUrl) {
           pdfUrl = window.materioCurrentPdfUrl;
         }
 
-        // Attempt 4: use title as identifier (last resort, but at least it's real)
         if (!isValidPdfUrl(pdfUrl) && this.pendingPdfTitle && this.pendingPdfTitle !== 'Unknown Document') {
           pdfUrl = `title:${this.pendingPdfTitle}`;
         }
@@ -581,7 +600,6 @@
         if (isValidPdfUrl(pdfUrl) || (pdfUrl && pdfUrl.startsWith('title:'))) {
           this._startPdfSession(pdfUrl, title);
         }
-        // If still no valid URL, silently skip — don't pollute the DB with junk
       }, CONFIG.PDF_URL_RETRY_DELAY);
     }
 
@@ -593,11 +611,17 @@
       this.pdfWasHiddenAt = null;
       this._lastPdfEngagementAt = 0;
 
+      // v3: Slim event — only title, no device fingerprint per-event
       this.push('pdf_open', {
-        url: pdfUrl,
-        title: title,
-        deviceFingerprint: this.deviceFingerprint
+        title: title
       });
+
+      // v3: Maintain pdfs_read map { title: count }
+      if (this.pdfsRead[title]) {
+        this.pdfsRead[title]++;
+      } else {
+        this.pdfsRead[title] = 1;
+      }
     }
 
     _handlePdfClose() {
@@ -608,15 +632,17 @@
     _closePdfSession() {
       if (!this.currentPdf) return;
 
-      const activeDuration = this._getCurrentPdfActiveTime();
+      const activeDurationMs = this._getCurrentPdfActiveTime();
+      const activeDurationSec = Math.round(activeDurationMs / 1000);
 
+      // v3: Slim event — title + reading_time_sec, no URL/fingerprint bloat
       this.push('pdf_close', {
-        url: this.currentPdf,
         title: this.currentPdfTitle,
-        duration_ms: activeDuration,
-        duration_sec: Math.round(activeDuration / 1000),
-        deviceFingerprint: this.deviceFingerprint
+        reading_time_sec: activeDurationSec
       });
+
+      // v3: Accumulate total reading time across the session
+      this.totalReadingTimeSec += activeDurationSec;
 
       this.currentPdf = null;
       this.currentPdfTitle = null;
@@ -632,16 +658,12 @@
       if (!this.currentPdf) return;
 
       const now = Date.now();
-
-      // Throttle engagement events
       const shouldThrottle = (now - this._lastPdfEngagementAt) < CONFIG.PDF_ENGAGEMENT_THROTTLE;
 
       switch (data.type) {
         case 'pdfPageChanged':
         case 'pagechanging':
-          // Page navigation — always track (not throttled)
           this.push('pdf_page_nav', {
-            url: this.currentPdf,
             page: data.pageNumber || data.page || null,
             totalPages: data.pagesCount || data.totalPages || null
           });
@@ -652,7 +674,6 @@
         case 'scroll':
           if (!shouldThrottle) {
             this.push('pdf_scroll', {
-              url: this.currentPdf,
               scrollPosition: data.scrollTop || data.position || null
             });
             this._lastPdfEngagementAt = now;
@@ -663,7 +684,6 @@
         case 'textlayerrendered':
           if (!shouldThrottle) {
             this.push('pdf_interaction', {
-              url: this.currentPdf,
               action: 'text_select'
             });
             this._lastPdfEngagementAt = now;
@@ -673,7 +693,6 @@
         case 'pdfZoom':
         case 'scalechanging':
           this.push('pdf_interaction', {
-            url: this.currentPdf,
             action: 'zoom',
             scale: data.scale || data.value || null
           });
@@ -683,7 +702,6 @@
         case 'pdfSearch':
         case 'find':
           this.push('pdf_interaction', {
-            url: this.currentPdf,
             action: 'search'
           });
           this._lastPdfEngagementAt = now;

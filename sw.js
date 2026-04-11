@@ -6,6 +6,16 @@
 const VERSION = 'v4.2.0-notif-fix';
 const CORE_CACHE = 'materio-core-' + VERSION;
 const PDFJS_CACHE_PREFIX = 'pdfjs-assets-';
+const META_CACHE = 'materio-meta-' + VERSION;
+const META_STATE_KEY = '/__sw_meta/content-state';
+
+const CONTENT_CHECK_TAG = 'materio-content-check';
+const NOTIFY_SOURCES = {
+    system: 'https://cdn-materioa.vercel.app/notifications.json',
+    insight: 'https://insightroom.vercel.app/api/posts',
+    updates: '/assets/data/posts.json',
+    releases: '/assets/data/releases.json'
+};
 
 // Essential UI / Core assets
 const CORE_ASSETS = [
@@ -32,6 +42,166 @@ const PDFJS_PRECACHE = [
 
 let currentSessionId = null;
 
+function getDefaultMetaState() {
+    return {
+        notificationsEnabled: true,
+        lastCheckTs: 0,
+        lastVersion: null,
+        seen: {
+            system: {},
+            insight: {},
+            updates: {}
+        }
+    };
+}
+
+async function readMetaState() {
+    const cache = await caches.open(META_CACHE);
+    const res = await cache.match(META_STATE_KEY);
+    if (!res) {
+        return getDefaultMetaState();
+    }
+
+    try {
+        const parsed = await res.json();
+        const defaults = getDefaultMetaState();
+        return {
+            ...defaults,
+            ...parsed,
+            seen: {
+                ...defaults.seen,
+                ...(parsed?.seen || {})
+            }
+        };
+    } catch (e) {
+        return getDefaultMetaState();
+    }
+}
+
+async function writeMetaState(state) {
+    const cache = await caches.open(META_CACHE);
+    await cache.put(
+        META_STATE_KEY,
+        new Response(JSON.stringify(state), {
+            headers: { 'Content-Type': 'application/json' }
+        })
+    );
+}
+
+function toDate(value) {
+    const d = new Date(value);
+    return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function getItemId(item, fallbackPrefix) {
+    return String(
+        item?.id ||
+        item?._id ||
+        item?.slug ||
+        item?.url ||
+        item?.link ||
+        item?.title ||
+        `${fallbackPrefix}-${item?.date || Date.now()}`
+    );
+}
+
+async function fetchJson(url) {
+    const sep = url.includes('?') ? '&' : '?';
+    const response = await fetch(`${url}${sep}t=${Date.now()}`, { cache: 'no-store' });
+    if (!response.ok) return [];
+    return response.json();
+}
+
+async function showBackgroundNotification(title, body, url, image = null) {
+    await self.registration.showNotification(title, {
+        body,
+        icon: '/assets/img/icon.svg',
+        badge: '/assets/img/icon.svg',
+        image,
+        data: { url: url || '/' },
+        vibrate: [200, 100, 200]
+    });
+}
+
+async function checkForNewContent() {
+    const state = await readMetaState();
+    if (state.notificationsEnabled === false) {
+        return;
+    }
+
+    const lastCheckDate = new Date(state.lastCheckTs || 0);
+
+    const [systemNotifs, resources, updates, releases] = await Promise.all([
+        fetchJson(NOTIFY_SOURCES.system),
+        fetchJson(NOTIFY_SOURCES.insight),
+        fetchJson(NOTIFY_SOURCES.updates),
+        fetchJson(NOTIFY_SOURCES.releases)
+    ]);
+
+    if (Array.isArray(systemNotifs)) {
+        for (const n of systemNotifs) {
+            const date = toDate(n?.date);
+            const id = getItemId(n, 'sys');
+            if (date && date > lastCheckDate && !state.seen.system[id]) {
+                await showBackgroundNotification('New Resource Added', n?.title || 'New content available', n?.links?.[0]?.url || '/');
+                state.seen.system[id] = true;
+            }
+        }
+    }
+
+    if (Array.isArray(resources)) {
+        for (const p of resources) {
+            const date = toDate(p?.date);
+            const id = getItemId(p, 'insight');
+            if (date && date > lastCheckDate && !state.seen.insight[id]) {
+                const excerpt = typeof p?.excerpt === 'string' ? p.excerpt : '';
+                const body = excerpt ? (excerpt.length > 100 ? `${excerpt.slice(0, 97)}...` : excerpt) : (p?.title || 'New post');
+                await showBackgroundNotification('New Resource', body, p?.link || '/', p?.imgUrl || null);
+                state.seen.insight[id] = true;
+            }
+        }
+    }
+
+    if (Array.isArray(updates)) {
+        for (const p of updates) {
+            const date = toDate(p?.date);
+            const id = getItemId(p, 'updates');
+            if (date && date > lastCheckDate && !state.seen.updates[id]) {
+                const excerpt = typeof p?.excerpt === 'string' ? p.excerpt : '';
+                const body = excerpt ? (excerpt.length > 100 ? `${excerpt.slice(0, 97)}...` : excerpt) : (p?.title || 'New update');
+                await showBackgroundNotification('New Update', body, p?.url || '/', p?.image || null);
+                state.seen.updates[id] = true;
+            }
+        }
+    }
+
+    if (Array.isArray(releases) && releases.length > 0) {
+        const latest = releases[0];
+        if (latest?.version && state.lastVersion !== latest.version) {
+            await showBackgroundNotification(
+                'Materio Updated',
+                `Materio was updated to V${latest.version}. Check the changelog for details.`,
+                '/changelog'
+            );
+            state.lastVersion = latest.version;
+        }
+    }
+
+    state.lastCheckTs = Date.now();
+    await writeMetaState(state);
+}
+
+async function registerBackgroundChecks() {
+    if ('periodicSync' in self.registration) {
+        try {
+            await self.registration.periodicSync.register(CONTENT_CHECK_TAG, {
+                minInterval: 6 * 60 * 60 * 1000
+            });
+        } catch (e) {
+        }
+    }
+}
+
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CORE_CACHE).then(cache => cache.addAll(CORE_ASSETS))
@@ -48,6 +218,7 @@ self.addEventListener('activate', (event) => {
                         .map(key => caches.delete(key))
                 );
             }),
+            registerBackgroundChecks(),
             self.clients.claim()
         ])
     );
@@ -100,26 +271,31 @@ self.addEventListener('notificationclick', (event) => {
 
 // Real Push listener (ready for backend integration)
 self.addEventListener('push', (event) => {
-    let data = { title: 'Materio Notification', message: 'New update available!', url: '/' };
-    if (event.data) {
-        try {
-            data = event.data.json();
-        } catch (e) {
-            data.message = event.data.text();
+    event.waitUntil((async () => {
+        const state = await readMetaState();
+        if (state.notificationsEnabled === false) {
+            return;
         }
-    }
 
-    const options = {
-        body: data.message,
-        icon: '/assets/img/icon.svg',
-        badge: '/assets/img/icon.svg',
-        data: { url: data.url },
-        vibrate: [200, 100, 200]
-    };
+        let data = { title: 'Materio Notification', message: 'New update available!', url: '/' };
+        if (event.data) {
+            try {
+                data = event.data.json();
+            } catch (e) {
+                data.message = event.data.text();
+            }
+        }
 
-    event.waitUntil(
-        self.registration.showNotification(data.title, options)
-    );
+        const options = {
+            body: data.message,
+            icon: '/assets/img/icon.svg',
+            badge: '/assets/img/icon.svg',
+            data: { url: data.url },
+            vibrate: [200, 100, 200]
+        };
+
+        await self.registration.showNotification(data.title, options);
+    })());
 });
 
 // Intercept messages
@@ -147,8 +323,28 @@ self.addEventListener('message', (event) => {
                 data: { url: url }
             })
         );
+    } else if (event.data.type === 'CHECK_NEW_CONTENT') {
+        event.waitUntil(checkForNewContent());
+    } else if (event.data.type === 'SET_NOTIFICATIONS_ENABLED') {
+        event.waitUntil((async () => {
+            const state = await readMetaState();
+            state.notificationsEnabled = !!event.data.enabled;
+            await writeMetaState(state);
+        })());
     }
 
+});
+
+self.addEventListener('sync', (event) => {
+    if (event.tag === CONTENT_CHECK_TAG) {
+        event.waitUntil(checkForNewContent());
+    }
+});
+
+self.addEventListener('periodicsync', (event) => {
+    if (event.tag === CONTENT_CHECK_TAG) {
+        event.waitUntil(checkForNewContent());
+    }
 });
 
 self.addEventListener('fetch', (event) => {

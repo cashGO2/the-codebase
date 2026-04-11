@@ -12,6 +12,12 @@ const {
 const { getFormsCollection, getMongoDb } = require("../_config_shared/mongodb");
 const { sendAlertEmail, ALERT_EMAIL } = require("../_utils_shared/mailer");
 const {
+  isWebPushConfigured,
+  getVapidPublicKey,
+  upsertWebPushSubscription,
+  removeWebPushSubscription,
+} = require("../_utils_shared/webpush");
+const {
   getContributionNotificationTemplate,
 } = require("../_utils_shared/email-templates");
 const { ObjectId } = require("mongodb");
@@ -95,6 +101,7 @@ module.exports = async (req, res) => {
     const isContribute = url.pathname.includes("/contribute");
     const isNotebooks = url.pathname.includes("/notebooks");
     const isSubscription = url.pathname.includes("/subscription");
+    const isWebPush = url.pathname.includes("/web-push");
 
     // Check query param action
     const action = queryParams.action || req.query?.action;
@@ -165,6 +172,10 @@ module.exports = async (req, res) => {
       return await handleSubscription(req, res, url);
     }
 
+    if (isWebPush || action === "web-push" || pathParam.includes("web-push")) {
+      return await handleWebPush(req, res, url);
+    }
+
     if (
       url.pathname.includes("/pdf-share") ||
       pathParam.includes("pdf-share") ||
@@ -188,6 +199,7 @@ module.exports = async (req, res) => {
           "contribute",
           "notebooks",
           "pdf-share",
+          "web-push",
         ],
       },
     });
@@ -1518,6 +1530,67 @@ async function handleContribute(req, res) {
 
     return res.status(statusCode).json({ error: errorMessage });
   }
+}
+
+// ==========================================
+// Web Push Handler (VAPID Subscription APIs)
+// ==========================================
+async function handleWebPush(req, res, url) {
+  const origin = req.headers.origin || req.headers.Origin;
+  const headers = corsHeaders(origin);
+  Object.entries(headers).forEach(([key, value]) => {
+    res.setHeader(key, value);
+  });
+
+  const subAction = url.searchParams.get("subAction") || req.query?.subAction;
+
+  if (subAction === "public-key") {
+    if (!isWebPushConfigured()) {
+      return res.status(503).json({ error: "Web push is not configured" });
+    }
+    return res.status(200).json({ publicKey: getVapidPublicKey() });
+  }
+
+  if (subAction === "subscribe") {
+    if (req.method !== "POST") {
+      return res.status(405).json({ error: "Method not allowed" });
+    }
+    if (!isWebPushConfigured()) {
+      return res.status(503).json({ error: "Web push is not configured" });
+    }
+
+    try {
+      const subscription = req.body?.subscription;
+      if (!subscription) {
+        return res.status(400).json({ error: "subscription is required" });
+      }
+
+      await upsertWebPushSubscription(subscription, {
+        userAgent: req.headers["user-agent"] || null,
+        ip: req.headers["x-forwarded-for"] || req.headers["x-real-ip"] || null,
+      });
+
+      return res.status(200).json({ success: true });
+    } catch (error) {
+      return res.status(400).json({ error: error.message || "Invalid subscription" });
+    }
+  }
+
+  if (subAction === "unsubscribe") {
+    if (req.method !== "POST") {
+      return res.status(405).json({ error: "Method not allowed" });
+    }
+
+    const endpoint = req.body?.endpoint || req.body?.subscription?.endpoint;
+    if (!endpoint) {
+      return res.status(400).json({ error: "endpoint is required" });
+    }
+
+    await removeWebPushSubscription(endpoint);
+    return res.status(200).json({ success: true });
+  }
+
+  return res.status(404).json({ error: "Web push action not found" });
 }
 
 // ==========================================
