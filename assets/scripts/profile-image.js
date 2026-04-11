@@ -16,11 +16,17 @@ const LOCAL_STORAGE_USER_KEY = 'materio_user';
  * @returns {boolean}
  */
 function isUserLoggedIn() {
-  // Check both localStorage and cookies for production compatibility
-  return !!(localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY) ||
-    localStorage.getItem(LOCAL_STORAGE_USER_KEY) ||
-    getCookie(LOCAL_STORAGE_TOKEN_KEY) ||
-    getCookie(LOCAL_STORAGE_USER_KEY));
+  // Check cookie as the source of truth for session validity
+  const tokenCookie = getCookie(LOCAL_STORAGE_TOKEN_KEY);
+  if (!tokenCookie) {
+    // If cookie is gone but localStorage has it, we are in a stale state
+    if (localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY)) {
+      localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
+      localStorage.removeItem(LOCAL_STORAGE_USER_KEY);
+    }
+    return false;
+  }
+  return true;
 }
 
 /**
@@ -427,10 +433,15 @@ function init() {
 
   // Robust login check using local helper
   const isUserLoggedInSafe = () => {
-    return !!(localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY) ||
-      localStorage.getItem(LOCAL_STORAGE_USER_KEY) ||
-      getCookieSafe(LOCAL_STORAGE_TOKEN_KEY) ||
-      getCookieSafe(LOCAL_STORAGE_USER_KEY));
+    const tokenCookie = getCookieSafe(LOCAL_STORAGE_TOKEN_KEY);
+    if (!tokenCookie) {
+      if (localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY)) {
+        localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
+        localStorage.removeItem(LOCAL_STORAGE_USER_KEY);
+      }
+      return false;
+    }
+    return true;
   };
 
   const isLoggedIn = isUserLoggedInSafe();

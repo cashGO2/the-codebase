@@ -55,7 +55,34 @@
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
-            // Unregister any existing service workers and clear caches.
+            // Smart Clear Cache logic (Only Once per version)
+            {% if site.force_clear_cache %}
+            const CLEAR_VERSION = "{{ site.time | date: '%s' }}"; // Uses Jekyll build timestamp
+            if (localStorage.getItem('m_last_force_clear') !== CLEAR_VERSION) {
+                // Clear everything except the migration flag we just set
+                localStorage.clear();
+                localStorage.setItem('m_last_force_clear', CLEAR_VERSION);
+                
+                if (window.caches && caches.keys) {
+                    caches.keys().then(function (names) {
+                        for (let name of names) caches.delete(name);
+                    });
+                }
+                console.log('One-time force cache clear executed for version: ' + CLEAR_VERSION);
+            }
+            {% endif %}
+
+            // Aggressive Service Worker Update check on every reload
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                    for (let registration of registrations) {
+                        registration.update(); // Force check the server for a new sw.js
+                    }
+                });
+            }
+
+            // Unregister any existing service workers if disabled
+            {% if site.disable_service_worker %}
             navigator.serviceWorker.getRegistrations()
                 .then(function (registrations) {
                     registrations.forEach(function (reg) {

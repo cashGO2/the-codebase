@@ -122,15 +122,17 @@ async function setupNotificationsToggle() {
   const notificationsToggle = document.getElementById('notificationsToggle');
   const enabled = isNotificationsEnabled();
 
+  // Proactively ensure SW is in sync before anything else
   await syncServiceWorkerNotificationPreference(enabled);
 
-  if (!notificationsToggle) {
-    if (enabled) {
-      await ensureAutomaticNotificationSubscription();
-    }
-    return;
+  // If enabled (default is true), aggressively try to subscribe
+  if (enabled) {
+    await ensureAutomaticNotificationSubscription();
   }
 
+  if (!notificationsToggle) return;
+
+  // Ensure toggle matches state
   notificationsToggle.checked = enabled;
 
   notificationsToggle.addEventListener('change', async function () {
@@ -145,10 +147,6 @@ async function setupNotificationsToggle() {
       await unsubscribeBrowserPush();
     }
   });
-
-  if (enabled) {
-    await ensureAutomaticNotificationSubscription();
-  }
 }
 
 async function ensureAutomaticNotificationSubscription() {
@@ -156,10 +154,38 @@ async function ensureAutomaticNotificationSubscription() {
   if (!('Notification' in window)) return;
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
 
+  // 1. Check if we should show the "Soft Prompt"
   if (Notification.permission === 'default') {
-    try {
-      await Notification.requestPermission();
-    } catch (error) {
+    const lastPrompt = localStorage.getItem('m_last_soft_prompt_ts');
+    const cooldown = 24 * 60 * 60 * 1000; // Ask once every 24 hours if they click "Later"
+
+    if (!lastPrompt || (Date.now() - parseInt(lastPrompt)) > cooldown) {
+      if (typeof window.materioConfirm === 'function') {
+        const agreed = await window.materioConfirm(
+          "Turn on notifications and we'll ping you when new materials are available occasionally.",
+          {
+            title: 'Want a heads up?',
+            confirmText: 'Turn on notifications',
+            cancelText: 'Maybe later',
+            type: 'info',
+            iconClass: 'fa-bell'
+          }
+        );
+
+        localStorage.setItem('m_last_soft_prompt_ts', Date.now().toString());
+
+        if (!agreed) return; // User opted out for now
+      }
+
+      // 2. Trigger native prompt (now with a User Gesture!)
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') return;
+      } catch (error) {
+        return;
+      }
+    } else {
+      return; // Still in cooldown
     }
   }
 
