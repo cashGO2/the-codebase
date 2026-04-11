@@ -103,8 +103,9 @@
       this._setupListeners();
       this._setupPdfObserver();
       this._setupClickTracking();
-      setInterval(() => this._flush(), 60000);
-      this._flush();
+      console.log('Materio Analytics v4 Started. ID:', this.anonId);
+      setInterval(() => this._flush(), 300000); // 5-minute interval
+      setTimeout(() => this._flush(), 5000);   // Delayed initial capture
     }
 
     _prepareSession() {
@@ -141,16 +142,17 @@
       }
 
       const diff = Math.round((now - this._pageActiveTs) / 1000);
-      if (diff > 0) this.usermetaDiff.total_engagement_sec += Math.min(diff, 60);
+      if (diff > 0) this.usermetaDiff.total_engagement_sec += Math.min(diff, 305); // Allow slightly over interval
       
       this._pageActiveTs = now;
 
       if (this._pdfTitle && this._pdfOpenTs) {
         const pDiff = Math.round((now - this._pdfOpenTs) / 1000);
         if (pDiff > 0) {
-          this.metricsDiff.total_reading_sec += pDiff;
+          const actualPDiff = Math.min(pDiff, 305);
+          this.metricsDiff.total_reading_sec += actualPDiff;
           if (!this.metricsDiff.pdf_counts[this._pdfTitle]) this.metricsDiff.pdf_counts[this._pdfTitle] = { count: 0, time_sec: 0 };
-          this.metricsDiff.pdf_counts[this._pdfTitle].time_sec += pDiff;
+          this.metricsDiff.pdf_counts[this._pdfTitle].time_sec += actualPDiff;
         }
         this._pdfOpenTs = now;
       }
@@ -165,20 +167,36 @@
       if (!this.metricsDiff.pdf_counts[this._pdfTitle]) this.metricsDiff.pdf_counts[this._pdfTitle] = { count: 0, time_sec: 0 };
       this.metricsDiff.pdf_counts[this._pdfTitle].count += 1;
       this._isPdfOpening = false;
+      this._flush(); // Immediate sync on open
     }
 
-    _closePdf() { if (this._pdfTitle) { this._bumpEngagement(); this._pdfTitle = null; this._pdfOpenTs = null; } }
+    _closePdf() { 
+      if (this._pdfTitle) { 
+        this._bumpEngagement(); 
+        this._flush(); // Immediate sync on close
+        this._pdfTitle = null; 
+        this._pdfOpenTs = null; 
+      } 
+    }
 
     _setupPdfObserver() {
       const p = document.getElementById('popup');
       if (!p) return;
-      new MutationObserver(() => {
+      const observer = new MutationObserver(() => {
         const iframe = p.querySelector('iframe');
-        const isVisible = p.offsetParent !== null;
+        const isVisible = p.offsetParent !== null || p.classList.contains('active') || p.style.display === 'block';
         const hasSrc = iframe && iframe.src && !iframe.src.includes('about:blank');
-        if (isVisible && hasSrc && !this._pdfTitle) { this._extractTitle(iframe); this._openPdf(this._pendingTitle); }
-        else if (!isVisible && this._pdfTitle) { this._closePdf(); }
-      }).observe(p, { attributes: true, attributeFilter: ['style', 'class'] });
+        
+        if (isVisible && hasSrc) {
+          if (!this._pdfTitle) {
+            this._extractTitle(iframe);
+            this._openPdf(this._pendingTitle);
+          }
+        } else if (!isVisible && this._pdfTitle) {
+          this._closePdf();
+        }
+      });
+      observer.observe(p, { attributes: true, attributeFilter: ['style', 'class'], childList: true, subtree: true });
     }
 
     _extractTitle(iframe) {
@@ -227,6 +245,8 @@
       const hasSession = !!payload.usermeta.session || !!payload.usermeta.state;
       
       if (!hasMetrics && !hasEngagement && !hasSession) return;
+      
+      console.log('Analytics Flush:', payload);
       
       this.metricsDiff = { total_reading_sec: 0, pdf_counts: {} };
       this.usermetaDiff.total_engagement_sec = 0; this.usermetaDiff.session = null; this.usermetaDiff.engagement = { clicks: {}, scroll: 0, zoom: 0, shortcuts: {} }; this.usermetaDiff.state = null;
