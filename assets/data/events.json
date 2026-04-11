@@ -148,13 +148,6 @@
       }
     ],
     "setDate": "2025-01-01T00:00:00Z",
-    "default": 0
-  },
-  {
-    "event": "old",
-    "url_pc": "/assets/img/events/hero.webp",
-    "url_mobile": "/assets/img/events/hero_mobile.webp",
-    "setDate": "2020-01-01T00:00:00Z",
-    "default": 0
+    "default": 1
   }
 ]
