@@ -1,721 +1,355 @@
 /**
- * Materio Analytics/Metrics Client v3
- * 
- * v3 Changes:
- *  - FIXED: pdf_close now fires reliably via classList observer + beforeunload
- *  - Events are slim: only { type, ts, data:{...minimal} }
- *  - Session metadata (user_agent, referrer, url, ip, device_fingerprint) sent
- *    once per session via a session_init event, not on every event
- *  - Maintains a pdfs_read map: { "Title": count } — incremented on each pdf_open
- *  - reading_time_seconds accumulates sum of all (close_ts - open_ts) durations
- *  - Active reading time still subtracts hidden/background time
+ * Materio Analytics v4 (FINAL RESTRUCTURED)
+ *
+ * One row per user per day in Supabase.
+ *
+ * Columns:
+ * - metrics:  SOLELY PDF & Reading data (opens, closes, duration, pdfs_read map)
+ * - usermeta: EVERYTHING ELSE (User Agent, IP, Screen, Referrer, Engagement clicks, Cookies/Settings)
  */
 
 (function () {
   'use strict';
 
-  // Environment detection
-  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  const API_BASE = isLocal ? 'http://localhost:3000' : 'https://materiosync.vercel.app';
+  // ─── Supabase Config ───
+  const SUPABASE_URL = 'https://popaoujsfvznlqltszfr.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvcGFvdWpzZnZ6bmxxbHRzemZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcxMTg1NTIsImV4cCI6MjA2MjY5NDU1Mn0.nJFDXqpcnQDnZa7OueLSiHeqE0RxbINEcKcwv8l8bRw';
+  const TABLE = 'user_daily_stats';
 
-  const CONFIG = {
-    DATA_PUSH: `${API_BASE}/sync`,
-    DATA_VERIFY: `${API_BASE}/client`,
-    BATCH_INTERVAL: 30000,
-    MIN_ENGAGEMENT_TIME: 2000,
-    STORAGE_KEY_V1: 'm_v1_store',
-    STORAGE_KEY_ID: 'm_u_id',
-    STORAGE_KEY_DEVICE: 'm_device_fp',
-    STORAGE_KEY_TOKEN: 'materio_auth_token',
-    STORAGE_KEY_USER: 'materio_user',
-    STORAGE_KEY_SESSION_META: 'm_session_meta_sent',
-    MAX_BUFFER_SIZE: 50,
-    PDF_URL_RETRY_DELAY: 1200,
-    PDF_ENGAGEMENT_THROTTLE: 5000
-  };
+  // ─── Constants ───
+  const FLUSH_INTERVAL_MS = 60_000;
+  const COOKIE_POLL_MS = 5_000;
+  const STORAGE_ANON_ID = 'materio_anon_id';
+  const STORAGE_PENDING = 'materio_analytics_pending';
 
-  // ─── Device fingerprint (persistent across storage clears) ───
-  function generateDeviceFingerprint() {
-    try {
-      const components = [];
-      components.push(`${screen.width}x${screen.height}x${screen.colorDepth}`);
-      components.push(Intl.DateTimeFormat().resolvedOptions().timeZone || String(new Date().getTimezoneOffset()));
-      components.push(navigator.language || navigator.userLanguage || 'unknown');
-      components.push(navigator.platform || 'unknown');
-      components.push(String(navigator.hardwareConcurrency || 0));
-      components.push(String(navigator.deviceMemory || 0));
-
-      try {
-        const canvas = document.createElement('canvas');
-        canvas.width = 200;
-        canvas.height = 50;
-        const ctx = canvas.getContext('2d');
-        ctx.textBaseline = 'top';
-        ctx.font = '14px Arial';
-        ctx.fillStyle = '#f60';
-        ctx.fillRect(0, 0, 200, 50);
-        ctx.fillStyle = '#069';
-        ctx.fillText('Materio fp 🖥️', 2, 15);
-        ctx.fillStyle = 'rgba(102,204,0,0.7)';
-        ctx.fillText('Materio fp 🖥️', 4, 17);
-        components.push(canvas.toDataURL().slice(-50));
-      } catch (e) {
-        components.push('no-canvas');
+  // ─── Helpers ───
+  function todayISO() { return new Date().toISOString().slice(0, 10); }
+  function uuid() {
+    if (crypto && crypto.randomUUID) return crypto.randomUUID();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+  }
+  function detectDeviceType() {
+    const ua = navigator.userAgent;
+    if (/Mobi|Android/i.test(ua)) return 'mobile';
+    if (/Tablet|iPad/i.test(ua)) return 'tablet';
+    return 'desktop';
+  }
+  function getMaterialCookies() {
+    const result = {};
+    document.cookie.split(';').forEach(c => {
+      const trimmed = c.trim();
+      const eqIdx = trimmed.indexOf('=');
+      if (eqIdx < 0) return;
+      const name = trimmed.slice(0, eqIdx);
+      // EXCLUDE sensitive data like auth tokens or user payloads
+      if (name.startsWith('materio_') && !name.includes('auth_token') && !name.includes('user')) {
+        result[name.slice(8)] = trimmed.slice(eqIdx + 1);
       }
-
-      try {
-        const glCanvas = document.createElement('canvas');
-        const gl = glCanvas.getContext('webgl') || glCanvas.getContext('experimental-webgl');
-        if (gl) {
-          const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-          if (debugInfo) {
-            components.push(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || 'unknown-gl');
-          }
-        }
-      } catch (e) {
-        components.push('no-webgl');
-      }
-
-      components.push(String('ontouchstart' in window));
-
-      const raw = components.join('|');
-      let hash = 0;
-      for (let i = 0; i < raw.length; i++) {
-        const char = raw.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash |= 0;
-      }
-      return 'dfp_' + (hash >>> 0).toString(16).padStart(8, '0');
-    } catch (e) {
-      return 'dfp_fallback_' + Date.now().toString(36);
-    }
+    });
+    return result;
+  }
+  function getCookieValue(name) {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? match[2] : null;
   }
 
-  // ─── Utility: check if a URL looks like a real PDF source ───
-  function isValidPdfUrl(url) {
-    if (!url || typeof url !== 'string') return false;
-    const invalid = ['unknown', 'about:blank', 'null', 'undefined', ''];
-    if (invalid.includes(url.toLowerCase())) return false;
-    if (url.startsWith('blob:')) return false;
-    if (url.includes('viewer.html') && !url.includes('.pdf')) return false;
-    return true;
-  }
+  // ═══════════════════════════════════════════════════
+  //  Analytics Client
+  // ═══════════════════════════════════════════════════
 
-  class MetricsClient {
+  class MaterioAnalytics {
     constructor() {
-      this.buffer = [];
-      this.sessionId = sessionStorage.getItem('materio_session_id') || this._uuid();
-      sessionStorage.setItem('materio_session_id', this.sessionId);
-      this.anonymousId = this._getAnonymousId();
-      this.deviceFingerprint = this._getDeviceFingerprint();
-      this.isTrackingEngagement = false;
-      this.engagementStartTime = Date.now();
-      this.pdfStartTime = null;
-      this.pdfActiveTime = 0;
-      this.pdfWasHiddenAt = null;
-      this.currentPdf = null;
-      this.currentPdfTitle = null;
-      this.hasIdentified = false;
-      this.pendingPdfTitle = null;
-      this._batchTimerRef = null;
-      this._lastPdfEngagementAt = 0;
+      // ─── Identity ───
+      this.anonId = this._loadOrCreateAnonId();
+      this.userId = this._readUserId();
 
-      // Session-level tracking
-      this.pdfsRead = {};               // { "Title": count }
-      this.totalReadingTimeSec = 0;     // Accumulated reading time in seconds
-      this._sessionMetaSent = sessionStorage.getItem(CONFIG.STORAGE_KEY_SESSION_META) === '1';
+      // ─── Diffs for metrics (PDF/Reading) ───
+      this.metricsDiff = {
+        total_reading_sec: 0,
+        pdf_opens_total: 0,
+        pdf_closes_total: 0,
+        pdfs_read: {}
+      };
 
-      // Initial setup
-      this._loadBuffer();
+      // ─── Diffs for usermeta (Engagement/State/Session) ───
+      this.usermetaDiff = {
+        session: null,
+        engagement: { scroll_events: 0, zoom_events: 0, button_clicks: {}, keyboard_shortcuts: {} },
+        state: null
+      };
+
+      // ─── guards ───
+      this._pdfOpenTs = null;
+      this._pdfTitle = null;
+      this._pdfHiddenAt = null;
+      this._pdfActiveMs = 0;
+      this._pendingPdfTitle = null;
+      this._isPdfOpening = false;
+
+      // ─── Inits ───
+      this._lastCookieSnapshot = document.cookie;
+      this._retryPending();
+      this._prepareSessionMeta();
+      this._refreshStateSnapshot();
+      this._backfillUserId();
       this._setupEventListeners();
-      this._startBatchTimer();
+      this._setupPdfTracking();
+      this._setupEngagements();
+      this._startPeriodicFlush();
+      this._startCookiePolling();
 
-      // Send session metadata once per session
-      this._sendSessionMeta();
-
-      // Track initial page view (slim — no device fingerprint per-event)
-      this.push('page_view', {
-        title: document.title,
-        path: window.location.pathname
-      });
-
-      // Attempt user verification
-      this._verify();
+      this._flushAll();
     }
 
-    // ─── Identity ───
-
-    _uuid() {
-      if (crypto && crypto.randomUUID) return crypto.randomUUID();
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-        const r = Math.random() * 16 | 0;
-        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-      });
-    }
-
-    _getAnonymousId() {
-      let id = localStorage.getItem(CONFIG.STORAGE_KEY_ID);
-      if (!id) {
-        id = this._uuid();
-        localStorage.setItem(CONFIG.STORAGE_KEY_ID, id);
-      }
+    _loadOrCreateAnonId() {
+      let id = localStorage.getItem(STORAGE_ANON_ID);
+      if (!id) { id = uuid(); localStorage.setItem(STORAGE_ANON_ID, id); }
       return id;
     }
 
-    _getDeviceFingerprint() {
-      let fp = localStorage.getItem(CONFIG.STORAGE_KEY_DEVICE);
-      if (!fp) {
-        fp = generateDeviceFingerprint();
-        localStorage.setItem(CONFIG.STORAGE_KEY_DEVICE, fp);
-      }
-      return fp;
-    }
-
-    getUserId() {
+    _readUserId() {
       try {
-        const userStr = localStorage.getItem(CONFIG.STORAGE_KEY_USER);
-        if (userStr) {
-          const user = JSON.parse(userStr);
-          if (user && user.id) return user.id;
-          if (user && (user.userId || user.user_id)) return user.userId || user.user_id;
-        }
-      } catch (e) { /* ignore parse errors */ }
+        const raw = localStorage.getItem('materio_user');
+        if (!raw) return null;
+        const user = JSON.parse(raw);
+        return user?.id || user?.userId || user?.user_id || null;
+      } catch { return null; }
+    }
 
+    async _backfillUserId() {
+      const uId = this._readUserId();
+      if (!uId) return;
       try {
-        const token = localStorage.getItem(CONFIG.STORAGE_KEY_TOKEN);
-        if (!token) return null;
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(
-          window.atob(base64).split('').map(c =>
-            '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-          ).join('')
-        );
-        const payload = JSON.parse(jsonPayload);
-        return payload.sub || payload.id || payload.user_id || payload.uid;
-      } catch (e) {
-        return null;
-      }
+        const url = `${SUPABASE_URL}/rest/v1/${TABLE}?anon_id=eq.${this.anonId}&date=eq.${todayISO()}&apikey=${SUPABASE_ANON_KEY}`;
+        await fetch(url, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+          body: JSON.stringify({ user_id: uId })
+        });
+      } catch { }
     }
 
-    // ─── Session Metadata (sent once per session) ───
+    // ═══════════════════════════════════════════════════
+    //  Supabase Transport
+    // ═══════════════════════════════════════════════════
 
-    _sendSessionMeta() {
-      if (this._sessionMetaSent) return;
-
-      this.push('session_init', {
-        user_agent: navigator.userAgent,
-        referrer: document.referrer,
-        url: window.location.href,
-        deviceFingerprint: this.deviceFingerprint,
-        screen: `${screen.width}x${screen.height}`,
-        language: navigator.language
-      });
-
-      this._sessionMetaSent = true;
-      sessionStorage.setItem(CONFIG.STORAGE_KEY_SESSION_META, '1');
-    }
-
-    // ─── Server Communication ───
-
-    async _verify() {
-      const userId = this.getUserId();
-      if (userId && !this.hasIdentified) {
-        try {
-          const response = await fetch(CONFIG.DATA_VERIFY, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId: userId,
-              anonymousId: this.anonymousId,
-              deviceFingerprint: this.deviceFingerprint
-            })
-          });
-          if (response.ok) {
-            this.hasIdentified = true;
-            this._syncStats(userId);
-          }
-        } catch (e) { /* silent */ }
-      }
-    }
-
-    async _syncStats(userId) {
+    async _upsert(fields) {
+      const date = todayISO();
       try {
-        const response = await fetch(`${API_BASE}/stats/${userId}?period=all_time`);
-        if (response.ok) {
-          const data = await response.json();
-          const stats = {
-            pdfsRead: data.metrics.unique_pdfs_count || 0,
-            timeSpent: (data.metrics.reading_time_seconds || 0) + (data.metrics.engagement_time_seconds || 0),
-            streak: data.streak || 0,
-            trends: data.trends || {},
-            history: data.history || [],
-            lastReadDate: null
-          };
-          if (stats.history.length > 0) {
-            stats.lastReadDate = stats.history[0].date.split('T')[0];
-          }
-          localStorage.setItem('materio_user_stats', JSON.stringify(stats));
-          window.dispatchEvent(new CustomEvent('materio-stats-updated', { detail: stats }));
-        }
-      } catch (e) { /* silent */ }
-    }
+        const existing = await this._getExisting(date);
+        const merged = this._mergeRow(existing, fields);
+        const body = { anon_id: this.anonId, date: date, user_id: this._readUserId(), ...merged };
 
-    // ─── Event Buffer ───
-    // v3: Events are slim — no url, referrer, deviceFingerprint per event
-
-    push(eventName, properties = {}) {
-      const event = {
-        type: eventName,
-        ts: new Date().toISOString(),
-        data: properties,
-        sessionId: this.sessionId
-      };
-
-      this.buffer.push(event);
-      this._saveBuffer();
-
-      if (this.buffer.length >= CONFIG.MAX_BUFFER_SIZE) {
-        this.flush();
-      }
-    }
-
-    _loadBuffer() {
-      try {
-        const stored = localStorage.getItem(CONFIG.STORAGE_KEY_V1);
-        if (stored) {
-          this.buffer = JSON.parse(stored);
-        }
-      } catch (e) {
-        this.buffer = [];
-      }
-    }
-
-    _saveBuffer() {
-      try {
-        localStorage.setItem(CONFIG.STORAGE_KEY_V1, JSON.stringify(this.buffer));
-      } catch (e) { /* storage full — will flush on next cycle */ }
-    }
-
-    async flush() {
-      if (this.buffer.length === 0) return;
-
-      const eventsToSend = [...this.buffer];
-
-      const payload = {
-        anonymousId: this.anonymousId,
-        userId: this.getUserId(),
-        deviceFingerprint: this.deviceFingerprint,
-        // Include session-level accumulated data
-        sessionMeta: {
-          pdfs_read: this.pdfsRead,
-          reading_time_seconds: this.totalReadingTimeSec
-        },
-        events: eventsToSend
-      };
-
-      if (navigator.sendBeacon && document.visibilityState === 'hidden') {
-        const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
-        const sent = navigator.sendBeacon(CONFIG.DATA_PUSH, blob);
-        if (sent) {
-          this.buffer = [];
-          this._saveBuffer();
-        }
-        return;
-      }
-
-      try {
-        const response = await fetch(CONFIG.DATA_PUSH, {
+        const url = `${SUPABASE_URL}/rest/v1/${TABLE}?on_conflict=anon_id,date&apikey=${SUPABASE_ANON_KEY}`;
+        const resp = await fetch(url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Prefer': 'resolution=merge-duplicates'
+          },
+          body: JSON.stringify(body)
         });
 
-        if (response.ok || response.status === 207) {
-          this.buffer = this.buffer.slice(eventsToSend.length);
-          this._saveBuffer();
-        } else {
-          throw new Error(`HTTP ${response.status}`);
-        }
-      } catch (e) {
-        // Keep events in buffer — they'll be retried on next flush
+        if (!resp.ok) throw new Error(resp.status);
+        localStorage.removeItem(STORAGE_PENDING);
+      } catch (err) {
+        this._savePending(fields);
       }
     }
 
-    // ─── Batch Timer ───
-
-    _startBatchTimer() {
-      if (this._batchTimerRef) clearInterval(this._batchTimerRef);
-      this._batchTimerRef = setInterval(() => {
-        this.flush();
-      }, CONFIG.BATCH_INTERVAL);
+    async _getExisting(date) {
+      try {
+        const url = `${SUPABASE_URL}/rest/v1/${TABLE}?anon_id=eq.${this.anonId}&date=eq.${date}&select=metrics,usermeta&apikey=${SUPABASE_ANON_KEY}`;
+        const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } });
+        const rows = await resp.json();
+        return (Array.isArray(rows) && rows.length > 0) ? rows[0] : null;
+      } catch { return null; }
     }
 
-    // ─── Event Listeners ───
+    _mergeRow(existing, diff) {
+      const result = {};
+      // Metrics
+      if (diff.metrics) {
+        const b = existing?.metrics || { total_reading_sec: 0, pdf_opens_total: 0, pdf_closes_total: 0, pdfs_read: {} };
+        const d = diff.metrics;
+        const m = { ...b };
+        m.total_reading_sec = (b.total_reading_sec || 0) + (d.total_reading_sec || 0);
+        m.pdf_opens_total = (b.pdf_opens_total || 0) + (d.pdf_opens_total || 0);
+        m.pdf_closes_total = (b.pdf_closes_total || 0) + (d.pdf_closes_total || 0);
+        m.pdfs_read = { ...(b.pdfs_read || {}) };
+        for (const [t, p] of Object.entries(d.pdfs_read || {})) {
+          if (m.pdfs_read[t]) {
+            m.pdfs_read[t] = { opens: (m.pdfs_read[t].opens || 0) + p.opens, duration_sec: (m.pdfs_read[t].duration_sec || 0) + p.duration_sec };
+          } else {
+            m.pdfs_read[t] = { ...p };
+          }
+        }
+        result.metrics = m;
+      }
+      // UserMeta
+      if (diff.usermeta) {
+        const b = existing?.usermeta || { session: {}, engagement: { scroll_events: 0, zoom_events: 0, button_clicks: {}, keyboard_shortcuts: {} }, state: {} };
+        const d = diff.usermeta;
+        const u = { ...b };
+        if (d.session && Object.keys(b.session).length === 0) u.session = d.session;
+        if (d.state) u.state = d.state;
+        if (d.engagement) {
+          const be = b.engagement, de = d.engagement;
+          u.engagement = {
+            scroll_events: (be.scroll_events || 0) + (de.scroll_events || 0),
+            zoom_events: (be.zoom_events || 0) + (de.zoom_events || 0),
+            button_clicks: { ...(be.button_clicks || {}) },
+            keyboard_shortcuts: { ...(be.keyboard_shortcuts || {}) }
+          };
+          for (const [k, v] of Object.entries(de.button_clicks || {})) u.engagement.button_clicks[k] = (u.engagement.button_clicks[k] || 0) + v;
+          for (const [k, v] of Object.entries(de.keyboard_shortcuts || {})) u.engagement.keyboard_shortcuts[k] = (u.engagement.keyboard_shortcuts[k] || 0) + v;
+        }
+        result.usermeta = u;
+      }
+      return result;
+    }
+
+    _savePending(fields) { try { const e = JSON.parse(localStorage.getItem(STORAGE_PENDING) || '{}'); localStorage.setItem(STORAGE_PENDING, JSON.stringify(this._mergeRow(e, fields))); } catch { } }
+    async _retryPending() { try { const r = localStorage.getItem(STORAGE_PENDING); if (r) await this._upsert(JSON.parse(r)); } catch { } }
+
+    // ═══════════════════════════════════════════════════
+    //  Data Preparation
+    // ═══════════════════════════════════════════════════
+
+    _prepareSessionMeta() {
+      const flag = `materio_meta_v4_${todayISO()}`;
+      if (localStorage.getItem(flag) === '1') return;
+      this.usermetaDiff.session = { user_agent: navigator.userAgent, device: detectDeviceType(), screen: `${screen.width}x${screen.height}`, url: window.location.href };
+      fetch('https://api.ipify.org?format=json', { signal: AbortSignal.timeout(2000) })
+        .then(r => r.json()).then(d => { if(this.usermetaDiff.session) this.usermetaDiff.session.ip = d.ip; }).catch(() => {});
+      localStorage.setItem(flag, '1');
+    }
+
+    _refreshStateSnapshot() {
+      this.usermetaDiff.state = { updated: new Date().toISOString(), settings: getMaterialCookies(), common: {} };
+      ['theme', 'activeTab', 'notificationsEnabled'].forEach(name => {
+        const val = getCookieValue(name); if (val !== null) this.usermetaDiff.state.common[name] = val;
+      });
+    }
+
+    // ═══════════════════════════════════════════════════
+    //  PDF Tracking (Metrics)
+    // ═══════════════════════════════════════════════════
+
+    _openPdf(rawTitle) {
+      if (this._pdfTitle || this._isPdfOpening) return;
+      this._isPdfOpening = true;
+      const title = (rawTitle || 'unknown').trim().toLowerCase();
+      this._pdfTitle = title;
+      this._pdfOpenTs = Date.now();
+      this._pdfActiveMs = 0;
+      this._pdfHiddenAt = null;
+      this.metricsDiff.pdf_opens_total += 1;
+      if (!this.metricsDiff.pdfs_read[title]) this.metricsDiff.pdfs_read[title] = { opens: 0, duration_sec: 0 };
+      this.metricsDiff.pdfs_read[title].opens += 1;
+      this._isPdfOpening = false;
+    }
+
+    _closePdf() {
+      if (!this._pdfTitle) return;
+      const sec = Math.round(this._computeActiveMs() / 1000);
+      if (sec > 0) {
+        this.metricsDiff.total_reading_sec += sec;
+        const pdf = this.metricsDiff.pdfs_read[this._pdfTitle];
+        if (pdf) pdf.duration_sec += sec;
+      }
+      this.metricsDiff.pdf_closes_total += 1;
+      this._pdfTitle = null; this._pdfOpenTs = null;
+    }
+
+    _computeActiveMs() {
+      if (!this._pdfOpenTs) return this._pdfActiveMs;
+      const now = Date.now();
+      return this._pdfActiveMs + (this._pdfHiddenAt ? (this._pdfHiddenAt - this._pdfOpenTs) : (now - this._pdfOpenTs));
+    }
+
+    _setupPdfTracking() {
+      const p = document.getElementById('popup'); if (!p) return;
+      const obs = new MutationObserver((ms) => {
+        for (const m of ms) {
+          if (m.attributeName === 'style') {
+            const v = p.style.display !== 'none' && p.style.display !== '';
+            if (v && !this._pdfTitle) { this._captureTitle(); this._openPdf(this._pendingPdfTitle || 'Unknown'); }
+            else if (!v && this._pdfTitle) this._closePdf();
+          }
+          if (m.attributeName === 'class' && p.classList.contains('closing') && this._pdfTitle) this._closePdf();
+        }
+      });
+      obs.observe(p, { attributes: true, attributeFilter: ['style', 'class'] });
+      document.getElementById('submitButton')?.addEventListener('click', () => this._captureTitle());
+    }
+
+    _captureTitle() {
+      try {
+        const s = document.getElementById('subjectSelect')?.options[document.getElementById('subjectSelect')?.selectedIndex]?.text;
+        const t = document.getElementById('topicSelect')?.options[document.getElementById('topicSelect')?.selectedIndex]?.text;
+        if (s && s !== 'Select Subject') this._pendingPdfTitle = (t && t !== 'Select Topic') ? `${s} - ${t}` : s;
+        else this._pendingPdfTitle = (t && t !== 'Select Topic') ? t : 'Unknown Document';
+      } catch { this._pendingPdfTitle = 'Unknown Document'; }
+    }
+
+    // ═══════════════════════════════════════════════════
+    //  Engagement Tracking (UserMeta)
+    // ═══════════════════════════════════════════════════
+
+    _bumpBtn(k) { this.usermetaDiff.engagement.button_clicks[k] = (this.usermetaDiff.engagement.button_clicks[k] || 0) + 1; }
+    _bumpSht(k) { this.usermetaDiff.engagement.keyboard_shortcuts[k] = (this.usermetaDiff.engagement.keyboard_shortcuts[k] || 0) + 1; }
+
+    _setupEngagements() {
+      const bMap = { 'submitButton': 'start_reading', 'bugReportBtn': 'bug_report_open', 'quickSearchInput': 'search_focus', 'aiSearchToggle': 'ai_search_toggle', 'aiConnectorsBanner': 'mcp_banner', 'closePopup': 'pdf_close_btn', 'sharePdfButton': 'share_pdf', 'downloadButton': 'download_pdf', 'fullscreenButton': 'fullscreen_pdf', 'keyboardShortcutsBtn': 'shortcuts_open' };
+      for (const [id, k] of Object.entries(bMap)) { const el = document.getElementById(id); if (el) el.addEventListener(id==='quickSearchInput'?'focus':'click', () => this._bumpBtn(k)); }
+      const mFns = { 'openMcpModal': 'mcp_open', 'closeMcpModal': 'mcp_close', 'openExamModal': 'exam_open', 'closeExamModal': 'exam_close', 'closePromoModal': 'promo_close' };
+      for (const [f, k] of Object.entries(mFns)) { const o = window[f]; if (typeof o === 'function') { window[f] = (...a) => { this._bumpBtn(k); return o.apply(window, a); }; } }
+      const oF = window.openDynamicForm;
+      if (typeof oF === 'function') { window.openDynamicForm = (t, ...a) => { this._bumpBtn(`form_${(t || 'unknown').replace(/[^a-z0-9]/gi, '_')}`); return oF(t, ...a); }; }
+      document.querySelectorAll('.tab-link[data-tab]').forEach(l => l.addEventListener('click', () => this._bumpBtn(`tab_${l.getAttribute('data-tab')}`)));
+      const pMod = document.getElementById('promoModal');
+      if (pMod) {
+        new MutationObserver(() => {
+          if (pMod.classList.contains('show') && pMod.style.display !== 'none') {
+            this._bumpBtn('promo_view');
+            const t = pMod.querySelector('.promo-title, h2')?.textContent.trim().toLowerCase().replace(/[^a-z0-9]/gi, '_');
+            if (t) this._bumpBtn(`promo_view_${t}`);
+          }
+        }).observe(pMod, { attributes: true, attributeFilter: ['style', 'class'] });
+      }
+      let sT; window.addEventListener('scroll', () => { clearTimeout(sT); sT = setTimeout(()=>this.usermetaDiff.engagement.scroll_events++, 300); }, { passive:true });
+      window.addEventListener('message', (e) => { if (e.origin === window.location.origin && (e.data?.type === 'pdfZoom' || e.data?.type === 'scalechanging')) this.usermetaDiff.engagement.zoom_events++; });
+      document.addEventListener('keydown', (e) => { if (e.ctrlKey) { if (e.key.toLowerCase() === 's') this._bumpSht('ctrl_s'); if (e.key.toLowerCase() === 'p') this._bumpSht('ctrl_p'); if (e.key.toLowerCase() === 'u') this._bumpSht('ctrl_u'); if (e.shiftKey && e.key.toLowerCase() === 'i') this._bumpSht('ctrl_shift_i'); } if (e.key === 'F12') this._bumpSht('f12'); });
+    }
 
     _setupEventListeners() {
-      // Visibility change — track engagement + flush + manage PDF active time
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden') {
-          this._stopEngagement();
-          this._handlePdfHidden();
-          this.flush();
-        } else {
-          this._startEngagement();
-          this._handlePdfVisible();
-        }
-      });
-
-      // Before unload — final flush with pdf_close
-      window.addEventListener('beforeunload', () => {
-        this._stopEngagement();
-        if (this.currentPdf) {
-          this._closePdfSession();
-        }
-        this.flush();
-      });
-
-      // PDF tracking — the core fix for pdf_close
-      this._setupPdfTracking();
-
-      // Dropdown selection capture
-      const submitBtn = document.getElementById('submitButton');
-      if (submitBtn) {
-        submitBtn.addEventListener('click', () => {
-          this._captureDropdownSelection();
-        });
-      }
-
-      // Listen for login events to re-identify
-      window.addEventListener('storage', (e) => {
-        if (e.key === CONFIG.STORAGE_KEY_USER && e.newValue) {
-          this.hasIdentified = false;
-          this._verify();
-        }
-      });
-
-      // Listen for PDF engagement messages from iframe
-      window.addEventListener('message', (event) => {
-        if (event.origin !== window.location.origin) return;
-        this._handlePdfIframeMessage(event.data);
-      });
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { this._pdfHiddenAt = Date.now(); } else if (this._pdfOpenTs && this._pdfHiddenAt) { this._pdfActiveMs += (this._pdfHiddenAt - this._pdfOpenTs); this._pdfHiddenAt = null; this._pdfOpenTs = Date.now(); } });
+      window.addEventListener('beforeunload', () => { if (this._pdfTitle) this._closePdf(); this._flushViaBeacon(); });
+      window.addEventListener('storage', (e) => { if (e.key === 'materio_user' && e.newValue) this._backfillUserId(); });
     }
+    _startPeriodicFlush() { setInterval(() => this._flushAll(), FLUSH_INTERVAL_MS); }
+    _startCookiePolling() { setInterval(() => { if (document.cookie !== this._lastCookieSnapshot) { this._lastCookieSnapshot = document.cookie; this._refreshStateSnapshot(); this._flushAll(); } }, COOKIE_POLL_MS); }
 
-    // ─── Page Engagement ───
-
-    _startEngagement() {
-      this.engagementStartTime = Date.now();
+    async _flushAll() {
+      const p = {};
+      if (this.metricsDiff.pdf_opens_total > 0 || this.metricsDiff.total_reading_sec > 0) { p.metrics = { ...this.metricsDiff }; this.metricsDiff = { total_reading_sec: 0, pdf_opens_total: 0, pdf_closes_total: 0, pdfs_read: {} }; }
+      const u = this.usermetaDiff; if (u.session || u.state || u.engagement.scroll_events > 0 || Object.keys(u.engagement.button_clicks).length > 0) { p.usermeta = { ...u }; this.usermetaDiff = { session: null, engagement: { scroll_events: 0, zoom_events: 0, button_clicks: {}, keyboard_shortcuts: {} }, state: null }; }
+      if (Object.keys(p).length > 0) await this._upsert(p);
     }
-
-    _stopEngagement() {
-      const timeSpent = Date.now() - this.engagementStartTime;
-      if (timeSpent >= CONFIG.MIN_ENGAGEMENT_TIME) {
-        this.push('user_engagement', {
-          duration_ms: timeSpent,
-          duration_sec: Math.round(timeSpent / 1000)
-        });
-      }
+    _flushViaBeacon() {
+      const p = { metrics: this.metricsDiff, usermeta: { ...this.usermetaDiff, state: { ...this.usermetaDiff.state, updated: new Date().toISOString() } } };
+      this._savePending(p);
+      try { const b = { anon_id: this.anonId, date: todayISO(), user_id: this._readUserId(), ...p }; navigator.sendBeacon(`${SUPABASE_URL}/rest/v1/${TABLE}?on_conflict=anon_id,date&apikey=${SUPABASE_ANON_KEY}`, new Blob([JSON.stringify(b)], { type: 'application/json' })); } catch { }
     }
-
-    // ─── PDF Active Time Tracking ───
-
-    _handlePdfHidden() {
-      if (this.currentPdf && !this.pdfWasHiddenAt) {
-        this.pdfWasHiddenAt = Date.now();
-      }
-    }
-
-    _handlePdfVisible() {
-      if (this.currentPdf && this.pdfWasHiddenAt) {
-        this.pdfActiveTime += (this.pdfWasHiddenAt - this.pdfStartTime);
-        this.pdfWasHiddenAt = null;
-        this.pdfStartTime = Date.now();
-      }
-    }
-
-    _getCurrentPdfActiveTime() {
-      if (!this.pdfStartTime) return this.pdfActiveTime;
-      const now = Date.now();
-      if (this.pdfWasHiddenAt) {
-        return this.pdfActiveTime + (this.pdfWasHiddenAt - this.pdfStartTime);
-      }
-      return this.pdfActiveTime + (now - this.pdfStartTime);
-    }
-
-    // ─── PDF Tracking ───
-
-    _captureDropdownSelection() {
-      try {
-        const subject = document.getElementById('subjectSelect');
-        const topic = document.getElementById('topicSelect');
-        const category = document.getElementById('categorySelect');
-
-        let name = '';
-
-        if (topic && topic.selectedIndex >= 0) {
-          name = topic.options[topic.selectedIndex].text;
-          if (name === 'Select Topic') name = '';
-        }
-
-        if (!name && category && category.selectedIndex >= 0) {
-          name = category.options[category.selectedIndex].text;
-          if (name === 'Select Category') name = '';
-        }
-
-        if (subject && subject.selectedIndex >= 0) {
-          const subName = subject.options[subject.selectedIndex].text;
-          if (subName !== 'Select Subject') {
-            this.pendingPdfTitle = name ? `${subName} - ${name}` : subName;
-          } else {
-            this.pendingPdfTitle = name || 'Unknown Document';
-          }
-        } else {
-          this.pendingPdfTitle = name || 'Unknown Document';
-        }
-      } catch (e) {
-        console.warn('Error capturing dropdown selection:', e);
-      }
-    }
-
-    /**
-     * v3 FIX: Dual-observer approach for reliable pdf_close detection.
-     * 
-     * The old v2 observer only watched for style attribute changes on #popup.
-     * Problem: The close flow is popup.classList.add('closing') → animation → 
-     * popup.style.display='none'. The MutationObserver fires on the style change,
-     * but by then the animation has already run. More critically, if the observer
-     * misses the exact style change (race with multiple listeners in caching.js),
-     * pdf_close never fires.
-     * 
-     * v3 Fix: We observe BOTH attributes AND classList changes. When 'closing' 
-     * class is added, we immediately fire pdf_close (the user has initiated close).
-     * We also keep the display='none' check as a safety net.
-     */
-    _setupPdfTracking() {
-      const popup = document.getElementById('popup');
-      const popupContent = document.getElementById('popupContent');
-
-      if (!popup) return;
-
-      // Track whether we've already fired close for this session to prevent double-fire
-      let closeHandled = false;
-
-      const observer = new MutationObserver((mutations) => {
-        for (const mutation of mutations) {
-          if (mutation.type !== 'attributes') continue;
-
-          // Check 1: 'closing' class added → user clicked close
-          if (mutation.attributeName === 'class') {
-            if (popup.classList.contains('closing') && this.currentPdf && !closeHandled) {
-              closeHandled = true;
-              this._handlePdfClose();
-            }
-            // 'closing' class removed + popup visible → new PDF opened
-            if (!popup.classList.contains('closing') && 
-                popup.style.display !== 'none' && popup.style.display !== '') {
-              closeHandled = false;
-            }
-          }
-
-          // Check 2: style.display changed (safety net)
-          if (mutation.attributeName === 'style') {
-            const isVisible = popup.style.display !== 'none' && popup.style.display !== '';
-
-            if (isVisible && !this.currentPdf) {
-              closeHandled = false;
-              this._captureDropdownSelection();
-              this._handlePdfOpen(popupContent);
-            } else if (!isVisible && this.currentPdf && !closeHandled) {
-              closeHandled = true;
-              this._handlePdfClose();
-            }
-          }
-        }
-      });
-
-      observer.observe(popup, { attributes: true, attributeFilter: ['style', 'class'] });
-    }
-
-    _extractPdfUrl(container) {
-      const iframe = container.querySelector('iframe');
-      let extractedUrl = null;
-
-      if (iframe) {
-        try {
-          if (iframe.src && (iframe.src.includes('viewer.html') || iframe.src.includes('oread/web/viewer.html'))) {
-            const src = new URL(iframe.src, window.location.origin);
-            const fileParam = src.searchParams.get('file');
-            if (fileParam) {
-              extractedUrl = decodeURIComponent(fileParam);
-            }
-          }
-          if (!extractedUrl && iframe.src && !iframe.src.includes('viewer.html')) {
-            extractedUrl = iframe.src;
-          }
-        } catch (e) {
-          if (iframe.src) extractedUrl = iframe.src;
-        }
-
-        if (!isValidPdfUrl(extractedUrl)) {
-          const attrUrl = iframe.getAttribute('data-src') || iframe.getAttribute('data-file-url');
-          if (attrUrl && isValidPdfUrl(attrUrl)) extractedUrl = attrUrl;
-        }
-      }
-
-      if (!isValidPdfUrl(extractedUrl)) {
-        const containerUrl = container.getAttribute('data-pdf-url') || container.getAttribute('data-filename');
-        if (containerUrl) extractedUrl = containerUrl;
-      }
-
-      if (!isValidPdfUrl(extractedUrl) && window.materioCurrentPdfUrl) {
-        extractedUrl = window.materioCurrentPdfUrl;
-      }
-
-      return extractedUrl;
-    }
-
-    _handlePdfOpen(container) {
-      const title = this.pendingPdfTitle || 'Unknown PDF';
-
-      // Attempt 1: immediate extraction
-      let pdfUrl = this._extractPdfUrl(container);
-
-      if (isValidPdfUrl(pdfUrl)) {
-        this._startPdfSession(pdfUrl, title);
-        return;
-      }
-
-      // Attempt 2: delayed extraction (iframe may not be loaded yet)
-      setTimeout(() => {
-        pdfUrl = this._extractPdfUrl(container);
-
-        if (!isValidPdfUrl(pdfUrl) && window.materioCurrentPdfUrl) {
-          pdfUrl = window.materioCurrentPdfUrl;
-        }
-
-        if (!isValidPdfUrl(pdfUrl) && this.pendingPdfTitle && this.pendingPdfTitle !== 'Unknown Document') {
-          pdfUrl = `title:${this.pendingPdfTitle}`;
-        }
-
-        if (isValidPdfUrl(pdfUrl) || (pdfUrl && pdfUrl.startsWith('title:'))) {
-          this._startPdfSession(pdfUrl, title);
-        }
-      }, CONFIG.PDF_URL_RETRY_DELAY);
-    }
-
-    _startPdfSession(pdfUrl, title) {
-      this.currentPdf = pdfUrl;
-      this.currentPdfTitle = title;
-      this.pdfStartTime = Date.now();
-      this.pdfActiveTime = 0;
-      this.pdfWasHiddenAt = null;
-      this._lastPdfEngagementAt = 0;
-
-      // v3: Slim event — only title, no device fingerprint per-event
-      this.push('pdf_open', {
-        title: title
-      });
-
-      // v3: Maintain pdfs_read map { title: count }
-      if (this.pdfsRead[title]) {
-        this.pdfsRead[title]++;
-      } else {
-        this.pdfsRead[title] = 1;
-      }
-    }
-
-    _handlePdfClose() {
-      if (!this.currentPdf) return;
-      this._closePdfSession();
-    }
-
-    _closePdfSession() {
-      if (!this.currentPdf) return;
-
-      const activeDurationMs = this._getCurrentPdfActiveTime();
-      const activeDurationSec = Math.round(activeDurationMs / 1000);
-
-      // v3: Slim event — title + reading_time_sec, no URL/fingerprint bloat
-      this.push('pdf_close', {
-        title: this.currentPdfTitle,
-        reading_time_sec: activeDurationSec
-      });
-
-      // v3: Accumulate total reading time across the session
-      this.totalReadingTimeSec += activeDurationSec;
-
-      this.currentPdf = null;
-      this.currentPdfTitle = null;
-      this.pdfStartTime = null;
-      this.pdfActiveTime = 0;
-      this.pdfWasHiddenAt = null;
-    }
-
-    // ─── PDF Engagement from Iframe ───
-
-    _handlePdfIframeMessage(data) {
-      if (!data || !data.type) return;
-      if (!this.currentPdf) return;
-
-      const now = Date.now();
-      const shouldThrottle = (now - this._lastPdfEngagementAt) < CONFIG.PDF_ENGAGEMENT_THROTTLE;
-
-      switch (data.type) {
-        case 'pdfPageChanged':
-        case 'pagechanging':
-          this.push('pdf_page_nav', {
-            page: data.pageNumber || data.page || null,
-            totalPages: data.pagesCount || data.totalPages || null
-          });
-          this._lastPdfEngagementAt = now;
-          break;
-
-        case 'pdfScroll':
-        case 'scroll':
-          if (!shouldThrottle) {
-            this.push('pdf_scroll', {
-              scrollPosition: data.scrollTop || data.position || null
-            });
-            this._lastPdfEngagementAt = now;
-          }
-          break;
-
-        case 'pdfTextSelected':
-        case 'textlayerrendered':
-          if (!shouldThrottle) {
-            this.push('pdf_interaction', {
-              action: 'text_select'
-            });
-            this._lastPdfEngagementAt = now;
-          }
-          break;
-
-        case 'pdfZoom':
-        case 'scalechanging':
-          this.push('pdf_interaction', {
-            action: 'zoom',
-            scale: data.scale || data.value || null
-          });
-          this._lastPdfEngagementAt = now;
-          break;
-
-        case 'pdfSearch':
-        case 'find':
-          this.push('pdf_interaction', {
-            action: 'search'
-          });
-          this._lastPdfEngagementAt = now;
-          break;
-      }
-    }
+    push(e, p) { this._bumpBtn(e); }
+    flush() { this._flushAll(); }
   }
 
-  window.MetricsClient = new MetricsClient();
-  window.SyncManager = window.MetricsClient;
-
-  // Backward-compat: main.js share feature references window.pdfAnalytics.currentPdf
-  Object.defineProperty(window, 'pdfAnalytics', {
-    get() { return window.MetricsClient; },
-    configurable: true
-  });
+  const analytics = new MaterioAnalytics();
+  window.MetricsClient = analytics; window.SyncManager = analytics;
+  Object.defineProperty(window, 'pdfAnalytics', { get: () => ({ currentPdf: analytics._pdfTitle ? `title:${analytics._pdfTitle}` : null }), configurable: true });
 })();

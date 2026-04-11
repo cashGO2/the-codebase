@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
       password, 
       profilePicture, 
       otp,
-      avatarVariant = 'beam', // beam, marble, pixel, sunset, bauhaus, ring
+      avatarVariant = 'shape', // shape, character, face (Avvvatars styles)
       inviteCode, // Optional gift code
       branch = 'Computer Science and Engineering',
       currentYear,
@@ -107,8 +107,8 @@ module.exports = async (req, res) => {
     const recoveryKey = generateRecoveryKey();
     const hashedPassword = await hashPassword(password);
     
-    // Default avatar if none provided (Boring Avatars - user selected variant)
-    const boringAvatarUrl = `https://source.boringavatars.com/${avatarVariant}/120/${encodeURIComponent(username)}?colors=264653,2a9d8f,e9c46a,f4a261,e76f51`;
+    // Default fallback if capture fails (UI Avatars - neutral and clean)
+    const fallbackAvatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random&size=128&bold=true`;
     
     const userData = {
       username,
@@ -123,8 +123,8 @@ module.exports = async (req, res) => {
       passout_year: passoutYear,
       specialization: specialization,
       university_roll_no: email.split('@')[0], // Entire numeric string
-      // Keep the user's selected avatar immediately and replace with storage URL once upload succeeds.
-      profile_picture: hasInlineProfilePicture ? profilePicture : boringAvatarUrl,
+      // Use captured picture if available, otherwise neutral fallback
+      profile_picture: hasInlineProfilePicture ? profilePicture : fallbackAvatarUrl,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
