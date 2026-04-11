@@ -119,8 +119,7 @@
         window.addEventListener('load', function () {
             // 1. Smart Clear Cache logic (Only Once per version/push)
             {% if site.force_clear_cache %}
-            const CLEAR_VERSION = "{{ site.time | date: '%s' }}"; 
-            if (localStorage.getItem('m_last_force_clear') !== CLEAR_VERSION) {
+            if (!localStorage.getItem('m_last_force_clear')) {
                 // Targeted clear to avoid refresh loops
                 const preserveKeys = ['m_last_force_clear'];
                 const keys = Object.keys(localStorage);
@@ -128,14 +127,14 @@
                     if (!preserveKeys.includes(k)) localStorage.removeItem(k);
                 });
                 
-                localStorage.setItem('m_last_force_clear', CLEAR_VERSION);
+                localStorage.setItem('m_last_force_clear', 'Done');
                 
                 if (window.caches && caches.keys) {
                     caches.keys().then(function (names) {
                         names.forEach(function (name) { caches.delete(name); });
                     });
                 }
-                console.log('Targeted force cache clear executed for version: ' + CLEAR_VERSION);
+                console.log('Targeted force cache clear executed.');
             }
             {% endif %}
 

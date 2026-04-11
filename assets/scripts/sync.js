@@ -54,18 +54,30 @@
 
   function getSettings() {
     const s = {};
+    const trackKeys = [
+      'theme', 'remindLaterTime', 'promoLastShown', 'promoRemindLaterTime', 
+      'usr_enr', 'invertMode', 'paperMode', 'nightReading', 'einkMode', 
+      'bgToggle', 'hapticToggle', 'haptic_feedback', 'notifications_enabled',
+      'notificationsToggle'
+    ];
+
+    // Check Cookies
     document.cookie.split(';').forEach(c => {
       const p = c.trim().split('=');
       if (p.length < 2) return;
       const k = p[0];
-      if (k === 'theme' || k === 'remindLaterTime' || k.startsWith('materio_') && !k.includes('auth') && !k.includes('user')) {
-        s[k.replace('materio_', '')] = p[1];
+      const cleanK = k.replace('materio_', '');
+      if (trackKeys.includes(cleanK) || k.startsWith('materio_') && !k.includes('auth') && !k.includes('user')) {
+        s[cleanK] = p[1];
       }
     });
-    ['promoLastShown', 'promoRemindLaterTime', 'usr_enr'].forEach(k => {
-      const val = localStorage.getItem(k);
-      if (val) s[k] = val;
+
+    // Check LocalStorage
+    trackKeys.forEach(k => {
+      const val = localStorage.getItem(k) || localStorage.getItem(`materio_${k}`);
+      if (val && !s[k]) s[k] = val;
     });
+
     return s;
   }
 
@@ -106,7 +118,6 @@
       this._setupListeners();
       this._setupPdfObserver();
       this._setupClickTracking();
-      console.log('Materio Analytics v4 Started. ID:', this.anonId);
       setInterval(() => this._flush(), 300000); // 5-minute interval
       setTimeout(() => this._flush(), 5000);   // Delayed initial capture
     }
@@ -178,14 +189,12 @@
       if (!this.metricsDiff.pdf_counts[this._pdfTitle]) this.metricsDiff.pdf_counts[this._pdfTitle] = { count: 0, time_sec: 0 };
       this.metricsDiff.pdf_counts[this._pdfTitle].count += 1;
       
-      console.log('PDF Tracked: Open ->', this._pdfTitle);
       this._isPdfOpening = false;
       this._flush(); // Immediate sync on open
     }
 
     _closePdf() { 
       if (this._pdfTitle) { 
-        console.log('PDF Tracked: Close ->', this._pdfTitle);
         this._bumpEngagement(); 
         this._flush(); // Immediate sync on close
         this._pdfTitle = null; 
@@ -215,6 +224,21 @@
       const observer = new MutationObserver(checkPdf);
       observer.observe(p, { attributes: true, attributeFilter: ['style', 'class'], childList: true, subtree: true });
       
+      // 2. Wallpaper Store Observer
+      const w = document.getElementById('customWallpaperStoreModal');
+      if (w) {
+        new MutationObserver(() => {
+          const isVisible = w.classList.contains('show') || w.style.display === 'flex';
+          const wasOpen = w.dataset.wasOpen === 'true';
+          if (isVisible && !wasOpen) {
+            this.usermetaDiff.engagement.clicks['wallpaper_store_open'] = (this.usermetaDiff.engagement.clicks['wallpaper_store_open'] || 0) + 1;
+            w.dataset.wasOpen = 'true';
+          } else if (!isVisible && wasOpen) {
+            w.dataset.wasOpen = 'false';
+          }
+        }).observe(w, { attributes: true, attributeFilter: ['style', 'class'] });
+      }
+
       // Also poll slightly for the first 10 seconds to ensure we didn't miss the initial load
       let polls = 0;
       const poll = setInterval(() => {
@@ -237,10 +261,57 @@
     }
 
     _setupClickTracking() {
-      const ids = { 'submitButton': 'start_reading', 'bugReportBtn': 'bug_report', 'aiConnectorsBanner': 'mcp_banner', 'sharePdfButton': 'share', 'downloadButton': 'download' };
-      Object.entries(ids).forEach(([id, k]) => document.getElementById(id)?.addEventListener('click', () => { this.usermetaDiff.engagement.clicks[k] = (this.usermetaDiff.engagement.clicks[k] || 0) + 1; }));
+      // 1. Static Mappings (IDs to friendly keys)
+      const idMap = {
+        'submitButton': 'start_reading',
+        'bugReportBtn': 'bug_report',
+        'aiConnectorsBanner': 'mcp_banner',
+        'sharePdfButton': 'share',
+        'downloadButton': 'download',
+        'logout-btn': 'logout'
+      };
+
+      // 2. Tab Navigation
+      const tabIds = ['home', 'chat', 'notebooks', 'downloads', 'settings'];
+      
+      // 3. Settings Cards
+      const cardIds = [
+        'invertMode', 'paperModeCard', 'nightReadingCard', 'einkModeCard', 
+        'bgToggleCard', 'hapticToggleCard', 'wallpaperSelectionCard', 
+        'getinsights', 'notificationsToggleCard', 'clearSiteDataCard', 
+        'creatorInfo', 'themeCard'
+      ];
+
+      document.addEventListener('click', (e) => {
+        const target = e.target.closest('[id], .card-layout, .tab-link');
+        if (!target) return;
+
+        let key = null;
+        const id = target.id;
+
+        // Priority Logic:
+        if (idMap[id]) key = idMap[id];
+        else if (tabIds.includes(id)) key = `tab_${id}`;
+        else if (cardIds.includes(id) || target.classList.contains('card-layout')) key = `card_${id || 'unnamed'}`;
+        else if (id === 'profile-menu-item') {
+          const isNotLoggedIn = !localStorage.getItem('materio_auth_token') && !localStorage.getItem('materio_user');
+          key = isNotLoggedIn ? 'login_click' : 'account_menu_open';
+        }
+        else if (target.getAttribute('href')?.includes('/account/profile')) key = 'profile_view';
+
+        if (key) {
+          this.usermetaDiff.engagement.clicks[key] = (this.usermetaDiff.engagement.clicks[key] || 0) + 1;
+        }
+      }, { passive: true });
+
+      // Keep dynamic form tracking
       const orig = window.openDynamicForm;
-      if (typeof orig === 'function') { window.openDynamicForm = (t, ...a) => { this.usermetaDiff.engagement.clicks[`form_${t}`] = (this.usermetaDiff.engagement.clicks[`form_${t}`] || 0) + 1; return orig(t, ...a); }; }
+      if (typeof orig === 'function') {
+        window.openDynamicForm = (t, ...a) => {
+          this.usermetaDiff.engagement.clicks[`form_${t}`] = (this.usermetaDiff.engagement.clicks[`form_${t}`] || 0) + 1;
+          return orig(t, ...a);
+        };
+      }
     }
 
     _setupListeners() {
@@ -269,8 +340,6 @@
       const hasSession = !!payload.usermeta.session || !!payload.usermeta.state;
       
       if (!hasMetrics && !hasEngagement && !hasSession) return;
-      
-      console.log('Analytics Flush:', payload);
       
       this.metricsDiff = { total_reading_sec: 0, pdf_counts: {} };
       this.usermetaDiff.total_engagement_sec = 0; this.usermetaDiff.session = null; this.usermetaDiff.engagement = { clicks: {}, scroll: 0, zoom: 0, shortcuts: {} }; this.usermetaDiff.state = null;

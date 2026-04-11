@@ -505,10 +505,31 @@ function findSemesterData(data, semester) {
         return null;
     }
 
-    // Find specific semester
-    const found = data.semesters.find(s => s.semester === semester);
+    // Find all matching semesters
+    const matches = data.semesters.filter(s => s.semester === semester);
+    if (matches.length === 0) return null;
+    if (matches.length === 1) return matches[0];
 
-    return found || null;
+    // If multiple entries for the same semester (e.g. Mid-Sem, End-Sem, Viva)
+    // Find the one that is currently relevant
+    const now = getCurrentDate();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    // Priority 1: Pick the one that is currently active/ongoing
+    const ongoing = matches.find(semData => {
+        const startDate = new Date(semData.examPeriod.startDate);
+        const startDateOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+        const endDate = semData.examPeriod.endDate ? new Date(semData.examPeriod.endDate) : null;
+        return today >= startDateOnly && (!endDate || now <= endDate);
+    });
+    if (ongoing) return ongoing;
+
+    // Priority 2: Pick the one that is upcoming soonest
+    const upcoming = matches
+        .filter(semData => new Date(semData.examPeriod.startDate) > now)
+        .sort((a, b) => new Date(a.examPeriod.startDate) - new Date(b.examPeriod.startDate))[0];
+
+    return upcoming || matches[0];
 }
 
 function shouldDisplayExamCard(data, semesterData) {
