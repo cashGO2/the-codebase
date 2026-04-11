@@ -72,8 +72,8 @@
     constructor() {
       this.anonId = this._loadIdentity();
       this.userId = this._readUserId();
-      this.metricsDiff = { total_reading_time: 0, pdf_counts: {} };
-      this.usermetaDiff = { total_engagement_time: 0, session: null, engagement: { clicks: {}, scroll: 0, zoom: 0, shortcuts: {} }, state: null };
+      this.metricsDiff = { total_reading_sec: 0, pdf_counts: {} };
+      this.usermetaDiff = { total_engagement_sec: 0, session: null, engagement: { clicks: {}, scroll: 0, zoom: 0, shortcuts: {} }, state: null };
       
       this._pageActiveTs = Date.now();
       this._pdfOpenTs = null;
@@ -129,14 +129,14 @@
     _bumpEngagement() {
       const now = Date.now();
       const diff = Math.round((now - this._pageActiveTs) / 1000);
-      if (diff > 0) this.usermetaDiff.total_engagement_time += Math.min(diff, 300); // Sanity cap 5 mins
+      if (diff > 0) this.usermetaDiff.total_engagement_sec += Math.min(diff, 300); // Sanity cap 5 mins
       this._pageActiveTs = now;
       if (this._pdfTitle && this._pdfOpenTs) {
         const pDiff = Math.round((now - this._pdfOpenTs) / 1000);
         if (pDiff > 0) {
-          this.metricsDiff.total_reading_time += pDiff;
-          if (!this.metricsDiff.pdf_counts[this._pdfTitle]) this.metricsDiff.pdf_counts[this._pdfTitle] = { count: 0, time: 0 };
-          this.metricsDiff.pdf_counts[this._pdfTitle].time += pDiff;
+          this.metricsDiff.total_reading_sec += pDiff;
+          if (!this.metricsDiff.pdf_counts[this._pdfTitle]) this.metricsDiff.pdf_counts[this._pdfTitle] = { count: 0, time_sec: 0 };
+          this.metricsDiff.pdf_counts[this._pdfTitle].time_sec += pDiff;
         }
         this._pdfOpenTs = now;
       }
@@ -148,7 +148,7 @@
       this._bumpEngagement();
       this._pdfTitle = (title || 'unknown').trim().toLowerCase();
       this._pdfOpenTs = Date.now();
-      if (!this.metricsDiff.pdf_counts[this._pdfTitle]) this.metricsDiff.pdf_counts[this._pdfTitle] = { count: 0, time: 0 };
+      if (!this.metricsDiff.pdf_counts[this._pdfTitle]) this.metricsDiff.pdf_counts[this._pdfTitle] = { count: 0, time_sec: 0 };
       this.metricsDiff.pdf_counts[this._pdfTitle].count += 1;
       this._isPdfOpening = false;
     }
@@ -196,10 +196,10 @@
       this._bumpEngagement();
       if (!this.usermetaDiff.state) this._refreshState();
       const payload = { metrics: { ...this.metricsDiff }, usermeta: { ...this.usermetaDiff } };
-      if (payload.metrics.total_reading_time <= 0 && Object.keys(payload.metrics.pdf_counts).length === 0 && !payload.usermeta.session && !payload.usermeta.state && Object.keys(payload.usermeta.engagement.clicks).length === 0) return;
+      if (payload.metrics.total_reading_sec <= 0 && Object.keys(payload.metrics.pdf_counts).length === 0 && !payload.usermeta.session && !payload.usermeta.state && Object.keys(payload.usermeta.engagement.clicks).length === 0) return;
       
-      this.metricsDiff = { total_reading_time: 0, pdf_counts: {} };
-      this.usermetaDiff.total_engagement_time = 0; this.usermetaDiff.session = null; this.usermetaDiff.engagement = { clicks: {}, scroll: 0, zoom: 0, shortcuts: {} }; this.usermetaDiff.state = null;
+      this.metricsDiff = { total_reading_sec: 0, pdf_counts: {} };
+      this.usermetaDiff.total_engagement_sec = 0; this.usermetaDiff.session = null; this.usermetaDiff.engagement = { clicks: {}, scroll: 0, zoom: 0, shortcuts: {} }; this.usermetaDiff.state = null;
 
       const url = `${SUPABASE_URL}/rest/v1/rpc/merge_daily_stats?apikey=${SUPABASE_ANON_KEY}`;
       const data = { p_anon_id: this.anonId, p_date: todayISO(), p_metrics_diff: payload.metrics, p_usermeta_diff: payload.usermeta, p_user_id: this.userId };
