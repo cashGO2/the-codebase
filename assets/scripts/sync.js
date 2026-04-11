@@ -15,12 +15,15 @@
       const keysToRemove = [];
       for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);
+        // CRITICAL: Preserve the force clear version key to avoid refresh loops
+        if (k === 'm_last_force_clear') continue;
+        
         if (k && (k.startsWith('m_') || k.startsWith('materio_meta_') || k.startsWith('materio_analytics_'))) {
           keysToRemove.push(k);
         }
       }
       keysToRemove.forEach(k => localStorage.removeItem(k));
-      localStorage.setItem('m_v4_migrated', '1');
+      localStorage.setItem('m_v4_migrated', 'true');
     }
   } catch (e) {}
 
@@ -162,16 +165,27 @@
       if (this._isPdfOpening) return;
       this._isPdfOpening = true;
       this._bumpEngagement();
-      this._pdfTitle = (title || 'unknown').trim().toLowerCase();
+      const cleanTitle = (title || 'unknown').trim().toLowerCase();
+      
+      // Prevent duplicate open calls for same title within 5s
+      if (this._pdfTitle === cleanTitle && (Date.now() - this._pdfOpenTs < 5000)) {
+        this._isPdfOpening = false;
+        return;
+      }
+
+      this._pdfTitle = cleanTitle;
       this._pdfOpenTs = Date.now();
       if (!this.metricsDiff.pdf_counts[this._pdfTitle]) this.metricsDiff.pdf_counts[this._pdfTitle] = { count: 0, time_sec: 0 };
       this.metricsDiff.pdf_counts[this._pdfTitle].count += 1;
+      
+      console.log('PDF Tracked: Open ->', this._pdfTitle);
       this._isPdfOpening = false;
       this._flush(); // Immediate sync on open
     }
 
     _closePdf() { 
       if (this._pdfTitle) { 
+        console.log('PDF Tracked: Close ->', this._pdfTitle);
         this._bumpEngagement(); 
         this._flush(); // Immediate sync on close
         this._pdfTitle = null; 
@@ -182,9 +196,10 @@
     _setupPdfObserver() {
       const p = document.getElementById('popup');
       if (!p) return;
-      const observer = new MutationObserver(() => {
+      
+      const checkPdf = () => {
         const iframe = p.querySelector('iframe');
-        const isVisible = p.offsetParent !== null || p.classList.contains('active') || p.style.display === 'block';
+        const isVisible = p.offsetParent !== null || p.style.display === 'block' || p.classList.contains('active');
         const hasSrc = iframe && iframe.src && !iframe.src.includes('about:blank');
         
         if (isVisible && hasSrc) {
@@ -195,8 +210,17 @@
         } else if (!isVisible && this._pdfTitle) {
           this._closePdf();
         }
-      });
+      };
+
+      const observer = new MutationObserver(checkPdf);
       observer.observe(p, { attributes: true, attributeFilter: ['style', 'class'], childList: true, subtree: true });
+      
+      // Also poll slightly for the first 10 seconds to ensure we didn't miss the initial load
+      let polls = 0;
+      const poll = setInterval(() => {
+        checkPdf();
+        if (++polls > 10) clearInterval(poll);
+      }, 1000);
     }
 
     _extractTitle(iframe) {
