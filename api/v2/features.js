@@ -1837,6 +1837,11 @@ async function handleAnalytics(req, res) {
       data.p_usermeta_diff.session.ip = ip;
     }
 
+    // Clean up p_user_id (convert empty/invalid strings to null for UUID cast)
+    if (!data.p_user_id || data.p_user_id === "" || data.p_user_id === "null") {
+      data.p_user_id = null;
+    }
+
     // Proxy specifically to the atomic merger RPC
     const { error } = await supabaseAdmin.rpc("merge_daily_stats", data);
 

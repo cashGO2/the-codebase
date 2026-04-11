@@ -77,7 +77,7 @@
       this._pdfOpenTs = null;
       this._pdfTitle = null;
       this._isPdfOpening = false;
-      this._hasActivity = true; // Start as true for initial load capture
+      this._lastActivityTs = Date.now(); // Track last interaction time
       this._init();
     }
 
@@ -126,15 +126,22 @@
 
     // [All other methods remain the same but optimized for stability]
     _bumpEngagement() {
-      if (!this._hasActivity && !this._pdfTitle) {
-        this._pageActiveTs = Date.now();
-        if (this._pdfOpenTs) this._pdfOpenTs = Date.now();
+      const now = Date.now();
+      const idleSec = (now - this._lastActivityTs) / 1000;
+      
+      // Idle Thresholds:
+      // - Standard Page: 60s
+      // - PDF Reading: 300s (5 mins grace for reading blocks)
+      const threshold = this._pdfTitle ? 300 : 60;
+      
+      if (idleSec > threshold) {
+        this._pageActiveTs = now;
+        if (this._pdfOpenTs) this._pdfOpenTs = now;
         return;
       }
 
-      const now = Date.now();
       const diff = Math.round((now - this._pageActiveTs) / 1000);
-      if (diff > 0) this.usermetaDiff.total_engagement_sec += Math.min(diff, 30); // Smaller sanity cap for idle periods
+      if (diff > 0) this.usermetaDiff.total_engagement_sec += Math.min(diff, 60);
       
       this._pageActiveTs = now;
 
@@ -147,8 +154,6 @@
         }
         this._pdfOpenTs = now;
       }
-      
-      this._hasActivity = false; // Reset activity flag
     }
 
     _openPdf(title) {
@@ -198,10 +203,13 @@
 
     _setupListeners() {
       const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart', 'mousemove'];
-      activityEvents.forEach(e => document.addEventListener(e, () => { this._hasActivity = true; }, { passive: true }));
+      activityEvents.forEach(e => document.addEventListener(e, () => { this._lastActivityTs = Date.now(); }, { passive: true }));
       
       document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') this._pageActiveTs = Date.now();
+        if (document.visibilityState === 'visible') {
+          this._pageActiveTs = Date.now();
+          this._lastActivityTs = Date.now(); 
+        }
         this._bumpEngagement();
       });
       window.addEventListener('beforeunload', () => { this._bumpEngagement(); this._flush(true); });
