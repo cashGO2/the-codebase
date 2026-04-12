@@ -2784,3 +2784,15 @@
         align-items: stretch;
       }
     }
+
+    /* Invisible Scrollbars for Admin Tables */
+    .admin-table-wrap-scroll {
+      max-height: 400px;
+      overflow-y: auto;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE/Edge */
+    }
+
+    .admin-table-wrap-scroll::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }

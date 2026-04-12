@@ -106,7 +106,7 @@ async function fetchServerStats() {
             const data = await response.json();
 
             const stats = {
-                pdfsRead: data.metrics.unique_pdfs_count || 0,
+                pdfsRead: data.metrics.pdfs_read_count || 0,
                 timeSpent: (data.metrics.reading_time_seconds || 0) + (data.metrics.engagement_time_seconds || 0),
                 streak: data.streak || 0,
                 history: data.history || [],
@@ -228,7 +228,7 @@ function renderTopUsersTable(rows) {
             <tr>
                 <td>${index + 1}</td>
                 <td><span class="admin-user-name" title="${displayName}">${displayName}</span></td>
-                <td>${escapeHtml(formatTime(row.reading_time_seconds || 0))}</td>
+                <td><span class="admin-reading-time">${escapeHtml(row.reading_time_human || '00:00:00')}</span></td>
                 <td>${row.pdf_reads || 0}</td>
             </tr>
         `;

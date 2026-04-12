@@ -28,7 +28,10 @@
   } catch (e) {}
 
   // ─── 2. Helpers ───
-  function todayISO() { return new Date().toISOString().slice(0, 10); }
+  function todayISO() { 
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
   function generateFingerprint() {
     const nav = window.navigator;
     const screen = window.screen;
@@ -97,14 +100,28 @@
     }
 
     _loadIdentity() {
+      // 1. Check LocalStorage
       let id = localStorage.getItem(STORAGE_ANON_ID);
+      
+      // 2. Fallback to Cookie (for cross-subdomain or persistence after LS clear)
+      if (!id) {
+        const cookies = document.cookie.split(';');
+        const found = cookies.find(c => c.trim().startsWith(STORAGE_ANON_ID + '='));
+        if (found) id = found.split('=')[1];
+      }
+
       const fp = generateFingerprint();
       
-      // If no ID but we have a fingerprint, we can prefix the fingerprint to avoid duplicates
       if (!id) {
-        // Generate a random ID with fingerprint seed
         id = fp + '-' + Math.random().toString(36).substring(2, 10);
         localStorage.setItem(STORAGE_ANON_ID, id);
+      }
+      
+      // Sync to cookie
+      if (id) {
+        const expiry = new Date();
+        expiry.setFullYear(expiry.getFullYear() + 2); // 2 years
+        document.cookie = `${STORAGE_ANON_ID}=${id}; expires=${expiry.toUTCString()}; path=/; SameSite=Lax`;
       }
       return id;
     }
@@ -118,19 +135,38 @@
       this._setupListeners();
       this._setupPdfObserver();
       this._setupClickTracking();
-      setInterval(() => this._flush(), 300000); // 5-minute interval
+      setInterval(() => this._flush(), 180000); // 3-minute interval (was 5)
       setTimeout(() => this._flush(), 5000);   // Delayed initial capture
     }
 
     _prepareSession() {
       const flag = `m_v4_meta_${todayISO()}`;
       if (localStorage.getItem(flag)) return;
+      
+      const url = new URL(window.location.href);
+      const utm = {};
+      const params = {};
+      const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'utm_id', 'gclid', 'fbclid', 'msclkid'];
+      
+      url.searchParams.forEach((v, k) => {
+        if (k === 'handoff') return;
+        if (utmKeys.includes(k)) {
+          utm[k.replace('utm_', '')] = v;
+        } else {
+          params[k] = v;
+        }
+      });
+
       this.usermetaDiff.session = {
         ua: navigator.userAgent,
         screen: `${screen.width}x${screen.height}`,
-        ref: document.referrer || null,
+        referrer: document.referrer || null,
         url: window.location.href,
-        fp: generateFingerprint() // Store the seed for server-side linking
+        path: window.location.pathname,
+        utm: Object.keys(utm).length ? utm : null,
+        campaign: utm.campaign || null,
+        params: Object.keys(params).length ? params : null,
+        fp: generateFingerprint()
       };
       localStorage.setItem(flag, '1');
     }
@@ -145,9 +181,9 @@
       const idleSec = (now - this._lastActivityTs) / 1000;
       
       // Idle Thresholds:
-      // - Standard Page: 60s
+      // - Standard Page: 120s (increased for better reader capture)
       // - PDF Reading: 300s (5 mins grace for reading blocks)
-      const threshold = this._pdfTitle ? 300 : 60;
+      const threshold = this._pdfTitle ? 300 : 120;
       
       if (idleSec > threshold) {
         this._pageActiveTs = now;
@@ -326,6 +362,7 @@
         this._bumpEngagement();
       });
       window.addEventListener('beforeunload', () => { this._bumpEngagement(); this._flush(true); });
+      window.addEventListener('pagehide', () => { this._bumpEngagement(); this._flush(true); });
     }
 
     async _flush(isBeacon = false) {
