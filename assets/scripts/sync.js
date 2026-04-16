@@ -95,7 +95,10 @@
       this._pdfOpenTs = null;
       this._pdfTitle = null;
       this._isPdfOpening = false;
-      this._lastActivityTs = Date.now(); // Track last interaction time
+      this._lastActivityTs = Date.now();
+      this._lastPdfScrollTs = Date.now();
+      this._flushTimer = null;
+      this._idleMs = { page: 120000, pdf: 300000 };
       this._init();
     }
 
@@ -135,8 +138,6 @@
       this._setupListeners();
       this._setupPdfObserver();
       this._setupClickTracking();
-      setInterval(() => this._flush(), 180000); // 3-minute interval (was 5)
-      setTimeout(() => this._flush(), 5000);   // Delayed initial capture
     }
 
     _prepareSession() {
@@ -175,64 +176,64 @@
       this.usermetaDiff.state = { updated: new Date().toISOString(), settings: getSettings() };
     }
 
-    // [All other methods remain the same but optimized for stability]
-    _bumpEngagement() {
-      const now = Date.now();
-      const idleSec = (now - this._lastActivityTs) / 1000;
-      
-      // Idle Thresholds:
-      // - Standard Page: 120s (increased for better reader capture)
-      // - PDF Reading: 300s (5 mins grace for reading blocks)
-      const threshold = this._pdfTitle ? 300 : 120;
-      
-      if (idleSec > threshold) {
-        this._pageActiveTs = now;
-        if (this._pdfOpenTs) this._pdfOpenTs = now;
-        return;
-      }
+    _scheduleFlush() {
+      if (this._flushTimer) return;
+      this._flushTimer = setTimeout(() => {
+        this._flushTimer = null;
+        this._flush();
+      }, 1000);
+    }
 
-      const diff = Math.round((now - this._pageActiveTs) / 1000);
-      if (diff > 0) this.usermetaDiff.total_engagement_sec += Math.min(diff, 305); // Allow slightly over interval
-      
-      this._pageActiveTs = now;
+    _recordEngagementUntil(now = Date.now()) {
+      if (now <= this._pageActiveTs) return;
 
-      if (this._pdfTitle && this._pdfOpenTs) {
-        const pDiff = Math.round((now - this._pdfOpenTs) / 1000);
-        if (pDiff > 0) {
-          const actualPDiff = Math.min(pDiff, 305);
-          this.metricsDiff.total_reading_sec += actualPDiff;
+      const idleCutoff = this._pdfTitle
+        ? this._lastPdfScrollTs + this._idleMs.pdf
+        : this._lastActivityTs + this._idleMs.page;
+      const activeUntil = Math.min(now, idleCutoff);
+      const engagedSec = Math.floor((activeUntil - this._pageActiveTs) / 1000);
+
+      if (engagedSec > 0) {
+        this.usermetaDiff.total_engagement_sec += engagedSec;
+        if (this._pdfTitle) {
+          this.metricsDiff.total_reading_sec += engagedSec;
           if (!this.metricsDiff.pdf_counts[this._pdfTitle]) this.metricsDiff.pdf_counts[this._pdfTitle] = { count: 0, time_sec: 0 };
-          this.metricsDiff.pdf_counts[this._pdfTitle].time_sec += actualPDiff;
+          this.metricsDiff.pdf_counts[this._pdfTitle].time_sec += engagedSec;
         }
-        this._pdfOpenTs = now;
       }
+
+      this._pageActiveTs = now;
     }
 
     _openPdf(title) {
       if (this._isPdfOpening) return;
       this._isPdfOpening = true;
-      this._bumpEngagement();
+      const now = Date.now();
+      this._recordEngagementUntil(now);
       const cleanTitle = (title || 'unknown').trim().toLowerCase();
       
       // Prevent duplicate open calls for same title within 5s
-      if (this._pdfTitle === cleanTitle && (Date.now() - this._pdfOpenTs < 5000)) {
+      if (this._pdfTitle === cleanTitle && (now - this._pdfOpenTs < 5000)) {
         this._isPdfOpening = false;
         return;
       }
 
       this._pdfTitle = cleanTitle;
-      this._pdfOpenTs = Date.now();
+      this._pdfOpenTs = now;
+      this._lastPdfScrollTs = now;
       if (!this.metricsDiff.pdf_counts[this._pdfTitle]) this.metricsDiff.pdf_counts[this._pdfTitle] = { count: 0, time_sec: 0 };
       this.metricsDiff.pdf_counts[this._pdfTitle].count += 1;
       
       this._isPdfOpening = false;
-      this._flush(); // Immediate sync on open
+      this._refreshState();
+      this._scheduleFlush();
     }
 
     _closePdf() { 
       if (this._pdfTitle) { 
-        this._bumpEngagement(); 
-        this._flush(); // Immediate sync on close
+        this._recordEngagementUntil(Date.now());
+        this._refreshState();
+        this._scheduleFlush();
         this._pdfTitle = null; 
         this._pdfOpenTs = null; 
       } 
@@ -259,6 +260,27 @@
 
       const observer = new MutationObserver(checkPdf);
       observer.observe(p, { attributes: true, attributeFilter: ['style', 'class'], childList: true, subtree: true });
+
+      const wirePdfScrollTracking = () => {
+        const iframe = p.querySelector('iframe');
+        if (!iframe || iframe.dataset.scrollTracked === 'true') return;
+        iframe.addEventListener('load', () => {
+          try {
+            const markPdfScroll = () => {
+              if (!this._pdfTitle) return;
+              const now = Date.now();
+              this._recordEngagementUntil(now);
+              this._lastPdfScrollTs = now;
+              this._lastActivityTs = now;
+            };
+            const w = iframe.contentWindow;
+            w.addEventListener('scroll', markPdfScroll, { passive: true });
+            w.addEventListener('wheel', markPdfScroll, { passive: true });
+            w.addEventListener('touchmove', markPdfScroll, { passive: true });
+          } catch {}
+        });
+        iframe.dataset.scrollTracked = 'true';
+      };
       
       // 2. Wallpaper Store Observer
       const w = document.getElementById('customWallpaperStoreModal');
@@ -268,6 +290,8 @@
           const wasOpen = w.dataset.wasOpen === 'true';
           if (isVisible && !wasOpen) {
             this.usermetaDiff.engagement.clicks['wallpaper_store_open'] = (this.usermetaDiff.engagement.clicks['wallpaper_store_open'] || 0) + 1;
+            this._refreshState();
+            this._scheduleFlush();
             w.dataset.wasOpen = 'true';
           } else if (!isVisible && wasOpen) {
             w.dataset.wasOpen = 'false';
@@ -278,9 +302,12 @@
       // Also poll slightly for the first 10 seconds to ensure we didn't miss the initial load
       let polls = 0;
       const poll = setInterval(() => {
+        wirePdfScrollTracking();
         checkPdf();
         if (++polls > 10) clearInterval(poll);
       }, 1000);
+
+      wirePdfScrollTracking();
     }
 
     _extractTitle(iframe) {
@@ -337,6 +364,8 @@
 
         if (key) {
           this.usermetaDiff.engagement.clicks[key] = (this.usermetaDiff.engagement.clicks[key] || 0) + 1;
+          this._refreshState();
+          this._scheduleFlush();
         }
       }, { passive: true });
 
@@ -345,36 +374,60 @@
       if (typeof orig === 'function') {
         window.openDynamicForm = (t, ...a) => {
           this.usermetaDiff.engagement.clicks[`form_${t}`] = (this.usermetaDiff.engagement.clicks[`form_${t}`] || 0) + 1;
+          this._refreshState();
+          this._scheduleFlush();
           return orig(t, ...a);
         };
       }
     }
 
     _setupListeners() {
-      const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart', 'mousemove'];
-      activityEvents.forEach(e => document.addEventListener(e, () => { this._lastActivityTs = Date.now(); }, { passive: true }));
+      const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart', 'mousemove', 'wheel', 'touchmove'];
+      const pdfScrollEvents = new Set(['scroll', 'wheel', 'touchmove']);
+      activityEvents.forEach(e => {
+        document.addEventListener(e, () => {
+          const now = Date.now();
+          this._recordEngagementUntil(now);
+          this._lastActivityTs = now;
+          if (this._pdfTitle && pdfScrollEvents.has(e)) this._lastPdfScrollTs = now;
+        }, { passive: true });
+      });
+
+      window.addEventListener('message', (event) => {
+        if (event.origin !== window.location.origin) return;
+        if (!event.data || event.data.type !== 'pdfUserActivity') return;
+        if (!this._pdfTitle) return;
+        const now = Date.now();
+        this._recordEngagementUntil(now);
+        this._lastPdfScrollTs = now;
+        this._lastActivityTs = now;
+      });
       
       document.addEventListener('visibilitychange', () => {
+        const now = Date.now();
+        this._recordEngagementUntil(now);
         if (document.visibilityState === 'visible') {
-          this._pageActiveTs = Date.now();
-          this._lastActivityTs = Date.now(); 
+          this._pageActiveTs = now;
+          this._lastActivityTs = now;
+          if (this._pdfTitle) this._lastPdfScrollTs = now;
+        } else {
+          this._refreshState();
+          this._flush(true);
         }
-        this._bumpEngagement();
       });
-      window.addEventListener('beforeunload', () => { this._bumpEngagement(); this._flush(true); });
-      window.addEventListener('pagehide', () => { this._bumpEngagement(); this._flush(true); });
+      window.addEventListener('beforeunload', () => { this._recordEngagementUntil(Date.now()); this._refreshState(); this._flush(true); });
+      window.addEventListener('pagehide', () => { this._recordEngagementUntil(Date.now()); this._refreshState(); this._flush(true); });
     }
 
     async _flush(isBeacon = false) {
-      if (document.visibilityState === 'visible') this._bumpEngagement();
-      if (!this.usermetaDiff.state) this._refreshState();
+      if (document.visibilityState === 'visible') this._recordEngagementUntil(Date.now());
       
       const payload = { metrics: { ...this.metricsDiff }, usermeta: { ...this.usermetaDiff } };
       
-      // Strict Gatekeeper: Only flush if there is meaningful new data
+      // Strict gatekeeper: action-driven events and non-idle engagement only.
       const hasMetrics = payload.metrics.total_reading_sec > 0 || Object.keys(payload.metrics.pdf_counts).length > 0;
       const hasEngagement = payload.usermeta.total_engagement_sec > 0 || Object.keys(payload.usermeta.engagement.clicks).length > 0;
-      const hasSession = !!payload.usermeta.session || !!payload.usermeta.state;
+      const hasSession = !!payload.usermeta.session;
       
       if (!hasMetrics && !hasEngagement && !hasSession) return;
       

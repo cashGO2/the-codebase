@@ -3,6 +3,25 @@
 
 (function () {
     'use strict';
+
+    const ACTIVITY_THROTTLE_MS = 1000;
+    let lastActivityPing = 0;
+
+    function reportPdfActivity(source = 'viewer') {
+        const now = Date.now();
+        if (now - lastActivityPing < ACTIVITY_THROTTLE_MS) return;
+        lastActivityPing = now;
+        try {
+            window.parent.postMessage({
+                type: 'pdfUserActivity',
+                source,
+                ts: now
+            }, '*');
+        } catch (e) {
+            // ignore
+        }
+    }
+
     // Listen for overlay mode messages from parent window
     window.addEventListener('message', function (event) {
         if (event.data && event.data.type === 'overlayMode') {
@@ -139,30 +158,6 @@
             // console.log('Could not request overlay modes from parent');
         }
     }
-    // Wait for PDF.js to fully load before requesting overlay modes
-    function initializeOverlays() {
-        // Check if PDF.js viewer is ready
-        if (window.PDFViewerApplication && window.PDFViewerApplication.initialized) {
-            requestOverlayModes();
-            initializeTheme();
-            setupPdfLoadingNotifications();
-        } else {
-            // Wait for PDF.js to initialize
-            document.addEventListener('webviewerloaded', function () {
-                requestOverlayModes();
-                initializeTheme();
-                setupPdfLoadingNotifications();
-            });
-
-            // Fallback: try after a short delay
-            setTimeout(function () {
-                requestOverlayModes();
-                initializeTheme();
-                setupPdfLoadingNotifications();
-            }, 1000);
-        }
-    }
-
     // Notify parent window about PDF loading events for haptic feedback
     function setupPdfLoadingNotifications() {
         if (!window.PDFViewerApplication) return;
@@ -190,6 +185,7 @@
 
         // Document loaded event - PDF file fully downloaded
         eventBus.on('documentloaded', function () {
+            reportPdfActivity('documentloaded');
             try {
                 window.parent.postMessage({
                     type: 'pdfLoaded'
@@ -197,13 +193,21 @@
             } catch (e) { }
         });
 
-        // Pages loaded event - all pages rendered
         eventBus.on('pagesloaded', function () {
+            reportPdfActivity('pagesloaded');
             try {
                 window.parent.postMessage({
                     type: 'pdfLoaded'
                 }, '*');
             } catch (e) { }
+        });
+
+        eventBus.on('pagechanging', function () {
+            reportPdfActivity('pagechanging');
+        });
+
+        eventBus.on('updateviewarea', function () {
+            reportPdfActivity('updateviewarea');
         });
 
         // Error event
@@ -255,6 +259,55 @@
             }
             // console.log('PDF viewer initial theme set based on system preference: ' + 
             //             (prefersDarkMode ? 'dark' : 'light'));
+        }
+    }
+
+    function setupUserActivityNotifications() {
+        const viewerContainer = document.getElementById('viewerContainer');
+        const viewer = document.getElementById('viewer');
+
+        const mark = () => reportPdfActivity('interaction');
+
+        if (viewerContainer) {
+            viewerContainer.addEventListener('scroll', mark, { passive: true });
+            viewerContainer.addEventListener('wheel', mark, { passive: true });
+            viewerContainer.addEventListener('touchmove', mark, { passive: true });
+        }
+
+        if (viewer) {
+            viewer.addEventListener('scroll', mark, { passive: true });
+            viewer.addEventListener('wheel', mark, { passive: true });
+            viewer.addEventListener('touchmove', mark, { passive: true });
+        }
+
+        document.addEventListener('keydown', mark, { passive: true });
+        document.addEventListener('mousedown', mark, { passive: true });
+    }
+
+    // Call setupUserActivityNotifications in initializeOverlays
+    function initializeOverlays() {
+        // Check if PDF.js viewer is ready
+        if (window.PDFViewerApplication && window.PDFViewerApplication.initialized) {
+            requestOverlayModes();
+            initializeTheme();
+            setupPdfLoadingNotifications();
+            setupUserActivityNotifications();
+        } else {
+            // Wait for PDF.js to initialize
+            document.addEventListener('webviewerloaded', function () {
+                requestOverlayModes();
+                initializeTheme();
+                setupPdfLoadingNotifications();
+                setupUserActivityNotifications();
+            });
+
+            // Fallback: try after a short delay
+            setTimeout(function () {
+                requestOverlayModes();
+                initializeTheme();
+                setupPdfLoadingNotifications();
+                setupUserActivityNotifications();
+            }, 1000);
         }
     }
 
