@@ -391,6 +391,11 @@ document.addEventListener("DOMContentLoaded", function () {
         new CustomEvent("tabOpened", { detail: { tab: tab } }),
       );
 
+      // Load leaderboard when leaderboard tab opens
+      if (tab === "leaderboard" && typeof window.loadLeaderboardData === "function") {
+        window.loadLeaderboardData();
+      }
+
       // Hide search dropdown when switching away from home tab
       const searchResults = document.getElementById("quickSearchResults");
       if (searchResults && tab !== "home") {
@@ -519,6 +524,247 @@ const popup = document.getElementById("popup");
 const closePopup = document.getElementById("closePopup");
 
 const PDF_LFS_POINTER_MAX_BYTES = 2048;
+const pdfInsightCache = new Map();
+let pdfInsightInFlight = null;
+
+window.materioTopicMetadataMap = window.materioTopicMetadataMap || new Map();
+
+function normalizePdfName(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/\.pdf$/i, "")
+    .replace(/[-_]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function resolveTopicOptionData(topicValue, topicItem) {
+  const normalizedTopicValue = String(topicValue || "").trim();
+  const topicObject =
+    topicItem && typeof topicItem === "object" && !Array.isArray(topicItem)
+      ? topicItem
+      : {};
+
+  const curatedBy =
+    topicObject.curatedBy ||
+    topicObject.curated_by ||
+    topicObject.curator ||
+    topicObject.curated ||
+    "";
+  const contributedBy =
+    topicObject.contributedBy ||
+    topicObject.contributed_by ||
+    topicObject.contributor ||
+    topicObject.author ||
+    "";
+
+  return {
+    title: normalizedTopicValue,
+    curatedBy: String(curatedBy || "").trim(),
+    contributedBy: String(contributedBy || "").trim(),
+  };
+}
+
+function storeTopicMetadata(semKey, subjectKey, categoryIndex, topicValue, metadata) {
+  if (!topicValue) return;
+  const key = `${semKey || ""}::${subjectKey || ""}::${categoryIndex || ""}::${topicValue}`.toLowerCase();
+  window.materioTopicMetadataMap.set(key, metadata || {});
+}
+
+function getCurrentSelectionMetadata() {
+  const semester = document.getElementById("semesterSelect")?.value || "";
+  const subject = document.getElementById("subjectSelect")?.value || "";
+  const category = document.getElementById("categorySelect")?.value || "";
+  const topic = document.getElementById("topicSelect")?.value || "";
+  const key = `${semester}::${subject}::${category}::${topic}`.toLowerCase();
+  const fromMap = window.materioTopicMetadataMap.get(key) || {};
+
+  let topicOption = null;
+  if (topic) {
+    const escapedTopic =
+      typeof CSS !== "undefined" && typeof CSS.escape === "function"
+        ? CSS.escape(topic)
+        : null;
+    if (escapedTopic) {
+      topicOption = document.querySelector(
+        `#topicSelect option[value="${escapedTopic}"]`,
+      );
+    }
+  }
+
+  topicOption =
+    topicOption || document.getElementById("topicSelect")?.selectedOptions?.[0];
+
+  const curatedBy =
+    fromMap.curatedBy || topicOption?.dataset?.curatedBy || "";
+  const contributedBy =
+    fromMap.contributedBy || topicOption?.dataset?.contributedBy || "";
+
+  return {
+    curatedBy: String(curatedBy || "").trim(),
+    contributedBy: String(contributedBy || "").trim(),
+  };
+}
+
+function getActivePdfNameFromPopup() {
+  const iframe = document.querySelector("#popupContent iframe");
+  if (iframe?.src) {
+    try {
+      const iframeUrl = new URL(iframe.src, window.location.origin);
+      const fileParam = iframeUrl.searchParams.get("file");
+      if (fileParam) {
+        const decoded = decodeURIComponent(fileParam);
+        const rawName = decoded.split("/").pop()?.split("?")[0] || "";
+        const normalized = normalizePdfName(rawName);
+        if (normalized) return normalized;
+      }
+    } catch (error) {
+      // Ignore parse errors and fall back to selected topic.
+    }
+  }
+
+  const topicValue = document.getElementById("topicSelect")?.value || "";
+  return normalizePdfName(topicValue);
+}
+
+function setupPdfInsightPill() {
+  const pill = document.getElementById("pdfInsightPill");
+  const views = document.getElementById("pdfInsightViews");
+  const infoButton = document.getElementById("pdfInsightInfoButton");
+  const infoPanel = document.getElementById("pdfInsightInfoPanel");
+  const curatedByRow = document.getElementById("pdfInsightCuratedBy");
+  const contributedByRow = document.getElementById("pdfInsightContributedBy");
+
+  if (!pill || !views || !infoButton || !infoPanel || !curatedByRow || !contributedByRow) {
+    return;
+  }
+
+  const hidePill = () => {
+    pill.hidden = true;
+    views.textContent = "";
+    infoPanel.hidden = true;
+  };
+
+  const setInfoRows = (metadata) => {
+    const curatedBy = String(metadata?.curatedBy || "").trim();
+    const contributedBy = String(metadata?.contributedBy || "").trim();
+
+    curatedByRow.textContent = curatedBy ? `Curated by: ${curatedBy}` : "";
+    curatedByRow.style.display = curatedBy ? "block" : "none";
+
+    contributedByRow.textContent = contributedBy
+      ? `Contributed by: ${contributedBy}`
+      : "";
+    contributedByRow.style.display = contributedBy ? "block" : "none";
+
+    return Boolean(curatedBy || contributedBy);
+  };
+
+  const loadUniqueReadsForPdf = async (pdfName) => {
+    const cacheKey = normalizePdfName(pdfName);
+    const now = Date.now();
+    const cached = pdfInsightCache.get(cacheKey);
+    if (cached && now - cached.at < 2 * 60 * 1000) {
+      return cached.data;
+    }
+
+    const requestUrl = `/api/v2/features?action=views&pdfName=${encodeURIComponent(cacheKey)}`;
+    const fallbackRequestUrl = `/api/v2/features?action=analytics-views&pdfName=${encodeURIComponent(cacheKey)}`;
+
+    if (pdfInsightInFlight === requestUrl) {
+      return cached?.data || null;
+    }
+
+    pdfInsightInFlight = requestUrl;
+    try {
+      let response = await fetch(requestUrl);
+      if (response.status === 404) {
+        response = await fetch(fallbackRequestUrl);
+      }
+      if (!response.ok) return null;
+      const payload = await response.json();
+      pdfInsightCache.set(cacheKey, { at: now, data: payload });
+      return payload;
+    } catch (error) {
+      return null;
+    } finally {
+      pdfInsightInFlight = null;
+    }
+  };
+
+  const refreshPill = async () => {
+    if (window.innerWidth <= 768) {
+      hidePill();
+      return;
+    }
+
+    const popupVisible =
+      popup &&
+      popup.style.display !== "none" &&
+      !popup.classList.contains("closing");
+
+    if (!popupVisible) {
+      hidePill();
+      return;
+    }
+
+    const metadata = getCurrentSelectionMetadata();
+    const hasInfo = setInfoRows(metadata);
+    const pdfName = getActivePdfNameFromPopup();
+
+    if (!pdfName) {
+      views.textContent = "";
+      views.style.display = "none";
+      pill.hidden = !hasInfo;
+      return;
+    }
+
+    const insightData = await loadUniqueReadsForPdf(pdfName);
+    const uniqueReads = Number(insightData?.uniqueReads || 0);
+    const hasReads = Boolean(insightData?.hasData && uniqueReads > 0);
+
+    if (hasReads) {
+      views.textContent = `${uniqueReads.toLocaleString()} unique reads`;
+      views.style.display = "block";
+    } else {
+      views.textContent = "";
+      views.style.display = "none";
+    }
+
+    pill.hidden = !(hasReads || hasInfo);
+    if (pill.hidden) {
+      infoPanel.hidden = true;
+    }
+  };
+
+  infoButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    if (pill.hidden) return;
+    infoPanel.hidden = !infoPanel.hidden;
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!pill.contains(event.target)) {
+      infoPanel.hidden = true;
+    }
+  });
+
+  const observer = new MutationObserver(() => {
+    refreshPill();
+  });
+
+  observer.observe(popup, {
+    attributes: true,
+    attributeFilter: ["style", "class"],
+    childList: true,
+    subtree: true,
+  });
+
+  window.addEventListener("resize", refreshPill);
+  window.refreshPdfInsightPill = refreshPill;
+}
+
+setupPdfInsightPill();
 
 function buildApiPdfFallbackUrl(pdfUrl) {
   try {
@@ -742,6 +988,7 @@ submitButton.addEventListener("click", async () => {
     popup.classList.remove("closing");
     popup.style.display = "block";
     showPopupShareTooltip();
+    window.refreshPdfInsightPill?.();
   } else {
     // Fallback to original behavior if caching system not available
     let pdfUrl;
@@ -765,6 +1012,7 @@ submitButton.addEventListener("click", async () => {
     popup.classList.remove("closing");
     popup.style.display = "block";
     showPopupShareTooltip();
+    window.refreshPdfInsightPill?.();
   }
 });
 
@@ -1078,6 +1326,7 @@ async function checkSharedPdf() {
         popup.classList.remove("closing");
         popup.style.display = "block";
         showPopupShareTooltip();
+        window.refreshPdfInsightPill?.();
       }
 
       // Clean URL
@@ -1131,6 +1380,7 @@ async function checkCustomPdfOpen() {
       popup.classList.remove("closing");
       popup.style.display = "block";
       showPopupShareTooltip();
+      window.refreshPdfInsightPill?.();
     }
 
     // Clean URL
@@ -1283,10 +1533,32 @@ document.addEventListener("DOMContentLoaded", function () {
           const topics = catObj.content;
           const topicSelect = document.getElementById("topicSelect");
           if (topics && topics.length > 0) {
-            topics.forEach((topic) => {
+            topics.forEach((topicItem) => {
+              const topicName =
+                typeof topicItem === "string"
+                  ? topicItem
+                  : topicItem?.name || topicItem?.title || topicItem?.topic || "";
+
+              if (!topicName) return;
+
+              const topicMetadata = resolveTopicOptionData(topicName, topicItem);
+              storeTopicMetadata(
+                semKey,
+                subjectKey,
+                categoryIndex,
+                topicName,
+                topicMetadata,
+              );
+
               const option = document.createElement("option");
-              option.value = topic;
-              option.textContent = topic;
+              option.value = topicName;
+              option.textContent = topicName;
+              if (topicMetadata.curatedBy) {
+                option.dataset.curatedBy = topicMetadata.curatedBy;
+              }
+              if (topicMetadata.contributedBy) {
+                option.dataset.contributedBy = topicMetadata.contributedBy;
+              }
               topicSelect.appendChild(option);
             });
             topicSelect.disabled = false;
@@ -1654,10 +1926,32 @@ function loadResourcesData(restoreSemester = null) {
           const topics = catObj.content;
           const topicSelect = document.getElementById("topicSelect");
           if (topics && topics.length > 0) {
-            topics.forEach((topic) => {
+            topics.forEach((topicItem) => {
+              const topicName =
+                typeof topicItem === "string"
+                  ? topicItem
+                  : topicItem?.name || topicItem?.title || topicItem?.topic || "";
+
+              if (!topicName) return;
+
+              const topicMetadata = resolveTopicOptionData(topicName, topicItem);
+              storeTopicMetadata(
+                semKey,
+                subjectKey,
+                categoryIndex,
+                topicName,
+                topicMetadata,
+              );
+
               const option = document.createElement("option");
-              option.value = topic;
-              option.textContent = topic;
+              option.value = topicName;
+              option.textContent = topicName;
+              if (topicMetadata.curatedBy) {
+                option.dataset.curatedBy = topicMetadata.curatedBy;
+              }
+              if (topicMetadata.contributedBy) {
+                option.dataset.contributedBy = topicMetadata.contributedBy;
+              }
               topicSelect.appendChild(option);
             });
             topicSelect.disabled = false;
@@ -1882,7 +2176,28 @@ document.addEventListener("DOMContentLoaded", function () {
 // INSIGHTROOM API - LOAD POSTS FROM API
 // ================================================
 
-const INSIGHTROOM_API = "https://insightroom.vercel.app/api/posts";
+const INSIGHTROOM_APIS = [
+  "https://room.getmaterio.app/api/posts",
+  "https://insightroom.vercel.app/api/posts",
+];
+
+async function fetchInsightroomPostsWithFallback() {
+  let lastError = null;
+
+  for (const endpoint of INSIGHTROOM_APIS) {
+    try {
+      const response = await fetch(endpoint, { redirect: "follow" });
+      if (!response.ok) {
+        throw new Error(`Failed to fetch posts from ${endpoint}: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError || new Error("Failed to fetch InsightRoom posts from all endpoints");
+}
 
 // Function to load posts from InsightRoom API
 async function loadInsightroomPosts() {
@@ -1894,10 +2209,7 @@ async function loadInsightroomPosts() {
   if (!defaultPostsContainer || !allPostsDataEl) return;
 
   try {
-    const response = await fetch(INSIGHTROOM_API);
-    if (!response.ok) throw new Error("Failed to fetch posts");
-
-    const allPosts = await response.json();
+    const allPosts = await fetchInsightroomPostsWithFallback();
 
     // Filter out private posts and get latest 5
     const publicPosts = allPosts.filter(
@@ -3502,6 +3814,7 @@ async function openSearchResultPdf(event, semester, subject, topic) {
     popup.classList.remove("closing");
     popup.style.display = "block";
     showPopupShareTooltip();
+    window.refreshPdfInsightPill?.();
   } else {
     // Fallback to original behavior
     document.getElementById("popupContent").innerHTML =
@@ -3511,6 +3824,7 @@ async function openSearchResultPdf(event, semester, subject, topic) {
     popup.classList.remove("closing");
     popup.style.display = "block";
     showPopupShareTooltip();
+    window.refreshPdfInsightPill?.();
   }
 }
 
