@@ -27,6 +27,171 @@
 <meta name="twitter:image" content="https://materioa.vercel.app/assets/img/open-graph.png">
 <meta name="theme-color" content="#333333">
 
+<script>
+    (function () {
+        var OLD_HOST = "materioa.vercel.app";
+        var NEW_HOST = "getmaterio.app";
+        var HANDOFF_PREFIX = "materio-handoff:";
+        var HANDOFF_MAX_AGE_MS = 10 * 60 * 1000;
+
+        function isAllowedLocalStorageKey(key) {
+            if (!key) return false;
+            if (key.startsWith("materio_")) return true;
+            if (key.startsWith("m_v4_")) return true;
+            if (key === "m_last_force_clear") return true;
+            if (key === "theme") return true;
+            if (key === "activeTab") return true;
+            if (key === "insightroomSettings") return true;
+            return false;
+        }
+
+        function isAllowedSessionStorageKey(key) {
+            return key === "materio_session_id";
+        }
+
+        function isAllowedCookieKey(key) {
+            if (!key) return false;
+            if (key.startsWith("materio_")) return true;
+            if (key === "theme") return true;
+            if (key === "activeTab") return true;
+            if (key === "insightroomSettings") return true;
+            return false;
+        }
+
+        function safeEncode(value) {
+            return btoa(unescape(encodeURIComponent(value)));
+        }
+
+        function safeDecode(value) {
+            return decodeURIComponent(escape(atob(value)));
+        }
+
+        function collectStorage(storage, allowKey) {
+            var data = {};
+            try {
+                for (var i = 0; i < storage.length; i++) {
+                    var key = storage.key(i);
+                    if (!allowKey(key)) continue;
+                    var value = storage.getItem(key);
+                    if (typeof value === "string") data[key] = value;
+                }
+            } catch (e) {
+                return {};
+            }
+            return data;
+        }
+
+        function collectCookies() {
+            var data = {};
+            try {
+                var cookies = document.cookie ? document.cookie.split(";") : [];
+                for (var i = 0; i < cookies.length; i++) {
+                    var raw = cookies[i].trim();
+                    if (!raw) continue;
+                    var idx = raw.indexOf("=");
+                    var name = idx >= 0 ? raw.slice(0, idx) : raw;
+                    var value = idx >= 0 ? raw.slice(idx + 1) : "";
+                    name = decodeURIComponent(name);
+                    if (!isAllowedCookieKey(name)) continue;
+                    data[name] = value;
+                }
+            } catch (e) {
+                return {};
+            }
+            return data;
+        }
+
+        function restoreStorage(storage, values) {
+            if (!values || typeof values !== "object") return;
+            try {
+                Object.keys(values).forEach(function (key) {
+                    var value = values[key];
+                    if (typeof value !== "string") return;
+                    storage.setItem(key, value);
+                });
+            } catch (e) { }
+        }
+
+        function restoreCookies(values) {
+            if (!values || typeof values !== "object") return;
+            Object.keys(values).forEach(function (name) {
+                if (!isAllowedCookieKey(name)) return;
+                var value = values[name];
+                if (typeof value !== "string") return;
+
+                var maxAge = name === "materio_anon_id" ? 2 * 365 * 24 * 60 * 60 : 365 * 24 * 60 * 60;
+                document.cookie = encodeURIComponent(name) + "=" + value + "; Max-Age=" + maxAge + "; Path=/; SameSite=Lax";
+            });
+        }
+
+        function buildHandoffPayload() {
+            return {
+                v: 1,
+                ts: Date.now(),
+                src: window.location.host,
+                localStorage: collectStorage(window.localStorage, isAllowedLocalStorageKey),
+                sessionStorage: collectStorage(window.sessionStorage, isAllowedSessionStorageKey),
+                cookies: collectCookies()
+            };
+        }
+
+        function readWindowNamePayload() {
+            var raw = String(window.name || "");
+            if (!raw.startsWith(HANDOFF_PREFIX)) return null;
+            var encoded = raw.slice(HANDOFF_PREFIX.length);
+            if (!encoded) return null;
+
+            try {
+                var decoded = safeDecode(encoded);
+                var parsed = JSON.parse(decoded);
+                return parsed && typeof parsed === "object" ? parsed : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function clearWindowNamePayload() {
+            try {
+                if (String(window.name || "").startsWith(HANDOFF_PREFIX)) {
+                    window.name = "";
+                }
+            } catch (e) { }
+        }
+
+        try {
+            if (window.location.hostname === OLD_HOST) {
+                var payload = buildHandoffPayload();
+                var serialized = JSON.stringify(payload);
+                window.name = HANDOFF_PREFIX + safeEncode(serialized);
+
+                var target = new URL(window.location.href);
+                target.hostname = NEW_HOST;
+                target.protocol = "https:";
+                window.location.replace(target.toString());
+                return;
+            }
+
+            if (window.location.hostname === NEW_HOST) {
+                var incoming = readWindowNamePayload();
+                if (!incoming) return;
+
+                var payloadAge = Date.now() - Number(incoming.ts || 0);
+                if (!Number.isFinite(payloadAge) || payloadAge < 0 || payloadAge > HANDOFF_MAX_AGE_MS) {
+                    clearWindowNamePayload();
+                    return;
+                }
+
+                restoreStorage(window.localStorage, incoming.localStorage);
+                restoreStorage(window.sessionStorage, incoming.sessionStorage);
+                restoreCookies(incoming.cookies);
+                clearWindowNamePayload();
+            }
+        } catch (e) {
+            clearWindowNamePayload();
+        }
+    })();
+</script>
+
 {% unless site.disable_service_worker %}
 <!-- General Webpage Assets (Non-PWA) -->
 <link rel="apple-touch-icon" href="/assets/img/icon.svg">
