@@ -25,8 +25,8 @@ function closeExamModal() {
 
 document.addEventListener("DOMContentLoaded", function () {
   // Initialize session ID for caching and analytics
-  const sessionId = sessionStorage.getItem('materio_session_id') || 
-                   (crypto.randomUUID ? crypto.randomUUID() : 's-' + Math.random().toString(36).substring(2, 10));
+  const sessionId = sessionStorage.getItem('materio_session_id') ||
+    (crypto.randomUUID ? crypto.randomUUID() : 's-' + Math.random().toString(36).substring(2, 10));
   sessionStorage.setItem('materio_session_id', sessionId);
   window.materioSessionId = sessionId;
 
@@ -1347,14 +1347,14 @@ async function checkCustomPdfOpen() {
   try {
     const popup = document.getElementById("popup");
     const decodedUrl = decodeURIComponent(customUrl);
-    
+
     // For custom/external URLs, skip loadPdfWithCache (which does HEAD validation)
     // and load directly in iframe to avoid CORS issues with validation
     // The viewer.html will handle the PDF loading directly
-    
+
     const initializeIframe = () => {
       let pdfIframe = document.getElementById('pdf-iframe');
-      
+
       if (!pdfIframe) {
         pdfIframe = document.createElement('iframe');
         pdfIframe.id = 'pdf-iframe';
@@ -1369,13 +1369,13 @@ async function checkCustomPdfOpen() {
         document.getElementById('popupContent').innerHTML = '';
         document.getElementById('popupContent').appendChild(pdfIframe);
       }
-      
+
       // Load viewer with custom PDF URL - bypass caching validation
       pdfIframe.src = `/oread/web/viewer.html?file=${encodeURIComponent(decodedUrl)}`;
     };
-    
+
     initializeIframe();
-    
+
     if (popup) {
       popup.classList.remove("closing");
       popup.style.display = "block";
@@ -1753,7 +1753,7 @@ fullscreenButton.addEventListener("click", () => {
         icon.className = "fa-solid fa-compress";
         fullscreenButton.setAttribute("aria-label", "Exit fullscreen");
       })
-      .catch((err) => {});
+      .catch((err) => { });
   } else {
     // Mark this as an intentional exit so fullscreenchange handler doesn't block it
     intentionalFullscreenExit = true;
@@ -1766,7 +1766,7 @@ fullscreenButton.addEventListener("click", () => {
         icon.className = "fas fa-expand";
         fullscreenButton.setAttribute("aria-label", "Enter fullscreen");
       })
-      .catch((err) => {});
+      .catch((err) => { });
   }
 });
 
@@ -1865,100 +1865,100 @@ function loadResourcesData(restoreSemester = null) {
       });
 
       document.getElementById("subjectSelect").addEventListener("change", function () {
-          clearSelect("categorySelect", "Select Category");
-          clearSelect("topicSelect", "Select Topic");
-          const semKey = document.getElementById("semesterSelect").value;
-          const subjectKey = this.value;
-          if (!subjectKey) return;
+        clearSelect("categorySelect", "Select Category");
+        clearSelect("topicSelect", "Select Topic");
+        const semKey = document.getElementById("semesterSelect").value;
+        const subjectKey = this.value;
+        if (!subjectKey) return;
 
-          let categoriesArr;
+        let categoriesArr;
 
-          // Special handling for Vault (semester 9999)
-          if (semKey === "9999") {
-            // Get Vault array directly
-            categoriesArr = data[semKey].Vault;
-          } else {
-            // Normal semester handling
-            categoriesArr = data[semKey][subjectKey];
-          }
+        // Special handling for Vault (semester 9999)
+        if (semKey === "9999") {
+          // Get Vault array directly
+          categoriesArr = data[semKey].Vault;
+        } else {
+          // Normal semester handling
+          categoriesArr = data[semKey][subjectKey];
+        }
 
-          const categorySelect = document.getElementById("categorySelect");
-          if (categoriesArr && categoriesArr.length) {
-            let defaultSet = false;
-            categoriesArr.forEach((catObj, idx) => {
-              const option = document.createElement("option");
-              option.value = idx;
-              option.textContent = catObj.type;
-              if (catObj.type.trim().toLowerCase() === "chapters") {
-                option.selected = true;
-                defaultSet = true;
-              }
-              categorySelect.appendChild(option);
-            });
-            categorySelect.disabled = false;
-            if (defaultSet) {
-              categorySelect.dispatchEvent(new Event("change"));
-            } else if (categoriesArr.length > 0) {
-              categorySelect.selectedIndex = 1;
-              categorySelect.dispatchEvent(new Event("change"));
+        const categorySelect = document.getElementById("categorySelect");
+        if (categoriesArr && categoriesArr.length) {
+          let defaultSet = false;
+          categoriesArr.forEach((catObj, idx) => {
+            const option = document.createElement("option");
+            option.value = idx;
+            option.textContent = catObj.type;
+            if (catObj.type.trim().toLowerCase() === "chapters") {
+              option.selected = true;
+              defaultSet = true;
             }
+            categorySelect.appendChild(option);
+          });
+          categorySelect.disabled = false;
+          if (defaultSet) {
+            categorySelect.dispatchEvent(new Event("change"));
+          } else if (categoriesArr.length > 0) {
+            categorySelect.selectedIndex = 1;
+            categorySelect.dispatchEvent(new Event("change"));
           }
+        }
       });
 
       document.getElementById("categorySelect").addEventListener("change", function () {
-          clearSelect("topicSelect", "Select Topic");
-          const semKey = document.getElementById("semesterSelect").value;
-          const subjectKey = document.getElementById("subjectSelect").value;
-          const categoryIndex = this.value;
-          if (categoryIndex === "") return;
+        clearSelect("topicSelect", "Select Topic");
+        const semKey = document.getElementById("semesterSelect").value;
+        const subjectKey = document.getElementById("subjectSelect").value;
+        const categoryIndex = this.value;
+        if (categoryIndex === "") return;
 
-          let catObj;
+        let catObj;
 
-          // Special handling for Vault (semester 9999)
-          if (semKey === "9999") {
-            // Get category from Vault array
-            catObj = data[semKey].Vault[categoryIndex];
-          } else {
-            // Normal semester handling
-            catObj = data[semKey][subjectKey][categoryIndex];
-          }
+        // Special handling for Vault (semester 9999)
+        if (semKey === "9999") {
+          // Get category from Vault array
+          catObj = data[semKey].Vault[categoryIndex];
+        } else {
+          // Normal semester handling
+          catObj = data[semKey][subjectKey][categoryIndex];
+        }
 
-          const topics = catObj.content;
-          const topicSelect = document.getElementById("topicSelect");
-          if (topics && topics.length > 0) {
-            topics.forEach((topicItem) => {
-              const topicName =
-                typeof topicItem === "string"
-                  ? topicItem
-                  : topicItem?.name || topicItem?.title || topicItem?.topic || "";
+        const topics = catObj.content;
+        const topicSelect = document.getElementById("topicSelect");
+        if (topics && topics.length > 0) {
+          topics.forEach((topicItem) => {
+            const topicName =
+              typeof topicItem === "string"
+                ? topicItem
+                : topicItem?.name || topicItem?.title || topicItem?.topic || "";
 
-              if (!topicName) return;
+            if (!topicName) return;
 
-              const topicMetadata = resolveTopicOptionData(topicName, topicItem);
-              storeTopicMetadata(
-                semKey,
-                subjectKey,
-                categoryIndex,
-                topicName,
-                topicMetadata,
-              );
+            const topicMetadata = resolveTopicOptionData(topicName, topicItem);
+            storeTopicMetadata(
+              semKey,
+              subjectKey,
+              categoryIndex,
+              topicName,
+              topicMetadata,
+            );
 
-              const option = document.createElement("option");
-              option.value = topicName;
-              option.textContent = topicName;
-              if (topicMetadata.curatedBy) {
-                option.dataset.curatedBy = topicMetadata.curatedBy;
-              }
-              if (topicMetadata.contributedBy) {
-                option.dataset.contributedBy = topicMetadata.contributedBy;
-              }
-              topicSelect.appendChild(option);
-            });
-            topicSelect.disabled = false;
-            // Default select first topic
-            topicSelect.selectedIndex = 1;
-            topicSelect.dispatchEvent(new Event("change"));
-          }
+            const option = document.createElement("option");
+            option.value = topicName;
+            option.textContent = topicName;
+            if (topicMetadata.curatedBy) {
+              option.dataset.curatedBy = topicMetadata.curatedBy;
+            }
+            if (topicMetadata.contributedBy) {
+              option.dataset.contributedBy = topicMetadata.contributedBy;
+            }
+            topicSelect.appendChild(option);
+          });
+          topicSelect.disabled = false;
+          // Default select first topic
+          topicSelect.selectedIndex = 1;
+          topicSelect.dispatchEvent(new Event("change"));
+        }
       });
 
       function clearSelect(selectId, placeholderText) {
@@ -2177,8 +2177,8 @@ document.addEventListener("DOMContentLoaded", function () {
 // ================================================
 
 const INSIGHTROOM_APIS = [
-  "https://room.getmaterio.app/api/posts",
-  "https://insightroom.vercel.app/api/posts",
+  `${process.env.INSIGHTROOM_API}?num=5`,
+  "https://insightroom.vercel.app/api/posts?num=5",
 ];
 
 async function fetchInsightroomPostsWithFallback() {
@@ -3612,8 +3612,8 @@ function displaySearchResults(results, query) {
                         <i class="far fa-lightbulb"></i> AI Suggestions:
                     </p>
                     ${aiData.suggestions
-                      .map(
-                        (s) => `
+          .map(
+            (s) => `
                         <div onclick="document.getElementById('quickSearchInput').value='${s.replace(/'/g, "\\'")}'; performQuickSearch('${s.replace(/'/g, "\\'")}')"
                              style="padding: 6px 8px; margin: 4px 0; background: rgba(255, 130, 0, 0.05); border-radius: 4px; font-size: 11px; color: #666; cursor: pointer; transition: all 0.2s;"
                              onmouseover="this.style.background='rgba(255, 130, 0, 0.1)'"
@@ -3621,8 +3621,8 @@ function displaySearchResults(results, query) {
                             <i class="far fa-search" style="opacity: 0.5; margin-right: 4px;"></i>${s}
                         </div>
                     `,
-                      )
-                      .join("")}
+          )
+          .join("")}
                 </div>
             `;
     } else {
@@ -3665,15 +3665,14 @@ function renderSearchResults(query) {
                     <i class="far fa-sparkles" style="color: #ff2d95; animation: sparkle 1.5s ease-in-out infinite;"></i>
                     <span style="font-size: 12px; font-weight: 600; color: #ff2d95;">AI-Powered Results</span>
                 </div>
-                ${
-                  aiData && aiData.intent
-                    ? `
+                ${aiData && aiData.intent
+        ? `
                     <div style="margin-top: 4px; font-size: 11px; color: #666; font-style: italic;">
                         <i class="far fa-brain" style="margin-right: 4px;"></i>${aiData.intent}
                     </div>
                 `
-                    : ""
-                }
+        : ""
+      }
             </div>
         `;
   }
@@ -3937,7 +3936,7 @@ function selectSearchResult(semester, subject, category, topic) {
           readingCard.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       }, 300);
-    } catch (error) {}
+    } catch (error) { }
   }
 
   // Execute the population
