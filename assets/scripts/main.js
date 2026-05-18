@@ -42,6 +42,12 @@ document.addEventListener("DOMContentLoaded", function () {
   // Check if offline and redirect to downloads tab
   checkOfflineAndRedirect();
 
+  // Preload offline nudge image into memory cache when online
+  if (navigator.onLine) {
+    const preloadImg = new Image();
+    preloadImg.src = "/assets/img/internet.webp";
+  }
+
   // Listen for online/offline changes
   window.addEventListener("online", () => {
     showAllTabs();
@@ -213,22 +219,74 @@ window.closeBugTooltip = function () {
   }
 };
 
-// Offline detection and redirect to downloads
+// Offline detection and nudge
 function checkOfflineAndRedirect() {
   if (!navigator.onLine) {
-    // Hide all tabs except Downloads
-    hideNonDownloadTabs();
-
-    // Wait a bit for the page to fully load
-    setTimeout(() => {
-      // Directly show Downloads tab without needing login/dropdown
-      showDownloadsTabOffline();
-    }, 500);
+    showOfflineNudge();
   } else {
     // Online - show all tabs
     showAllTabs();
+    hideOfflineNudge();
   }
 }
+
+function showOfflineNudge() {
+  // Check if it already exists
+  if (document.getElementById('offlineNudgeCard')) return;
+
+  const card = document.createElement('aside');
+  card.id = 'offlineNudgeCard';
+  card.className = 'leaderboard-nudge-card';
+  card.setAttribute('role', 'status');
+  card.setAttribute('aria-live', 'polite');
+
+  card.innerHTML = `
+    <img src="/assets/img/internet.webp" alt="" class="leaderboard-nudge-image" />
+    <div class="leaderboard-nudge-content">
+      <p class="leaderboard-nudge-text">You seem to be offline.<br>Want to access your downloaded materials?</p>
+      <div class="leaderboard-nudge-actions">
+        <button type="button" class="leaderboard-nudge-btn leaderboard-nudge-btn-primary" data-action="downloads">View Downloads</button>
+        <button type="button" class="leaderboard-nudge-btn" data-action="dismiss">Dismiss</button>
+      </div>
+      <p style="margin: 4px 0 0; font-size: 10px; color: #888; display: flex; align-items: flex-start; gap: 4px; line-height: 1.2;">
+        <i class="fas fa-lightbulb" style="color: inherit; font-size: 10px; margin-top: 1px;"></i> 
+        <span>You can save pdfs for offline reading by clicking on bookmark icon in viewer</span>
+      </p>
+    </div>
+  `;
+
+  card.addEventListener('click', (event) => {
+    const action = event.target?.getAttribute('data-action');
+    if (!action) return;
+
+    if (action === 'downloads') {
+      showDownloadsTabOffline();
+      document.body.classList.remove('leaderboard-nudge-open');
+      card.remove();
+      return;
+    }
+
+    if (action === 'dismiss') {
+      document.body.classList.remove('leaderboard-nudge-open');
+      card.remove();
+    }
+  });
+
+  document.body.classList.add('leaderboard-nudge-open');
+  document.body.appendChild(card);
+}
+
+function hideOfflineNudge() {
+  const card = document.getElementById('offlineNudgeCard');
+  if (card) {
+    card.remove();
+    document.body.classList.remove('leaderboard-nudge-open');
+  }
+}
+
+// Expose to window for easy testing in the console
+window.showOfflineNudge = showOfflineNudge;
+window.hideOfflineNudge = hideOfflineNudge;
 
 // Show Downloads tab directly (works even when not logged in)
 function showDownloadsTabOffline() {
@@ -246,19 +304,7 @@ function showDownloadsTabOffline() {
 
     // Dispatch event to trigger downloads loading
     document.dispatchEvent(new Event("downloadsTabOpened"));
-  } else {
   }
-}
-
-// Hide all tabs except Downloads when offline
-function hideNonDownloadTabs() {
-  const tabs = document.querySelectorAll(".tab-button");
-  tabs.forEach((tab) => {
-    const tabName = tab.getAttribute("data-tab");
-    if (tabName !== "downloads") {
-      tab.style.display = "none";
-    }
-  });
 }
 
 // Show all tabs when online
@@ -524,19 +570,8 @@ const popup = document.getElementById("popup");
 const closePopup = document.getElementById("closePopup");
 
 const PDF_LFS_POINTER_MAX_BYTES = 2048;
-const pdfInsightCache = new Map();
-let pdfInsightInFlight = null;
 
 window.materioTopicMetadataMap = window.materioTopicMetadataMap || new Map();
-
-function normalizePdfName(value) {
-  return String(value || "")
-    .toLowerCase()
-    .replace(/\.pdf$/i, "")
-    .replace(/[-_]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
 
 function resolveTopicOptionData(topicValue, topicItem) {
   const normalizedTopicValue = String(topicValue || "").trim();
@@ -570,201 +605,6 @@ function storeTopicMetadata(semKey, subjectKey, categoryIndex, topicValue, metad
   const key = `${semKey || ""}::${subjectKey || ""}::${categoryIndex || ""}::${topicValue}`.toLowerCase();
   window.materioTopicMetadataMap.set(key, metadata || {});
 }
-
-function getCurrentSelectionMetadata() {
-  const semester = document.getElementById("semesterSelect")?.value || "";
-  const subject = document.getElementById("subjectSelect")?.value || "";
-  const category = document.getElementById("categorySelect")?.value || "";
-  const topic = document.getElementById("topicSelect")?.value || "";
-  const key = `${semester}::${subject}::${category}::${topic}`.toLowerCase();
-  const fromMap = window.materioTopicMetadataMap.get(key) || {};
-
-  let topicOption = null;
-  if (topic) {
-    const escapedTopic =
-      typeof CSS !== "undefined" && typeof CSS.escape === "function"
-        ? CSS.escape(topic)
-        : null;
-    if (escapedTopic) {
-      topicOption = document.querySelector(
-        `#topicSelect option[value="${escapedTopic}"]`,
-      );
-    }
-  }
-
-  topicOption =
-    topicOption || document.getElementById("topicSelect")?.selectedOptions?.[0];
-
-  const curatedBy =
-    fromMap.curatedBy || topicOption?.dataset?.curatedBy || "";
-  const contributedBy =
-    fromMap.contributedBy || topicOption?.dataset?.contributedBy || "";
-
-  return {
-    curatedBy: String(curatedBy || "").trim(),
-    contributedBy: String(contributedBy || "").trim(),
-  };
-}
-
-function getActivePdfNameFromPopup() {
-  const iframe = document.querySelector("#popupContent iframe");
-  if (iframe?.src) {
-    try {
-      const iframeUrl = new URL(iframe.src, window.location.origin);
-      const fileParam = iframeUrl.searchParams.get("file");
-      if (fileParam) {
-        const decoded = decodeURIComponent(fileParam);
-        const rawName = decoded.split("/").pop()?.split("?")[0] || "";
-        const normalized = normalizePdfName(rawName);
-        if (normalized) return normalized;
-      }
-    } catch (error) {
-      // Ignore parse errors and fall back to selected topic.
-    }
-  }
-
-  const topicValue = document.getElementById("topicSelect")?.value || "";
-  return normalizePdfName(topicValue);
-}
-
-function setupPdfInsightPill() {
-  const pill = document.getElementById("pdfInsightPill");
-  const views = document.getElementById("pdfInsightViews");
-  const infoButton = document.getElementById("pdfInsightInfoButton");
-  const infoPanel = document.getElementById("pdfInsightInfoPanel");
-  const curatedByRow = document.getElementById("pdfInsightCuratedBy");
-  const contributedByRow = document.getElementById("pdfInsightContributedBy");
-
-  if (!pill || !views || !infoButton || !infoPanel || !curatedByRow || !contributedByRow) {
-    return;
-  }
-
-  const hidePill = () => {
-    pill.hidden = true;
-    views.textContent = "";
-    infoPanel.hidden = true;
-  };
-
-  const setInfoRows = (metadata) => {
-    const curatedBy = String(metadata?.curatedBy || "").trim();
-    const contributedBy = String(metadata?.contributedBy || "").trim();
-
-    curatedByRow.textContent = curatedBy ? `Curated by: ${curatedBy}` : "";
-    curatedByRow.style.display = curatedBy ? "block" : "none";
-
-    contributedByRow.textContent = contributedBy
-      ? `Contributed by: ${contributedBy}`
-      : "";
-    contributedByRow.style.display = contributedBy ? "block" : "none";
-
-    return Boolean(curatedBy || contributedBy);
-  };
-
-  const loadUniqueReadsForPdf = async (pdfName) => {
-    const cacheKey = normalizePdfName(pdfName);
-    const now = Date.now();
-    const cached = pdfInsightCache.get(cacheKey);
-    if (cached && now - cached.at < 2 * 60 * 1000) {
-      return cached.data;
-    }
-
-    const requestUrl = `/api/v2/features?action=views&pdfName=${encodeURIComponent(cacheKey)}`;
-    const fallbackRequestUrl = `/api/v2/features?action=analytics-views&pdfName=${encodeURIComponent(cacheKey)}`;
-
-    if (pdfInsightInFlight === requestUrl) {
-      return cached?.data || null;
-    }
-
-    pdfInsightInFlight = requestUrl;
-    try {
-      let response = await fetch(requestUrl);
-      if (response.status === 404) {
-        response = await fetch(fallbackRequestUrl);
-      }
-      if (!response.ok) return null;
-      const payload = await response.json();
-      pdfInsightCache.set(cacheKey, { at: now, data: payload });
-      return payload;
-    } catch (error) {
-      return null;
-    } finally {
-      pdfInsightInFlight = null;
-    }
-  };
-
-  const refreshPill = async () => {
-    if (window.innerWidth <= 768) {
-      hidePill();
-      return;
-    }
-
-    const popupVisible =
-      popup &&
-      popup.style.display !== "none" &&
-      !popup.classList.contains("closing");
-
-    if (!popupVisible) {
-      hidePill();
-      return;
-    }
-
-    const metadata = getCurrentSelectionMetadata();
-    const hasInfo = setInfoRows(metadata);
-    const pdfName = getActivePdfNameFromPopup();
-
-    if (!pdfName) {
-      views.textContent = "";
-      views.style.display = "none";
-      pill.hidden = !hasInfo;
-      return;
-    }
-
-    const insightData = await loadUniqueReadsForPdf(pdfName);
-    const uniqueReads = Number(insightData?.uniqueReads || 0);
-    const hasReads = Boolean(insightData?.hasData && uniqueReads > 0);
-
-    if (hasReads) {
-      views.textContent = `${uniqueReads.toLocaleString()} unique reads`;
-      views.style.display = "block";
-    } else {
-      views.textContent = "";
-      views.style.display = "none";
-    }
-
-    pill.hidden = !(hasReads || hasInfo);
-    if (pill.hidden) {
-      infoPanel.hidden = true;
-    }
-  };
-
-  infoButton.addEventListener("click", (event) => {
-    event.stopPropagation();
-    if (pill.hidden) return;
-    infoPanel.hidden = !infoPanel.hidden;
-  });
-
-  document.addEventListener("click", (event) => {
-    if (!pill.contains(event.target)) {
-      infoPanel.hidden = true;
-    }
-  });
-
-  const observer = new MutationObserver(() => {
-    refreshPill();
-  });
-
-  observer.observe(popup, {
-    attributes: true,
-    attributeFilter: ["style", "class"],
-    childList: true,
-    subtree: true,
-  });
-
-  window.addEventListener("resize", refreshPill);
-  window.refreshPdfInsightPill = refreshPill;
-}
-
-setupPdfInsightPill();
 
 function buildApiPdfFallbackUrl(pdfUrl) {
   try {
@@ -2176,8 +2016,9 @@ document.addEventListener("DOMContentLoaded", function () {
 // INSIGHTROOM API - LOAD POSTS FROM API
 // ================================================
 
+const INSIGHTROOM_BASE_URL = (window.MATERIO_CONFIG && window.MATERIO_CONFIG.INSIGHTROOM_API) || "https://room.getmaterio.app/api/posts";
 const INSIGHTROOM_APIS = [
-  `${process.env.INSIGHTROOM_API}?num=5`,
+  `${INSIGHTROOM_BASE_URL}?num=5`,
   "https://insightroom.vercel.app/api/posts?num=5",
 ];
 
@@ -2219,6 +2060,9 @@ async function loadInsightroomPosts() {
 
     // Hide loading
     if (loadingEl) loadingEl.style.display = "none";
+
+    // Replace any server-rendered fallback cards so the live feed stays authoritative.
+    defaultPostsContainer.innerHTML = "";
 
     // Render posts as horizontal scrolling squircle cards
     latestPosts.forEach((post, index) => {

@@ -221,18 +221,76 @@ function renderTopUsersTable(rows) {
         const isAnon = row && (row.participant_type === 'anon' || (!row.user_id && row.anon_id));
         const displayName = escapeHtml(
             isAnon
-                ? 'Anonymous User'
+                ? 'Anonymous'
                 : (row.display_name || row.username || row.user_id || 'Unknown User')
         );
+
+        const anonId = row.anon_id || row.readerId || '';
+        const fingerprint = row.fingerprint || '';
+        const ip = row.ip_address || row.ip || '';
+
+        // Add moderation tools for admins
+        const modButton = isAdminOrSuperUser() ? `
+            <button class="btn btn-outline btn-xs mod-user-btn" 
+                data-anon="${escapeHtml(anonId)}" 
+                data-fp="${escapeHtml(fingerprint)}" 
+                data-ip="${escapeHtml(ip)}"
+                title="Moderate User">
+                <i class="fas fa-shield-halved"></i>
+            </button>
+        ` : '';
+
         return `
             <tr>
                 <td>${index + 1}</td>
-                <td><span class="admin-user-name" title="${displayName}">${displayName}</span></td>
+                <td>
+                    <div class="admin-user-cell">
+                        <span class="admin-user-name" title="${displayName}">${displayName}</span>
+                        ${isAnon ? `<small class="admin-user-id-hint">${escapeHtml(anonId.slice(-6))}</small>` : ''}
+                    </div>
+                </td>
                 <td><span class="admin-reading-time">${escapeHtml(row.reading_time_human || '00:00:00')}</span></td>
-                <td>${row.pdf_reads || 0}</td>
+                <td>
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <span>${row.pdf_reads || 0}</span>
+                        ${modButton}
+                    </div>
+                </td>
             </tr>
         `;
     }).join('');
+
+    // Add event listeners for moderation buttons
+    if (isAdminOrSuperUser()) {
+        tbody.querySelectorAll('.mod-user-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const anon = this.getAttribute('data-anon');
+                const fp = this.getAttribute('data-fp');
+                const ip = this.getAttribute('data-ip');
+
+                // Fill the moderation form in profile.js
+                const anonInput = document.getElementById('moderationAnonId');
+                const fpInput = document.getElementById('moderationFingerprint');
+                const ipInput = document.getElementById('moderationIp');
+
+                if (anonInput) anonInput.value = anon;
+                if (fpInput) fpInput.value = fp;
+                if (ipInput) ipInput.value = ip;
+
+                // Scroll to moderation section
+                const modSection = document.querySelector('.abuse-moderation-section');
+                if (modSection) {
+                    modSection.scrollIntoView({ behavior: 'smooth' });
+                    modSection.classList.add('highlight-section');
+                    setTimeout(() => modSection.classList.remove('highlight-section'), 2000);
+                }
+
+                if (window.showNotification) {
+                    window.showNotification('User identifiers copied to moderation form', 'info');
+                }
+            });
+        });
+    }
 }
 
 function loadUserAnalytics() {

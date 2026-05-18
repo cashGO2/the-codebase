@@ -3,7 +3,7 @@
  * 🔋 Optimized High-Precision PDF.js Asset Caching & Push Notifications
  */
 
-const VERSION = 'v4.2.0-notif-fix';
+const VERSION = 'v4.2.1-offline-nudge';
 const CORE_CACHE = 'materio-core-' + VERSION;
 const PDFJS_CACHE_PREFIX = 'pdfjs-assets-';
 const META_CACHE = 'materio-meta-' + VERSION;
@@ -11,8 +11,8 @@ const META_STATE_KEY = '/__sw_meta/content-state';
 
 const CONTENT_CHECK_TAG = 'materio-content-check';
 const NOTIFY_SOURCES = {
-    system: 'https://cdn-materioa.vercel.app/notifications.json',
-    insight: 'https://insightroom.vercel.app/api/posts',
+    system: '/api/v2/features?action=notifications-feed&num=6',
+    insight: 'https://room.getmaterio.app/api/posts?num=6',
     updates: '/assets/data/posts.json',
     releases: '/assets/data/releases.json'
 };
@@ -25,7 +25,8 @@ const CORE_ASSETS = [
     '/assets/scripts/main.js',
     '/assets/scripts/caching.js',
     '/assets/img/icon.svg',
-    '/assets/img/v4_logo.png'
+    '/assets/img/v4_logo.png',
+    '/assets/img/internet.webp'
 ];
 
 // Explicit PDF.js Viewer assets to be pre-cached per session
@@ -107,9 +108,16 @@ function getItemId(item, fallbackPrefix) {
 
 async function fetchJson(url) {
     const sep = url.includes('?') ? '&' : '?';
-    const response = await fetch(`${url}${sep}t=${Date.now()}`, { cache: 'no-store' });
-    if (!response.ok) return [];
-    return response.json();
+    try {
+        const response = await fetch(`${url}${sep}t=${Date.now()}`, { cache: 'no-store' });
+        if (!response.ok) return [];
+        const payload = await response.json();
+        if (Array.isArray(payload)) return payload;
+        if (Array.isArray(payload?.notifications)) return payload.notifications;
+        return [];
+    } catch (e) {
+        return [];
+    }
 }
 
 async function showBackgroundNotification(title, body, url, image = null) {
@@ -204,7 +212,17 @@ async function registerBackgroundChecks() {
 
 self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CORE_CACHE).then(cache => cache.addAll(CORE_ASSETS))
+        (async () => {
+            const cache = await caches.open(CORE_CACHE);
+            await Promise.allSettled(
+                CORE_ASSETS.map(async (asset) => {
+                    try {
+                        await cache.add(asset);
+                    } catch (e) {
+                    }
+                })
+            );
+        })()
     );
     self.skipWaiting();
 });

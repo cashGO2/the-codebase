@@ -1,3 +1,8 @@
+<script>
+    window.MATERIO_CONFIG = {
+        INSIGHTROOM_API: "{{ site.insightroom_api | default: 'https://room.getmaterio.app/api/posts' }}"
+    };
+</script>
 <div class="container">
     <!-- Mobile Frame Corners -->
     <div class="mobile-corner-tl" aria-hidden="true"></div>
@@ -16,22 +21,8 @@
                         d="M20.5 9.5V16C20.5 18.3456 20.5 19.5184 19.8801 20.3263C19.7205 20.5343 19.5343 20.7205 19.3263 20.8801C18.5184 21.5 17.3456 21.5 15 21.5V17C15 15.5858 15 14.8787 14.5607 14.4393C14.1213 14 13.4142 14 12 14C10.5858 14 9.87868 14 9.43934 14.4393C9 14.8787 9 15.5858 9 17V21.5C6.65442 21.5 5.48164 21.5 4.67372 20.8801C4.46572 20.7205 4.27954 20.5343 4.11994 20.3263C3.5 19.5184 3.5 18.3456 3.5 16V9.5" />
                 </svg>
             </a>
-            <a href="#local" class="tab-link" data-tab="local" id="localTabLink" style="display: none;"
-                aria-label="Local Resources">
-                <i class="far fa-hard-drive" aria-hidden="true"></i>
-            </a>
-            <a href="#2" class="tab-link" data-tab="chat">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor"
-                    fill="none" stroke="#141B34" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12.0045 10.5H12.0135M16 10.5H16.009M8.009 10.5H8.01797" />
-                    <path
-                        d="M2 10.5C2 9.72921 2.01346 8.97679 2.03909 8.2503C2.12282 5.87683 2.16469 4.69009 3.13007 3.71745C4.09545 2.74481 5.3157 2.6926 7.7562 2.58819C9.09517 2.5309 10.5209 2.5 12 2.5C13.4791 2.5 14.9048 2.5309 16.2438 2.58819C18.6843 2.6926 19.9046 2.74481 20.8699 3.71745C21.8353 4.69009 21.8772 5.87683 21.9609 8.2503C21.9865 8.97679 22 9.72921 22 10.5C22 11.2708 21.9865 12.0232 21.9609 12.7497C21.8772 15.1232 21.8353 16.3099 20.8699 17.2826C19.9046 18.2552 18.6843 18.3074 16.2437 18.4118C15.5098 18.4432 14.7498 18.4667 13.9693 18.4815C13.2282 18.4955 12.8576 18.5026 12.532 18.6266C12.2064 18.7506 11.9325 18.9855 11.3845 19.4553L9.20503 21.3242C9.07273 21.4376 8.90419 21.5 8.72991 21.5C8.32679 21.5 8 21.1732 8 20.7701V18.4219C7.91842 18.4186 7.83715 18.4153 7.75619 18.4118C5.31569 18.3074 4.09545 18.2552 3.13007 17.2825C2.16469 16.3099 2.12282 15.1232 2.03909 12.7497C2.01346 12.0232 2 11.2708 2 10.5Z" />
-                </svg>
-            </a>
-            <a href="#community" class="tab-link" data-tab="community" title="Community Boards" style="display: none;">
-                <i class="far fa-messages-question"></i>
-            </a>
-            <a href="#3" class="tab-link" data-tab="notifications">
+
+             <a href="#3" class="tab-link" data-tab="notifications">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor"
                     fill="none" stroke="#141B34" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M15.5 18C15.5 19.933 13.933 21.5 12 21.5C10.067 21.5 8.5 19.933 8.5 18" />
@@ -39,13 +30,23 @@
                         d="M19.2311 18H4.76887C3.79195 18 3 17.208 3 16.2311C3 15.762 3.18636 15.3121 3.51809 14.9803L4.12132 14.3771C4.68393 13.8145 5 13.0514 5 12.2558V9.5C5 5.63401 8.13401 2.5 12 2.5C15.866 2.5 19 5.634 19 9.5V12.2558C19 13.0514 19.3161 13.8145 19.8787 14.3771L20.4819 14.9803C20.8136 15.3121 21 15.762 21 16.2311C21 17.208 20.208 18 19.2311 18Z" />
                 </svg>
             </a>
-
-            <!-- <a href="#4" class="tab-link" data-tab="ai-chat">
-                <i class="far fa-robot"></i>
-            </a> -->
-
-
-            <a href="https://insightroom.vercel.app" target="_blank">
+           
+            <a href="#leaderboard" class="tab-link" data-tab="leaderboard">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor"
+                    fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M3.5 18C3.5 16.5858 3.5 15.8787 3.93934 15.4393C4.37868 15 5.08579 15 6.5 15H7C7.94281 15 8.41421 15 8.70711 15.2929C9 15.5858 9 16.0572 9 17V22H3.5V18Z" />
+                    <path
+                        d="M15 19C15 18.0572 15 17.5858 15.2929 17.2929C15.5858 17 16.0572 17 17 17H17.5C18.9142 17 19.6213 17 20.0607 17.4393C20.5 17.8787 20.5 18.5858 20.5 20V22H15V19Z" />
+                    <path d="M2 22H22" />
+                    <path
+                        d="M9 16C9 14.5858 9 13.8787 9.43934 13.4393C9.87868 13 10.5858 13 12 13C13.4142 13 14.1213 13 14.5607 13.4393C15 13.8787 15 14.5858 15 16V22H9V16Z" />
+                    <path
+                        d="M12.6911 2.57767L13.395 3.99715C13.491 4.19475 13.7469 4.38428 13.9629 4.42057L15.2388 4.6343C16.0547 4.77141 16.2467 5.36824 15.6587 5.957L14.6668 6.95709C14.4989 7.12646 14.4069 7.4531 14.4589 7.68699L14.7428 8.925C14.9668 9.90492 14.4509 10.284 13.591 9.77185L12.3951 9.05808C12.1791 8.92903 11.8232 8.92903 11.6032 9.05808L10.4073 9.77185C9.5514 10.284 9.03146 9.90089 9.25543 8.925L9.5394 7.68699C9.5914 7.4531 9.49941 7.12646 9.33143 6.95709L8.33954 5.957C7.7556 5.36824 7.94358 4.77141 8.75949 4.6343L10.0353 4.42057C10.2473 4.38428 10.5033 4.19475 10.5993 3.99715L11.3032 2.57767C11.6872 1.80744 12.3111 1.80744 12.6911 2.57767Z" />
+                </svg>
+            </a>
+           
+            <a href="https://room.getmaterio.app" target="_blank">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor"
                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path
@@ -224,11 +225,18 @@
             <!-- AI Connectors Banner -->
             <div class="ai-connectors-banner" id="aiConnectorsBanner" style="display: none;" onclick="openMcpModal()">
                 <div class="ai-banner-content">
-                    <span class="ai-banner-text"><span class="desktop-only-text">Materio is now in your AI, </span>Try out Connectors in ChatGPT and Claude</span>
+                    <span class="ai-banner-text">
+                        <span class="desktop-only-text">Connectors now work with ChatGPT, Claude, and Perplexity.</span>
+                        <span class="mobile-only">Perplexity support has arrived.</span>
+                    </span>
                     <div class="ai-banner-right">
                         <div class="ai-icons-group">
-                            <img src="/assets/img/chatgpt.webp" alt="ChatGPT" class="ai-icon chatgpt-icon">
-                            <img src="/assets/img/claude.webp" alt="Claude" class="ai-icon claude-icon">
+                            <img src="https://www.google.com/s2/favicons?sz=128&domain=perplexity.ai" alt="Perplexity"
+                            class="ai-icon perplexity-icon">
+                            <img src="https://www.google.com/s2/favicons?sz=128&domain=chatgpt.com" alt="ChatGPT"
+                                class="ai-icon chatgpt-icon">
+                            <img src="https://www.google.com/s2/favicons?sz=128&domain=claude.com" alt="Claude"
+                                class="ai-icon claude-icon">
                         </div>
                         <i class="fas fa-chevron-right ai-banner-chevron"></i>
                     </div>
@@ -256,6 +264,42 @@
                 <div class="blog-posts-container" id="blogPostsContent">
                     <!-- Default: Latest 5 posts (loaded from API) - Horizontal Scroll -->
                     <div id="defaultPosts" class="insight-cards-scroll">
+                        {% assign insightroom_fallback_posts = site.data.insightroom_fallback %}
+                        {% if insightroom_fallback_posts and insightroom_fallback_posts.size > 0 %}
+                        {% for post in insightroom_fallback_posts limit: 5 %}
+                        <a href="{{ post.url }}" class="insight-card-link" target="_blank" rel="noopener noreferrer">
+                            <article class="insight-card" id="staticBlogPost{{ forloop.index }}"
+                                style="--card-bg: url('{% if post.image %}{{ post.image }}{% else %}/assets/img/noidea.png{% endif %}')">
+                                <div class="insight-card-bg"></div>
+                                <div class="insight-card-gradient"></div>
+                                <div class="insight-card-content">
+                                    <h3 class="insight-card-title">{{ post.title }}</h3>
+                                    <p class="insight-card-excerpt">{{ post.excerpt }}</p>
+                                    <span class="insight-card-date">{{ post.date }}</span>
+                                </div>
+                            </article>
+                        </a>
+                        {% endfor %}
+                        {% else %}
+                        {% for post in site.posts limit: 3 %}
+                        {% unless post.hidden or post.draft or post.visibility == 'private' %}
+                        <a href="{{ post.url | relative_url }}" class="insight-card-link" target="_blank"
+                            rel="noopener noreferrer">
+                            <article class="insight-card" id="staticBlogPost{{ forloop.index }}"
+                                style="--card-bg: url('{% if post.image %}{{ post.image | relative_url }}{% else %}/assets/img/noidea.png{% endif %}')">
+                                <div class="insight-card-bg"></div>
+                                <div class="insight-card-gradient"></div>
+                                <div class="insight-card-content">
+                                    <h3 class="insight-card-title">{{ post.title }}</h3>
+                                    <p class="insight-card-excerpt">{{ post.excerpt | strip_html | normalize_whitespace
+                                        | truncate: 120 }}</p>
+                                    <span class="insight-card-date">{{ post.date | date: "%d-%m-%Y" }}</span>
+                                </div>
+                            </article>
+                        </a>
+                        {% endunless %}
+                        {% endfor %}
+                        {% endif %}
                         <!-- Exam Card in Default View -->
                         <div id="examCardDefault" class="exam-card" style="display: none;" onclick="openExamModal()">
                             <!-- View 1: Pre-Exam (Before exams start) -->
@@ -532,14 +576,10 @@
                                     <h3 class="exam-schedule-heading">Exam schedule</h3>
                                     <!-- Classroom Selector -->
                                     <div class="classroom-selector" id="classroomSelector" style="display: none;">
-                                        <input
-                                            id="classroomSelect"
-                                            class="classroom-select"
-                                            list="classroomOptions"
-                                            type="text"
-                                            autocomplete="off"
-                                            placeholder="Search division (e.g. 6A1)" />
-                                        <button id="clearDivisionBtn" class="clear-division-btn" type="button" aria-label="Clear division" title="Clear division" style="display: none;">
+                                        <input id="classroomSelect" class="classroom-select" list="classroomOptions"
+                                            type="text" autocomplete="off" placeholder="Search division (e.g. 6A1)" />
+                                        <button id="clearDivisionBtn" class="clear-division-btn" type="button"
+                                            aria-label="Clear division" title="Clear division" style="display: none;">
                                             <i class="fas fa-times"></i>
                                         </button>
                                         <datalist id="classroomOptions"></datalist>
@@ -577,10 +617,11 @@
         </div>
 
         <!-- MCP Connectors Modal -->
-        <div class="promo-modal-overlay" id="mcpConnectorsModal" role="dialog" aria-hidden="true" style="display: none;">
+        <div class="promo-modal-overlay" id="mcpConnectorsModal" role="dialog" aria-hidden="true"
+            style="display: none;">
             <div class="promo-modal dynamic-form-modal">
                 <i class="fas fa-times promo-close-btn" onclick="closeMcpModal()"></i>
-                
+
                 <div class="promo-content dynamic-form-content-wrapper">
                     <div class="dynamic-form-header" style="margin-bottom: 20px;">
                         <h2 style="font-size: 1.3rem; font-weight: 700; margin: 0;">MCP Connectors</h2>
@@ -588,28 +629,58 @@
 
                     <div style="display: flex; flex-direction: column; gap: 12px;">
                         <!-- ChatGPT -->
-                        <a href="https://chatgpt.com/g/g-69b90f449ff08191a3d32d3c0bec0591-materio" target="_blank" class="mcp-connect-card">
+                        <a href="https://chatgpt.com/g/g-69b90f449ff08191a3d32d3c0bec0591-materio" target="_blank"
+                            class="mcp-connect-card">
                             <div style="display: flex; align-items: center; gap: 12px;">
-                                <img src="/assets/img/chatgpt.webp" alt="ChatGPT" style="width: 36px; height: 36px; border-radius: 8px;">
+                                <img src="https://www.google.com/s2/favicons?sz=128&domain=chatgpt.com" alt="ChatGPT"
+                                    style="width: 36px; height: 36px; border-radius: 8px;">
                                 <span style="font-weight: 600; font-size: 16px;">ChatGPT</span>
                             </div>
                             <i class="fas fa-chevron-right" style="color: #888; font-size: 14px;"></i>
                         </a>
 
                         <!-- Claude Container -->
-                        <div class="mcp-connect-card-container" style="background: rgba(128, 128, 128, 0.05); border-radius: 12px; border: 1px solid rgba(128, 128, 128, 0.1); overflow: hidden;">
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid rgba(128, 128, 128, 0.1);">
+                        <div class="mcp-connect-card-container"
+                            style="background: rgba(128, 128, 128, 0.05); border-radius: 12px; border: 1px solid rgba(128, 128, 128, 0.1); overflow: hidden;">
+                            <div
+                                style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid rgba(128, 128, 128, 0.1);">
                                 <div style="display: flex; align-items: center; gap: 12px;">
-                                    <img src="/assets/img/claude.webp" alt="Claude" style="width: 36px; height: 36px; border-radius: 8px;">
+                                    <img src="https://www.google.com/s2/favicons?sz=128&domain=claude.com" alt="Claude"
+                                        style="width: 36px; height: 36px; border-radius: 8px;">
                                     <span style="font-weight: 600; font-size: 16px;">Claude</span>
                                 </div>
                             </div>
                             <div style="display: flex; flex-direction: column;">
-                                <a href="https://claude.ai/settings/connectors?modal=add-custom-connector" target="_blank" class="mcp-sublink">
+                                <a href="https://claude.ai/settings/connectors?modal=add-custom-connector"
+                                    target="_blank" class="mcp-sublink">
                                     <span>Connect</span>
                                     <i class="fas fa-chevron-right"></i>
                                 </a>
-                                <a href="https://materioa.vercel.app/docs/mcp#connecting-claude" target="_blank" class="mcp-sublink">
+                                <a href="https://getmaterio.app/docs/mcp#connecting-claude" target="_blank"
+                                    class="mcp-sublink">
+                                    <span>Guide</span>
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Perplexity Container -->
+                        <div class="mcp-connect-card-container"
+                            style="background: rgba(128, 128, 128, 0.05); border-radius: 12px; border: 1px solid rgba(128, 128, 128, 0.1); overflow: hidden;">
+                            <div
+                                style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid rgba(128, 128, 128, 0.1);">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <img src="https://www.google.com/s2/favicons?sz=128&domain=perplexity.ai"
+                                        alt="Claude" style="width: 36px; height: 36px; border-radius: 8px;">
+                                    <span style="font-weight: 600; font-size: 16px;">Perplexity</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; flex-direction: column;">
+                                <a href="https://www.perplexity.ai/computer/connectors" target="_blank" class="mcp-sublink">
+                                    <span>Connect</span>
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                                <a href="https://getmaterio.app/docs/mcp#connecting-perplexity" target="_blank"
+                                    class="mcp-sublink">
                                     <span>Guide</span>
                                     <i class="fas fa-chevron-right"></i>
                                 </a>
@@ -621,7 +692,8 @@
         </div>
 
         <!-- Custom Wallpaper Store Modal (Promo Modal Style) -->
-        <div class="promo-modal-overlay" id="customWallpaperStoreModal" role="dialog" aria-hidden="true" style="display: none;">
+        <div class="promo-modal-overlay" id="customWallpaperStoreModal" role="dialog" aria-hidden="true"
+            style="display: none;">
             <div class="promo-modal dynamic-form-modal wallpaper-store-modal">
                 <i class="fas fa-times promo-close-btn" onclick="closeCustomWallpaperStoreModal()"></i>
 
@@ -636,34 +708,34 @@
         </div>
 
         <script>
-        function openMcpModal() {
-            const modal = document.getElementById('mcpConnectorsModal');
-            if (modal) {
-                modal.classList.add('show');
-                document.body.classList.add('modal-open');
+            function openMcpModal() {
+                const modal = document.getElementById('mcpConnectorsModal');
+                if (modal) {
+                    modal.classList.add('show');
+                    document.body.classList.add('modal-open');
+                }
             }
-        }
-        function closeMcpModal() {
-            const modal = document.getElementById('mcpConnectorsModal');
-            if (modal) {
-                modal.classList.remove('show');
-                document.body.classList.remove('modal-open');
+            function closeMcpModal() {
+                const modal = document.getElementById('mcpConnectorsModal');
+                if (modal) {
+                    modal.classList.remove('show');
+                    document.body.classList.remove('modal-open');
+                }
             }
-        }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const banner = document.getElementById('aiConnectorsBanner');
-            if (banner) {
-                banner.style.display = 'flex';
-                setInterval(() => {
-                    if (banner.style.display === 'none') {
-                        banner.style.display = 'flex';
-                    } else {
-                        banner.style.display = 'none';
-                    }
-                }, 30 * 60 * 1000); // 30 minutes
-            }
-        });
+            document.addEventListener('DOMContentLoaded', () => {
+                const banner = document.getElementById('aiConnectorsBanner');
+                if (banner) {
+                    banner.style.display = 'flex';
+                    setInterval(() => {
+                        if (banner.style.display === 'none') {
+                            banner.style.display = 'flex';
+                        } else {
+                            banner.style.display = 'none';
+                        }
+                    }, 30 * 60 * 1000); // 30 minutes
+                }
+            });
         </script>
 
         <!-- Dynamic Forms Modal -->
@@ -672,146 +744,19 @@
         <!-- Notebook Modal -->
         {% include notebook.html %}
 
-        <div id="local" class="tab-content">
-            <h1>
-                Local Resources
-                <i class="fas fa-circle-info info-icon">
-                    <span class="tooltip" style="font-weight: normal;">Load CDN resources from your local server or
-                        directory for faster access and offline use.</span>
-                </i>
-            </h1>
+       
 
-            <!-- Local CDN Card -->
-            <div class="card-layout" id="localCdnCard">
-                <div class="local-cdn-container">
-                    <div class="local-cdn-header">
-                        <div class="paper-mode-info">
-                            <div class="paper-mode-title">
-                                Local Resources
-                            </div>
-                            <div class="paper-mode-description">Use local copy of CDN resources</div>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="localCdnToggle">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <div class="local-cdn-settings" id="localCdnSettings" style="display: none; margin-top: 15px;">
-                        <div class="local-cdn-warning"
-                            style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 12px; margin-bottom: 15px; font-size: 12px; color: #856404;">
-                            <i class="fas fa-exclamation-triangle" style="margin-right: 5px;"></i>
-                            <strong>Note:</strong> This feature requires a CORS-enabled local server.
-                            <details style="margin-top: 10px; cursor: var(--f-cursor-pointer);">
-                                <summary style="font-weight: 700; outline: none; user-select: none;">
-                                    Quick Setup Guide
-                                </summary>
-                                <div
-                                    style="margin-top: 8px; padding-left: 20px; border-left: 3px solid #ffc107; padding-left: 12px;">
-                                    <strong>Step 1:</strong> In your CDN directory, run:<br>
-                                    <code
-                                        style="display: block; background: #f8f9fa; padding: 6px; margin: 4px 0; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 11px;">
-                                        python scripts/cors-server.py 8080
-                                    </code>
-                                    <strong>Step 2:</strong> Enter URL below and click Save Path<br>
-                                    <code
-                                        style="background: #f8f9fa; padding: 2px 6px; border-radius: 3px;">http://localhost:8080</code>
-                                </div>
-                            </details>
-                        </div>
-                        <div class="local-cdn-input-group">
-                            <label for="localCdnPath"
-                                style="font-size: 13px; color: #666; margin-bottom: 8px; display: block;">
-                                <i class="fas fa-folder-open" style="margin-right: 5px;"></i>
-                                Server URL or Directory Path
-                            </label>
-                            <input type="text" id="localCdnPath"
-                                placeholder="http://localhost:8080 or E:\GitHub\cdn-materio"
-                                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 13px; box-sizing: border-box; max-width: 100%;">
-                            <div id="serverStatus"
-                                style="margin-top: 8px; font-size: 12px; color: #666; display: none;">
-                                <i class="fas fa-circle" id="serverStatusIcon"></i>
-                                <span id="serverStatusText"></span>
-                            </div>
-                            <button id="saveLocalCdnPath"
-                                style="font-family: Manrope;margin-top: 12px; padding: 10px 20px; background: #ff8400; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: var(--f-cursor-pointer); width: 100%; transition: transform 0.2s; box-sizing: border-box;">
-                                <i class="fas fa-save" style="margin-right: 5px;"></i>
-                                Save Path
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Terminal Window for Server Logs -->
-            <div class="card-layout" id="serverTerminal" style="margin-top: 20px; display: none;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-terminal" style="color: #ff8200;"></i>
-                        <h3 style="margin: 0; font-size: 14px; font-weight: 600;">Server Logs</h3>
-                    </div>
-                    <div style="display: flex; gap: 8px;">
-                        <button id="clearTerminal" class="terminal-btn" title="Clear logs">
-                            <i class="fas fa-eraser"></i>
-                        </button>
-                        <button id="toggleTerminal" class="terminal-btn" title="Collapse/Expand">
-                            <i class="fas fa-chevron-up"></i>
-                        </button>
-                    </div>
-                </div>
-                <div id="terminalContent" class="terminal-window">
-                    <div id="terminalOutput" class="terminal-output">
-                        <div class="terminal-line" style="color: #858585; font-style: italic;">
-                            Waiting for local server connection...
-                        </div>
-                        <div class="terminal-line" style="color: #858585; font-style: italic;">
-                            Enable Local Resources above to start monitoring server logs
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="chat" class="tab-content">
-            <h1>
-                Chat
-                <i class="fas fa-circle-info info-icon">
-                    <span class="tooltip" style="font-weight: normal;">You can chat here by signing with github and
-                        ask doubts or discuss topics, Formatting with Markdown is supported.</span>
-                </i>
-            </h1>
-            <div id="giscus" data-repo="Materioa/Materio">
-                <!-- The Giscus comment section will be loaded here -->
-            </div>
-            <script src="https://giscus.app/client.js" data-repo="Materioa/web-frontend" data-repo-id="R_kgDOK_VkLg"
-                data-category="Chat" data-category-id="DIC_kwDOK_VkLs4CmdaW" data-mapping="title" data-strict="0"
-                data-reactions-enabled="0" data-emit-metadata="0" data-input-position="top" data-theme="noborder_dark"
-                data-lang="en" data-order="desc" crossorigin="anonymous" async>
-                </script>
-
-        </div>
         <div id="notifications" class="tab-content">
             <h1>Notifications</h1>
-            <div id="notificationBoard" style="color:#000000;">
-                <!-- Notification cards will be dynamically added here -->
+            <div id="notificationBoard" class="notifications-data-panel active" style="color:#000000;">
+                <!-- Notification update cards will be dynamically added here -->
             </div>
         </div>
 
-        <!-- Community Boards Tab -->
-        <div id="community" class="tab-content" style="display: none;">
-            <h1>
-                Community Boards
-                <i class="fas fa-circle-info info-icon">
-                    <span class="tooltip" style="font-weight: normal;">
-                        Discuss topics, ask questions, and share knowledge with other Materio users.
-                        Faculty-verified and student-consensus community notes add context to discussions.
-                    </span>
-                </i>
-            </h1>
-            <!-- Injectable Community Module -->
-            <div id="materio-community" data-api-url="http://localhost:3001" data-theme="auto"
-                data-enable-anonymous="true" data-enable-notes="true" data-enable-attachments="true">
-            </div>
+        <div id="leaderboard" class="tab-content">
+            {% include leaderboard.html %}
         </div>
+
 
         <div id="notebooks" class="tab-content">
             <div class="notebooks-tab-header">
@@ -850,10 +795,6 @@
             </div>
         </div>
 
-        <div id="ai-chat" class="tab-content" disabled>
-            <h1>AI Chat</h1>
-            {% include ai-chat.html %}
-        </div>
 
         <div id="downloads" class="tab-content">
             <h1>
@@ -1314,10 +1255,11 @@
                     <div class="toggle-container">
                         <div class="paper-mode-info">
                             <div class="paper-mode-title">Notifications</div>
-                            <div class="paper-mode-description">Receive notifications about new uploads and updates</div>
+                            <div class="paper-mode-description">Receive notifications about new uploads and updates
+                            </div>
                         </div>
                         <label class="switch">
-                            <input type="checkbox" id="notificationsToggle" class="setting-toggle">
+                            <input type="checkbox" id="notificationsToggle" class="setting-toggle" checked>
                             <span class="slider"></span>
                         </label>
                     </div>

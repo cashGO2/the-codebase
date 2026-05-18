@@ -6,6 +6,9 @@ const {
   corsHeaders,
   generateRecoveryKey
 } = require('./_utils');
+const { getMongoDb } = require('../_config_shared/mongodb');
+
+const MODERATION_COLLECTION = 'abuse_moderation_rules';
 
 module.exports = async (req, res) => {
   const origin = req.headers.origin || req.headers.Origin;
@@ -45,6 +48,7 @@ module.exports = async (req, res) => {
     const isToggleAdminEndpoint = pathAction === 'toggle-admin' || url.pathname.includes('/invites/toggle-admin');
     const isTogglePlusEndpoint = pathAction === 'toggle-plus' || url.pathname.includes('/invites/toggle-plus');
     const isDeleteEndpoint = pathAction === 'delete' || url.pathname.includes('/invites/delete');
+    const isModerationEndpoint = pathAction === 'moderation' || url.pathname.includes('/invites/moderation');
     // Sharelink endpoint moved to features.js
     const isSharelinkEndpoint = pathAction === 'sharelink' || url.pathname.includes('/sharelink') || bodyAction === 'sharelink';
     const isSharelinkInfoEndpoint = pathAction === 'sharelink-info' || url.pathname.includes('/sharelink-info');
@@ -94,7 +98,7 @@ module.exports = async (req, res) => {
     }
 
     // Admin required endpoints
-    if (isToggleAdminEndpoint || isTogglePlusEndpoint || isDeleteEndpoint || (req.method === 'POST' && !isSharelinkEndpoint) || (req.method === 'GET' && !isSharelinkEndpoint)) {
+    if (isToggleAdminEndpoint || isTogglePlusEndpoint || isDeleteEndpoint || isModerationEndpoint || (req.method === 'POST' && !isSharelinkEndpoint) || (req.method === 'GET' && !isSharelinkEndpoint)) {
        if (!user.has_admin_privileges) {
          return res.status(403).json({ error: 'Admin privileges required' });
        }
@@ -110,6 +114,10 @@ module.exports = async (req, res) => {
 
     if (isDeleteEndpoint && req.method === 'POST') {
       return await deleteInvite(req, res, origin, user.id);
+    }
+
+    if (isModerationEndpoint && (req.method === 'POST' || req.method === 'GET')) {
+      return await handleAbuseModeration(req, res, user.id);
     }
 
     // Sharelink creation is now handled in features.js
@@ -175,6 +183,186 @@ async function createInvite(userId, origin, requestBody = null, res) {
     });
   } catch (error) {
     return res.status(500).json({ error: 'Failed to create invite', details: error.message });
+  }
+}
+
+function normalizeIdentity(value, maxLength = 128) {
+  return String(value || '').trim().toLowerCase().slice(0, maxLength);
+}
+
+function toCleanText(value, maxLength = 200) {
+  return String(value || '').trim().slice(0, maxLength);
+}
+
+function normalizeIpv4Like(value) {
+  const normalized = normalizeIdentity(value, 64);
+  if (!normalized) return '';
+  // Preserve IPv6 while cleaning IPv4-mapped values like ::ffff:1.2.3.4
+  return normalized.replace(/^::ffff:/, '');
+}
+
+async function getModerationCollection() {
+  const db = await getMongoDb();
+  const collection = db.collection(MODERATION_COLLECTION);
+  await collection.createIndex({ anon_id: 1, fingerprint: 1, ip_address: 1 }, { name: 'identity_tuple_idx' });
+  await collection.createIndex({ active: 1, updatedAt: -1 }, { name: 'active_updated_idx' });
+  return collection;
+}
+
+async function lookupUserIdentifiers(anonId) {
+  try {
+    // Attempt to find recent activity for this anon_id to get fingerprint/IP
+    const { data, error } = await supabaseAdmin
+      .from('user_daily_stats')
+      .select('usermeta')
+      .eq('anon_id', anonId)
+      .order('updated_at', { ascending: false })
+      .limit(1);
+
+    if (error || !data || data.length === 0) {
+      console.warn('Identity lookup failed for:', anonId, error);
+      return null;
+    }
+
+    const session = data[0]?.usermeta?.session || data[0]?.usermeta?.p_usermeta_diff?.session;
+    if (!session) return null;
+
+    return {
+      fingerprint: session.fp || null,
+      ipAddress: session.ip || null
+    };
+  } catch (e) {
+    console.error('Identity lookup error:', e);
+    return null;
+  }
+}
+
+async function handleAbuseModeration(req, res, adminUserId) {
+  try {
+    const collection = await getMongoDb(); // Get default DB and use collection
+    const moderationCollection = collection.collection(MODERATION_COLLECTION);
+
+    if (req.method === 'GET') {
+      const requestUrl = new URL(req.url, `http://${req.headers.host}`);
+      const statusFilter = String(requestUrl.searchParams.get('status') || req.query?.status || '').trim().toLowerCase();
+      const query = statusFilter === 'all' ? {} : { active: true };
+      const rules = await moderationCollection
+        .find(query, {
+          projection: {
+            _id: 0,
+            anon_id: 1,
+            fingerprint: 1,
+            ip_address: 1,
+            action: 1,
+            title: 1,
+            body: 1,
+            preset: 1,
+            active: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            createdBy: 1,
+            updatedBy: 1,
+          }
+        })
+        .sort({ updatedAt: -1, createdAt: -1 })
+        .limit(100)
+        .toArray();
+
+      return res.status(200).json({ rules });
+    }
+
+    const action = normalizeIdentity(req.body?.action, 16);
+    let anonId = normalizeIdentity(req.body?.anonId, 128);
+    let fingerprint = normalizeIdentity(req.body?.fingerprint, 128);
+    let ipAddress = normalizeIpv4Like(req.body?.ipAddress);
+    const title = toCleanText(req.body?.title, 120);
+    const body = toCleanText(req.body?.body, 300);
+    const preset = toCleanText(req.body?.preset, 40) || null;
+
+    if (!['warn', 'ban', 'clear'].includes(action)) {
+      return res.status(400).json({ error: 'action must be warn, ban, or clear' });
+    }
+
+    if (!anonId) {
+      return res.status(400).json({ error: 'anonId is required' });
+    }
+
+    // Auto-populate missing identifiers if possible
+    if (action !== 'clear' && (!fingerprint || !ipAddress)) {
+      const found = await lookupUserIdentifiers(anonId);
+      if (found) {
+        if (!fingerprint) fingerprint = found.fingerprint;
+        if (!ipAddress) ipAddress = found.ipAddress;
+      }
+    }
+
+    if (!fingerprint || !ipAddress) {
+      return res.status(400).json({ 
+        error: 'Identity triplet incomplete. Provide fingerprint/IP or ensure user has recent activity.',
+        details: { anonId, fingerprint, ipAddress }
+      });
+    }
+
+    const identityFilter = { anon_id: anonId, fingerprint, ip_address: ipAddress };
+
+    if (action === 'clear') {
+      const result = await moderationCollection.updateMany(identityFilter, {
+        $set: {
+          active: false,
+          updatedAt: new Date(),
+          updatedBy: adminUserId,
+        }
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: 'Moderation rule cleared',
+        modified: result.modifiedCount || 0,
+      });
+    }
+
+    const defaultTitle = action === 'ban' ? 'Access Restricted' : 'Account Notice';
+    const defaultBody = action === 'ban'
+      ? 'Your activity matched a blocked profile and access has been restricted.'
+      : 'Your activity matched a review profile. Please follow usage guidelines.';
+
+    const now = new Date();
+    await moderationCollection.updateOne(
+      identityFilter,
+      {
+        $set: {
+          action,
+          title: title || defaultTitle,
+          body: body || defaultBody,
+          preset,
+          active: true,
+          updatedAt: now,
+          updatedBy: adminUserId,
+        },
+        $setOnInsert: {
+          createdAt: now,
+          createdBy: adminUserId,
+        }
+      },
+      { upsert: true }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: `Moderation ${action} rule saved`,
+      rule: {
+        anon_id: anonId,
+        fingerprint,
+        ip_address: ipAddress,
+        action,
+        title: title || defaultTitle,
+        body: body || defaultBody,
+        active: true,
+      }
+    });
+  } catch (error) {
+    console.error('Moderation API error:', error);
+    return res.status(500).json({ error: 'Failed to process moderation request', details: error.message });
   }
 }
 

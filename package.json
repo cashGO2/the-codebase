@@ -6,7 +6,7 @@
   "scripts": {
     "generate:oread-icons": "node scripts/generate-oread-icons-css.js",
     "vercel-dev": "node scripts/vercel dev",
-    "build": "node scripts/bundle exec jekyll build && netlify build",
+    "build": "node scripts/generate-build-id.js && node scripts/generate-insightroom-fallback.js && bundle exec jekyll build && netlify build",
     "functions": "node scripts/netlify functions:serve --functions=api/v1",
     "minify-js": "uglifyjs assets/scripts/auth.js assets/scripts/login.js assets/scripts/signup.js assets/scripts/forgot-password.js assets/scripts/profile-management.js -o _site/assets/scripts/auth.min.js --source-map --compress --mangle",
     "optimize": "npm run minify-js && npm run copy-min",

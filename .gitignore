@@ -39,6 +39,7 @@ devdocs.md
 
 # New !
 insightroom/*
+svelte/*
 analytics-api/* 
 _site/
 _drafts/*

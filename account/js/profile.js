@@ -194,6 +194,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
     // Admin invite card reference
   const adminInviteCard = document.getElementById('adminInviteCard');
+    const presetWarnBtn = document.getElementById('presetWarnBtn');
+    const presetBanBtn = document.getElementById('presetBanBtn');
+    const saveModerationBtn = document.getElementById('saveModerationBtn');
+    const refreshModerationBtn = document.getElementById('refreshModerationBtn');
 
   // Function to extract username from URL or session storage
   function getProfileUsername() {
@@ -241,6 +245,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Show admin invite card if user has admin privileges
         if (user.hasAdminPrivileges && adminInviteCard) {
           adminInviteCard.style.display = 'block';
+          initAbuseModerationSection();
         }        // Show Files tab if user has admin privileges
         const filesTab = document.getElementById('filesTab');
         if (user.hasAdminPrivileges && filesTab) {
@@ -362,6 +367,22 @@ document.addEventListener('DOMContentLoaded', function () {
     generateInviteBtn.addEventListener('click', async function () {
       await generateInvite(this, false);
     });
+  }
+
+  if (presetWarnBtn) {
+    presetWarnBtn.addEventListener('click', () => applyModerationPreset('warn'));
+  }
+
+  if (presetBanBtn) {
+    presetBanBtn.addEventListener('click', () => applyModerationPreset('ban'));
+  }
+
+  if (saveModerationBtn) {
+    saveModerationBtn.addEventListener('click', () => saveModerationRule(saveModerationBtn));
+  }
+
+  if (refreshModerationBtn) {
+    refreshModerationBtn.addEventListener('click', loadModerationRules);
   }
 
   // Generate plus invite code
@@ -811,6 +832,147 @@ function closeInvitesModal() {
   if (modal) {
     modal.style.display = 'none';
     modal.classList.remove('show');
+  }
+}
+
+let abuseModerationInitialized = false;
+
+function initAbuseModerationSection() {
+  if (abuseModerationInitialized) return;
+  abuseModerationInitialized = true;
+  
+  // Attach event listeners
+  const saveBtn = document.getElementById('saveModerationBtn');
+  if (saveBtn) saveBtn.addEventListener('click', () => saveModerationRule(saveBtn));
+
+  const refreshBtn = document.getElementById('refreshModerationBtn');
+  if (refreshBtn) refreshBtn.addEventListener('click', loadModerationRules);
+
+  const warnBtn = document.getElementById('presetWarnBtn');
+  if (warnBtn) warnBtn.addEventListener('click', () => applyModerationPreset('warn'));
+
+  const banBtn = document.getElementById('presetBanBtn');
+  if (banBtn) banBtn.addEventListener('click', () => applyModerationPreset('ban'));
+
+  loadModerationRules();
+}
+
+function applyModerationPreset(preset) {
+  const actionEl = document.getElementById('moderationAction');
+  const titleEl = document.getElementById('moderationTitle');
+  const bodyEl = document.getElementById('moderationBody');
+  if (!actionEl || !titleEl || !bodyEl) return;
+
+  if (preset === 'ban') {
+    actionEl.value = 'ban';
+    titleEl.value = 'Access Restricted';
+    bodyEl.value = 'Your activity matched a blocked profile and access has been restricted.';
+    return;
+  }
+
+  actionEl.value = 'warn';
+  titleEl.value = 'Account Notice';
+  bodyEl.value = 'Your activity matched a review profile. Please follow usage guidelines.';
+}
+
+function maskValue(value, keep = 6) {
+  const text = String(value || '').trim();
+  if (!text) return '-';
+  if (text.length <= keep) return text;
+  return `${text.slice(0, 3)}...${text.slice(-keep)}`;
+}
+
+function escapeHtmlSafe(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+async function saveModerationRule(triggerBtn) {
+  const anonId = document.getElementById('moderationAnonId')?.value?.trim() || '';
+  const fingerprint = document.getElementById('moderationFingerprint')?.value?.trim() || '';
+  const ipAddress = document.getElementById('moderationIp')?.value?.trim() || '';
+  const action = document.getElementById('moderationAction')?.value || 'warn';
+  const title = document.getElementById('moderationTitle')?.value?.trim() || '';
+  const body = document.getElementById('moderationBody')?.value?.trim() || '';
+
+  if (!anonId) {
+    showNotification('anon_id is required', 'error');
+    return;
+  }
+
+  // If fingerprint or IP are missing, we'll let the backend try to find them
+  if (!fingerprint || !ipAddress) {
+    console.log('Fingerprint or IP missing, backend will attempt to auto-fill from recent activity.');
+  }
+
+  const originalText = triggerBtn?.innerHTML;
+  if (triggerBtn) {
+    triggerBtn.disabled = true;
+    triggerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+  }
+
+  try {
+    await makeApiRequest('invites/moderation', 'POST', {
+      anonId,
+      fingerprint,
+      ipAddress,
+      action,
+      title,
+      body,
+      preset: action,
+    }, true);
+
+    showNotification(action === 'clear' ? 'Moderation rule cleared' : `Moderation ${action} rule saved`, 'success');
+    await loadModerationRules();
+  } catch (error) {
+    console.error('Save moderation rule error:', error);
+    showNotification(error.message || 'Failed to save moderation rule', 'error');
+  } finally {
+    if (triggerBtn) {
+      triggerBtn.disabled = false;
+      triggerBtn.innerHTML = originalText;
+    }
+  }
+}
+
+async function loadModerationRules() {
+  const tbody = document.getElementById('moderationRulesBody');
+  if (!tbody) return;
+
+  tbody.innerHTML = '<tr><td colspan="6" class="admin-empty-cell">Loading rules...</td></tr>';
+
+  try {
+    const response = await makeApiRequest('invites/moderation?status=all', 'GET', null, true);
+    const rules = Array.isArray(response?.rules) ? response.rules : [];
+
+    if (!rules.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="admin-empty-cell">No moderation rules yet.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = rules.map((rule) => {
+      const action = String(rule.action || '').toLowerCase();
+      const actionClass = action === 'ban' ? 'ban' : 'warn';
+      const updatedAt = rule.updatedAt ? formatDate(rule.updatedAt) : '-';
+      const title = escapeHtmlSafe(rule.title || '-');
+      return `
+        <tr>
+          <td><span class="moderation-action-pill ${actionClass}">${escapeHtmlSafe(action || 'warn')}</span></td>
+          <td title="${escapeHtmlSafe(rule.anon_id || '')}">${escapeHtmlSafe(maskValue(rule.anon_id || ''))}</td>
+          <td title="${escapeHtmlSafe(rule.fingerprint || '')}">${escapeHtmlSafe(maskValue(rule.fingerprint || ''))}</td>
+          <td title="${escapeHtmlSafe(rule.ip_address || '')}">${escapeHtmlSafe(rule.ip_address || '-')}</td>
+          <td title="${title}">${title}</td>
+          <td class="moderation-muted">${escapeHtmlSafe(updatedAt)}</td>
+        </tr>
+      `;
+    }).join('');
+  } catch (error) {
+    console.error('Load moderation rules error:', error);
+    tbody.innerHTML = '<tr><td colspan="6" class="admin-empty-cell">Failed to load moderation rules.</td></tr>';
   }
 }
 

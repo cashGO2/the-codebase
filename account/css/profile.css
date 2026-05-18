@@ -211,6 +211,76 @@
       border: 1px solid var(--border-color);
     }
 
+    .abuse-moderation-section {
+      margin-top: 22px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+      display: grid;
+      gap: 12px;
+    }
+
+    .abuse-moderation-header h4 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .abuse-moderation-header p {
+      margin: 4px 0 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .abuse-preset-row,
+    .abuse-actions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .abuse-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .abuse-grid .form-group {
+      margin: 0;
+    }
+
+    .abuse-rules-table-wrap {
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: auto;
+      max-height: 260px;
+    }
+
+    .moderation-action-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .moderation-action-pill.warn {
+      background: rgba(255, 130, 0, 0.16);
+      color: #ff8200;
+    }
+
+    .moderation-action-pill.ban {
+      background: rgba(220, 53, 69, 0.16);
+      color: #dc3545;
+    }
+
+    .moderation-muted {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+    }
+
     .invite-code-container label {
       display: block;
       margin-bottom: 8px;
@@ -356,6 +426,10 @@
       .modal-generation-buttons .btn {
         width: 100%;
         margin: 0;
+      }
+
+      .abuse-grid {
+        grid-template-columns: 1fr;
       }
     }
 

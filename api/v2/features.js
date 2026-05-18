@@ -117,8 +117,20 @@ module.exports = async (req, res) => {
       pathParam,
     );
 
+    if (action === "analytics-views" || action === "views") {
+      return await handleAnalyticsViews(req, res, url);
+    }
+
+    if (action === "analytics-leaderboard" || action === "leaderboard") {
+      return await handleAnalyticsLeaderboard(req, res, url);
+    }
+
     if (action === "analytics") {
       return await handleAnalytics(req, res);
+    }
+
+    if (action === "notifications-feed") {
+      return await handleNotificationsFeed(req, res);
     }
 
     if (isInsights || action === "insights" || pathParam.includes("insights")) {
@@ -205,6 +217,11 @@ module.exports = async (req, res) => {
           "notebooks",
           "pdf-share",
           "web-push",
+          "views",
+          "leaderboard",
+          "analytics-views",
+          "analytics-leaderboard",
+          "notifications-feed",
         ],
       },
     });
@@ -250,6 +267,52 @@ async function handleInsights(req, res) {
     console.error("Error fetching real-time users:", error);
     return res.status(500).json({ error: error.message });
   }
+}
+
+async function handleNotificationsFeed(req, res) {
+  const origin = req.headers.origin || req.headers.Origin;
+  const headers = corsHeaders(origin);
+  Object.entries(headers).forEach(([key, value]) => {
+    res.setHeader(key, value);
+  });
+  res.setHeader("Cache-Control", "no-store");
+
+  const limitParam = Number(req.query?.num);
+  const limit = Number.isFinite(limitParam) && limitParam > 0 ? Math.floor(limitParam) : 6;
+
+  const useLocalResources = process.env.USE_LOCAL_RESOURCES === "true";
+  const sources = [
+    ...(useLocalResources ? ["http://localhost:8080/notifications.json"] : []),
+    "https://cdn-materioa.vercel.app/notifications.json",
+    "https://cdn-materioa.netlify.app/notifications.json"
+  ];
+
+  for (const source of sources) {
+    try {
+      const response = await fetch(`${source}?t=${Date.now()}`, {
+        cache: "no-store",
+      });
+
+      if (!response.ok) {
+        continue;
+      }
+
+      const payload = await response.json();
+      const notifications = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload?.notifications)
+          ? payload.notifications
+          : [];
+
+      if (notifications.length > 0) {
+        return res.status(200).json(notifications.slice(0, limit));
+      }
+    } catch (error) {
+      // Try next source
+    }
+  }
+
+  return res.status(200).json([]);
 }
 
 async function handleSavePromo(req, res) {
@@ -1565,7 +1628,12 @@ async function handleWebPush(req, res, url) {
     }
 
     try {
-      const subscription = req.body?.subscription;
+      const body =
+        req.body && typeof req.body === "string"
+          ? JSON.parse(req.body)
+          : (req.body || {});
+
+      const subscription = body?.subscription;
       if (!subscription) {
         return res.status(400).json({ error: "subscription is required" });
       }
@@ -1586,13 +1654,22 @@ async function handleWebPush(req, res, url) {
       return res.status(405).json({ error: "Method not allowed" });
     }
 
-    const endpoint = req.body?.endpoint || req.body?.subscription?.endpoint;
-    if (!endpoint) {
-      return res.status(400).json({ error: "endpoint is required" });
-    }
+    try {
+      const body =
+        req.body && typeof req.body === "string"
+          ? JSON.parse(req.body)
+          : (req.body || {});
 
-    await removeWebPushSubscription(endpoint);
-    return res.status(200).json({ success: true });
+      const endpoint = body?.endpoint || body?.subscription?.endpoint;
+      if (!endpoint) {
+        return res.status(400).json({ error: "endpoint is required" });
+      }
+
+      await removeWebPushSubscription(endpoint);
+      return res.status(200).json({ success: true });
+    } catch (error) {
+      return res.status(400).json({ error: "Invalid unsubscribe payload" });
+    }
   }
 
   return res.status(404).json({ error: "Web push action not found" });
@@ -1820,26 +1897,423 @@ async function handlePdfShare(req, res, url) {
  * @param {import('vercel').VercelRequest} req
  * @param {import('vercel').VercelResponse} res
  */
+const ANALYTICS_ALLOWED_ORIGIN_HOSTS = new Set([
+  "materioa.netlify.app",
+  "materioa.vercel.app",
+  "materioapp.in",
+  "auth-materioa.netlify.app",
+  "insightroom.vercel.app",
+]);
+const ANALYTICS_MAX_REQUEST_SECONDS = 2 * 60 * 60;
+const ANALYTICS_MAX_REQUEST_ENGAGEMENT_SECONDS = 3 * 60 * 60;
+const ANALYTICS_MAX_PDF_ENTRIES = 30;
+const ANALYTICS_MAX_REQUEST_PDF_OPENS = 30;
+const ANALYTICS_MAX_PDF_COUNT_PER_ITEM = 8;
+const ANALYTICS_MAX_PDF_SECONDS_PER_ITEM = 2 * 60 * 60;
+const ANALYTICS_RATE_WINDOW_MS = 60 * 1000;
+const ANALYTICS_RATE_LIMIT_IP = 180;
+const ANALYTICS_RATE_LIMIT_ANON = 90;
+const ANALYTICS_RATE_LIMIT_USER = 90;
+const ANALYTICS_UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const analyticsRateBuckets = new Map();
+const MODERATION_RULES_COLLECTION = "abuse_moderation_rules";
+
+function clampInteger(value, min, max) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return min;
+  const normalized = Math.trunc(number);
+  return Math.min(Math.max(normalized, min), max);
+}
+
+function toTrimmedString(value, maxLength = 255) {
+  return String(value || "").trim().slice(0, maxLength);
+}
+
+function normalizeModerationIdentity(value, maxLength = 255) {
+  return toTrimmedString(value, maxLength).toLowerCase();
+}
+
+function getAnalyticsClientIp(req) {
+  const forwardedFor = String(req.headers["x-forwarded-for"] || "");
+  if (forwardedFor) {
+    return forwardedFor.split(",")[0].trim().slice(0, 64);
+  }
+  return (
+    req.socket?.remoteAddress ||
+    req.connection?.remoteAddress ||
+    "unknown"
+  );
+}
+
+async function findActiveModerationRule({ anonId, fingerprint, ipAddress, action = null } = {}) {
+  const normalizedAnonId = normalizeModerationIdentity(anonId, 128);
+  const normalizedFingerprint = normalizeModerationIdentity(fingerprint, 128);
+  const normalizedIp = normalizeModerationIdentity(ipAddress, 64);
+
+  // Require all three identifiers to avoid warning/blocking the wrong user.
+  if (!normalizedAnonId || !normalizedFingerprint || !normalizedIp) {
+    return null;
+  }
+
+  try {
+    const db = await getMongoDb();
+    const query = {
+      active: true,
+      anon_id: normalizedAnonId,
+      fingerprint: normalizedFingerprint,
+      ip_address: normalizedIp,
+    };
+
+    if (action) {
+      query.action = normalizeModerationIdentity(action, 16);
+    }
+
+    const rule = await db.collection(MODERATION_RULES_COLLECTION).findOne(query, {
+      sort: { updatedAt: -1, createdAt: -1 },
+      projection: {
+        _id: 0,
+        action: 1,
+        title: 1,
+        body: 1,
+        active: 1,
+        updatedAt: 1,
+      },
+    });
+
+    if (!rule) return null;
+
+    return {
+      action: normalizeModerationIdentity(rule.action, 16),
+      title: toTrimmedString(rule.title, 120),
+      body: toTrimmedString(rule.body, 300),
+      active: rule.active !== false,
+      updatedAt: rule.updatedAt || null,
+    };
+  } catch (error) {
+    // Moderation checks are best-effort and must not break analytics availability.
+    return null;
+  }
+}
+
+function isAllowedAnalyticsHost(host) {
+  if (!host) return false;
+  if (ANALYTICS_ALLOWED_ORIGIN_HOSTS.has(host)) return true;
+  return host.startsWith("localhost:") || host.startsWith("127.0.0.1:");
+}
+
+function resolveHeaderUrlHost(value) {
+  const raw = toTrimmedString(value, 512);
+  if (!raw) return "";
+  try {
+    return new URL(raw).host.toLowerCase();
+  } catch {
+    return "";
+  }
+}
+
+function validateAnalyticsRequestOrigin(req) {
+  const originHost = resolveHeaderUrlHost(req.headers.origin || req.headers.Origin);
+  const refererHost = resolveHeaderUrlHost(
+    req.headers.referer || req.headers.referrer,
+  );
+  const secFetchSite = String(req.headers["sec-fetch-site"] || "").toLowerCase();
+
+  if (
+    secFetchSite &&
+    !["same-origin", "same-site", "none"].includes(secFetchSite)
+  ) {
+    return { ok: false, reason: "Cross-site analytics submission blocked" };
+  }
+
+  if (originHost && isAllowedAnalyticsHost(originHost)) {
+    return { ok: true };
+  }
+
+  if (!originHost && refererHost && isAllowedAnalyticsHost(refererHost)) {
+    return { ok: true };
+  }
+
+  return { ok: false, reason: "Untrusted analytics request origin" };
+}
+
+function consumeAnalyticsRateLimit(key, limit, windowMs) {
+  const now = Date.now();
+  const bucket = analyticsRateBuckets.get(key);
+
+  if (!bucket || now - bucket.windowStart >= windowMs) {
+    analyticsRateBuckets.set(key, { count: 1, windowStart: now, lastSeen: now });
+    return { allowed: true };
+  }
+
+  bucket.lastSeen = now;
+  if (bucket.count >= limit) {
+    const retryAfterMs = Math.max(windowMs - (now - bucket.windowStart), 1000);
+    return { allowed: false, retryAfterSec: Math.ceil(retryAfterMs / 1000) };
+  }
+
+  bucket.count += 1;
+  return { allowed: true };
+}
+
+function cleanupAnalyticsRateBuckets() {
+  const now = Date.now();
+  const staleAfter = ANALYTICS_RATE_WINDOW_MS * 10;
+  for (const [key, value] of analyticsRateBuckets.entries()) {
+    if (!value?.lastSeen || now - value.lastSeen > staleAfter) {
+      analyticsRateBuckets.delete(key);
+    }
+  }
+}
+
+function validateAnalyticsDateKey(value) {
+  const dateKey = toTrimmedString(value, 32);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateKey)) {
+    return null;
+  }
+
+  const parsed = new Date(`${dateKey}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+
+  const today = new Date();
+  const todayUtc = Date.UTC(
+    today.getUTCFullYear(),
+    today.getUTCMonth(),
+    today.getUTCDate(),
+  );
+  const deltaDays = Math.round((parsed.getTime() - todayUtc) / (24 * 60 * 60 * 1000));
+
+  // Allow small client/server timezone skew only.
+  if (deltaDays < -2 || deltaDays > 1) {
+    return null;
+  }
+
+  return dateKey;
+}
+
+function sanitizeAnalyticsPdfCounts(rawPdfCounts) {
+  if (!rawPdfCounts || typeof rawPdfCounts !== "object" || Array.isArray(rawPdfCounts)) {
+    return { ok: true, pdfCounts: {}, totalPdfOpens: 0, uniquePdfReads: 0 };
+  }
+
+  const entries = Object.entries(rawPdfCounts).slice(0, ANALYTICS_MAX_PDF_ENTRIES);
+  const safeCounts = {};
+  let totalPdfOpens = 0;
+  let uniquePdfReads = 0;
+
+  for (const [rawName, rawValue] of entries) {
+    const name = normalizeAnalyticsPdfName(rawName).slice(0, 120);
+    if (!name) continue;
+
+    let count = 0;
+    let timeSec = 0;
+
+    if (typeof rawValue === "number") {
+      count = clampInteger(rawValue, 0, ANALYTICS_MAX_PDF_COUNT_PER_ITEM);
+    } else if (rawValue && typeof rawValue === "object" && !Array.isArray(rawValue)) {
+      count = clampInteger(rawValue.count, 0, ANALYTICS_MAX_PDF_COUNT_PER_ITEM);
+      timeSec = clampInteger(rawValue.time_sec, 0, ANALYTICS_MAX_PDF_SECONDS_PER_ITEM);
+    }
+
+    if (count <= 0 && timeSec <= 0) {
+      continue;
+    }
+
+    totalPdfOpens += count;
+    if (count > 0) uniquePdfReads += 1;
+
+    safeCounts[name] = {
+      count,
+      time_sec: timeSec,
+    };
+  }
+
+  if (totalPdfOpens > ANALYTICS_MAX_REQUEST_PDF_OPENS) {
+    return { ok: false, error: "Too many PDF opens in a single analytics request" };
+  }
+
+  if (uniquePdfReads > totalPdfOpens) {
+    return { ok: false, error: "Invalid PDF counters: unique exceeds total" };
+  }
+
+  return { ok: true, pdfCounts: safeCounts, totalPdfOpens, uniquePdfReads };
+}
+
+function sanitizeAnalyticsPayload(rawPayload) {
+  if (!rawPayload || typeof rawPayload !== "object" || Array.isArray(rawPayload)) {
+    return { ok: false, error: "Invalid analytics payload" };
+  }
+
+  const anonId = toTrimmedString(rawPayload.p_anon_id, 128);
+  if (!anonId || !/^[a-zA-Z0-9._:-]{8,128}$/.test(anonId)) {
+    return { ok: false, error: "Invalid anonymous analytics identity" };
+  }
+
+  const dateKey = validateAnalyticsDateKey(rawPayload.p_date);
+  if (!dateKey) {
+    return { ok: false, error: "Invalid analytics date" };
+  }
+
+  const metricsDiff =
+    rawPayload.p_metrics_diff &&
+    typeof rawPayload.p_metrics_diff === "object" &&
+    !Array.isArray(rawPayload.p_metrics_diff)
+      ? rawPayload.p_metrics_diff
+      : {};
+
+  const usermetaDiff =
+    rawPayload.p_usermeta_diff &&
+    typeof rawPayload.p_usermeta_diff === "object" &&
+    !Array.isArray(rawPayload.p_usermeta_diff)
+      ? rawPayload.p_usermeta_diff
+      : {};
+
+  const totalReadingSec = clampInteger(
+    metricsDiff.total_reading_sec,
+    0,
+    ANALYTICS_MAX_REQUEST_SECONDS,
+  );
+  const totalEngagementSec = clampInteger(
+    usermetaDiff.total_engagement_sec,
+    0,
+    ANALYTICS_MAX_REQUEST_ENGAGEMENT_SECONDS,
+  );
+
+  const pdfResult = sanitizeAnalyticsPdfCounts(metricsDiff.pdf_counts || {});
+  if (!pdfResult.ok) {
+    return { ok: false, error: pdfResult.error };
+  }
+
+  const sanitized = {
+    p_anon_id: anonId,
+    p_date: dateKey,
+    p_user_id: null,
+    p_metrics_diff: {
+      total_reading_sec: totalReadingSec,
+      pdf_counts: pdfResult.pdfCounts,
+    },
+    p_usermeta_diff: {
+      total_engagement_sec: totalEngagementSec,
+      session:
+        usermetaDiff.session &&
+        typeof usermetaDiff.session === "object" &&
+        !Array.isArray(usermetaDiff.session)
+          ? {
+              ua: toTrimmedString(usermetaDiff.session.ua, 400),
+              screen: toTrimmedString(usermetaDiff.session.screen, 40),
+              referrer: toTrimmedString(usermetaDiff.session.referrer, 500),
+              url: toTrimmedString(usermetaDiff.session.url, 500),
+              path: toTrimmedString(usermetaDiff.session.path, 200),
+              campaign: toTrimmedString(usermetaDiff.session.campaign, 100),
+              fp: toTrimmedString(usermetaDiff.session.fp, 128),
+            }
+          : null,
+      engagement:
+        usermetaDiff.engagement &&
+        typeof usermetaDiff.engagement === "object" &&
+        !Array.isArray(usermetaDiff.engagement)
+          ? usermetaDiff.engagement
+          : { clicks: {}, scroll: 0, zoom: 0, shortcuts: {} },
+      state:
+        usermetaDiff.state &&
+        typeof usermetaDiff.state === "object" &&
+        !Array.isArray(usermetaDiff.state)
+          ? usermetaDiff.state
+          : null,
+    },
+    rawUserId: toTrimmedString(rawPayload.p_user_id, 64) || null,
+  };
+
+  return { ok: true, data: sanitized };
+}
+
 async function handleAnalytics(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    const data = req.body;
-    if (!data || !data.p_anon_id) {
-      return res.status(400).json({ error: "Missing required payload" });
+    cleanupAnalyticsRateBuckets();
+
+    const originCheck = validateAnalyticsRequestOrigin(req);
+    if (!originCheck.ok) {
+      return res.status(403).json({ error: originCheck.reason });
+    }
+
+    const parsedPayload = sanitizeAnalyticsPayload(req.body);
+    if (!parsedPayload.ok) {
+      return res.status(400).json({ error: parsedPayload.error });
+    }
+
+    const data = parsedPayload.data;
+    const clientIp = getAnalyticsClientIp(req);
+    const fingerprint = toTrimmedString(data.p_usermeta_diff?.session?.fp, 128);
+    const token = getTokenFromHeaders(req.headers);
+    const decoded = token ? verifyToken(token) : null;
+
+    if (token && (!decoded || !decoded.id || !ANALYTICS_UUID_REGEX.test(decoded.id))) {
+      return res.status(401).json({ error: "Invalid analytics auth token" });
+    }
+
+    if (data.rawUserId && decoded?.id && data.rawUserId !== decoded.id) {
+      // Block spoofed user identity writes from unauthenticated or mismatched requests.
+      return res.status(403).json({ error: "User identity mismatch in analytics payload" });
+    }
+
+    data.p_user_id = decoded?.id || null;
+    delete data.rawUserId;
+
+    const matchedBan = await findActiveModerationRule({
+      anonId: data.p_anon_id,
+      fingerprint,
+      ipAddress: clientIp,
+      action: "ban",
+    });
+
+    if (matchedBan) {
+      return res.status(403).json({
+        error: matchedBan.title || "This device has been blocked",
+        action: "ban",
+      });
+    }
+
+    const ipLimit = consumeAnalyticsRateLimit(
+      `analytics:ip:${clientIp}`,
+      ANALYTICS_RATE_LIMIT_IP,
+      ANALYTICS_RATE_WINDOW_MS,
+    );
+    if (!ipLimit.allowed) {
+      res.setHeader("Retry-After", String(ipLimit.retryAfterSec));
+      return res.status(429).json({ error: "Too many analytics requests from IP" });
+    }
+
+    const anonLimit = consumeAnalyticsRateLimit(
+      `analytics:anon:${data.p_anon_id}`,
+      ANALYTICS_RATE_LIMIT_ANON,
+      ANALYTICS_RATE_WINDOW_MS,
+    );
+    if (!anonLimit.allowed) {
+      res.setHeader("Retry-After", String(anonLimit.retryAfterSec));
+      return res.status(429).json({ error: "Too many analytics requests for anonymous identity" });
+    }
+
+    if (data.p_user_id) {
+      const userLimit = consumeAnalyticsRateLimit(
+        `analytics:user:${data.p_user_id}`,
+        ANALYTICS_RATE_LIMIT_USER,
+        ANALYTICS_RATE_WINDOW_MS,
+      );
+      if (!userLimit.allowed) {
+        res.setHeader("Retry-After", String(userLimit.retryAfterSec));
+        return res.status(429).json({ error: "Too many analytics requests for user" });
+      }
     }
 
     // Enrich payload with server-side metadata if not present
-    const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
     if (data.p_usermeta_diff && data.p_usermeta_diff.session) {
-      data.p_usermeta_diff.session.ip = ip;
-    }
-
-    // Clean up p_user_id (convert empty/invalid strings to null for UUID cast)
-    if (!data.p_user_id || data.p_user_id === "" || data.p_user_id === "null") {
-      data.p_user_id = null;
+      data.p_usermeta_diff.session.ip = clientIp;
     }
 
     // Proxy specifically to the atomic merger RPC
@@ -1854,5 +2328,432 @@ async function handleAnalytics(req, res) {
   } catch (error) {
     console.error("Analytics Handler Error:", error);
     return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+function normalizeAnalyticsPdfName(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/\.pdf$/i, "")
+    .replace(/[-_]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function extractPdfCountMap(metrics) {
+  if (!metrics || typeof metrics !== "object") {
+    return {};
+  }
+  if (metrics.pdf_counts && typeof metrics.pdf_counts === "object") {
+    return metrics.pdf_counts;
+  }
+  if (metrics.pdfs_read && typeof metrics.pdfs_read === "object") {
+    return metrics.pdfs_read;
+  }
+  return {};
+}
+
+function getPdfReadsForName(pdfCountMap, targetPdfName) {
+  const normalizedTarget = normalizeAnalyticsPdfName(targetPdfName);
+  if (!normalizedTarget) return 0;
+
+  let reads = 0;
+  for (const [rawName, value] of Object.entries(pdfCountMap || {})) {
+    if (normalizeAnalyticsPdfName(rawName) !== normalizedTarget) {
+      continue;
+    }
+
+    const countValue =
+      typeof value === "number"
+        ? value
+        : Number(value?.count || 0);
+    reads += Number.isFinite(countValue) ? countValue : 0;
+  }
+
+  return reads;
+}
+
+function getPdfTimeSecForName(pdfCountMap, targetPdfName) {
+  const normalizedTarget = normalizeAnalyticsPdfName(targetPdfName);
+  if (!normalizedTarget) return 0;
+
+  let seconds = 0;
+  for (const [rawName, value] of Object.entries(pdfCountMap || {})) {
+    if (normalizeAnalyticsPdfName(rawName) !== normalizedTarget) {
+      continue;
+    }
+
+    if (typeof value === "number") {
+      continue;
+    }
+
+    const secValue = Number(value?.time_sec || value?.duration_sec || 0);
+    seconds += Number.isFinite(secValue) ? secValue : 0;
+  }
+
+  return seconds;
+}
+
+async function fetchDailyStatsRows(maxRows = 25000) {
+  const batchSize = 1000;
+  let from = 0;
+  const allRows = [];
+
+  while (from < maxRows) {
+    const to = from + batchSize - 1;
+    const { data, error } = await supabaseAdmin
+      .from("user_daily_stats")
+      .select("*")
+      .range(from, to);
+
+    if (error) {
+      throw error;
+    }
+
+    const rows = data || [];
+    allRows.push(...rows);
+
+    if (rows.length < batchSize) {
+      break;
+    }
+
+    from += batchSize;
+  }
+
+  return allRows;
+}
+
+function toDateKey(value) {
+  if (!value) return null;
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+      return trimmed;
+    }
+
+    const parsed = new Date(trimmed);
+    if (!Number.isNaN(parsed.getTime())) {
+      return parsed.toISOString().slice(0, 10);
+    }
+    return null;
+  }
+
+  if (value instanceof Date) {
+    if (Number.isNaN(value.getTime())) return null;
+    return value.toISOString().slice(0, 10);
+  }
+
+  return null;
+}
+
+function getRowDateKey(row) {
+  if (!row || typeof row !== "object") return null;
+
+  const candidates = [
+    row.stat_date,
+    row.date,
+    row.day,
+    row.record_date,
+    row.created_at,
+    row.updated_at,
+  ];
+
+  for (const candidate of candidates) {
+    const key = toDateKey(candidate);
+    if (key) return key;
+  }
+
+  return null;
+}
+
+function filterRowsByTimeframe(rows, timeframe, requestedDateKey) {
+  if (timeframe !== "today") {
+    return rows;
+  }
+
+  const todayKey = toDateKey(requestedDateKey) || new Date().toISOString().slice(0, 10);
+  return (rows || []).filter((row) => getRowDateKey(row) === todayKey);
+}
+
+function isSuspiciousLeaderboardAggregate(entry, timeframe) {
+  if (!entry || typeof entry !== "object") return true;
+
+  const totalReads = Number(entry.totalReads || 0);
+  const totalReadSec = Number(entry.totalReadSec || 0);
+  const uniquePdfs = Number(entry.uniquePdfs || 0);
+  const maxTimeframeReadSec =
+    timeframe === "today"
+      ? 16 * 60 * 60
+      : 7 * 16 * 60 * 60;
+
+  if (!Number.isFinite(totalReads) || totalReads < 0) return true;
+  if (!Number.isFinite(totalReadSec) || totalReadSec < 0) return true;
+  if (!Number.isFinite(uniquePdfs) || uniquePdfs < 0) return true;
+  if (uniquePdfs > totalReads) return true;
+  if (totalReadSec > maxTimeframeReadSec) return true;
+  return false;
+}
+
+async function fetchLeaderboardIdentityMap(readerIds = []) {
+  const UUID_REGEX =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+  const userIds = Array.from(
+    new Set(
+      (readerIds || [])
+        .map((id) => String(id || "").trim())
+        .filter((id) => UUID_REGEX.test(id)),
+    ),
+  );
+
+  if (!userIds.length) {
+    return new Map();
+  }
+
+  const identities = new Map();
+  const chunkSize = 200;
+
+  for (let i = 0; i < userIds.length; i += chunkSize) {
+    const chunk = userIds.slice(i, i + chunkSize);
+    const { data, error } = await supabaseAdmin
+      .from("users")
+      .select("id,display_name,username")
+      .in("id", chunk);
+
+    if (error) {
+      throw error;
+    }
+
+    for (const row of data || []) {
+      const id = String(row.id || "").trim();
+      if (!id) continue;
+
+      const displayName =
+        String(row.display_name || "").trim() ||
+        String(row.username || "").trim() ||
+        null;
+
+      if (displayName) {
+        identities.set(id, displayName);
+      }
+    }
+  }
+
+  return identities;
+}
+
+async function handleAnalyticsViews(req, res, url) {
+  if (req.method !== "GET") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  try {
+    const pdfName =
+      url.searchParams.get("pdfName") ||
+      req.query?.pdfName ||
+      "";
+
+    const normalizedPdfName = normalizeAnalyticsPdfName(pdfName);
+    if (!normalizedPdfName) {
+      return res.status(400).json({ error: "pdfName is required" });
+    }
+
+    const rows = await fetchDailyStatsRows();
+
+    let totalReads = 0;
+    const readers = new Set();
+
+    for (const row of rows) {
+      const countMap = extractPdfCountMap(row.metrics);
+      const reads = getPdfReadsForName(countMap, normalizedPdfName);
+      if (reads <= 0) continue;
+
+      totalReads += reads;
+      const readerId = String(row.user_id || row.anon_id || "").trim();
+      if (readerId) {
+        readers.add(readerId);
+      }
+    }
+
+    const uniqueReads = readers.size;
+    const hasData = totalReads > 0 && uniqueReads > 0;
+
+    return res.status(200).json({
+      pdfName: normalizedPdfName,
+      hasData,
+      uniqueReads,
+      totalReads,
+    });
+  } catch (error) {
+    console.error("Analytics Views Error:", error);
+    return res.status(500).json({ error: "Failed to compute PDF views" });
+  }
+}
+
+async function handleAnalyticsLeaderboard(req, res, url) {
+  if (req.method !== "GET") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  try {
+    const limitRaw = Number(url.searchParams.get("limit") || req.query?.limit || 50);
+    const limit = Math.min(Math.max(Number.isFinite(limitRaw) ? limitRaw : 50, 3), 50);
+
+    const targetPdfName =
+      url.searchParams.get("pdfName") ||
+      req.query?.pdfName ||
+      "";
+    const normalizedTargetPdf = normalizeAnalyticsPdfName(targetPdfName);
+
+    const requesterAnonId = String(
+      url.searchParams.get("anonId") || req.query?.anonId || "",
+    ).trim();
+    const requesterFingerprint = String(
+      url.searchParams.get("fp") || req.query?.fp || "",
+    ).trim();
+    const requesterUserId = String(
+      url.searchParams.get("userId") || req.query?.userId || "",
+    ).trim();
+    const timeframeRaw = String(
+      url.searchParams.get("timeframe") || req.query?.timeframe || "weekly",
+    )
+      .trim()
+      .toLowerCase();
+    const timeframe = timeframeRaw === "today" ? "today" : "weekly";
+    const requestedDateKey = String(
+      url.searchParams.get("date") || req.query?.date || "",
+    ).trim();
+
+    const rows = filterRowsByTimeframe(
+      await fetchDailyStatsRows(),
+      timeframe,
+      requestedDateKey,
+    );
+    const byReader = new Map();
+
+    for (const row of rows) {
+      const readerKey = String(row.user_id || row.anon_id || "").trim();
+      if (!readerKey) continue;
+
+      const current = byReader.get(readerKey) || {
+        readerId: readerKey,
+        isAnonymous: !row.user_id,
+        totalReads: 0,
+        totalReadSec: 0,
+        uniquePdfSet: new Set(),
+      };
+
+      const countMap = extractPdfCountMap(row.metrics);
+      if (normalizedTargetPdf) {
+        current.totalReads += getPdfReadsForName(countMap, normalizedTargetPdf);
+        current.totalReadSec += getPdfTimeSecForName(countMap, normalizedTargetPdf);
+      } else {
+        for (const [pdfName, value] of Object.entries(countMap || {})) {
+          const reads =
+            typeof value === "number"
+              ? value
+              : Number(value?.count || 0);
+          const readSec =
+            typeof value === "number"
+              ? 0
+              : Number(value?.time_sec || value?.duration_sec || 0);
+
+          const safeReads = Number.isFinite(reads) ? reads : 0;
+          const safeReadSec = Number.isFinite(readSec) ? readSec : 0;
+
+          current.totalReads += safeReads;
+          current.totalReadSec += safeReadSec;
+
+          if (safeReads > 0) {
+            current.uniquePdfSet.add(normalizeAnalyticsPdfName(pdfName));
+          }
+        }
+      }
+
+      byReader.set(readerKey, current);
+    }
+
+    const userIdsInLeaderboard = Array.from(byReader.values())
+      .filter((entry) => !entry.isAnonymous)
+      .map((entry) => entry.readerId);
+    const identityMap = await fetchLeaderboardIdentityMap(userIdsInLeaderboard);
+
+    const ranked = Array.from(byReader.values())
+      .filter((entry) => entry.totalReads > 0)
+      .map((entry) => ({
+        readerId: entry.readerId,
+        isAnonymous: entry.isAnonymous,
+        totalReads: entry.totalReads,
+        totalReadSec: entry.totalReadSec,
+        uniquePdfs: entry.uniquePdfSet.size,
+      }))
+      .filter((entry) => !isSuspiciousLeaderboardAggregate(entry, timeframe))
+      .sort((a, b) => {
+        if (b.totalReadSec !== a.totalReadSec) return b.totalReadSec - a.totalReadSec;
+        if (b.totalReads !== a.totalReads) return b.totalReads - a.totalReads;
+        if (b.uniquePdfs !== a.uniquePdfs) return b.uniquePdfs - a.uniquePdfs;
+        return a.readerId.localeCompare(b.readerId);
+      })
+      .map((entry, index) => {
+        const readableId = entry.readerId || "reader";
+        const maskedId = readableId.slice(-6).padStart(6, "0");
+        const resolvedName =
+          !entry.isAnonymous && identityMap.has(entry.readerId)
+            ? identityMap.get(entry.readerId)
+            : null;
+        return {
+          ...entry,
+          rank: index + 1,
+          displayName:
+            resolvedName ||
+            (entry.isAnonymous ? `Anon #${maskedId}` : `Reader #${maskedId}`),
+        };
+      });
+
+    const requester =
+      ranked.find((entry) => {
+        if (requesterUserId && entry.readerId === requesterUserId) return true;
+        if (requesterAnonId && entry.readerId === requesterAnonId) return true;
+        return false;
+      }) || null;
+
+    const moderationNotice = await findActiveModerationRule({
+      anonId: requesterAnonId,
+      fingerprint: requesterFingerprint,
+      ipAddress: getAnalyticsClientIp(req),
+    });
+
+    return res.status(200).json({
+      generatedAt: new Date().toISOString(),
+      timeframe,
+      date: timeframe === "today" ? (toDateKey(requestedDateKey) || new Date().toISOString().slice(0, 10)) : null,
+      targetPdf: normalizedTargetPdf || null,
+      totalParticipants: ranked.length,
+      entries: ranked.slice(0, limit),
+      requester: requester
+        ? {
+            readerId: requester.readerId,
+            rank: requester.rank,
+            isTopReader: requester.rank === 1,
+            isAnonymous: requester.isAnonymous,
+          }
+        : {
+            rank: null,
+            isTopReader: false,
+            isAnonymous: !requesterUserId,
+          },
+      moderationNotice: moderationNotice
+        ? {
+            action: moderationNotice.action,
+            title: moderationNotice.title,
+            body: moderationNotice.body,
+            active: moderationNotice.active,
+          }
+        : null,
+    });
+  } catch (error) {
+    console.error("Analytics Leaderboard Error:", error);
+    return res.status(500).json({ error: "Failed to compute leaderboard" });
   }
 }

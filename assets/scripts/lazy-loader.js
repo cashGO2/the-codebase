@@ -115,14 +115,6 @@ function loadAdvanced() {
 }
 
 /**
- * Load local CDN (Super users only)
- * @returns {Promise}
- */
-function loadLocalCDN() {
-    return loadScript('/assets/scripts/local-cdn.js');
-}
-
-/**
  * Load OTA updates checker
  * @returns {Promise}
  */
@@ -174,8 +166,7 @@ function loadNonCriticalScripts() {
         '/assets/scripts/ga.js',
         '/assets/scripts/ota-hugeicons.js',
         '/account/js/ux-enhancers.js',
-        '/assets/scripts/promotions.js',
-        '/assets/scripts/local-cdn.js'
+        '/assets/scripts/promotions.js'
     ];
 
     return loadScripts(nonCritical).catch(err => {
@@ -229,7 +220,6 @@ const LazyLoader = {
     loadPromotions,
     loadGestures,
     loadAdvanced,
-    loadLocalCDN,
     loadOTA,
     loadAnalytics,
     loadUXEnhancers,
@@ -250,7 +240,6 @@ export {
     loadPromotions,
     loadGestures,
     loadAdvanced,
-    loadLocalCDN,
     loadOTA,
     loadAnalytics,
     loadUXEnhancers,

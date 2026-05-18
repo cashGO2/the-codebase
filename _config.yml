@@ -68,3 +68,6 @@ exclude:
 permalink: /:categories/:title/ #default permalink: pretty
 
 timezone: Asia/Kolkata
+
+# Insightroom API
+insightroom_api: https://room.getmaterio.app/api/posts

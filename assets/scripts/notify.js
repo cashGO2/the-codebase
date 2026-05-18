@@ -85,23 +85,32 @@ async function registerSubscriptionOnServer(subscription) {
     subscription: typeof subscription.toJSON === 'function' ? subscription.toJSON() : subscription
   };
 
-  await fetch(`${WEB_PUSH_API_BASE}&subAction=subscribe`, {
+  const response = await fetch('/api/v2/features?action=web-push&subAction=subscribe', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'same-origin',
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
+    headers: {
+      'Content-Type': 'application/json'
+    }
   });
+
+  if (!response.ok) {
+    throw new Error(`Subscription sync failed (${response.status})`);
+  }
 }
 
 async function unregisterSubscriptionOnServer(endpoint) {
   if (!endpoint) return;
 
-  await fetch(`${WEB_PUSH_API_BASE}&subAction=unsubscribe`, {
+  const response = await fetch(`${WEB_PUSH_API_BASE}&subAction=unsubscribe`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'same-origin',
     body: JSON.stringify({ endpoint })
   });
+
+  if (!response.ok) {
+    throw new Error(`Unsubscribe sync failed (${response.status})`);
+  }
 }
 
 async function unsubscribeBrowserPush() {
@@ -125,9 +134,9 @@ async function setupNotificationsToggle() {
   // Proactively ensure SW is in sync before anything else
   await syncServiceWorkerNotificationPreference(enabled);
 
-  // If enabled (default is true), aggressively try to subscribe
+  // Do not block notification list rendering on push permission UX.
   if (enabled) {
-    await ensureAutomaticNotificationSubscription();
+    ensureAutomaticNotificationSubscription().catch(() => {});
   }
 
   if (!notificationsToggle) return;
@@ -175,6 +184,8 @@ async function ensureAutomaticNotificationSubscription() {
         localStorage.setItem('m_last_soft_prompt_ts', Date.now().toString());
 
         if (!agreed) return; // User opted out for now
+      } else {
+        localStorage.setItem('m_last_soft_prompt_ts', Date.now().toString());
       }
 
       // 2. Trigger native prompt (now with a User Gesture!)
@@ -251,8 +262,9 @@ function displayNotifications(notifications) {
   container.style.alignItems = '';
   container.style.minHeight = '';
 
+  // Only show notifications from the last 20 days
   const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - 10);
+  cutoff.setDate(cutoff.getDate() - 20);
 
   const validNotifications = notifications
     .filter(n => new Date(n.date) >= cutoff)
@@ -430,15 +442,44 @@ function updateNotificationBadge(notifications) {
  * @returns {Promise<Array>}
  */
 async function fetchNotifications() {
-  const notifyUrl = 'https://cdn-materioa.vercel.app/notifications.json';
-  try {
-    const response = await fetch(notifyUrl + '?t=' + Date.now());
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return await response.json();
-  } catch (error) {
-    console.error('Error loading notifications:', error);
+  const baseCdnUrl = 'https://cdn-materioa.vercel.app/notifications.json';
+  const localCdnUrl = window.MaterioLocalCDN?.transformUrl?.(baseCdnUrl);
+  const sources = [
+    '/api/v2/features?action=notifications-feed&num=6',
+    ...(localCdnUrl && localCdnUrl !== baseCdnUrl ? [localCdnUrl] : []),
+    baseCdnUrl
+  ];
+
+  const normalizeNotifications = (payload) => {
+    if (Array.isArray(payload)) return payload;
+    if (Array.isArray(payload?.notifications)) return payload.notifications;
     return [];
+  };
+
+  for (const source of sources) {
+    try {
+      const response = await fetch(`${source}?t=${Date.now()}`, {
+        cache: 'no-store'
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const payload = await response.json();
+      const notifications = normalizeNotifications(payload)
+        .filter(item => item && typeof item === 'object')
+        .filter(item => item.title || item.message || item.date);
+
+      if (notifications.length > 0) {
+        return notifications;
+      }
+    } catch (error) {
+      console.warn(`Failed notifications source: ${source}`, error);
+    }
   }
+
+  return [];
 }
 
 /**
@@ -446,7 +487,7 @@ async function fetchNotifications() {
  */
 async function fetchInsightRoomPosts() {
   try {
-    const response = await fetch('https://insightroom.vercel.app/api/posts?t=' + Date.now());
+    const response = await fetch(`https://room.getmaterio.app/api/posts?num=6&t=${Date.now()}`);
     if (!response.ok) return [];
     return await response.json();
   } catch (error) {
@@ -667,6 +708,10 @@ function setupTabClickHandlers() {
       }
     });
   });
+}
+
+function setupNotificationsDataTabs() {
+  // Kept for backward compatibility with old tab logic.
 }
 
 /**

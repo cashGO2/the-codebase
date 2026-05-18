@@ -25,10 +25,12 @@ vercel dev --listen 1000
 goto end
 
 :jekyll
+node scripts/generate-insightroom-fallback.js
 bundle exec jekyll serve
 goto end
 
 :jekyll-build
+node scripts/generate-insightroom-fallback.js
 jekyll build
 goto end
 

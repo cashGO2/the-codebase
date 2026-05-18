@@ -8,6 +8,7 @@
   const TABLE = 'user_daily_stats';
   const STORAGE_ANON_ID = 'materio_anon_id';
   const STORAGE_PENDING = 'materio_analytics_pending';
+  const HEARTBEAT_FLUSH_MS = 3 * 60 * 1000;
 
   // ─── 1. One Time Migration (Cleanup old keys) ───
   try {
@@ -98,6 +99,8 @@
       this._lastActivityTs = Date.now();
       this._lastPdfScrollTs = Date.now();
       this._flushTimer = null;
+      this._heartbeatTimer = null;
+      this._lastFlushAt = 0;
       this._idleMs = { page: 120000, pdf: 300000 };
       this._init();
     }
@@ -138,6 +141,34 @@
       this._setupListeners();
       this._setupPdfObserver();
       this._setupClickTracking();
+      this._setupHeartbeatFlush();
+    }
+
+    _setupHeartbeatFlush() {
+      if (this._heartbeatTimer) return;
+
+      // Idle-aware heartbeat avoids noisy pings while still persisting long reading sessions.
+      this._heartbeatTimer = setInterval(() => {
+        try {
+          const now = Date.now();
+          const idleThreshold = this._pdfTitle ? this._idleMs.pdf : this._idleMs.page;
+          if (now - this._lastActivityTs > idleThreshold) return;
+
+          this._recordEngagementUntil(now);
+          if (!this._hasPendingAnalytics()) return;
+
+          if (this._lastFlushAt && (now - this._lastFlushAt < HEARTBEAT_FLUSH_MS)) return;
+          this._flush();
+        } catch {}
+      }, HEARTBEAT_FLUSH_MS);
+    }
+
+    _hasPendingAnalytics() {
+      const hasMetrics = this.metricsDiff.total_reading_sec > 0 || Object.keys(this.metricsDiff.pdf_counts).length > 0;
+      const clicks = this.usermetaDiff.engagement?.clicks || {};
+      const hasEngagement = this.usermetaDiff.total_engagement_sec > 0 || Object.keys(clicks).length > 0;
+      const hasSession = !!this.usermetaDiff.session;
+      return hasMetrics || hasEngagement || hasSession;
     }
 
     _prepareSession() {
@@ -430,6 +461,8 @@
       const hasSession = !!payload.usermeta.session;
       
       if (!hasMetrics && !hasEngagement && !hasSession) return;
+
+      this._lastFlushAt = Date.now();
       
       this.metricsDiff = { total_reading_sec: 0, pdf_counts: {} };
       this.usermetaDiff.total_engagement_sec = 0; this.usermetaDiff.session = null; this.usermetaDiff.engagement = { clicks: {}, scroll: 0, zoom: 0, shortcuts: {} }; this.usermetaDiff.state = null;

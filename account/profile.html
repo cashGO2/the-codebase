@@ -319,6 +319,84 @@
               <p class="invite-help">Share this code with users you want to invite. The code expires in 30 days.</p>
             </div>
           </div>
+
+          <div class="abuse-moderation-section">
+            <div class="abuse-moderation-header">
+              <h4>Abuse Moderation</h4>
+              <p>Warn or ban abusive identities using anon_id + fingerprint + IP matching.</p>
+            </div>
+
+            <div class="abuse-preset-row">
+              <button type="button" class="btn btn-outline btn-sm" id="presetWarnBtn">
+                <i class="fas fa-triangle-exclamation"></i> Preset: Warn
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" id="presetBanBtn">
+                <i class="fas fa-ban"></i> Preset: Ban
+              </button>
+            </div>
+
+            <div class="abuse-grid">
+              <div class="form-group">
+                <label for="moderationAnonId">Anon ID</label>
+                <input type="text" id="moderationAnonId" placeholder="anon id from analytics" autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label for="moderationFingerprint">Device Fingerprint</label>
+                <input type="text" id="moderationFingerprint" placeholder="fingerprint hash" autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label for="moderationIp">IP Address</label>
+                <input type="text" id="moderationIp" placeholder="x.x.x.x" autocomplete="off">
+              </div>
+            </div>
+
+            <div class="abuse-grid">
+              <div class="form-group">
+                <label for="moderationAction">Action</label>
+                <select id="moderationAction">
+                  <option value="warn">Warn</option>
+                  <option value="ban">Ban</option>
+                  <option value="clear">Clear Rule</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="moderationTitle">Notification Title</label>
+                <input type="text" id="moderationTitle" maxlength="120" placeholder="Custom title">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="moderationBody">Notification Body</label>
+              <textarea id="moderationBody" rows="3" maxlength="300" placeholder="Custom body or use presets"></textarea>
+            </div>
+
+            <div class="abuse-actions-row">
+              <button type="button" class="btn btn-primary" id="saveModerationBtn">
+                <i class="fas fa-shield-check"></i> Save Moderation Rule
+              </button>
+              <button type="button" class="btn btn-outline" id="refreshModerationBtn">
+                <i class="fas fa-rotate"></i> Refresh Rules
+              </button>
+            </div>
+
+            <div class="abuse-rules-table-wrap">
+              <table class="admin-analytics-table" aria-label="Abuse Moderation Rules">
+                <thead>
+                  <tr>
+                    <th>Action</th>
+                    <th>Anon ID</th>
+                    <th>Fingerprint</th>
+                    <th>IP</th>
+                    <th>Title</th>
+                    <th>Updated</th>
+                  </tr>
+                </thead>
+                <tbody id="moderationRulesBody">
+                  <tr><td colspan="6" class="admin-empty-cell">No moderation rules yet.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
         <!-- Google Drive Tools -->

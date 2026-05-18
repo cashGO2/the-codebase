@@ -1,5 +1,5 @@
 [build]
-  command = "node scripts/generate-build-id.js && bundle exec jekyll build && node scripts/minify-assets.js"
+  command = "node scripts/generate-build-id.js && node scripts/generate-insightroom-fallback.js && bundle exec jekyll build && node scripts/minify-assets.js"
   functions = "api/v1"
   publish = "_site"
 

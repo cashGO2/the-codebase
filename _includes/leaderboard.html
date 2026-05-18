@@ -1,0 +1,19 @@
+<div class="leaderboard-shell">
+    <h1>
+        Leaderboard
+        <i class="fas fa-circle-info info-icon">
+            <span class="tooltip" style="font-weight: normal;">
+                Create account to know if you made it to top 50.
+                <a href="/account/">Create account</a>
+            </span>
+        </i>
+    </h1>
+    <p class="leaderboard-subtitle">Top readers this cycle based on reading time and unique coverage.</p>
+    <div class="leaderboard-controls" role="group" aria-label="Leaderboard range">
+        <button type="button" class="leaderboard-filter-btn active" data-leaderboard-range="weekly">Weekly</button>
+        <button type="button" class="leaderboard-filter-btn" data-leaderboard-range="today">Today</button>
+    </div>
+
+    <div class="leaderboard-loading" id="leaderboardLoadingState">Loading leaderboard...</div>
+    <div id="leaderboardContent" class="leaderboard-content"></div>
+</div>

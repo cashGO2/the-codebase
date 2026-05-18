@@ -670,10 +670,11 @@ class MateriosPWA {
     }
 
     try {
-      const permission = await Notification.requestPermission();
-      if (permission === 'granted') {
-        // console.log('[PWA] Push notifications enabled');
-        // You can implement push subscription logic here
+      // Do not prompt here. Notification permission/subscription is coordinated by notify.js
+      // through an explicit user interaction flow.
+      const existingSubscription = await this.swRegistration.pushManager.getSubscription();
+      if (existingSubscription) {
+        // console.log('[PWA] Existing push subscription detected');
       }
     } catch (error) {
       console.error('[PWA] Push notification setup failed:', error);

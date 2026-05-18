@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let pdfIframe = document.getElementById('pdf-iframe') || null;
     const pdfCache = new Map();
     const MAX_CACHE_SIZE = 3; // Reduce from 5 to 3 for memory efficiency
+    let lastOpenedPdfUrl = null;
 
     // Lightweight preload - only validates URL, doesn't download blob
     async function preloadPdf(pdfUrl) {
@@ -442,9 +443,16 @@ document.addEventListener('DOMContentLoaded', function () {
             }, '*');
         };
 
-        // If viewer is prewarmed, use postMessage for instant PDF change
-        // Otherwise, load the full viewer URL
-        if (isViewerPrewarmed && pdfIframe.contentWindow) {
+        // If the same PDF is requested again, force a full viewer reload to avoid stale state
+        if (lastOpenedPdfUrl === pdfUrl && pdfIframe) {
+            const reloadUrl = `${viewerUrl}&reload=${Date.now()}`;
+            pdfIframe.src = 'about:blank';
+            setTimeout(() => {
+                pdfIframe.src = reloadUrl;
+            }, 0);
+        } else if (isViewerPrewarmed && pdfIframe.contentWindow) {
+            // If viewer is prewarmed, use postMessage for instant PDF change
+            // Otherwise, load the full viewer URL
             // Check if iframe was just moved (causes reload) - need to wait for load
             if (pdfIframe._needsLoadWait) {
                 pdfIframe._needsLoadWait = false;
@@ -465,6 +473,8 @@ document.addEventListener('DOMContentLoaded', function () {
             // Fallback: Load viewer with PDF URL (first time or not prewarmed)
             pdfIframe.src = viewerUrl;
         }
+
+        lastOpenedPdfUrl = pdfUrl;
 
         // Show popup
         popup.classList.remove('closing');
