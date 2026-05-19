@@ -619,8 +619,10 @@ async function checkForNewContent() {
   }
 
   const now = new Date();
-  const lastCheck = localStorage.getItem('materio_last_notif_check') || (now.getTime() - 24 * 60 * 60 * 1000);
-  const lastCheckDate = new Date(parseInt(lastCheck));
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const lastCheck = localStorage.getItem('materio_last_notif_check');
+  const lastCheckDate = lastCheck ? new Date(parseInt(lastCheck)) : startOfToday;
 
   // Fetch all sources
   const [systemNotifs, resources, updates, releases] = await Promise.all([

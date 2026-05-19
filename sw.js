@@ -3,7 +3,7 @@
  * 🔋 Optimized High-Precision PDF.js Asset Caching & Push Notifications
  */
 
-const VERSION = 'v4.2.1-offline-nudge';
+const VERSION = 'v4.2.3-offline-nudge';
 const CORE_CACHE = 'materio-core-' + VERSION;
 const PDFJS_CACHE_PREFIX = 'pdfjs-assets-';
 const META_CACHE = 'materio-meta-' + VERSION;
@@ -26,7 +26,8 @@ const CORE_ASSETS = [
     '/assets/scripts/caching.js',
     '/assets/img/icon.svg',
     '/assets/img/v4_logo.png',
-    '/assets/img/internet.webp'
+    '/assets/img/internet.webp',
+    '/favicon.ico'
 ];
 
 // Explicit PDF.js Viewer assets to be pre-cached per session
@@ -123,8 +124,8 @@ async function fetchJson(url) {
 async function showBackgroundNotification(title, body, url, image = null) {
     await self.registration.showNotification(title, {
         body,
-        icon: '/assets/img/icon.svg',
-        badge: '/assets/img/icon.svg',
+        icon: '/favicon.ico',
+        badge: '/favicon.ico',
         image,
         data: { url: url || '/' },
         vibrate: [200, 100, 200]
@@ -137,7 +138,10 @@ async function checkForNewContent() {
         return;
     }
 
-    const lastCheckDate = new Date(state.lastCheckTs || 0);
+    // Set last check threshold to start of today on first run to avoid notification spamming
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const lastCheckDate = state.lastCheckTs ? new Date(state.lastCheckTs) : startOfToday;
 
     const [systemNotifs, resources, updates, releases] = await Promise.all([
         fetchJson(NOTIFY_SOURCES.system),
@@ -306,8 +310,9 @@ self.addEventListener('push', (event) => {
 
         const options = {
             body: data.message,
-            icon: '/assets/img/icon.svg',
-            badge: '/assets/img/icon.svg',
+            icon: data.icon || '/favicon.ico',
+            badge: '/favicon.ico',
+            image: data.image || data.coverImage || data.imgUrl || null,
             data: { url: data.url },
             vibrate: [200, 100, 200]
         };
@@ -334,8 +339,8 @@ self.addEventListener('message', (event) => {
         event.waitUntil(
             self.registration.showNotification(title, {
                 body: message,
-                icon: icon || '/assets/img/icon.svg',
-                badge: '/assets/img/icon.svg',
+                icon: icon || '/favicon.ico',
+                badge: '/favicon.ico',
                 image: image || null, // For large cover images
                 vibrate: [200, 100, 200],
                 data: { url: url }
@@ -365,6 +370,18 @@ self.addEventListener('periodicsync', (event) => {
     }
 });
 
+// Helper to cleanse redirected responses to prevent "a redirected response was used for a request whose redirect mode is not 'follow'"
+function cleanRedirectedResponse(response) {
+    if (!response || !response.redirected) {
+        return response;
+    }
+    return new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers
+    });
+}
+
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
     const path = url.pathname;
@@ -378,30 +395,37 @@ self.addEventListener('fetch', (event) => {
                 if (isOreadAsset && currentSessionId) {
                     const sessionCache = await caches.open(PDFJS_CACHE_PREFIX + currentSessionId);
                     const cachedResponse = await sessionCache.match(event.request);
-                    if (cachedResponse) return cachedResponse;
+                    if (cachedResponse) return cleanRedirectedResponse(cachedResponse);
                     
                     const networkResponse = await fetch(event.request);
                     if (networkResponse.ok) {
                         sessionCache.put(event.request, networkResponse.clone());
                     }
-                    return networkResponse;
+                    return cleanRedirectedResponse(networkResponse);
                 }
                 
                 const coreCache = await caches.open(CORE_CACHE);
                 const coreCached = await coreCache.match(event.request);
-                if (coreCached) return coreCached;
+                if (coreCached) return cleanRedirectedResponse(coreCached);
                 
-                return fetch(event.request);
+                const netRes = await fetch(event.request);
+                return cleanRedirectedResponse(netRes);
             })()
         );
         return;
     }
 
     event.respondWith(
-        fetch(event.request).catch(() => {
-            if (url.origin === self.location.origin) {
-                return caches.match(event.request);
-            }
-        })
+        fetch(event.request)
+            .then(res => cleanRedirectedResponse(res))
+            .catch((err) => {
+                if (url.origin === self.location.origin) {
+                    return caches.match(event.request).then(cached => {
+                        if (cached) return cleanRedirectedResponse(cached);
+                        throw err;
+                    });
+                }
+                throw err;
+            })
     );
 });

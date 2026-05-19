@@ -177,22 +177,76 @@ function showDownloadsTab() {
  * Handle clicks outside dropdown to close it
  * @param {Event} e
  */
+/**
+ * Adjust parent of profile dropdown and backdrop based on screen size
+ */
+function adjustDropdownParent() {
+  const profileDropdown = document.getElementById('profile-dropdown');
+  const backdrop = document.getElementById('profile-dropdown-backdrop');
+  const profileContainer = document.querySelector('.profile-icon-container');
+  
+  if (!profileDropdown || !profileContainer) return;
+  
+  const isMobile = window.innerWidth <= 768;
+  const currentParent = profileDropdown.parentElement;
+  
+  if (isMobile) {
+    if (currentParent !== document.body) {
+      document.body.appendChild(profileDropdown);
+      if (backdrop) document.body.appendChild(backdrop);
+    }
+  } else {
+    if (currentParent !== profileContainer) {
+      profileContainer.appendChild(profileDropdown);
+      if (backdrop) profileContainer.appendChild(backdrop);
+    }
+  }
+}
+
+// Attach resize handler
+window.addEventListener('resize', adjustDropdownParent);
+
+/**
+ * Helper to open/close profile dropdown and backdrop
+ * @param {boolean} show
+ */
+function setProfileDropdownOpen(show) {
+  adjustDropdownParent();
+  const profileDropdown = document.getElementById('profile-dropdown');
+  const backdrop = document.getElementById('profile-dropdown-backdrop');
+  if (!profileDropdown) return;
+
+  if (show) {
+    document.body.classList.add('profile-dropdown-open');
+    profileDropdown.classList.add('show');
+    profileDropdown.setAttribute('aria-hidden', 'false');
+    if (backdrop) backdrop.classList.add('show');
+    
+    // Focus first item when opening
+    const dropdownItems = profileDropdown.querySelectorAll('.dropdown-item');
+    dropdownItems.forEach(item => item.setAttribute('tabindex', '0'));
+    dropdownItems[0]?.focus();
+  } else {
+    document.body.classList.remove('profile-dropdown-open');
+    profileDropdown.classList.remove('show');
+    profileDropdown.setAttribute('aria-hidden', 'true');
+    if (backdrop) backdrop.classList.remove('show');
+    
+    profileDropdown.querySelectorAll('.dropdown-item').forEach(item => item.setAttribute('tabindex', '-1'));
+    // Reset submenus
+    profileDropdown.querySelectorAll('.has-submenu').forEach(p => p.classList.remove('submenu-open'));
+  }
+}
+
 function handleOutsideClick(e) {
   const profileIconLink = document.querySelector('.profile-icon');
   const profileDropdown = document.getElementById('profile-dropdown');
 
   if (profileDropdown &&
     !profileIconLink?.contains(e.target) &&
-    !profileDropdown.contains(e.target)) {
-    profileDropdown.classList.remove('show');
-    profileDropdown.setAttribute('aria-hidden', 'true');
-    profileDropdown.querySelectorAll('.dropdown-item').forEach(
-      item => item.setAttribute('tabindex', '-1')
-    );
-    // Reset submenus
-    profileDropdown.querySelectorAll('.has-submenu').forEach(
-      p => p.classList.remove('submenu-open')
-    );
+    !profileDropdown.contains(e.target) &&
+    !e.target.closest('#profile-dropdown-backdrop')) {
+    setProfileDropdownOpen(false);
   }
 }
 
@@ -212,10 +266,7 @@ function handleDropdownKeydown(e) {
   switch (e.key) {
     case 'Escape':
       e.preventDefault();
-      profileDropdown.classList.remove('show');
-      profileDropdown.setAttribute('aria-hidden', 'true');
-      items.forEach(item => item.setAttribute('tabindex', '-1'));
-      profileDropdown.querySelectorAll('.has-submenu').forEach(p => p.classList.remove('submenu-open'));
+      setProfileDropdownOpen(false);
       profileIconLink?.focus();
       break;
     case 'ArrowDown':
@@ -261,19 +312,7 @@ function setupProfileDropdown(profileIconLink, profileDropdown) {
         window.MaterioHaptics.vibrate(isShowing ? 'dropdownClose' : 'dropdownOpen');
       }
 
-      profileDropdown.classList.toggle('show');
-      profileDropdown.setAttribute('aria-hidden', isShowing ? 'true' : 'false');
-
-      // Update tabindex for focusable items
-      const dropdownItems = profileDropdown.querySelectorAll('.dropdown-item');
-      dropdownItems.forEach(item => {
-        item.setAttribute('tabindex', isShowing ? '-1' : '0');
-      });
-
-      // Focus first item when opening
-      if (!isShowing) {
-        dropdownItems[0]?.focus();
-      }
+      setProfileDropdownOpen(!isShowing);
     }
   }, true);
 
@@ -288,12 +327,7 @@ function setupProfileDropdown(profileIconLink, profileDropdown) {
         window.MaterioHaptics.vibrate('select');
       }
 
-      profileDropdown.classList.remove('show');
-      profileDropdown.setAttribute('aria-hidden', 'true');
-      profileDropdown.querySelectorAll('.dropdown-item').forEach(
-        item => item.setAttribute('tabindex', '-1')
-      );
-
+      setProfileDropdownOpen(false);
       showSettingsTab();
     });
   }
@@ -309,18 +343,27 @@ function setupProfileDropdown(profileIconLink, profileDropdown) {
         window.MaterioHaptics.vibrate('select');
       }
 
-      profileDropdown.classList.remove('show');
-      profileDropdown.setAttribute('aria-hidden', 'true');
-      profileDropdown.querySelectorAll('.dropdown-item').forEach(
-        item => item.setAttribute('tabindex', '-1')
-      );
-
+      setProfileDropdownOpen(false);
       showDownloadsTab();
     });
   }
 
   // Handle nested submenu interactions (event delegation for dynamic classes)
   profileDropdown.addEventListener('click', function (e) {
+    const backBtn = e.target.closest('.submenu-back-btn');
+    if (backBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const parent = backBtn.closest('.has-submenu');
+      if (parent) {
+        parent.classList.remove('submenu-open');
+        if (window.MaterioHaptics) {
+          window.MaterioHaptics.vibrate('dropdownClose');
+        }
+      }
+      return;
+    }
+
     const parent = e.target.closest('.has-submenu');
     if (!parent) return;
 
@@ -349,17 +392,25 @@ function setupProfileDropdown(profileIconLink, profileDropdown) {
   // Close dropdown when any item inside a submenu is clicked
   profileDropdown.addEventListener('click', function (e) {
     const item = e.target.closest('.dropdown-submenu .dropdown-item');
-    if (!item) return;
+    if (!item || item.classList.contains('submenu-back-btn')) return;
 
     // Close everything
-    profileDropdown.classList.remove('show');
-    profileDropdown.setAttribute('aria-hidden', 'true');
-    profileDropdown.querySelectorAll('.has-submenu').forEach(p => p.classList.remove('submenu-open'));
+    setProfileDropdownOpen(false);
 
     if (window.MaterioHaptics) {
       window.MaterioHaptics.vibrate('select');
     }
   });
+
+  // Setup backdrop click listener directly
+  const backdrop = document.getElementById('profile-dropdown-backdrop');
+  if (backdrop) {
+    backdrop.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      setProfileDropdownOpen(false);
+    });
+  }
 
   // Event listeners for closing dropdown
   document.addEventListener('click', handleOutsideClick);
@@ -473,6 +524,7 @@ function init() {
     }
 
     setupProfileDropdown(profileIconLink, profileDropdown);
+    adjustDropdownParent();
   }
 
   // Handle Handoff Code from URL

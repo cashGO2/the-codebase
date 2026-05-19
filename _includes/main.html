@@ -94,6 +94,8 @@
                     <img id="profile-image" src="/assets/img/default-avatar.svg" style="display: none;"
                         alt="Profile Picture">
                 </a>
+                <!-- Backdrop overlay for mobile bottom sheet -->
+                <div id="profile-dropdown-backdrop" class="profile-dropdown-backdrop"></div>
                 <!-- Profile dropdown menu -->
                 <div id="profile-dropdown" class="profile-dropdown" role="menu" aria-hidden="true">
                     <div id="profile-menu-item" class="dropdown-item" role="menuitem" tabindex="-1"
@@ -103,6 +105,10 @@
                         <i class="fa-regular fa-chevron-right submenu-chevron" id="profile-chevron"
                             aria-hidden="true"></i>
                         <div class="dropdown-submenu" id="profile-submenu">
+                            <div class="dropdown-item submenu-back-btn mobile-only">
+                                <i class="fa-regular fa-arrow-left" aria-hidden="true"></i>
+                                <span>Back</span>
+                            </div>
                             <a href="/account/profile" class="dropdown-item">
                                 <i class="fa-regular fa-user-circle" aria-hidden="true"></i>
                                 <span>Profile</span>
@@ -119,6 +125,10 @@
                         <span>Notebooks</span>
                         <i class="fa-regular fa-chevron-right submenu-chevron" aria-hidden="true"></i>
                         <div class="dropdown-submenu" role="menu" aria-hidden="true">
+                            <div class="dropdown-item submenu-back-btn mobile-only">
+                                <i class="fa-regular fa-arrow-left" aria-hidden="true"></i>
+                                <span>Back</span>
+                            </div>
                             <a href="#" class="dropdown-item" onclick="createNewNotebook(true); return false;"
                                 role="menuitem" tabindex="-1">
                                 <i class="fa-regular fa-plus" aria-hidden="true"></i>
@@ -191,9 +201,11 @@
                     style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
                     <!-- Quick Resource Search Box - First on Desktop, Second Row on Mobile -->
                     <div id="quickSearchContainer">
-                        <div style="position: relative;">
+                        <div class="quick-search-wrapper">
+                            <div class="quick-search-border-glow"></div>
+                            <div class="pulse-wave"></div>
                             <i class="far fa-search quick-search-icon-left"></i>
-                            <input type="text" id="quickSearchInput" placeholder="Finder" />
+                            <input type="text" id="quickSearchInput" placeholder="Finder" autocomplete="off" spellcheck="false" autocapitalize="off" />
                             <button id="clearSearchBtn" class="clear-search-btn" title="Clear Search"
                                 aria-label="Clear Search" style="display: none;">
                                 <i class="fa-solid fa-xmark"></i>

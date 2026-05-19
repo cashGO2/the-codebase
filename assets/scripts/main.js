@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Listen for online/offline changes
   window.addEventListener("online", () => {
-    showAllTabs();
+    checkOfflineAndRedirect();
   });
 
   window.addEventListener("offline", () => {
@@ -279,8 +279,15 @@ function showOfflineNudge() {
 function hideOfflineNudge() {
   const card = document.getElementById('offlineNudgeCard');
   if (card) {
-    card.remove();
-    document.body.classList.remove('leaderboard-nudge-open');
+    card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px) scale(0.95)';
+    setTimeout(() => {
+      if (card.parentNode) {
+        card.remove();
+      }
+      document.body.classList.remove('leaderboard-nudge-open');
+    }, 400);
   }
 }
 
@@ -3199,6 +3206,15 @@ let searchTimeout = null;
 let currentSearchController = null;
 let aiSearchEnabled = false; // Track AI search mode
 
+// Global function to trigger AI pulse wave animation
+window.triggerAIPulse = function() {
+  const pulseWave = document.querySelector('.pulse-wave');
+  if (!pulseWave) return;
+  pulseWave.classList.remove('active-pulse');
+  void pulseWave.offsetWidth; // Force reflow
+  pulseWave.classList.add('active-pulse');
+};
+
 // Initialize quick search functionality
 document.addEventListener("DOMContentLoaded", function () {
   const searchInput = document.getElementById("quickSearchInput");
@@ -3207,6 +3223,26 @@ document.addEventListener("DOMContentLoaded", function () {
   const clearBtn = document.getElementById("clearSearchBtn");
 
   if (!searchInput || !searchResults) return;
+
+  // Mutation observer to toggle active-results on quick-search-wrapper
+  const searchWrapper = searchInput.closest(".quick-search-wrapper");
+  if (searchWrapper) {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === "style") {
+          const isVisible = searchResults.style.display === "block";
+          if (isVisible) {
+            searchWrapper.classList.add("active-results");
+            searchResults.classList.add("active-results");
+          } else {
+            searchWrapper.classList.remove("active-results");
+            searchResults.classList.remove("active-results");
+          }
+        }
+      });
+    });
+    observer.observe(searchResults, { attributes: true, attributeFilter: ["style"] });
+  }
 
   // Handle clear button click
   if (clearBtn) {
@@ -3229,15 +3265,21 @@ document.addEventListener("DOMContentLoaded", function () {
     aiToggleBtn.addEventListener("click", function (e) {
       e.stopPropagation();
       aiSearchEnabled = !aiSearchEnabled;
+      const searchWrapper = searchInput.closest('.quick-search-wrapper');
 
       // Update UI
       if (aiSearchEnabled) {
         this.classList.add("active");
         searchInput.classList.add("ai-mode");
+        if (searchWrapper) searchWrapper.classList.add("ai-mode");
+        if (searchResults) searchResults.classList.add("ai-mode");
         searchInput.placeholder = "AI-powered search";
+        window.triggerAIPulse();
       } else {
         this.classList.remove("active");
         searchInput.classList.remove("ai-mode");
+        if (searchWrapper) searchWrapper.classList.remove("ai-mode");
+        if (searchResults) searchResults.classList.remove("ai-mode");
         searchInput.placeholder = "Quick search";
       }
 
@@ -3279,6 +3321,16 @@ document.addEventListener("DOMContentLoaded", function () {
     searchTimeout = setTimeout(() => {
       performQuickSearch(query);
     }, 300);
+  });
+
+  // Handle keydown for Enter key to trigger pulse wave explicitly without triggering on typing
+  searchInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      const query = this.value.trim();
+      if (query.length > 0 && aiSearchEnabled && typeof window.triggerAIPulse === 'function') {
+        window.triggerAIPulse();
+      }
+    }
   });
 
   // Close search results when clicking outside
@@ -3323,7 +3375,8 @@ function repositionSearchDropdown() {
   const searchInput = document.getElementById("quickSearchInput");
 
   if (searchResults && searchInput && searchResults.style.display === "block") {
-    const rect = searchInput.getBoundingClientRect();
+    const searchWrapper = searchInput.closest(".quick-search-wrapper") || searchInput;
+    const rect = searchWrapper.getBoundingClientRect();
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const scrollLeft =
       window.pageXOffset || document.documentElement.scrollLeft;
@@ -3332,7 +3385,7 @@ function repositionSearchDropdown() {
     if (isMobile) {
       searchResults.style.top = "425px";
     } else {
-      searchResults.style.top = `${rect.bottom + scrollTop + 8}px`;
+      searchResults.style.top = `${rect.bottom + scrollTop}px`; // Connect flush with bottom edge
     }
     searchResults.style.left = `${rect.left + scrollLeft}px`;
     searchResults.style.width = `${rect.width}px`;
@@ -3356,6 +3409,8 @@ async function performQuickSearch(query) {
     searchResults.style.display = "none";
     return;
   }
+
+
 
   // Cancel previous request if any
   if (currentSearchController) {
@@ -3421,7 +3476,8 @@ function displaySearchResults(results, query) {
 
   // Position dropdown below the search input (using absolute positioning)
   if (searchInput) {
-    const rect = searchInput.getBoundingClientRect();
+    const searchWrapper = searchInput.closest(".quick-search-wrapper") || searchInput;
+    const rect = searchWrapper.getBoundingClientRect();
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const scrollLeft =
       window.pageXOffset || document.documentElement.scrollLeft;
@@ -3430,7 +3486,7 @@ function displaySearchResults(results, query) {
     if (isMobile) {
       searchResults.style.top = "425px";
     } else {
-      searchResults.style.top = `${rect.bottom + scrollTop + 8}px`;
+      searchResults.style.top = `${rect.bottom + scrollTop}px`; // Connect flush with bottom edge
     }
     searchResults.style.left = `${rect.left + scrollLeft}px`;
     searchResults.style.width = `${rect.width}px`;
@@ -3550,11 +3606,10 @@ function renderSearchResults(query) {
                  data-topic="${result.topic}">
                 <div style="flex: 1; min-width: 0; cursor: pointer;" onclick="selectSearchResult('${result.semester}', \`${result.subject.replace(/`/g, "\\`")}\`, \`${result.category.replace(/`/g, "\\`")}\`, \`${result.topic.replace(/`/g, "\\`")}\`)">
                     <div class="search-result-semester">
-                        <i class="far fa-graduation-cap" style="margin-right: 4px;"></i>
-                        Semester ${result.semester} • ${result.subject}
+                        ${result.semester} • ${result.subject}
                     </div>
                     <div class="search-result-title">
-                        ${result.topic}
+                        ${result.topic} <span style="color: ${scoreColor}; font-size: 11px; font-weight: 700; font-family: var(--font-primary), sans-serif; margin-left: 6px;">${result.score}%</span>
                     </div>
                     <div class="search-result-category">
                         ${result.category}
@@ -3562,11 +3617,8 @@ function renderSearchResults(query) {
                     ${aiExplanation}
                 </div>
                 <div style="flex-shrink: 0; display: flex; align-items: center; gap: 8px;">
-                    <span class="search-result-score" style="background: ${scoreColor}20; color: ${scoreColor};">
-                        ${result.score}%
-                    </span>
                     <button onclick="openSearchResultPdf(event, '${result.semester}', \`${result.subject.replace(/`/g, "\\`")}\`, \`${result.topic.replace(/`/g, "\\`")}\`)"
-                            style="padding: 8px 16px; background: #ff8400; color: white; border: none; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s ease; font-family: 'Manrope', sans-serif;"
+                            style="padding: 8px 16px; background: #ff8400; color: white; border: none; border-radius: 12px; corner-shape: squircle; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s ease; font-family: 'Manrope', sans-serif;"
                             onmouseover="this.style.background='#ff9500'; this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(255, 132, 0, 0.4)'"
                             onmouseout="this.style.background='#ff8400'; this.style.transform='scale(1)'; this.style.boxShadow='none'">
                         <i class="far fa-external-link" style="margin-right: 4px;"></i>Open
