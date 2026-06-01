@@ -1,6 +1,18 @@
 [
     {
         "branch": "stable",
+        "version": "5.0",
+        "build": "01/06/2026",
+        "logs": [
+            "Materio MCP Connector expanded to Perplexity",
+            "New and Improved search",
+            "Thinklet - AI Chat",
+            "Ask AI in PDF viewer powered by Thinklet.",
+            "Other bug fixes and improvements"
+        ]
+    },
+    {
+        "branch": "stable",
         "version": "4.8.1.0",
         "build": "26/03/2026",
         "logs": [
