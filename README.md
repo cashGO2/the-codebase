@@ -22,16 +22,16 @@ Materio - A study SaaS that simplifies your CS preparation with verified, crowd-
 This project is licensed under the **Materio Proprietary Source-Available License (MPSAL) v1.0**.
 
 ### Key Points:
-- ✅ **Permitted**: Personal, educational, and internal use
-- ❌ **Prohibited**: Public hosting, commercial use, modifications without permission
-- 📋 **Requirements**: Attribution required for approved public hosting
-- 🔒 **Source Code**: Not all components may be publicly available
+- **Permitted**: Personal, educational, and internal use
+- **Prohibited**: Public hosting, commercial use, modifications without permission
+- **Requirements**: Attribution required for approved public hosting
+- **Source Code**: Not all components may be publicly available
 
 For detailed terms, see the [License](license) file.
 
 For commercial licensing or public hosting permissions, contact: [materio.operable341@silomails.com](mailto:materio.operable341@silomails.com)
 
-## 🐛 Bug Reports & Feature Requests
+## Bug Reports & Feature Requests
 
 If you encounter any issues or have suggestions for improvements:
 
@@ -42,11 +42,11 @@ If you encounter any issues or have suggestions for improvements:
 
 ##  Support
 
-- **Email**: [materio.operable341@silomails.com](mailto:materio.operable341@silomails.com)
+- **Email**: [materio.operable341@silomails.com](mailto:support@getmaterio.app)
 - **Issues**: [GitHub Issues](https://github.com/Materioa/materio/issues)
 
 
-## 📊 Project Stats
+## Project Stats
 
 ![GitHub stars](https://img.shields.io/github/stars/Materioa/materio?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/Materioa/materio?style=social)
