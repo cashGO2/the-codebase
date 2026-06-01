@@ -4,7 +4,7 @@
   "description": "Materio - all in one place for all your study needs. read, discuss, contribute",
   "main": "main.js",
   "scripts": {
-    "vercel-build": "node scripts/generate-build-id.js && node scripts/generate-insightroom-fallback.js && bundle exec jekyll build && node scripts/minify-assets.js && node scripts/version-assets.js",
+    "vercel-build": "bundle install && node scripts/generate-build-id.js && node scripts/generate-insightroom-fallback.js && bundle exec jekyll build && node scripts/minify-assets.js && node scripts/version-assets.js",
     "generate:oread-icons": "node scripts/generate-oread-icons-css.js",
     "vercel-dev": "node scripts/vercel dev",
     "build": "node scripts/generate-build-id.js && node scripts/generate-insightroom-fallback.js && bundle exec jekyll build && netlify build",

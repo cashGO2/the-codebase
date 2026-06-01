@@ -4,6 +4,7 @@
   const THINKLET_LOCAL_URL = 'http://localhost:5173/new';
   const THINKLET_PROD_URL = 'https://chat.getmaterio.app/new';
   const THINKLET_WIDTH_KEY = 'materio_thinklet_panel_width';
+  const THINKLET_RELEASE_OFFER_END = Date.parse('2026-08-27T00:00:00+05:30');
   let verifiedAccess = false;
   let activePdfUrl = null;
   let selectedQuery = '';
@@ -58,7 +59,15 @@
     postThinkletAuth(frame);
   }
 
+  function isThinkletReleaseOfferActive() {
+    return Date.now() < THINKLET_RELEASE_OFFER_END;
+  }
+
   async function verifyThinkletAccess() {
+    if (isThinkletReleaseOfferActive()) {
+      return true;
+    }
+
     if (window.checkPlusStatus?.() === true) {
       return true;
     }
@@ -83,7 +92,7 @@
       }
 
       const data = await response.json();
-      return data.user?.isPlusUser === true || data.user?.hasAdminPrivileges === true;
+      return data.user?.isPlusUser === true || data.user?.isLiteUser === true || data.user?.hasAdminPrivileges === true;
     } catch (error) {
       console.error('Thinklet access verification failed:', error);
       return false;
