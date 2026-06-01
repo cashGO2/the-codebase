@@ -3205,6 +3205,107 @@ window.clearAllSiteData = clearAllSiteData;
 let searchTimeout = null;
 let currentSearchController = null;
 let aiSearchEnabled = false; // Track AI search mode
+let searchLoadingTimer = null;
+
+function stopSearchLoading() {
+  if (searchLoadingTimer) {
+    clearTimeout(searchLoadingTimer);
+    searchLoadingTimer = null;
+  }
+}
+
+function buildDidYouMeanSuggestion(query) {
+  if (!query) return "";
+
+  let cleaned = String(query)
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!cleaned) return "";
+
+  cleaned = cleaned.replace(/\bch\s*(\d+)\b/g, "chapter $1");
+  cleaned = cleaned.replace(/\bunit\s*(\d+)\b/g, "unit $1");
+
+  const fillerPatterns = [
+    /\bthat one\b/g,
+    /\bthis one\b/g,
+    /\bthat pdf\b/g,
+    /\bthis pdf\b/g,
+    /\bthe pdf\b/g,
+    /\bpdf with\b/g,
+    /\bpdf about\b/g,
+    /\bcontent about\b/g,
+    /\bcontent on\b/g,
+    /\bnotes on\b/g,
+    /\bnotes about\b/g,
+    /\blooking for\b/g,
+    /\bi want\b/g,
+    /\bi need\b/g,
+    /\bcan you\b/g,
+    /\bplease\b/g,
+    /\bpls\b/g,
+    /\bshow me\b/g,
+    /\bgive me\b/g,
+    /\bfind me\b/g,
+    /\bneed help with\b/g,
+  ];
+
+  for (const pattern of fillerPatterns) {
+    cleaned = cleaned.replace(pattern, " ");
+  }
+
+  cleaned = cleaned.replace(
+    /\b(pdf|notes|note|material|materials|content|chapter|unit|module|topic|document|file|with|on|about|for|of|the|a|an|one|that|this|please|pls|show|give|find|need|want|looking|help|info|information)\b/g,
+    " ",
+  );
+
+  cleaned = cleaned.replace(/\s+/g, " ").trim();
+  return cleaned;
+}
+
+function startSearchLoading(modalList, query, aiMode) {
+  if (!modalList) return;
+  stopSearchLoading();
+
+  const textEl = modalList.querySelector(".search-loading-text");
+  if (!textEl) return;
+
+  const safeQuery = String(query || "").trim();
+  const steps = aiMode
+    ? [
+        "Calling tool",
+        `Searching for "${safeQuery}"`,
+        "Ranking",
+        "Finding best match",
+        "Just a sec",
+        "Almost there",
+      ]
+    : [
+        `Searching for "${safeQuery}"`,
+        "Ranking",
+        "Finding best match",
+        "Just a sec",
+        "Almost there",
+      ];
+
+  const delays = aiMode
+    ? [1600, 700, 650, 600, 600, 600]
+    : [700, 650, 600, 600, 600];
+
+  let index = 0;
+  textEl.textContent = steps[index];
+
+  const advance = () => {
+    index = (index + 1) % steps.length;
+    textEl.textContent = steps[index];
+    const delay = delays[index] || 600;
+    searchLoadingTimer = setTimeout(advance, delay);
+  };
+
+  searchLoadingTimer = setTimeout(advance, delays[0]);
+}
 
 // Global function to trigger AI pulse wave animation
 window.triggerAIPulse = function() {
@@ -3291,7 +3392,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Handle search input with debounce
+  // Handle search input with debounce — opens the modal
   searchInput.addEventListener("input", function () {
     const query = this.value.trim();
 
@@ -3305,9 +3406,9 @@ document.addEventListener("DOMContentLoaded", function () {
       clearTimeout(searchTimeout);
     }
 
-    // Hide results if query is empty
+    // Close modal if query is empty
     if (query.length === 0) {
-      searchResults.style.display = "none";
+      closeSearchResultsModal();
       return;
     }
 
@@ -3316,6 +3417,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!homeTab || !homeTab.classList.contains("active")) {
       return;
     }
+
+    // Open the modal (moves search bar into it)
+    openSearchModal();
 
     // Debounce search - wait 300ms after user stops typing
     searchTimeout = setTimeout(() => {
@@ -3331,21 +3435,12 @@ document.addEventListener("DOMContentLoaded", function () {
         window.triggerAIPulse();
       }
     }
-  });
-
-  // Close search results when clicking outside
-  document.addEventListener("click", function (e) {
-    const aiToggle = document.getElementById("aiSearchToggle");
-    if (
-      !searchInput.contains(e.target) &&
-      !searchResults.contains(e.target) &&
-      !aiToggle?.contains(e.target)
-    ) {
-      searchResults.style.display = "none";
+    if (e.key === "Escape") {
+      closeSearchResultsModal();
     }
   });
 
-  // Reopen results when clicking on input if there are results
+  // Open modal when clicking on input
   searchInput.addEventListener("click", function () {
     // Only show on home tab
     const homeTab = document.getElementById("home");
@@ -3353,149 +3448,197 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    if (this.value.trim().length > 0 && searchResults.children.length > 0) {
-      searchResults.style.display = "block";
-      // Reposition on click
-      repositionSearchDropdown();
+    if (this.value.trim().length > 0) {
+      openSearchModal();
     }
-  });
-
-  // Reposition dropdown on scroll and resize (for position: fixed) - use passive listener
-  window.addEventListener("scroll", repositionSearchDropdown, {
-    passive: true,
-  });
-  window.addEventListener("resize", repositionSearchDropdown, {
-    passive: true,
   });
 });
 
-// Reposition search dropdown (needed for position: absolute at body level)
-function repositionSearchDropdown() {
-  const searchResults = document.getElementById("quickSearchResults");
+// Store original parent of quickSearchContainer for returning it later
+let _searchContainerOriginalParent = null;
+let _searchContainerNextSibling = null;
+
+// Open the search results modal (promo-style) — moves quickSearchContainer into modal
+function openSearchModal() {
+  const modal = document.getElementById("searchResultsModal");
+  const slot = document.getElementById("modalSearchSlot");
+  const searchContainer = document.getElementById("quickSearchContainer");
   const searchInput = document.getElementById("quickSearchInput");
 
-  if (searchResults && searchInput && searchResults.style.display === "block") {
-    const searchWrapper = searchInput.closest(".quick-search-wrapper") || searchInput;
-    const rect = searchWrapper.getBoundingClientRect();
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const scrollLeft =
-      window.pageXOffset || document.documentElement.scrollLeft;
-    const isMobile = window.innerWidth <= 768;
+  if (!modal || !slot || !searchContainer) return;
 
-    if (isMobile) {
-      searchResults.style.top = "425px";
-    } else {
-      searchResults.style.top = `${rect.bottom + scrollTop}px`; // Connect flush with bottom edge
-    }
-    searchResults.style.left = `${rect.left + scrollLeft}px`;
-    searchResults.style.width = `${rect.width}px`;
+  // Remember original position so we can move it back on close
+  if (!_searchContainerOriginalParent) {
+    _searchContainerOriginalParent = searchContainer.parentNode;
+    _searchContainerNextSibling = searchContainer.nextSibling;
+  }
+
+  // Move the search container into the modal slot
+  if (!slot.contains(searchContainer)) {
+    slot.appendChild(searchContainer);
+  }
+
+  // Show modal if not already visible
+  if (modal.style.display !== "flex") {
+    modal.style.display = "flex";
+    modal.classList.add("show");
+    document.body.classList.add("modal-open");
+  }
+
+  // Focus the search input inside modal
+  if (searchInput) {
+    setTimeout(() => searchInput.focus(), 100);
   }
 }
+window.openSearchModal = openSearchModal;
 
 // Create sparkle particles animation
 
 // Perform search using the API
+let currentAiSearchController = null;
+
 async function performQuickSearch(query) {
-  const searchResults = document.getElementById("quickSearchResults");
   const searchInput = document.getElementById("quickSearchInput");
 
-  // If query is not provided, get it from the input field
   if (!query && searchInput) {
     query = searchInput.value.trim();
   }
 
-  // Don't search if query is empty
   if (!query) {
-    searchResults.style.display = "none";
+    closeSearchResultsModal();
     return;
   }
 
-
-
-  // Cancel previous request if any
+  // Cancel previous requests
   if (currentSearchController) {
     currentSearchController.abort();
   }
+  if (currentAiSearchController) {
+    currentAiSearchController.abort();
+  }
 
-  // Show loading state
-  const loadingIcon = aiSearchEnabled ? "fa-sparkles" : "fa-spinner fa-spin";
-  const loadingText = aiSearchEnabled ? "AI searching..." : "Searching...";
-  searchResults.innerHTML = `<div class="search-loading"><i class="far ${loadingIcon}"></i> ${loadingText}</div>`;
-  searchResults.style.display = "block";
+  const modalList = document.getElementById("searchResultsModalList");
+  const modalTitle = document.getElementById("searchResultsModalTitle");
+  const modal = document.getElementById("searchResultsModal");
+
+  // If user toggled AI, check if we already preloaded this query's AI data
+  if (aiSearchEnabled && window.preloadedAiQuery === query && window.preloadedAiData) {
+      if (modalList && modalTitle && modal) {
+          modalTitle.textContent = `Search results for "${query}"`;
+          openSearchModal();
+          window.currentAIData = window.preloadedAiData.ai || null;
+          displaySearchResults(window.preloadedAiData.results, query);
+      }
+      return;
+  }
+
+  if (modalList && modalTitle && modal) {
+    modalTitle.textContent = `Search results for "${query}"`;
+    modalList.innerHTML = `
+      <div class="search-loading">
+          <div class="search-loading-text"></div>
+      </div>
+    `;
+    startSearchLoading(modalList, query, aiSearchEnabled);
+    openSearchModal();
+  }
 
   try {
-    // Create new abort controller
     currentSearchController = new AbortController();
+    const selectedSemester = document.getElementById('semesterSelect')?.value || '';
+    const semesterParam = selectedSemester ? `&semester=${encodeURIComponent(selectedSemester)}` : '';
+    
+    // Always fetch algorithmic results first (FAST)
+    const algoUrl = `/api/v2/search?q=${encodeURIComponent(query)}${semesterParam}`;
+    
+    // Background fetch AI results (only when AI is enabled and online)
+    const isOffline = typeof navigator !== 'undefined' && navigator.onLine === false;
+    if (aiSearchEnabled && !isOffline) {
+      const aiUrl = `/api/v2/search?q=${encodeURIComponent(query)}&useAI=true&aiMode=pure${semesterParam}`;
+      currentAiSearchController = new AbortController();
 
-    // Build API URL with useAI parameter and aiMode=pure
-    const apiUrl = `/api/v2/search?q=${encodeURIComponent(query)}${aiSearchEnabled ? "&useAI=true&aiMode=pure" : ""}`;
+      // Reset preload cache for new query
+      window.preloadedAiQuery = query;
+      window.preloadedAiData = null;
 
-    // Call search API
-    const response = await fetch(apiUrl, {
+      fetch(aiUrl, { signal: currentAiSearchController.signal })
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`AI preload failed: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then(data => {
+          if (data.success) {
+            window.preloadedAiData = data;
+            // If user enabled AI mode while this was loading, update UI now
+            if (aiSearchEnabled && window.currentSearchQuery === query) {
+              stopSearchLoading();
+              window.currentAIData = data.ai || null;
+              displaySearchResults(data.results, query);
+            }
+          }
+        })
+        .catch(err => {
+          if (err.name !== "AbortError") console.warn("AI Preload failed:", err);
+        });
+    }
+
+    const response = await fetch(algoUrl, {
       signal: currentSearchController.signal,
     });
 
-    if (!response.ok) {
-      throw new Error(`Search failed: ${response.status}`);
-    }
-
+    if (!response.ok) throw new Error(`Search failed: ${response.status}`);
     const data = await response.json();
+    if (!data.success) throw new Error(data.error || "Search failed");
 
-    if (!data.success) {
-      throw new Error(data.error || "Search failed");
+    // Display algorithmic results immediately if AI mode is OFF
+    if (!aiSearchEnabled) {
+        stopSearchLoading();
+        window.currentAIData = null;
+        if (data.isDiscovery && data.results?.length > 0) {
+            if (modalTitle) modalTitle.textContent = `✨ Suggested for you`;
+        }
+        displaySearchResults(data.results, query);
+    } else {
+        // If AI is ON, wait for the AI fetch. 
+        // If it already resolved, preloadedAiData is set.
+        if (window.preloadedAiData) {
+            stopSearchLoading();
+            window.currentAIData = window.preloadedAiData.ai || null;
+            displaySearchResults(window.preloadedAiData.results, query);
+        }
     }
-
-    // Store AI data globally for displaying suggestions
-    window.currentAIData = data.ai || null;
-
-    displaySearchResults(data.results, query);
   } catch (error) {
     if (error.name === "AbortError") {
+      stopSearchLoading();
       return;
     }
-
-    searchResults.innerHTML = `
-            <div class="search-error">
-                <i class="far fa-exclamation-triangle"></i>
-                <p style="margin: 8px 0 0 0; font-size: 14px;">Search failed. Please try again.</p>
-            </div>
-        `;
-    searchResults.style.display = "block";
+    stopSearchLoading();
+    if (modalList) {
+      modalList.innerHTML = `
+        <div class="search-error">
+            <i class="far fa-exclamation-triangle"></i>
+            <p style="margin: 8px 0 0 0; font-size: 14px;">Search failed. Please try again.</p>
+        </div>
+      `;
+    }
   }
 }
 
 // Display search results
 function displaySearchResults(results, query) {
-  const searchResults = document.getElementById("quickSearchResults");
-  const searchInput = document.getElementById("quickSearchInput");
-
   // Store all results globally for expansion
   window.allSearchResults = results;
-  window.currentDisplayCount = 8;
+  window.currentDisplayCount = results ? results.length : 0;
   window.currentSearchQuery = query;
 
-  // Position dropdown below the search input (using absolute positioning)
-  if (searchInput) {
-    const searchWrapper = searchInput.closest(".quick-search-wrapper") || searchInput;
-    const rect = searchWrapper.getBoundingClientRect();
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const scrollLeft =
-      window.pageXOffset || document.documentElement.scrollLeft;
-    const isMobile = window.innerWidth <= 768;
-
-    if (isMobile) {
-      searchResults.style.top = "425px";
-    } else {
-      searchResults.style.top = `${rect.bottom + scrollTop}px`; // Connect flush with bottom edge
-    }
-    searchResults.style.left = `${rect.left + scrollLeft}px`;
-    searchResults.style.width = `${rect.width}px`;
+  const modalTitle = document.getElementById("searchResultsModalTitle");
+  if (modalTitle) {
+    modalTitle.textContent = `Search results for "${query}"`;
   }
 
   if (!results || results.length === 0) {
-    const aiIcon = aiSearchEnabled
-      ? '<i class="far fa-sparkles" style="color: #ff2d95;"></i> '
-      : "";
     const aiData = window.currentAIData;
 
     // Show AI suggestions if available
@@ -3514,7 +3657,7 @@ function displaySearchResults(results, query) {
                     ${aiData.suggestions
           .map(
             (s) => `
-                        <div onclick="document.getElementById('quickSearchInput').value='${s.replace(/'/g, "\\'")}'; performQuickSearch('${s.replace(/'/g, "\\'")}')"
+                        <div onclick="document.getElementById('modalSearchInput').value='${s.replace(/'/g, "\\'")}'; performQuickSearch('${s.replace(/'/g, "\\'")}')"
                              style="padding: 6px 8px; margin: 4px 0; background: rgba(255, 130, 0, 0.05); border-radius: 4px; font-size: 11px; color: #666; cursor: pointer; transition: all 0.2s;"
                              onmouseover="this.style.background='rgba(255, 130, 0, 0.1)'"
                              onmouseout="this.style.background='rgba(255, 130, 0, 0.05)'">
@@ -3526,29 +3669,40 @@ function displaySearchResults(results, query) {
                 </div>
             `;
     } else {
-      suggestionsHtml =
-        '<p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.7;">Try: "os intro", "dadv qb", "epj servlets"</p>';
+      const didYouMean = buildDidYouMeanSuggestion(query);
+      if (didYouMean) {
+        const safeSuggestion = didYouMean.replace(/'/g, "\\'");
+        suggestionsHtml = `
+          <div class="search-did-you-mean">
+            Did you mean:
+            <span class="search-did-you-mean-value" onclick="document.getElementById('modalSearchInput').value='${safeSuggestion}'; performQuickSearch('${safeSuggestion}')">${didYouMean}</span>
+          </div>
+        `;
+      }
     }
 
-    searchResults.innerHTML = `
+    const noResultsHtml = `
             <div class="search-no-results">
                 <i class="far fa-search"></i>
-                <p style="margin: 8px 0 0 0; font-size: 14px;">${aiIcon}No results found for "${query}"</p>
+          <p style="margin: 8px 0 0 0; font-size: 14px;">No results found for "${query}"</p>
                 ${suggestionsHtml}
             </div>
         `;
-    searchResults.style.display = "block";
+
+    const modalList = document.getElementById("searchResultsModalList");
+    if (modalList) {
+      modalList.innerHTML = noResultsHtml;
+    }
     return;
   }
 
   renderSearchResults(query);
 }
 
-// Render search results (can be called to expand)
+// Render search results (always inside modal)
 function renderSearchResults(query) {
-  const searchResults = document.getElementById("quickSearchResults");
   const results = window.allSearchResults || [];
-  const displayCount = window.currentDisplayCount || 8;
+  const displayCount = results.length;
 
   // Build HTML for results
   let html = "";
@@ -3556,11 +3710,9 @@ function renderSearchResults(query) {
   // Add AI mode indicator if enabled
   if (aiSearchEnabled) {
     const aiData = window.currentAIData;
-    const intentText =
-      aiData && aiData.intent ? aiData.intent : "AI-Powered Results";
 
     html += `
-            <div style="padding: 8px 16px; background: linear-gradient(135deg, rgba(255, 130, 0, 0.1), rgba(255, 45, 149, 0.1)); border-bottom: 1px solid rgba(255, 130, 0, 0.2);">
+            <div style="padding: 8px 16px; background: linear-gradient(135deg, rgba(255, 130, 0, 0.1), rgba(255, 45, 149, 0.1)); border-bottom: 1px solid rgba(255, 130, 0, 0.2); border-radius: 16px; margin-bottom: 8px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <i class="far fa-sparkles" style="color: #ff2d95; animation: sparkle 1.5s ease-in-out infinite;"></i>
                     <span style="font-size: 12px; font-weight: 600; color: #ff2d95;">AI-Powered Results</span>
@@ -3577,7 +3729,7 @@ function renderSearchResults(query) {
         `;
   }
 
-  // Show results based on display count
+  // Show all results
   const topResults = results.slice(0, displayCount);
 
   topResults.forEach((result, index) => {
@@ -3628,28 +3780,10 @@ function renderSearchResults(query) {
         `;
   });
 
-  // Add "Show more" button if there are more results
-  if (results.length > displayCount) {
-    html += `
-            <div onclick="showMoreSearchResults(event)" style="padding: 12px 16px; text-align: center; color: #ff8200; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; border-top: 1px solid rgba(255, 130, 0, 0.1);"
-                 onmouseover="this.style.background='rgba(255, 130, 0, 0.05)'"
-                 onmouseout="this.style.background='transparent'">
-                <i class="far fa-chevron-down"></i> Show ${results.length - displayCount} more result${results.length - displayCount === 1 ? "" : "s"}
-            </div>
-        `;
-  } else if (displayCount > 8 && results.length === displayCount) {
-    // Show collapse button if expanded
-    html += `
-            <div onclick="collapseSearchResults(event)" style="padding: 12px 16px; text-align: center; color: #6c757d; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; border-top: 1px solid rgba(108, 117, 125, 0.1);"
-                 onmouseover="this.style.background='rgba(108, 117, 125, 0.05)'"
-                 onmouseout="this.style.background='transparent'">
-                <i class="far fa-chevron-up"></i> Show less
-            </div>
-        `;
+  const modalList = document.getElementById("searchResultsModalList");
+  if (modalList) {
+    modalList.innerHTML = html;
   }
-
-  searchResults.innerHTML = html;
-  searchResults.style.display = "block";
 }
 
 // Expand search results to show all
@@ -3672,16 +3806,63 @@ function collapseSearchResults(event) {
   }
 }
 
+// Close search results modal — moves quickSearchContainer back to original position
+function closeSearchResultsModal() {
+  const modal = document.getElementById('searchResultsModal');
+  if (!modal || modal.style.display === 'none') return;
+
+  // Move search container back to its original location
+  const searchContainer = document.getElementById("quickSearchContainer");
+  if (searchContainer && _searchContainerOriginalParent) {
+    if (_searchContainerNextSibling) {
+      _searchContainerOriginalParent.insertBefore(searchContainer, _searchContainerNextSibling);
+    } else {
+      _searchContainerOriginalParent.appendChild(searchContainer);
+    }
+  }
+
+  const promoModalElement = modal.querySelector('.promo-modal');
+  if (promoModalElement) {
+    promoModalElement.style.willChange = 'transform, opacity';
+    promoModalElement.classList.add('closing');
+
+    modal.style.transition = 'opacity 0.4s cubic-bezier(0.32, 0.72, 0, 1)';
+    modal.style.opacity = '0';
+
+    setTimeout(() => {
+      modal.style.display = 'none';
+      modal.classList.remove('show');
+      modal.style.opacity = '';
+      modal.style.transition = '';
+      promoModalElement.classList.remove('closing');
+      promoModalElement.style.willChange = '';
+      promoModalElement.style.transform = '';
+      document.body.classList.remove('modal-open');
+    }, 400);
+  } else {
+    modal.style.display = 'none';
+    modal.classList.remove('show');
+    document.body.classList.remove('modal-open');
+  }
+
+  // Clear search input on dismiss
+  const searchInput = document.getElementById("quickSearchInput");
+  const clearBtn = document.getElementById("clearSearchBtn");
+  if (searchInput) {
+    searchInput.value = "";
+    searchInput.blur();
+  }
+  if (clearBtn) clearBtn.style.display = "none";
+}
+window.closeSearchResultsModal = closeSearchResultsModal;
+
 // Open PDF directly from search result
 async function openSearchResultPdf(event, semester, subject, topic) {
   // Stop event propagation to prevent selecting the result
   if (event) event.stopPropagation();
 
-  // Hide search results
-  const searchResults = document.getElementById("quickSearchResults");
-  const searchInput = document.getElementById("quickSearchInput");
-  if (searchResults) searchResults.style.display = "none";
-  if (searchInput) searchInput.value = "";
+  // Close the search modal
+  closeSearchResultsModal();
 
   // Get popup element
   const popup = document.getElementById("popup");
@@ -3725,11 +3906,8 @@ async function openSearchResultPdf(event, semester, subject, topic) {
 
 // Handle result selection
 function selectSearchResult(semester, subject, category, topic) {
-  // Hide search results first
-  const searchResults = document.getElementById("quickSearchResults");
-  const searchInput = document.getElementById("quickSearchInput");
-  if (searchResults) searchResults.style.display = "none";
-  if (searchInput) searchInput.value = "";
+  // Close the search modal
+  closeSearchResultsModal();
 
   // Populate the selection form
   const semesterSelect = document.getElementById("semesterSelect");

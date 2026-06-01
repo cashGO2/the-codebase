@@ -1301,6 +1301,8 @@ function initMobileSwipeHandling() {
     if (overlay.dataset.swipeInitialized) return;
     overlay.dataset.swipeInitialized = 'true';
 
+    const breakpoint = MOBILE_BREAKPOINT;
+
     let startY = 0;
     let currentY = 0;
     let startTime = 0;
@@ -1310,7 +1312,7 @@ function initMobileSwipeHandling() {
 
     function handleTouchStart(e) {
       // Only on mobile
-      if (window.innerWidth > MOBILE_BREAKPOINT) return;
+      if (window.innerWidth > breakpoint) return;
 
       modalElement = overlay.querySelector('.promo-modal, .dynamic-form-modal, .exam-modal');
       if (!modalElement) return;
@@ -1340,7 +1342,7 @@ function initMobileSwipeHandling() {
     }
 
     function handleTouchMove(e) {
-      if (!isDragging || !modalElement || window.innerWidth > MOBILE_BREAKPOINT) return;
+      if (!isDragging || !modalElement || window.innerWidth > breakpoint) return;
 
       currentY = e.touches[0].clientY;
       const deltaY = currentY - startY;
@@ -1368,7 +1370,7 @@ function initMobileSwipeHandling() {
     }
 
     function handleTouchEnd(e) {
-      if (!isDragging || !modalElement || window.innerWidth > MOBILE_BREAKPOINT) {
+      if (!isDragging || !modalElement || window.innerWidth > breakpoint) {
         // Reset state
         isDragging = false;
         canDismiss = false;
@@ -1398,6 +1400,10 @@ function initMobileSwipeHandling() {
           if (overlay.id === 'promoModal') {
             if (typeof window.closePromoModal === 'function') {
               window.closePromoModal();
+            }
+          } else if (overlay.id === 'searchResultsModal') {
+            if (typeof window.closeSearchResultsModal === 'function') {
+              window.closeSearchResultsModal();
             }
           } else if (overlay.id === 'examModal') {
             if (typeof window.closeExamModal === 'function') {

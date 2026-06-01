@@ -39,6 +39,7 @@ See https://github.com/adobe-type-tools/cmap-resources
   <script src="intelligence.js"></script>
   <script src="viewer.mjs" type="module"></script>
   <script src="showbtnrq.js"></script>
+  <script src="thinklet.js"></script>
   <script src="overlays.js"></script>
   <script src="keybinds.js"></script>
   <style>
@@ -232,6 +233,11 @@ See https://github.com/adobe-type-tools/cmap-resources
               </span>
             </div>
             <div id="toolbarViewerRight" class="toolbarHorizontalGroup">
+              <button id="thinkletButton" class="toolbarButton" type="button" tabindex="0"
+                aria-expanded="false" aria-controls="thinkletPanel" title="Open Thinklet" hidden>
+                <span>Thinklet</span>
+              </button>
+              <div id="thinkletSeparator" class="verticalToolbarSeparator" hidden></div>
               <div id="editorModeButtons" class="toolbarHorizontalGroup" role="radiogroup">
                 <div id="editorSignature" class="toolbarButtonWithContainer" hidden="true">
                   <button id="editorSignatureButton" class="toolbarButton" type="button" tabindex="0"
@@ -512,6 +518,34 @@ See https://github.com/adobe-type-tools/cmap-resources
         <div id="viewer" class="pdfViewer"></div>
       </div>
     </div> <!-- mainContainer -->
+
+    <aside id="thinkletPanel" aria-label="Thinklet AI chat" hidden>
+      <div id="thinkletResizeHandle" role="separator" aria-orientation="vertical"
+        aria-label="Resize Thinklet panel"></div>
+      <div id="thinkletPanelHeader">
+        <span>Ask Thinklet</span>
+        <div class="thinkletPanelActions">
+          <button id="thinkletSettingsButton" class="toolbarButton" type="button" title="Thinklet settings">
+            <svg class="thinkletSettingsIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+              <path d="M19.995 12C19.995 7.58172 16.4132 4 11.995 4C7.5767 4 3.99498 7.58172 3.99498 12C3.99498 16.4182 7.5767 20 11.995 20C16.4132 20 19.995 16.4182 19.995 12Z"></path>
+              <path d="M13.995 12C13.995 10.8954 13.0995 10 11.995 10C10.8904 10 9.99498 10.8954 9.99498 12C9.99498 13.1046 10.8904 14 11.995 14C13.0995 14 13.995 13.1046 13.995 12Z"></path>
+              <path d="M11.995 4V2M11.995 20V22M15.9957 5.0693L16.9957 3.33725M6.99566 20.6578L10.9967 13.7248M18.9257 7.99558L20.6577 6.99558M5.06929 15.9956L3.33724 16.9956M22 11.9949L13.995 11.9949M4.00003 11.9949H2.00003M18.9307 15.9955L20.6628 16.9955M5.07431 7.99554L3.34226 6.99554M16.0044 18.9256L17.0044 20.6577M7.00437 3.33718L10.9278 10.1435"></path>
+            </svg>
+          </button>
+          <button id="thinkletCloseButton" class="toolbarButton" type="button" title="Close Thinklet">
+            <span>Close Thinklet</span>
+          </button>
+        </div>
+      </div>
+      <iframe id="thinkletFrame" title="Thinklet AI chat"
+        allow="clipboard-read; clipboard-write; microphone"></iframe>
+    </aside>
+
+    <div id="thinkletBackdrop" class="promo-modal-overlay" hidden></div>
+
+    <div id="thinkletSelectionMenu" role="menu" hidden>
+      <button id="thinkletAskSelectionButton" type="button" role="menuitem">Ask AI</button>
+    </div>
 
     <div id="dialogContainer">
       <dialog id="passwordDialog">

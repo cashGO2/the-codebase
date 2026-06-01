@@ -6,7 +6,16 @@ const Fuse = require('fuse.js');
 // Load environment variables
 require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
 
-const API_KEY = process.env.OPENROUTER_API_KEY || process.env.NETLIFY_OPENROUTER_API_KEY;
+const API_KEY = process.env.OPENROUTER_API_KEY;
+const MCP_BASE_URL = process.env.MCP_BASE_URL || 'https://mcp.getmaterio.app';
+const MCP_SNAP_SEARCH_PATH = process.env.MCP_SNAP_SEARCH_PATH;
+const MCP_JSONRPC_PATH = process.env.MCP_JSONRPC_PATH || MCP_SNAP_SEARCH_PATH || '/mcp';
+const MCP_AI_SEARCH_ONLY = process.env.MCP_AI_SEARCH_ONLY === 'true';
+const MCP_TIMEOUT_MS = Number(process.env.MCP_TIMEOUT_MS || 8000);
+// Self-hosted HF Spaces endpoints (optional, used in parallel with OpenRouter)
+const HF_TOKEN = process.env.HF_TOKEN || '';
+const HF_LLM_URL = process.env.HF_LLM_URL || '';
+const HF_RERANKER_URL = process.env.HF_RERANKER_URL || '';
 
 // ============= CONTENT SAFETY FILTER =============
 
@@ -102,25 +111,86 @@ function validateSearchQuery(query) {
     return { valid: true };
 }
 
+function extractCoreQuery(query) {
+    if (!query || typeof query !== 'string') return '';
+
+    const original = query.trim();
+    if (!original) return '';
+
+    const normalized = original
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    if (!normalized) return original;
+
+    let cleaned = normalized;
+    const phrasePatterns = [
+        /\bthat one\b/g,
+        /\bthis one\b/g,
+        /\bthat pdf\b/g,
+        /\bthis pdf\b/g,
+        /\bthe pdf\b/g,
+        /\bpdf with\b/g,
+        /\bpdf about\b/g,
+        /\bcontent about\b/g,
+        /\bcontent on\b/g,
+        /\bnotes on\b/g,
+        /\bnotes about\b/g,
+        /\blooking for\b/g,
+        /\bi want\b/g,
+        /\bi need\b/g,
+        /\bcan you\b/g,
+        /\bplease\b/g,
+        /\bpls\b/g,
+        /\bshow me\b/g,
+        /\bgive me\b/g,
+        /\bfind me\b/g,
+        /\bneed help with\b/g
+    ];
+
+    for (const pattern of phrasePatterns) {
+        cleaned = cleaned.replace(pattern, ' ');
+    }
+
+    cleaned = cleaned.replace(
+        /\b(pdf|notes|note|material|materials|content|chapter|unit|module|topic|document|file|with|on|about|for|of|the|a|an|one|that|this|please|pls|show|give|find|need|want|looking|help|info|information)\b/g,
+        ' '
+    );
+
+    cleaned = cleaned.replace(/\s+/g, ' ').trim();
+    if (!cleaned) return original;
+
+    const keepShort = new Set([
+        'ai', 'os', 'db', 'cn', 'ml', 'dl', 'nlp', 'svm', 'da', 'ds', 'mad', 'ctsd', 'coa', 'cd', 'cns', 'ip', 'se', 'cnip', 'daa', 'dsa', 'iot', 'ui', 'ux', 'qa', 'api', 'dt', 'es', 'eee', 'bee', 'de', 'oopj', 'oop', 'epj', 'daa', 'dwdm', 'gcf', 'cc', 'hpc', 'qr'
+    ]);
+
+    const tokens = cleaned
+        .split(' ')
+        .filter(token => token.length >= 3 || keepShort.has(token));
+
+    const core = tokens.join(' ').trim();
+    return core || original;
+}
+
 // Import models from chat.js
 const chatModule = require('./chat.js');
 // Extract MODELS if it's exported, otherwise fallback to hardcoded list
 const GENERAL_MODELS = [
-    'openai/gpt-oss-20b:free',
-    'google/gemma-3-27b-it:free',
-    'meta-llama/llama-4-maverick:free',
+    'openai/gpt-oss-120b:free',
+    'google/gemma-4-31b-it:free',
     'meta-llama/llama-3.3-70b-instruct:free',
-    'google/gemini-2.0-flash-exp:free',
     'z-ai/glm-4.5-air:free',
-    'moonshotai/kimi-k2:free',
-    'mistralai/mistral-small-3.1-24b-instruct:free',
-    'deepseek/deepseek-chat-v3-0324:free',
-    'minimax/minimax-m2:free'
+    'deepseek/deepseek-v4-flash:free',
+    'minimax/minimax-m2.5:free',
+    'nvidia/nemotron-3-nano-30b-a3b:free',
+    'openrouter/free'
 ];
 
 // CDN URLs for resource library
 const RESOURCE_LIB_URLS = {
-    production: `https://cdn-materioa.vercel.app/databases/beta/resource.lib.json`,
+    production: `https://cdn.getmaterio.app/databases/beta/resource.lib.json`,
     local: 'http://localhost:8080/databases/beta/resource.lib.json'
 };
 
@@ -167,6 +237,297 @@ async function fetchResourceLibrary() {
 }
 
 // ============= SEARCH ALGORITHMS =============
+
+// ---------------------------------------------------------------------------
+// STATIC ABBREVIATION MAP
+// Highest-confidence signal. Maps short codes → full names used in the lib.
+// Keys: lowercase. Values: canonical form to match against subject/category.
+// ---------------------------------------------------------------------------
+const SUBJECT_ABBR_MAP = {
+    'os': 'Operating System',
+    'cn': 'Computer Networks',
+    'cnip': 'Computer Networks and Internet Protocol',
+    'se': 'Software Engineering',
+    'de': 'Digital Electronics',
+    'bee': 'Basic Electrical Engineering',
+    'eee': 'Electrical and Electronic Engineering',
+    'gcf': 'Global Cloud Fundamentals',
+    'ctsd': 'Computational Thinking and Structure Design',
+    'pp': 'Principles of Programming',
+    'dm': 'Discrete Mathematics',
+    'be': 'Business Economics',
+    'dwdm': 'Distributed and Wide Area Network',
+    'ppfsd': 'Programming in Python with Full Stack',
+    'ml': 'Machine Learning',
+    'dl': 'Deep Learning',
+    'daa': 'Design and Analysis of Algorithms',
+    'dsa': 'Data Structures and Algorithms',
+    'ds': 'Data Structures',
+    'da': 'Data Analytics',
+    'dadv': 'Data Analytics and Data Visualization',
+    'dbms': 'Database Management System',
+    'db': 'Database',
+    'ai': 'Artificial Intelligence',
+    'nlp': 'Natural Language Processing',
+    'iot': 'Internet of Things',
+    'epj': 'Enterprise Java Programming',
+    'toc': 'Theory of Computation',
+    'cd': 'Compiler Design',
+    'ppl': 'Principles of Programming Languages',
+    'flat': 'Formal Languages and Automata Theory',
+    'cg': 'Computer Graphics',
+    'is': 'Information Security',
+    'cc': 'Cloud Computing',
+    'hpc': 'High Performance Computing',
+    'mswd': 'MEAN Stack Web Development',
+    'cs': 'Cyber Security'
+};
+
+const CATEGORY_ABBR_MAP = {
+    'qb': 'Question Bank',
+    'qp': ['Previous Year Questions', 'Question Paper'],
+    'pyq': 'Previous Year Questions',
+    'lab': 'Lab Manual',
+    'ppt': 'Presentations',
+    'ch': 'Chapters',
+    'chap': 'Chapters',
+    'unit': 'Chapters',  // many libs use "unit" as chapter equivalent
+    'asgn': 'Assignments',
+    'asn': 'Assignments',
+    'assign': 'Assignments',
+    'notes': 'Chapters',
+};
+
+// Discovery query detection: these signal zero-topic intent
+const DISCOVERY_PHRASES = [
+    'random', 'suggest', 'surprise me', 'anything',
+    'where do i start', 'where to start', 'get started',
+    'what should i', 'what to study', 'what next',
+    'recommend', 'pick for me', "don't know", 'dont know',
+    "i don't know", 'no idea', 'help me choose', 'something new',
+];
+
+/**
+ * Detect if a query is a discovery / zero-keyword request.
+ * Returns true when the query carries no extractable topic.
+ */
+function isDiscoveryQuery(query) {
+    if (!query) return false;
+    const q = query.toLowerCase().trim();
+    return DISCOVERY_PHRASES.some(phrase => q.includes(phrase));
+}
+
+/**
+ * Pick a random topic from the user's selected semester.
+ * Falls back to a random semester if the provided one isn't in the library.
+ * Prefers Chapter/unit categories over QP/Lab.
+ */
+function pickDiscoveryResult(resourceLib, preferredSemester) {
+    if (!resourceLib || typeof resourceLib !== 'object') return null;
+
+    const semKeys = Object.keys(resourceLib);
+    if (semKeys.length === 0) return null;
+
+    // Use preferred semester if valid, else pick first available
+    const semester = (preferredSemester && resourceLib[preferredSemester])
+        ? preferredSemester
+        : semKeys[0];
+
+    const subjects = resourceLib[semester];
+    const subjectNames = Object.keys(subjects || {});
+    if (subjectNames.length === 0) return null;
+
+    // Shuffle subjects and pick the first that has chapter-like content
+    const shuffled = [...subjectNames].sort(() => Math.random() - 0.5);
+
+    for (const subjectName of shuffled) {
+        const categories = subjects[subjectName];
+        if (!Array.isArray(categories)) continue;
+
+        // Prefer chapter/unit categories
+        const preferred = categories.find(c =>
+            c && c.type && /chapter|unit|module/i.test(c.type) && Array.isArray(c.content) && c.content.length > 0
+        );
+        const fallback = categories.find(c =>
+            c && Array.isArray(c.content) && c.content.length > 0
+        );
+
+        const category = preferred || fallback;
+        if (!category) continue;
+
+        const items = category.content.filter(Boolean);
+        if (items.length === 0) continue;
+
+        const topic = items[Math.floor(Math.random() * items.length)];
+
+        return {
+            semester,
+            subject: subjectName,
+            category: category.type,
+            topic,
+            score: 100,
+            matchType: 'discovery',
+            isDiscovery: true,
+        };
+    }
+
+    return null;
+}
+
+// ---------------------------------------------------------------------------
+// BM25 SCORER
+// Pure in-memory text ranking. No network, no external deps.
+// Replaces Fuse.js as the primary scorer for keyword queries.
+// ---------------------------------------------------------------------------
+
+function tokenize(text) {
+    if (!text) return [];
+    return text
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .split(/\s+/)
+        .filter(t => t.length >= 2);
+}
+
+/**
+ * Build BM25 corpus statistics from the search index.
+ * Call once after building the index; cache the result.
+ */
+function buildBm25Corpus(searchIndex) {
+    const N = searchIndex.length;
+    const df = {}; // document frequency per term
+    let totalLen = 0;
+
+    const docs = searchIndex.map(item => {
+        // Combine all searchable text for this document, weighted
+        const text = [
+            item.subject, item.subject, item.subject,   // weight ×3
+            item.subjectAbbr, item.subjectAbbr,         // weight ×2
+            item.category, item.category,               // weight ×2
+            item.item, item.item, item.item,             // weight ×3
+            item.itemAbbr,
+            item.searchText
+        ].join(' ');
+
+        const tokens = tokenize(text);
+        const termFreq = {};
+        for (const t of tokens) {
+            termFreq[t] = (termFreq[t] || 0) + 1;
+        }
+        totalLen += tokens.length;
+
+        // Update document frequency
+        for (const t of Object.keys(termFreq)) {
+            df[t] = (df[t] || 0) + 1;
+        }
+
+        return { item, termFreq, length: tokens.length };
+    });
+
+    const avgLen = N > 0 ? totalLen / N : 1;
+    return { docs, df, N, avgLen };
+}
+
+/**
+ * Score a single document against a query using BM25.
+ * k1=1.5, b=0.75 are standard values.
+ */
+function bm25Score(queryTokens, doc, corpus, k1 = 1.5, b = 0.75) {
+    let score = 0;
+    for (const term of queryTokens) {
+        const tf = doc.termFreq[term] || 0;
+        if (tf === 0) continue;
+        const df = corpus.df[term] || 0;
+        const idf = Math.log((corpus.N - df + 0.5) / (df + 0.5) + 1);
+        const tfNorm = (tf * (k1 + 1)) / (tf + k1 * (1 - b + b * doc.length / corpus.avgLen));
+        score += idf * tfNorm;
+    }
+    return score;
+}
+
+/**
+ * Run BM25 search over the index.
+ * Returns results sorted by score, with scores normalized to 0-100.
+ */
+function searchBm25(queryTokens, corpus, expandedSubject, expandedCategory, limit = 20) {
+    if (queryTokens.length === 0) return [];
+
+    const scored = corpus.docs.map(doc => {
+        let score = bm25Score(queryTokens, doc, corpus);
+
+        // Hard boost: if the static abbreviation map resolved to a subject,
+        // items from that subject get a strong multiplier.
+        if (expandedSubject) {
+            const subjectLower = doc.item.subject?.toLowerCase() || '';
+            const expandedLower = expandedSubject.toLowerCase();
+            if (subjectLower.includes(expandedLower) || expandedLower.includes(subjectLower)) {
+                score *= 3.5;
+            }
+        }
+
+        // Category boost
+        if (expandedCategory) {
+            const catLower = doc.item.category?.toLowerCase() || '';
+            const expCatLower = expandedCategory.toLowerCase();
+            if (catLower.includes(expCatLower) || expCatLower.includes(catLower)) {
+                score *= 2.5;
+            }
+        }
+
+        return { item: doc.item, rawScore: score };
+    });
+
+    // Sort and normalize
+    scored.sort((a, b) => b.rawScore - a.rawScore);
+
+    const maxScore = scored[0]?.rawScore || 1;
+    if (maxScore <= 0) return [];
+
+    return scored
+        .filter(r => r.rawScore > 0)
+        .slice(0, limit)
+        .map(r => ({
+            semester: r.item.semester,
+            subject: r.item.subject,
+            category: r.item.category,
+            topic: r.item.item,
+            score: Math.min(100, Math.round((r.rawScore / maxScore) * 100)),
+            matchType: 'bm25'
+        }));
+}
+
+/**
+ * Expand query tokens using the static abbreviation maps.
+ * Returns { expandedTokens, expandedSubject, expandedCategory }
+ */
+function expandQueryWithAbbr(queryTokens) {
+    const expandedTokens = [];
+    let expandedSubject = null;
+    let expandedCategory = null;
+
+    for (const token of queryTokens) {
+        const subjectExpansion = SUBJECT_ABBR_MAP[token];
+        const categoryExpansion = CATEGORY_ABBR_MAP[token];
+
+        if (subjectExpansion) {
+            expandedSubject = subjectExpansion;
+            // Add all tokens from the expanded name for BM25
+            expandedTokens.push(...tokenize(subjectExpansion));
+        } else if (categoryExpansion) {
+            expandedCategory = categoryExpansion;
+            expandedTokens.push(...tokenize(categoryExpansion));
+        } else {
+            expandedTokens.push(token);
+        }
+    }
+
+    // Deduplicate
+    return {
+        expandedTokens: [...new Set(expandedTokens)],
+        expandedSubject,
+        expandedCategory
+    };
+}
 
 /**
  * Generate common abbreviations for a text
@@ -459,7 +820,11 @@ function handleDirectNavigation(query, resourceLib) {
 }
 
 /**
- * Search through the resource library using Fuse.js
+ * 4-layer search pipeline:
+ * 1. Direct navigation  (ml ch3, os unit 1)   — regex match, score=100
+ * 2. BM25 with abbreviation expansion         — primary keyword scorer
+ * 3. Fuse.js                                  — typo / fuzzy fallback
+ * Results are merged, deduped, and sorted.
  */
 async function searchResources(query, threshold = 0.4, limit = 20) {
     try {
@@ -470,169 +835,665 @@ async function searchResources(query, threshold = 0.4, limit = 20) {
             return [];
         }
 
-        // Check for direct navigation pattern (e.g., "ml ch3")
+        // Layer 1: Direct navigation (e.g. "ml ch3")
         const directResult = handleDirectNavigation(query, resourceLib);
 
         const searchIndex = buildSearchIndex(resourceLib);
-
         if (searchIndex.length === 0) {
-            console.error('Search index is empty - no resources indexed');
-            return [];
+            console.error('Search index is empty');
+            return directResult ? [directResult] : [];
         }
 
         console.log(`Search index built with ${searchIndex.length} items`);
 
-        // Fuse.js configuration - optimized for subject+item matching
-        const fuseOptions = {
-            keys: [
-                // Subject matching (high priority)
-                { name: 'subjectLower', weight: 0.25 },
-                { name: 'subjectAbbr', weight: 0.35 },       // Boost abbreviation matching
-                { name: 'subjectVariations', weight: 0.2 },
+        // ---- Layer 2: BM25 with static abbreviation expansion ----
+        const rawTokens = tokenize(query);
+        const { expandedTokens, expandedSubject, expandedCategory } = expandQueryWithAbbr(rawTokens);
 
-                // Item matching (high priority)
-                { name: 'itemLower', weight: 0.25 },
-                { name: 'itemAbbr', weight: 0.2 },
-                { name: 'itemVariations', weight: 0.15 },
+        const corpus = buildBm25Corpus(searchIndex);
+        const bm25Results = searchBm25(expandedTokens, corpus, expandedSubject, expandedCategory, limit * 2);
 
-                // Category matching (lower priority)
-                { name: 'categoryLower', weight: 0.1 },
-                { name: 'categoryAbbr', weight: 0.05 },
+        // ---- Layer 3: Fuse.js fallback (for typos when BM25 is weak) ----
+        // Only run Fuse if the top BM25 score is below a confidence threshold
+        const bm25Confident = bm25Results.length > 0 && bm25Results[0].score >= 60;
 
-                // Full text search (fallback)
-                { name: 'searchText', weight: 0.1 }
-            ],
-            threshold: threshold || 0.5, // More lenient matching
-            distance: 100,
-            minMatchCharLength: 2,
-            ignoreLocation: true,
-            includeScore: true,
-            useExtendedSearch: true,
-            shouldSort: true,
-            findAllMatches: true
-        };
-
-        const fuse = new Fuse(searchIndex, fuseOptions);
-        const fuseResults = fuse.search(query);
-
-        // Normalize query for intelligent matching
-        const queryLower = query.toLowerCase().trim();
-        const queryWords = queryLower.split(/\s+/).filter(w => w.length > 0);
-
-        // Transform Fuse.js results with SMART context-aware boosting
-        const results = fuseResults.map(result => {
-            const item = result.item;
-            let score = Math.round((1 - result.score) * 100); // Base Fuse.js score (0-100)
-
-            // Generate context data
-            const subjectAbbrs = generateAbbreviations(item.subject);
-            const itemAbbrs = generateAbbreviations(item.item);
-            const categoryAbbrs = generateAbbreviations(item.category);
-
-            // Calculate individual match scores using Jaro-Winkler + abbreviation lookup
-            const subjectMatchScore = calculateMatchScore(queryLower, item.subject, subjectAbbrs);
-            const itemMatchScore = calculateMatchScore(queryLower, item.item, itemAbbrs);
-            const categoryMatchScore = calculateMatchScore(queryLower, item.category, categoryAbbrs);
-
-            // CONTEXT BOOSTING LOGIC - Multi-word query analysis
-            if (queryWords.length === 1) {
-                // Single word query - prioritize abbreviation matches
-                const word = queryWords[0];
-
-                if (subjectAbbrs.includes(word)) {
-                    // Strong boost for subject abbreviation match
-                    score = Math.max(score, 75);
-                    if (itemAbbrs.includes(word)) {
-                        score = Math.min(100, score + 15); // Extra boost if item also matches
-                    }
-                } else if (itemAbbrs.includes(word)) {
-                    // Item abbreviation match but not subject - moderate boost
-                    score = Math.min(100, score + 10);
-                } else if (!subjectAbbrs.includes(word) && !itemAbbrs.includes(word)) {
-                    // No abbreviation match at all - penalize to prioritize exact abbreviations
-                    score = Math.round(score * 0.7); // 30% penalty
-                }
-            } else if (queryWords.length === 2) {
-                // Two-word query (most common: "se intro", "dadv qb", etc.)
-                const [word1, word2] = queryWords;
-
-                // Check if word1 is subject abbreviation
-                const isSubjectAbbr = subjectAbbrs.includes(word1);
-
-                // Check if word2 matches item or category
-                const word2MatchesItem = itemAbbrs.includes(word2) ||
-                    item.itemLower.includes(word2) ||
-                    jaroWinkler(word2, item.itemLower) > 0.8;
-
-                const word2MatchesCategory = categoryAbbrs.includes(word2) ||
-                    item.categoryLower.includes(word2) ||
-                    ((word2 === 'qb' || word2 === 'qp' || word2 === 'pyq') && (item.categoryLower.includes('question') || item.categoryLower.includes('paper')));
-
-                // STRONG BOOST: Subject abbreviation + item/category keyword
-                if (isSubjectAbbr && word2MatchesItem) {
-                    score = Math.max(score, 85); // Very high priority
-                    score = Math.min(100, score + 15); // Extra boost
-                } else if (isSubjectAbbr && word2MatchesCategory) {
-                    score = Math.max(score, 75); // High priority
-                    score = Math.min(100, score + 15);
-                } else if (isSubjectAbbr) {
-                    score = Math.max(score, 60); // Moderate priority
-                    score = Math.min(100, score + 10);
-                }
-
-                // Penalize if subject doesn't match abbreviation but item does
-                if (!isSubjectAbbr && word2MatchesItem) {
-                    // Only give small boost if subject isn't the abbreviation target
-                    score = Math.min(score + 5, 50); // Cap at 50 to keep below true matches
-                }
-            } else {
-                // Multi-word query (3+ words) - use combined scoring
-                const combinedScore = (subjectMatchScore * 0.5) + (itemMatchScore * 0.3) + (categoryMatchScore * 0.2);
-                score = Math.max(score, Math.round(combinedScore));
-            }
-
-            return {
-                semester: item.semester,
-                subject: item.subject,
-                category: item.category,
-                topic: item.item, // Changed from 'item' to 'topic' to match form field
-                score: Math.min(100, score), // Ensure max 100
-                matchType: score >= 90 ? 'exact' :
-                    score >= 75 ? 'high' :
-                        score >= 60 ? 'medium' : 'low'
+        let fuseResults = [];
+        if (!bm25Confident) {
+            const fuseOptions = {
+                keys: [
+                    { name: 'subjectLower', weight: 0.25 },
+                    { name: 'subjectAbbr', weight: 0.35 },
+                    { name: 'subjectVariations', weight: 0.2 },
+                    { name: 'itemLower', weight: 0.25 },
+                    { name: 'itemAbbr', weight: 0.2 },
+                    { name: 'itemVariations', weight: 0.15 },
+                    { name: 'categoryLower', weight: 0.1 },
+                    { name: 'categoryAbbr', weight: 0.05 },
+                    { name: 'searchText', weight: 0.1 }
+                ],
+                threshold: threshold || 0.5,
+                distance: 100,
+                minMatchCharLength: 2,
+                ignoreLocation: true,
+                includeScore: true,
+                useExtendedSearch: true,
+                shouldSort: true,
+                findAllMatches: true
             };
-        });
 
-        // Re-sort after intelligent boosting
-        results.sort((a, b) => b.score - a.score);
+            const fuse = new Fuse(searchIndex, fuseOptions);
+            const raw = fuse.search(query);
 
-        // Add direct result to the top if found
+            fuseResults = raw.map(result => {
+                const item = result.item;
+                const score = Math.round((1 - result.score) * 70); // cap Fuse at 70 — it's a fallback
+                return {
+                    semester: item.semester,
+                    subject: item.subject,
+                    category: item.category,
+                    topic: item.item,
+                    score: Math.min(70, score),
+                    matchType: 'fuzzy'
+                };
+            });
+        }
+
+        // ---- Merge BM25 + Fuse, dedup, sort ----
+        const seen = new Set();
+        const merged = [];
+
+        for (const r of [...bm25Results, ...fuseResults]) {
+            const key = `${r.semester}|${r.subject}|${r.category}|${r.topic}`;
+            if (seen.has(key)) continue;
+            seen.add(key);
+
+            // Re-label matchType based on final score
+            merged.push({
+                ...r,
+                matchType: r.score >= 90 ? 'exact' : r.score >= 75 ? 'high' : r.score >= 60 ? 'medium' : 'low'
+            });
+        }
+
+        merged.sort((a, b) => b.score - a.score);
+
+        // Insert direct nav result at the top (remove any duplicate)
         if (directResult) {
-            // Remove any lower-scored duplicate of the same item
-            const dedupedResults = results.filter(r =>
+            const dedupedMerged = merged.filter(r =>
                 !(r.subject === directResult.subject &&
                     r.topic === directResult.topic &&
                     r.category === directResult.category)
             );
-
-            // Add direct match at the beginning
-            dedupedResults.unshift(directResult);
-            return dedupedResults.slice(0, limit);
+            dedupedMerged.unshift(directResult);
+            return dedupedMerged.slice(0, limit);
         }
 
-        return results.slice(0, limit);
+        return merged.slice(0, limit);
     } catch (error) {
         console.error('Error in searchResources:', error);
         throw error;
     }
 }
 
+function normalizeSearchText(value) {
+    return String(value || '')
+        .toLowerCase()
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function topicMatches(a, b) {
+    const left = normalizeSearchText(a);
+    const right = normalizeSearchText(b);
+    if (!left || !right) return false;
+    return left === right || left.includes(right) || right.includes(left);
+}
+
+function relevanceFromSimilarity(similarity) {
+    if (typeof similarity !== 'number' || Number.isNaN(similarity)) return 'low';
+    if (similarity >= 0.75) return 'high';
+    if (similarity >= 0.6) return 'medium';
+    return 'low';
+}
+
+function topicScoreFromContent(content, topic) {
+    const contentText = normalizeSearchText(content);
+    const topicText = normalizeSearchText(topic);
+
+    if (!contentText || !topicText) return 0;
+
+    const topicTokens = topicText.split(' ').filter(token => token.length >= 3);
+    if (topicTokens.length === 0) return 0;
+
+    let matched = 0;
+    for (const token of topicTokens) {
+        if (contentText.includes(token)) {
+            matched += 1;
+        }
+    }
+
+    return matched / topicTokens.length;
+}
+
+async function queryMcpSnapSearch(query, semester, subject) {
+    if (!MCP_BASE_URL) {
+        throw new Error('MCP base URL not configured');
+    }
+
+    const base = MCP_BASE_URL.replace(/\/$/, '');
+    const url = new URL(`${base}${MCP_JSONRPC_PATH}`);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), MCP_TIMEOUT_MS);
+
+    try {
+        const payload = {
+            jsonrpc: '2.0',
+            id: `snapsearch-${Date.now()}`,
+            method: 'tools/call',
+            params: {
+                name: 'SnapSearch',
+                arguments: {
+                    query,
+                    ...(semester ? { semester } : {}),
+                    ...(subject ? { subject } : {}),
+                    results_per_page: 20
+                }
+            }
+        };
+
+        const response = await fetch(url.toString(), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json, text/event-stream'
+            },
+            body: JSON.stringify(payload),
+            signal: controller.signal
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text().catch(() => '');
+            throw new Error(`MCP JSON-RPC error: ${response.status} ${errorText}`);
+        }
+
+        const data = await response.json();
+        if (data?.error) {
+            const code = data.error.code ?? 'unknown';
+            const message = data.error.message ?? 'Unknown error';
+            throw new Error(`MCP JSON-RPC error: ${code} ${message}`);
+        }
+
+        const text = data?.result?.content?.find(item => item?.type === 'text')?.text
+            ?? data?.result?.content?.[0]?.text;
+        if (!text || typeof text !== 'string') {
+            throw new Error('Invalid MCP snap-search response');
+        }
+
+        let parsed;
+        try {
+            parsed = JSON.parse(text);
+        } catch {
+            if (/no results found/i.test(text)) {
+                return [];
+            }
+            throw new Error('Invalid MCP snap-search response');
+        }
+
+        const items = Array.isArray(parsed?.items)
+            ? parsed.items
+            : Array.isArray(parsed?.results)
+                ? parsed.results
+                : Array.isArray(parsed)
+                    ? parsed
+                    : null;
+
+        if (!items) {
+            throw new Error('Invalid MCP snap-search response');
+        }
+
+        return items.map(item => ({
+            topic: item.topic,
+            subject: item.subject,
+            similarity: item.similarity,
+            content: item.content ?? item.excerpt ?? ''
+        }));
+    } finally {
+        clearTimeout(timeoutId);
+    }
+}
+
+function flattenResourceLibrary(resourceLib) {
+    if (!resourceLib || typeof resourceLib !== 'object') return [];
+
+    const items = [];
+    Object.entries(resourceLib).forEach(([semester, subjects]) => {
+        if (!subjects || typeof subjects !== 'object') return;
+
+        Object.entries(subjects).forEach(([subjectName, categories]) => {
+            if (!Array.isArray(categories)) return;
+
+            categories.forEach(category => {
+                if (!category || !category.type || !Array.isArray(category.content)) return;
+
+                category.content.forEach(topic => {
+                    if (!topic) return;
+
+                    items.push({
+                        semester,
+                        subject: subjectName,
+                        category: category.type,
+                        topic
+                    });
+                });
+            });
+        });
+    });
+
+    return items;
+}
+
+function buildMcpRankings(query, searchResults, snapResults, resourceLib, limit = 10) {
+    if (!Array.isArray(snapResults)) return [];
+
+    const baseResults = Array.isArray(searchResults) && searchResults.length > 0
+        ? searchResults
+        : flattenResourceLibrary(resourceLib);
+
+    if (!Array.isArray(baseResults) || baseResults.length === 0) return [];
+
+    const ranked = [];
+    const seen = new Set();
+
+    const sortedSnap = [...snapResults].sort((a, b) => (b.similarity || 0) - (a.similarity || 0));
+
+    for (const snap of sortedSnap) {
+        if (!snap || !snap.subject || !snap.topic) continue;
+
+        let matches = baseResults.filter(result =>
+            topicMatches(result.subject, snap.subject) &&
+            topicMatches(result.topic, snap.topic)
+        );
+
+        if (matches.length === 0 && snap.content) {
+            const subjectMatches = baseResults.filter(result =>
+                topicMatches(result.subject, snap.subject)
+            );
+
+            const scored = subjectMatches
+                .map(result => {
+                    const contentScore = topicScoreFromContent(snap.content, result.topic);
+                    const topicScore = snap.topic
+                        ? jaroWinkler(normalizeSearchText(snap.topic), normalizeSearchText(result.topic))
+                        : 0;
+                    const combined = Math.max(contentScore, topicScore);
+
+                    return {
+                        result,
+                        score: combined
+                    };
+                })
+                .filter(item => item.score >= 0.35)
+                .sort((a, b) => b.score - a.score)
+                .slice(0, 2)
+                .map(item => item.result);
+
+            matches = scored;
+        }
+
+        for (const match of matches) {
+            const key = `${match.semester}|${match.subject}|${match.category}|${match.topic}`;
+            if (seen.has(key)) continue;
+            seen.add(key);
+
+            ranked.push({
+                semester: match.semester,
+                subject: match.subject,
+                category: match.category,
+                topic: match.topic,
+                relevance: relevanceFromSimilarity(snap.similarity),
+                explanation: `Text match for "${query}" in ${match.subject} -> ${match.topic}`
+            });
+
+            if (ranked.length >= limit) return ranked;
+        }
+    }
+
+    return ranked;
+}
+
+// ---------------------------------------------------------------------------
+// INTENT EXTRACTOR
+// Converts garbled / conversational queries into clean keyword(s) for MCP.
+// Rule-based pass runs first (free, ~0ms). LLM pass runs only for vague
+// queries that the rules can't resolve.
+// ---------------------------------------------------------------------------
+
 /**
- * AI-powered search using OpenRouter with automatic model switching on 429 errors
+ * Rule-based intent extraction.
+ * Returns { keywords: string[], subject: string|null, category: string|null, isVague: boolean }
+ */
+function extractIntent(query) {
+    if (!query) return { keywords: [query], subject: null, category: null, isVague: false };
+
+    const lower = query.toLowerCase().trim();
+
+    // Strip filler phrases
+    let cleaned = lower
+        .replace(/\b(that one|this one|the one|that pdf|this pdf|the pdf|pdf with|pdf about|content about|content on|notes on|notes about|looking for|i want|i need|can you|please|pls|show me|give me|find me|need help with|help with|tell me about|give me|find)\b/g, ' ')
+        .replace(/\b(material|materials|document|file|with|about|for|of|the|a|an|one|that|this|please|pls|show|give|find|help|info|information)\b/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    const tokens = cleaned.split(' ').filter(t => t.length >= 2);
+
+    // Check abbreviation map for each token
+    let subject = null;
+    let category = null;
+    const keywords = [];
+
+    for (const token of tokens) {
+        if (SUBJECT_ABBR_MAP[token]) {
+            subject = SUBJECT_ABBR_MAP[token];
+            // Add both short and long form as keywords
+            keywords.push(token, ...tokenize(SUBJECT_ABBR_MAP[token]));
+        } else if (CATEGORY_ABBR_MAP[token]) {
+            category = CATEGORY_ABBR_MAP[token];
+        } else if (token.length >= 3) {
+            keywords.push(token);
+        }
+    }
+
+    // Deduplicate keywords
+    const uniqueKeywords = [...new Set(keywords)];
+
+    // A query is "vague" if we couldn't extract at least 1 meaningful keyword
+    const isVague = uniqueKeywords.length === 0 && !subject;
+
+    // Best MCP query = subject expansion + remaining keywords
+    const mcpKeywords = subject
+        ? [subject, ...uniqueKeywords.filter(k => !tokenize(subject).includes(k))]
+        : uniqueKeywords;
+
+    return {
+        keywords: mcpKeywords.length > 0 ? mcpKeywords : [query],
+        subject,
+        category,
+        isVague
+    };
+}
+
+/**
+ * Call a self-hosted HF Spaces LLM endpoint (OpenAI-compatible API).
+ * Throws if HF_LLM_URL is not set or call fails.
+ */
+async function callHfLlm(systemPrompt, userMessage, timeoutMs = 18000) {
+    if (!HF_LLM_URL) throw new Error('HF_LLM_URL not configured');
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+        const url = HF_LLM_URL.endsWith('/chat') || HF_LLM_URL.endsWith('/v1/chat/completions')
+            ? HF_LLM_URL
+            : `${HF_LLM_URL.replace(/\/$/, '')}/v1/chat/completions`;
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(HF_TOKEN ? { 'Authorization': `Bearer ${HF_TOKEN}` } : {})
+            },
+            body: JSON.stringify({
+                model: 'local',  // HF Spaces ignores this but requires the field
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: userMessage }
+                ],
+                max_tokens: 512,
+                temperature: 0.2
+            }),
+            signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+        if (!response.ok) throw new Error(`HF LLM error: ${response.status}`);
+
+        const data = await response.json();
+        const content = data?.choices?.[0]?.message?.content;
+        if (!content) throw new Error('Empty HF LLM response');
+
+        const parsed = JSON.parse(content);
+        if (!parsed || typeof parsed !== 'object') throw new Error('HF LLM returned non-object');
+        if (!parsed.rankings || !Array.isArray(parsed.rankings)) throw new Error('HF LLM missing rankings');
+        return parsed;
+    } finally {
+        clearTimeout(timeoutId);
+    }
+}
+
+/**
+ * Call OpenRouter with a single model attempt.
+ * Returns the parsed AI response or throws.
+ */
+async function callOpenRouterLlm(model, systemPrompt, userMessage, timeoutMs = 20000) {
+    if (!API_KEY) throw new Error('OpenRouter API key not configured');
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${API_KEY}`,
+                'Content-Type': 'application/json',
+                'HTTP-Referer': 'https://getmaterio.app',
+                'X-Title': 'Materio Search'
+            },
+            body: JSON.stringify({
+                model,
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: userMessage }
+                ],
+                response_format: { type: 'json_object' }
+            }),
+            signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (response.status === 429) throw new Error(`Rate limit: ${model}`);
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            const msg = errData.error?.message || 'Unknown error';
+            if (response.status === 404 && msg.includes('No endpoints found')) {
+                throw new Error(`Model unavailable: ${model}`);
+            }
+            throw new Error(`OpenRouter ${response.status}: ${msg}`);
+        }
+
+        const data = await response.json();
+        if (!data.choices?.[0]?.message) throw new Error('Invalid OpenRouter response structure');
+
+        const parsed = JSON.parse(data.choices[0].message.content);
+        if (!parsed || typeof parsed !== 'object') throw new Error('OpenRouter returned non-object');
+        if (!parsed.rankings || !Array.isArray(parsed.rankings)) throw new Error('OpenRouter missing rankings');
+        return parsed;
+    } finally {
+        clearTimeout(timeoutId);
+    }
+}
+
+/**
+ * Race self-hosted HF LLM against OpenRouter — use whichever responds first.
+ * Falls back gracefully if HF_LLM_URL is not configured.
+ */
+async function callLlmRace(systemPrompt, userMessage) {
+    const promises = [];
+
+    // Self-hosted HF LLM (if configured)
+    if (HF_LLM_URL) {
+        promises.push(
+            callHfLlm(systemPrompt, userMessage).then(r => ({ source: 'hf', result: r }))
+        );
+    }
+
+    // OpenRouter — try first model only (within race; sequential fallback runs after)
+    if (API_KEY && GENERAL_MODELS.length > 0) {
+        promises.push(
+            callOpenRouterLlm(GENERAL_MODELS[0], systemPrompt, userMessage).then(r => ({ source: 'openrouter', result: r }))
+        );
+    }
+
+    if (promises.length === 0) throw new Error('No LLM providers configured');
+
+    // Promise.any: resolves with first success, ignores individual failures
+    try {
+        const { source, result } = await Promise.any(promises);
+        console.log(`LLM response from: ${source}`);
+        return result;
+    } catch {
+        // Promise.any rejects with AggregateError only if ALL promises rejected
+        // Try remaining OpenRouter models sequentially as final fallback
+        if (API_KEY) {
+            let lastErr;
+            for (const model of GENERAL_MODELS.slice(1)) {
+                try {
+                    const result = await callOpenRouterLlm(model, systemPrompt, userMessage);
+                    console.log(`LLM fallback succeeded with model: ${model}`);
+                    return result;
+                } catch (e) {
+                    lastErr = e;
+                    if (!e.message.includes('Rate limit') && !e.message.includes('unavailable') && !e.message.includes('AbortError')) {
+                        throw e; // Non-retryable
+                    }
+                }
+            }
+            throw lastErr || new Error('All OpenRouter models failed');
+        }
+        throw new Error('All LLM providers failed');
+    }
+}
+
+/**
+ * Call HF Spaces Reranker.
+ */
+async function callHfReranker(query, documents, topK = 10) {
+    if (!HF_RERANKER_URL) return null;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+    try {
+        const response = await fetch(HF_RERANKER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(HF_TOKEN ? { 'Authorization': `Bearer ${HF_TOKEN}` } : {})
+            },
+            body: JSON.stringify({
+                query,
+                documents,
+                top_k: topK
+            }),
+            signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+        if (!response.ok) throw new Error(`Reranker error: ${response.status}`);
+
+        const data = await response.json();
+        return data; // Array of { index, score, text }
+    } catch (error) {
+        clearTimeout(timeoutId);
+        console.warn('Reranker failed:', error.message);
+        return null;
+    }
+}
+
+/**
+ * AI-powered search using MCP snap-search, Reranker, and dual-host LLM fallback.
+ * Flow: intent extraction → HF Reranker (if configured) → MCP SnapSearch → (if weak) LLM race
  */
 async function aiSearch(query, searchResults, resourceLib) {
-    if (!API_KEY) {
-        throw new Error('OpenRouter API key not configured');
+    // Step 1: Extract intent to get clean keyword
+    const intent = extractIntent(query);
+    const cleanQuery = intent.keywords.slice(0, 3).join(' ');
+
+    console.log(`Intent extracted: keywords=[${intent.keywords.join(', ')}] subject=${intent.subject} category=${intent.category} vague=${intent.isVague}`);
+
+    // Step 2: Reranker phase (if we have a URL and algorithmic results)
+    if (HF_RERANKER_URL && searchResults && searchResults.length > 0) {
+        try {
+            // Build document strings for reranker
+            const docsToRerank = searchResults.slice(0, 20).map(r =>
+                `${r.subject} ${r.category} ${r.topic}`
+            );
+
+            const rerankerQuery = intent.subject ? `${intent.subject} ${cleanQuery}` : query;
+            console.log(`Calling Reranker with query: "${rerankerQuery}"`);
+
+            const reranked = await callHfReranker(rerankerQuery, docsToRerank, 10);
+
+            if (reranked && Array.isArray(reranked) && reranked.length > 0) {
+                // Map back to our search result objects
+                const finalRankings = reranked.map(item => {
+                    const originalResult = searchResults[item.index];
+                    return {
+                        semester: originalResult.semester,
+                        subject: originalResult.subject,
+                        category: originalResult.category,
+                        topic: originalResult.topic,
+                        relevance: item.score > 0.8 ? 'high' : item.score > 0.4 ? 'medium' : 'low',
+                        explanation: `Reranker score: ${(item.score * 100).toFixed(1)}%`
+                    };
+                }).filter(r => r.relevance !== 'low'); // Filter out low relevance
+
+                if (finalRankings.length > 0) {
+                    return {
+                        intent: `Reranked semantic match for "${query}"`,
+                        rankings: finalRankings,
+                        suggestions: []
+                    };
+                }
+            }
+        } catch (err) {
+            console.warn('Reranker step failed, falling back to MCP:', err.message);
+        }
+    }
+
+    // Step 3: MCP SnapSearch fallback
+    try {
+        let snapQuery = cleanQuery || query;
+        let snapResults = await queryMcpSnapSearch(snapQuery, undefined, intent.subject || undefined);
+
+        // Retry with raw query if clean query returned nothing
+        if ((!snapResults || snapResults.length === 0) && snapQuery !== query) {
+            snapQuery = query;
+            snapResults = await queryMcpSnapSearch(snapQuery);
+        }
+
+        const rankings = buildMcpRankings(snapQuery, searchResults, snapResults, resourceLib);
+
+        // If MCP returned useful rankings, skip LLM entirely
+        if (rankings.length > 0) {
+            return {
+                intent: intent.subject
+                    ? `Searching ${intent.subject}${intent.category ? ' → ' + intent.category : ''}`
+                    : `Semantic match for "${snapQuery}"`,
+                rankings,
+                suggestions: []
+            };
+        }
+    } catch (error) {
+        if (MCP_AI_SEARCH_ONLY) throw error;
+        console.warn('MCP SnapSearch failed, falling back to LLM:', error.message);
+    }
+
+    // Step 3: LLM race (HF self-hosted vs OpenRouter) for vague/unresolved queries
+    if (!API_KEY && !HF_LLM_URL) {
+        throw new Error('No LLM provider configured (set OPENROUTER_API_KEY or HF_LLM_URL)');
     }
 
     const allSubjects = Object.values(resourceLib)
@@ -718,132 +1579,8 @@ ${allSubjects}`}
 
 Remember: Only rank items from the search results above. Use exact values for semester/subject/category/topic.`;
 
-    // Try each model in sequence until one succeeds
-    const triedModels = [];
-    let lastError = null;
-    const MAX_RETRIES = 1; // Only try 1 model to stay within 30s Netlify timeout
-    let retryCount = 0;
-
-    for (const model of GENERAL_MODELS) {
-        if (triedModels.includes(model)) continue; // Skip already tried models
-        if (retryCount >= MAX_RETRIES) {
-            console.warn(`Reached maximum retry limit (${MAX_RETRIES}), stopping AI search`);
-            break;
-        }
-
-        triedModels.push(model);
-        retryCount++;
-
-        try {
-            console.log(`Attempting AI search with model: ${model} (attempt ${retryCount}/${MAX_RETRIES})`);
-
-            // Create abort controller for timeout
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 second timeout to stay within Netlify's 30s limit
-
-            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${API_KEY}`,
-                    'Content-Type': 'application/json',
-                    'HTTP-Referer': 'https://materioa.vercel.app',
-                    'X-Title': 'Materio Search'
-                },
-                body: JSON.stringify({
-                    model: model,
-                    messages: [
-                        { role: 'system', content: systemPrompt },
-                        { role: 'user', content: userMessage }
-                    ],
-                    response_format: { type: 'json_object' }
-                }),
-                signal: controller.signal
-            });
-
-            clearTimeout(timeoutId); // Clear timeout on successful response
-
-            if (response.status === 429) {
-                console.warn(`Model ${model} returned 429 (rate limit), trying next model...`);
-                lastError = new Error(`Rate limit exceeded for ${model}`);
-                continue; // Try next model
-            }
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                const errorMsg = `OpenRouter API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`;
-                console.error(errorMsg);
-                lastError = new Error(errorMsg);
-
-                // For 404 "No endpoints found" errors (model unavailable/deprecated), try next model
-                if (response.status === 404 && errorData.error?.message?.includes('No endpoints found')) {
-                    console.warn(`Model ${model} is unavailable (404 - No endpoints found), trying next model...`);
-                    continue;
-                }
-
-                // For 5xx errors, try next model
-                if (response.status >= 500) {
-                    console.warn(`Server error ${response.status}, trying next model...`);
-                    continue;
-                }
-
-                throw new Error(errorMsg);
-            }
-
-            const data = await response.json();
-
-            // Validate response structure
-            if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-                throw new Error('Invalid response structure from OpenRouter');
-            }
-
-            let aiResponse;
-            try {
-                aiResponse = JSON.parse(data.choices[0].message.content);
-            } catch (parseError) {
-                console.error('Failed to parse AI response as JSON:', data.choices[0].message.content);
-                throw new Error('AI returned invalid JSON response');
-            }
-
-            // Validate AI response has required fields
-            if (!aiResponse.rankings || !Array.isArray(aiResponse.rankings)) {
-                console.error('AI response missing rankings array:', aiResponse);
-                throw new Error('AI response missing valid rankings array');
-            }
-
-            // Validate at least one ranking exists
-            if (aiResponse.rankings.length === 0) {
-                console.warn('AI returned empty rankings array');
-                throw new Error('AI returned no rankings');
-            }
-
-            console.log(`Successfully used model: ${model} with ${aiResponse.rankings.length} rankings`);
-            return aiResponse;
-
-        } catch (error) {
-            console.error(`Error with model ${model}:`, error.message);
-            lastError = error;
-
-            // Handle timeout/abort errors
-            if (error.name === 'AbortError') {
-                console.warn(`Request to ${model} timed out, trying next model...`);
-                continue;
-            }
-
-            // If it's not a retryable error, stop trying
-            if (!error.message.includes('429') &&
-                !error.message.includes('rate limit') &&
-                !error.message.includes('timed out') &&
-                !error.message.includes('Server error') &&
-                !error.message.includes('No endpoints found')) {
-                throw error;
-            }
-            // Continue to next model for retryable errors
-        }
-    }
-
-    // If all models failed, throw the last error
-    console.error('All models failed or rate limited');
-    throw lastError || new Error('All models exhausted without success');
+    // Race HF self-hosted LLM vs OpenRouter — fastest response wins
+    return await callLlmRace(systemPrompt, userMessage);
 }
 
 /**
@@ -982,22 +1719,28 @@ module.exports = async (req, res) => {
                 }
             }
 
-            // Run algorithmic search
-            // For AI mode, use more lenient threshold and higher limit to give AI more options to filter
-            const searchThreshold = useAI ? 0.6 : threshold; // More lenient for AI
-            const searchLimit = useAI ? 30 : 20; // More results for AI to filter
-            let algorithmicResults = await searchResources(query, searchThreshold, searchLimit);
-
-            // If AI mode and no results found, try fallback searches for vague queries
-            if (useAI && algorithmicResults.length === 0) {
-                const vaguePhrases = ['what', 'start', 'begin', 'first', 'intro', 'help', 'need', 'show'];
-                const isVagueQuery = vaguePhrases.some(phrase => query.toLowerCase().includes(phrase));
-
-                if (isVagueQuery) {
-                    console.log('Vague query with no results, searching for introduction topics');
-                    algorithmicResults = await searchResources('introduction chapter', 0.6, 30);
+            // Discovery mode: handle zero-keyword queries ("suggest random", "where to start")
+            const semester = req.query.semester || null; // frontend passes selected semester
+            if (isDiscoveryQuery(query)) {
+                const resourceLib = await fetchResourceLibrary();
+                const discoveryResult = pickDiscoveryResult(resourceLib, semester);
+                if (discoveryResult) {
+                    return res.status(200).json({
+                        success: true,
+                        query,
+                        results: [discoveryResult],
+                        count: 1,
+                        method: 'discovery',
+                        aiUsed: false,
+                        isDiscovery: true
+                    });
                 }
             }
+
+            // Run algorithmic search (BM25 primary + Fuse fallback)
+            const searchThreshold = useAI ? 0.6 : threshold;
+            const searchLimit = useAI ? 30 : 20;
+            let algorithmicResults = await searchResources(query, searchThreshold, searchLimit);
 
             // If AI is requested and API key is available
             if (useAI && API_KEY) {
@@ -1036,13 +1779,36 @@ module.exports = async (req, res) => {
                         });
                     }
 
-                    // Pure AI mode but no rankings - fallback to algorithmic
+                    // Pure AI mode but no rankings - return empty AI result
                     if (aiMode === 'pure' && aiResults.rankings.length === 0) {
-                        console.warn('AI returned no rankings, falling back to algorithmic');
-                        throw new Error('AI returned empty rankings');
+                        return res.status(200).json({
+                            success: true,
+                            query,
+                            results: [],
+                            count: 0,
+                            ai: aiResults,
+                            method: 'ai',
+                            aiUsed: true
+                        });
                     }
 
                     // Hybrid mode (default) - merge AI rankings with algorithmic results
+                    if (!aiResults.rankings || aiResults.rankings.length === 0) {
+                        return res.status(200).json({
+                            success: true,
+                            query,
+                            results: algorithmicResults,
+                            count: algorithmicResults.length,
+                            algorithmic: {
+                                results: algorithmicResults,
+                                count: algorithmicResults.length
+                            },
+                            ai: aiResults,
+                            method: 'hybrid',
+                            aiUsed: true
+                        });
+                    }
+
                     const mergedResults = mergeAIRankings(algorithmicResults, aiResults.rankings);
 
                     return res.status(200).json({
@@ -1119,22 +1885,28 @@ module.exports = async (req, res) => {
                 }
             }
 
-            // First, run algorithmic search
-            // For AI mode, use more lenient threshold and higher limit to give AI more options to filter
-            const searchThreshold = useAI ? 0.6 : threshold; // More lenient for AI
-            const searchLimit = useAI ? 30 : 20; // More results for AI to filter
-            let algorithmicResults = await searchResources(query, searchThreshold, searchLimit);
-
-            // If AI mode and no results found, try fallback searches for vague queries
-            if (useAI && algorithmicResults.length === 0) {
-                const vaguePhrases = ['what', 'start', 'begin', 'first', 'intro', 'help', 'need', 'show'];
-                const isVagueQuery = vaguePhrases.some(phrase => query.toLowerCase().includes(phrase));
-
-                if (isVagueQuery) {
-                    console.log('Vague query with no results, searching for introduction topics');
-                    algorithmicResults = await searchResources('introduction chapter', 0.6, 30);
+            // Discovery mode for POST
+            const semester = req.body.semester || null;
+            if (isDiscoveryQuery(query)) {
+                const resourceLib = await fetchResourceLibrary();
+                const discoveryResult = pickDiscoveryResult(resourceLib, semester);
+                if (discoveryResult) {
+                    return res.status(200).json({
+                        success: true,
+                        query,
+                        results: [discoveryResult],
+                        count: 1,
+                        method: 'discovery',
+                        aiUsed: false,
+                        isDiscovery: true
+                    });
                 }
             }
+
+            // Run algorithmic search (BM25 primary + Fuse fallback)
+            const searchThreshold = useAI ? 0.6 : threshold;
+            const searchLimit = useAI ? 30 : 20;
+            let algorithmicResults = await searchResources(query, searchThreshold, searchLimit);
 
             // If AI is requested and we have poor results (or user explicitly wants AI)
             if (useAI && API_KEY) {
@@ -1173,13 +1945,36 @@ module.exports = async (req, res) => {
                         });
                     }
 
-                    // Pure AI mode but no rankings - fallback to algorithmic
+                    // Pure AI mode but no rankings - return empty AI result
                     if (aiMode === 'pure' && aiResults.rankings.length === 0) {
-                        console.warn('AI returned no rankings, falling back to algorithmic');
-                        throw new Error('AI returned empty rankings');
+                        return res.status(200).json({
+                            success: true,
+                            query,
+                            results: [],
+                            count: 0,
+                            ai: aiResults,
+                            method: 'ai',
+                            aiUsed: true
+                        });
                     }
 
                     // Hybrid mode (default) - merge AI rankings with algorithmic results
+                    if (!aiResults.rankings || aiResults.rankings.length === 0) {
+                        return res.status(200).json({
+                            success: true,
+                            query,
+                            results: algorithmicResults,
+                            count: algorithmicResults.length,
+                            algorithmic: {
+                                results: algorithmicResults,
+                                count: algorithmicResults.length
+                            },
+                            ai: aiResults,
+                            method: 'hybrid',
+                            aiUsed: true
+                        });
+                    }
+
                     const mergedResults = mergeAIRankings(algorithmicResults, aiResults.rankings);
 
                     return res.status(200).json({

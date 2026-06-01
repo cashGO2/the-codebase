@@ -45,6 +45,8 @@ include:
 exclude:
   - insightroom
   - insightroom/**
+  - svelte
+  - svelte/**
   - api
   - server
   - node_modules

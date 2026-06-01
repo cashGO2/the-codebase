@@ -38,6 +38,7 @@ const PDFJS_PRECACHE = [
     '/oread/web/viewer.mjs',
     '/oread/web/viewer.css',
     '/oread/web/intelligence.js',
+    '/oread/web/thinklet.js',
     '/oread/web/themesync.css',
     '/oread/web/images/loading-icon.gif'
 ];
@@ -385,6 +386,33 @@ function cleanRedirectedResponse(response) {
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
     const path = url.pathname;
+
+    // Bypass analytics/telemetry endpoints and non-GET requests so they
+    // are forwarded directly to the network (avoids accidental caching
+    // or HTML/offline fallbacks breaking analytics uploads).
+    const analyticsPaths = [
+        '/api/analytics',
+        '/analytics',
+        '/collect',
+        '/gtag/js'
+    ];
+
+    const isAnalytics = analyticsPaths.some(p => path.startsWith(p) || url.href.includes(p) || url.hostname.includes('google-analytics') || url.hostname.includes('analytics'));
+
+    if (event.request.method !== 'GET' || isAnalytics) {
+        event.respondWith(
+            fetch(event.request).catch((err) => {
+                if (url.origin === self.location.origin) {
+                    return caches.match(event.request).then(cached => {
+                        if (cached) return cleanRedirectedResponse(cached);
+                        throw err;
+                    });
+                }
+                throw err;
+            })
+        );
+        return;
+    }
 
     const isOreadAsset = path.startsWith('/oread/') && !path.endsWith('.pdf');
     const isCoreAsset = CORE_ASSETS.includes(path);

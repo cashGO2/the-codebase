@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "node scripts/generate-build-id.js && node scripts/generate-insightroom-fallback.js && bundle exec jekyll build && node scripts/minify-assets.js && node scripts/version-assets.js",
+  "buildCommand": "npm run vercel-build",
   "outputDirectory": "_site",
   "framework": "jekyll",
   "cleanUrls": true,

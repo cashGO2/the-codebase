@@ -759,19 +759,34 @@ async function init() {
   setupTabClickHandlers();
 
   // Check for new content for native notifications
+  // Do an immediate check once (this may prompt for permission). After
+  // that, only enable periodic polling when notifications are enabled and
+  // the user has already granted permission. This avoids frequent network
+  // pings while the user hasn't opted-in.
   requestServiceWorkerContentCheck();
 
-  // Keep polling while app is open.
-  setInterval(requestServiceWorkerContentCheck, 10 * 60 * 1000);
+  if (isNotificationsEnabled() && Notification.permission === 'granted') {
+    // Keep polling at a conservative hourly interval when fully enabled.
+    setInterval(requestServiceWorkerContentCheck, 60 * 60 * 1000);
 
-  // Re-check when user returns or network comes back.
-  window.addEventListener('focus', requestServiceWorkerContentCheck);
-  window.addEventListener('online', requestServiceWorkerContentCheck);
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-      requestServiceWorkerContentCheck();
-    }
-  });
+    // Re-check when user returns or network comes back.
+    window.addEventListener('focus', requestServiceWorkerContentCheck);
+    window.addEventListener('online', requestServiceWorkerContentCheck);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        requestServiceWorkerContentCheck();
+      }
+    });
+  } else {
+    // If notifications are disabled or permission not granted, keep only
+    // lightweight event hooks so a user action can trigger a re-check.
+    window.addEventListener('focus', () => {
+      if (isNotificationsEnabled() && Notification.permission === 'granted') requestServiceWorkerContentCheck();
+    });
+    window.addEventListener('online', () => {
+      if (isNotificationsEnabled() && Notification.permission === 'granted') requestServiceWorkerContentCheck();
+    });
+  }
 }
 
 

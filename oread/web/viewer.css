@@ -4898,6 +4898,14 @@ body.wait::before {
   z-index: 0;
 }
 
+#mainContainer {
+  transition: inset-inline-end 180ms ease;
+}
+
+body.thinkletPanelOpen #mainContainer {
+  inset-inline-end: var(--thinklet-panel-width, 420px);
+}
+
 #viewerContainer:not(.pdfPresentationMode) {
   transition-duration: var(--sidebar-transition-duration);
   transition-timing-function: var(--sidebar-transition-timing-function);
@@ -4906,6 +4914,144 @@ body.wait::before {
 #outerContainer.sidebarOpen #viewerContainer:not(.pdfPresentationMode) {
   inset-inline-start: var(--sidebar-width);
   transition-property: inset-inline-start;
+}
+
+#thinkletPanel {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  width: var(--thinklet-panel-width, 420px);
+  max-width: min(72vw, 760px);
+  min-width: 340px;
+  background: var(--toolbar-bg-color);
+  border-inline-start: 1px solid var(--separator-color);
+  box-shadow: -12px 0 24px rgb(0 0 0 / 0.12);
+  display: flex;
+  flex-direction: column;
+  z-index: 3;
+}
+
+body.thinkletResizing {
+  cursor: ew-resize;
+  user-select: none;
+}
+
+body.thinkletResizing #thinkletFrame {
+  pointer-events: none;
+}
+
+#thinkletPanel[hidden] {
+  display: none;
+}
+
+#thinkletResizeHandle {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: -4px;
+  width: 8px;
+  cursor: ew-resize;
+  z-index: 4;
+}
+
+#thinkletResizeHandle::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 3px;
+  width: 2px;
+  background: transparent;
+  transition: background 120ms ease;
+}
+
+#thinkletResizeHandle:is(:hover, :focus-visible)::before,
+body.thinkletResizing #thinkletResizeHandle::before {
+  background: var(--toolbar-icon-hover-bg-color);
+}
+
+#thinkletPanelHeader {
+  height: var(--toolbar-height);
+  min-height: var(--toolbar-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 12px 6px;
+  border-bottom: 1px solid var(--separator-color);
+  color: var(--main-color);
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.thinkletPanelActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#thinkletSettingsButton .thinkletSettingsIcon {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#thinkletSettingsButton::before {
+  content: none;
+}
+
+#thinkletCloseButton::before {
+  -webkit-mask-image: var(--closing-button-icon);
+  mask-image: var(--closing-button-icon);
+}
+
+#thinkletFrame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  flex: 1;
+  background: Canvas;
+}
+
+#thinkletBackdrop {
+  display: none;
+}
+
+#thinkletSelectionMenu {
+  position: fixed;
+  z-index: 100000;
+  min-width: 132px;
+  padding: 6px;
+  border: 1px solid var(--doorhanger-border-color);
+  border-radius: 8px;
+  background: var(--doorhanger-bg-color);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.2);
+}
+
+#thinkletSelectionMenu[hidden] {
+  display: none;
+}
+
+#thinkletAskSelectionButton {
+  width: 100%;
+  min-height: 32px;
+  border: 0;
+  border-radius: 6px;
+  padding: 0 12px;
+  color: var(--main-color);
+  background: transparent;
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: start;
+  cursor: pointer;
+}
+
+#thinkletAskSelectionButton:is(:hover, :focus-visible) {
+  background: var(--button-hover-color);
+  outline: none;
 }
 
 #sidebarContainer :is(input, button, select) {
@@ -5159,6 +5305,11 @@ body.wait::before {
 #downloadButton::before {
   -webkit-mask-image: var(--toolbarButton-download-icon);
   mask-image: var(--toolbarButton-download-icon);
+}
+
+#thinkletButton::before {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2024%2024%27%20width%3D%2724%27%20height%3D%2724%27%20fill%3D%27none%27%3E%3Cpath%20d%3D%27M14.1972%207.30833L3.51662%2017.9889C2.82779%2018.6777%202.82779%2019.7946%203.51662%2020.4834C4.20545%2021.1722%205.32225%2021.1722%206.01108%2020.4834L16.6917%209.80279L18.4834%208.01108C19.1722%207.32225%2019.1722%206.20545%2018.4834%205.51662C17.7946%204.82779%2016.6777%204.82779%2015.9889%205.51662L14.1972%207.30833ZM16.6917%209.80279L14.1972%207.30833%27%20stroke%3D%27black%27%20stroke-width%3D%272%27%20stroke-linejoin%3D%27round%27/%3E%3Cpath%20d%3D%27M17.9737%2014.0215C17.9795%2013.9928%2018.0205%2013.9928%2018.0263%2014.0215C18.3302%2015.5081%2019.4919%2016.6698%2020.9785%2016.9737C21.0072%2016.9795%2021.0072%2017.0205%2020.9785%2017.0263C19.4919%2017.3302%2018.3302%2018.4919%2018.0263%2019.9785C18.0205%2020.0072%2017.9795%2020.0072%2017.9737%2019.9785C17.6698%2018.4919%2016.5081%2017.3302%2015.0215%2017.0263C14.9928%2017.0205%2014.9928%2016.9795%2015.0215%2016.9737C16.5081%2016.6698%2017.6698%2015.5081%2017.9737%2014.0215Z%27%20stroke%3D%27black%27%20stroke-width%3D%272%27%20stroke-linejoin%3D%27round%27/%3E%3Cpath%20d%3D%27M8.12063%203.30967C8.20503%202.89678%208.79497%202.89678%208.87937%203.30967C9.06576%204.22159%209.77841%204.93424%2010.6903%205.12063C11.1032%205.20503%2011.1032%205.79497%2010.6903%205.87937C9.77841%206.06576%209.06576%206.77841%208.87937%207.69033C8.79497%208.10322%208.20503%208.10322%208.12063%207.69033C7.93424%206.77841%207.22159%206.06576%206.30967%205.87937C5.89678%205.79497%205.89678%205.20503%206.30967%205.12063C7.22159%204.93424%207.93424%204.22159%208.12063%203.30967Z%27%20fill%3D%27black%27/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2024%2024%27%20width%3D%2724%27%20height%3D%2724%27%20fill%3D%27none%27%3E%3Cpath%20d%3D%27M14.1972%207.30833L3.51662%2017.9889C2.82779%2018.6777%202.82779%2019.7946%203.51662%2020.4834C4.20545%2021.1722%205.32225%2021.1722%206.01108%2020.4834L16.6917%209.80279L18.4834%208.01108C19.1722%207.32225%2019.1722%206.20545%2018.4834%205.51662C17.7946%204.82779%2016.6777%204.82779%2015.9889%205.51662L14.1972%207.30833ZM16.6917%209.80279L14.1972%207.30833%27%20stroke%3D%27black%27%20stroke-width%3D%272%27%20stroke-linejoin%3D%27round%27/%3E%3Cpath%20d%3D%27M17.9737%2014.0215C17.9795%2013.9928%2018.0205%2013.9928%2018.0263%2014.0215C18.3302%2015.5081%2019.4919%2016.6698%2020.9785%2016.9737C21.0072%2016.9795%2021.0072%2017.0205%2020.9785%2017.0263C19.4919%2017.3302%2018.3302%2018.4919%2018.0263%2019.9785C18.0205%2020.0072%2017.9795%2020.0072%2017.9737%2019.9785C17.6698%2018.4919%2016.5081%2017.3302%2015.0215%2017.0263C14.9928%2017.0205%2014.9928%2016.9795%2015.0215%2016.9737C16.5081%2016.6698%2017.6698%2015.5081%2017.9737%2014.0215Z%27%20stroke%3D%27black%27%20stroke-width%3D%272%27%20stroke-linejoin%3D%27round%27/%3E%3Cpath%20d%3D%27M8.12063%203.30967C8.20503%202.89678%208.79497%202.89678%208.87937%203.30967C9.06576%204.22159%209.77841%204.93424%2010.6903%205.12063C11.1032%205.20503%2011.1032%205.79497%2010.6903%205.87937C9.77841%206.06576%209.06576%206.77841%208.87937%207.69033C8.79497%208.10322%208.20503%208.10322%208.12063%207.69033C7.93424%206.77841%207.22159%206.06576%206.30967%205.87937C5.89678%205.79497%205.89678%205.20503%206.30967%205.12063C7.22159%204.93424%207.93424%204.22159%208.12063%203.30967Z%27%20fill%3D%27black%27/%3E%3C/svg%3E");
 }
 
 #viewBookmark::before {
@@ -6354,6 +6505,83 @@ dialog :link {
 
   #outerContainer.sidebarOpen #viewerContainer {
     inset-inline-start: 0 !important;
+  }
+}
+
+@media all and (max-width: 870px) {
+  body.thinkletPanelOpen #mainContainer {
+    inset-inline-end: 0;
+  }
+
+  #thinkletBackdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: block;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    opacity: 1;
+    transition: opacity 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  #thinkletBackdrop[hidden] {
+    display: none;
+  }
+
+  #thinkletPanel {
+    position: fixed;
+    inset-block: auto 0;
+    inset-inline: 0;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    height: min(85dvh, 720px);
+    border-inline-start: 0;
+    border-radius: 40px 40px 0 0;
+    corner-shape: squircle;
+    box-shadow: 0 -8px 32px rgb(0 0 0 / 0.25);
+    overflow: hidden;
+    animation: thinkletSheetSlideUp 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+    touch-action: pan-y;
+    z-index: 100001;
+  }
+
+  #thinkletPanel::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 6px;
+    background-color: rgba(150, 150, 150, 0.6);
+    border-radius: 3px;
+    z-index: 5;
+  }
+
+  #thinkletResizeHandle {
+    display: none;
+  }
+
+  #thinkletPanelHeader {
+    padding-top: 12px;
+    height: calc(var(--toolbar-height) + 12px);
+    min-height: calc(var(--toolbar-height) + 12px);
+  }
+
+  #thinkletFrame {
+    min-height: 0;
+  }
+}
+
+@keyframes thinkletSheetSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
   }
 }
 

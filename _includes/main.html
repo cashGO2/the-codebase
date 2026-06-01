@@ -570,6 +570,25 @@
             </div>
         </div>
 
+        <!-- Search Results Modal (Promo-style, all screen sizes) -->
+        <div class="promo-modal-overlay search-results-overlay" id="searchResultsModal" style="display: none;">
+            <div class="promo-modal no-image search-results-modal">
+                <!-- Close Button -->
+                <i class="fas fa-times promo-close-btn" onclick="closeSearchResultsModal()"></i>
+
+                <div class="promo-content">
+                    <!-- Slot: quickSearchContainer will be moved here when modal opens -->
+                    <div id="modalSearchSlot"></div>
+
+                    <h2><span class="promo-title" id="searchResultsModalTitle">Results</span></h2>
+                    <!-- Search results list -->
+                    <div class="search-results-list" id="searchResultsModalList" style="width: 100%;">
+                        <!-- Dynamic results will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Exam Schedule Modal (Promo-style) -->
         <div class="promo-modal-overlay exam-modal-overlay" id="examModal" style="display: none;">
             <div class="promo-modal exam-modal">

@@ -3661,6 +3661,50 @@ body.dark-mode .promo-checkbox-label {
     color: #ccc;
 }
 
+/* Search Results Modal - quickSearchContainer inside modal */
+#modalSearchSlot #quickSearchContainer {
+    width: 100%;
+    margin-bottom: 12px;
+}
+#modalSearchSlot .quick-search-wrapper {
+    width: 100%;
+}
+
+/* Search Results Modal - Desktop: use standard promoModal centering */
+#searchResultsModal .search-results-modal {
+    max-width: 750px;
+    flex-direction: column;
+}
+#searchResultsModal .promo-content {
+    max-height: 70vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+#searchResultsModal .promo-content::-webkit-scrollbar {
+    display: none;
+}
+.search-results-list {
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+.search-results-list::-webkit-scrollbar {
+    display: none;
+}
+
+/* Search Results Modal - Mobile: bottom sheet with 4px padding */
+@media (max-width: 500px) {
+    #searchResultsModal {
+        align-items: flex-end;
+        padding: 4px;
+    }
+    #searchResultsModal .promo-modal {
+        max-height: 60vh;
+    }
+    #searchResultsModal .promo-content {
+        max-height: calc(60vh - 40px);
+    }
+}
+
 .hidden {
     display: none !important;
 }
@@ -5487,6 +5531,46 @@ body.dark-mode .ai-search-toggle.active:hover {
     padding: var(--spacing-lg);
     text-align: center;
     color: var(--text-color);
+}
+
+.search-loading-text {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    display: inline-block;
+    white-space: nowrap;
+    color: rgba(0, 0, 0, 0.4);
+    animation: search-shimmer-color 1.4s ease-in-out infinite;
+}
+
+body.dark-mode .search-loading-text {
+    color: rgba(255, 255, 255, 0.35);
+    animation: search-shimmer-color-dark 1.4s ease-in-out infinite;
+}
+
+@keyframes search-shimmer-color {
+    0%   { color: rgba(0, 0, 0, 0.25); }
+    50%  { color: rgba(0, 0, 0, 0.75); }
+    100% { color: rgba(0, 0, 0, 0.25); }
+}
+
+@keyframes search-shimmer-color-dark {
+    0%   { color: rgba(255, 255, 255, 0.25); }
+    50%  { color: rgba(255, 255, 255, 0.9); }
+    100% { color: rgba(255, 255, 255, 0.25); }
+}
+
+.search-did-you-mean {
+    margin-top: 10px;
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.search-did-you-mean-value {
+    margin-left: 6px;
+    font-weight: 600;
+    color: #ff8400;
+    cursor: pointer;
 }
 
 .search-error {

@@ -41,7 +41,7 @@ Open Claude and navigate to the **Connectors** tab, then click **Add Custom Conn
 
 ![connectors tab](/assets/img/post-content/23dkj54v.webp)
 
-Enter a name (e.g. "Materio") and paste the following as the Remote MCP Server URL: `https://materiomcp.vercel.app`
+Enter a name (e.g. "Materio") and paste the following as the Remote MCP Server URL: `https://mcp.getmaterio.app`
 
 Click **Add** and you're done.
 
@@ -89,12 +89,22 @@ Inside the config, locate the `mcpServers` object and add the following entry:
   "args": [
     "-y",
     "mcp-remote",
-    "https://materiomcp.vercel.app"
+    "https://mcp.getmaterio.app"
   ]
 }
 ```
 
 Save the file, then restart Claude Desktop. The Materio MCP server should now appear in your active connectors.
+
+## Connecting Perplexity
+Connecting MCP to Perplexity is similar to claude web version.  
+Just navigate to [Perplexity Connectors Settings](https://www.perplexity.ai/computer/connectors) and click on the `Custom Connector` button. which will open a setup modal, add the same info which you added in claude.  
+Name: Materio.  
+URL: `https://mcp.getmaterio.app/mcp`.  
+
+Now click on Advanced and set Authentication to `None` and keep Transport as it is - `Streamable HTTP`.  
+Finally, Check the confirmation checkbox and click add.
+
 
 ## What You Can Do After Connecting
 
