@@ -3,7 +3,7 @@ title: Introducing Materio v5
 layout: post
 excerpt: Materio v5 brings a fully rebuilt search engine with smarter rankings, an upgraded AI Mode that searches inside PDFs, and Thinklet, a new AI study assistant with Materio built right in.
 category: whats-new
-date: 2025-06-01 00:00:00 +530
+date: 2026-06-01 00:00:00 +530
 hidden: true
 image: "https://res.cloudinary.com/dvsdsl7iw/image/upload/v1780291254/insightroom/szthf1e5qdqcyqk8idvq.webp"
 no-ads: true
