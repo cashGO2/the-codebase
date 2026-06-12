@@ -65,6 +65,8 @@ exclude:
   - deploy.bat
   - count-loc.js
   - README.md
+  - src-tauri
+  - src-tauri/**
 
 # Custom permalink structure
 permalink: /:categories/:title/ #default permalink: pretty

@@ -130,24 +130,13 @@ const getTokenFromHeaders = (headers) => {
   return null;
 };
 
+const { isAllowedOrigin } = require('../_config_shared/cors-origins');
+
 // CORS headers for cross-origin requests
 const corsHeaders = (origin) => {
-  // Define allowed origins
-  const allowedOrigins = [
-    'http://localhost:*',
-    'https://materioa.netlify.app',
-    'https://materioa.vercel.app',
-    'https://materioapp.in',
-    'https://auth-materioa.netlify.app',
-    'https://insightroom.vercel.app'
-  ];
-
-  // Check if origin is allowed
   let corsOrigin = '*';
-  if (origin) {
-    if (allowedOrigins.includes(origin) || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
-      corsOrigin = origin;
-    }
+  if (origin && isAllowedOrigin(origin)) {
+    corsOrigin = origin;
   }
 
   return {

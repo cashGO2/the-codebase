@@ -1,5 +1,12 @@
 [
   {
+    "title": "Introducing Materio v5 ",
+    "excerpt": "Materio v5 brings a fully rebuilt search engine with smarter rankings, an upgraded AI Mode that searches inside PDFs, and Thinklet, a new AI study assistant with Materio built right in.",
+    "date": "01-06-2026",
+    "url": "https://room.getmaterio.app/whats-new/introducing-materio-v5",
+    "image": "https://res.cloudinary.com/dvsdsl7iw/image/upload/v1780291254/insightroom/szthf1e5qdqcyqk8idvq.webp"
+  },
+  {
     "title": " Unit 5 - Data Storage Techniques",
     "excerpt": "A complete coverage of Data Storage Techniques in Android - Shared Preferences, Files and Directories, SQLite Database, and Content Providers.",
     "date": "23-04-2026",
@@ -11,7 +18,7 @@
     "excerpt": "A complete coverage of all topics from CodeTantra notes of Unit 6 - Deployment and Best practices.",
     "date": "20-04-2026",
     "url": "https://room.getmaterio.app/chapter/mean-unit6",
-    "image": ""
+    "image": "https://res.cloudinary.com/dvsdsl7iw/image/upload/v1779015892/insightroom/mo0gafeiwxalwnqw1raf.webp"
   },
   {
     "title": "Unit 5 - Integration",
@@ -26,12 +33,5 @@
     "date": "22-01-2026",
     "url": "https://room.getmaterio.app/originals/git",
     "image": "https://room.getmaterio.app/assets/img/covers/aec4c2cc-25c1-48eb-961e-2048503608fd.webp"
-  },
-  {
-    "title": "Introduction to MEAN Stack",
-    "excerpt": "This resource provides overview about",
-    "date": "17-01-2026",
-    "url": "https://room.getmaterio.app/originals/introduction-to-mean-stack",
-    "image": "https://room.getmaterio.app/assets/img/covers/d146a58e-d51d-46d1-9ccb-e3c9a0a977ed.webp"
   }
 ]

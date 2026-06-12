@@ -3,12 +3,11 @@
   "category": "whats-new",
   "frequency": "daily",
   "customFrequencyHours": "0",
-  "title": "Materio is now in your AI",
-  "link": "/whats-new/introducing-mcp-connectors/",
-  "description": "**Introducing MCP Connectors for Claude & ChatGPT.**\n\nYour AI can now search the Materio library, read your subject notes, and answer questions directly from your course material.\n\nNo copy-pasting. No tab switching. Just ask.\n\n**Reading a PDF and need help?** Hit the Share button and choose your AI — it opens with full context already set, ready to assist right where you left off.",
+  "title": "Materio v5 is here",
+  "link": "/whats-new/introducing-materio-v5/",
+  "description": "Search is rebuilt from the ground up, AI Mode now searches inside your PDFs, and Thinklet, our new AI study assistant, launches today",
   "media": [
-    
-    "/assets/media/4f18615d-61b5-444b-9b31-7570824f5910.webm"
+    "https://res.cloudinary.com/dvsdsl7iw/image/upload/v1780291254/insightroom/szthf1e5qdqcyqk8idvq.webp"
   ],
   "mediaFit": "scale-down",
   "showImageOnMaintenance": false,
@@ -19,10 +18,10 @@
     "duration": 600
   },
   "isLimitedOffer": true,
-  "startDate": "2026-03-21T00:00",
-  "endDate": "2026-04-17T00:00",
+  "startDate": "2026-06-01T00:00",
+  "endDate": "2026-06-30T00:00",
   "showDateInfo": false,
-  "lastUpdated": "2026-03-21T14:23:00",
+  "lastUpdated": "2026-06-01T15:09:00",
   "buttons": {
     "primary": {
       "show": true,

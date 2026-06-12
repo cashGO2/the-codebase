@@ -333,7 +333,7 @@ async function loadAndDisplayExamCard() {
 
         const candidateRequests = [
             { url: '/assets/data/examdata.json', options: { cache: 'force-cache' } },
-            { url: 'https://cdn-materioa.vercel.app/databases/beta/examdata.json', options: { cache: 'no-store' } }
+            { url: 'https://cdn.getmaterio.app/databases/beta/examdata.json', options: { cache: 'no-store' } }
         ];
 
         let loaded = false;

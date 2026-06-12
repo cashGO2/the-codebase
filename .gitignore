@@ -49,3 +49,6 @@ community-api/*
 materio-mcp-server/
 pdfs/*
 .gemini/
+
+# Tauri
+src-tauri/target/

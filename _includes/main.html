@@ -1,7 +1,9 @@
 <script>
-    window.MATERIO_CONFIG = {
-        INSIGHTROOM_API: "{{ site.insightroom_api | default: 'https://room.getmaterio.app/api/posts' }}"
-    };
+    window.MATERIO_CONFIG = Object.assign(window.MATERIO_CONFIG || {}, {
+        INSIGHTROOM_API: "{{ site.insightroom_api | default: 'https://room.getmaterio.app/api/posts' }}"{% if site.tauri_build %},
+        IS_TAURI_APP: true,
+        API_ORIGIN: {{ site.api_origin | default: 'https://getmaterio.app' | jsonify }}{% endif %}
+    });
 </script>
 <div class="container">
     <!-- Mobile Frame Corners -->
@@ -219,7 +221,7 @@
 
                     <div class="icon-buttons-container"
                         style="display: flex; align-items: center; gap: 10px; flex-shrink: 0; margin-left: auto;">
-                        <button onclick="openDynamicForm('contribution', true)" class="icon-button"
+                        <button onclick="openDynamicForm('contribution')" class="icon-button"
                             style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 45px; height: 45px; min-width: 45px; background: rgba(255, 130, 0, 0.1); border: 1px solid rgba(255, 130, 0, 0.3); border-radius: 25px; color: #ff8200; cursor: var(--f-cursor-pointer); transition: all 0.3s ease; backdrop-filter: blur(4px);"
                             onmouseover="this.style.background='rgba(255, 130, 0, 0.2)'; this.style.transform='translateY(-2px)'"
                             onmouseout="this.style.background='rgba(255, 130, 0, 0.1)'; this.style.transform='translateY(0)'">
@@ -937,7 +939,7 @@
             <!-- Contributions -->
             <div class="card-layout" id="gh">
                 <div class="toggle-container">
-                    <button onclick="openDynamicForm('contribution', true)" class="contribute-button"
+                    <button onclick="openDynamicForm('contribution')" class="contribute-button"
                         style="border: none; background: transparent; width: 100%; text-align: left; cursor: var(--f-cursor-pointer);">
                         <i class="fas fa-circle-plus" style="margin-right: 15px;"></i>
                         <span

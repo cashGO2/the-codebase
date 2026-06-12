@@ -442,7 +442,7 @@ function updateNotificationBadge(notifications) {
  * @returns {Promise<Array>}
  */
 async function fetchNotifications() {
-  const baseCdnUrl = 'https://cdn-materioa.vercel.app/notifications.json';
+  const baseCdnUrl = 'https://cdn.getmaterio.app/notifications.json';
   const localCdnUrl = window.MaterioLocalCDN?.transformUrl?.(baseCdnUrl);
   const sources = [
     '/api/v2/features?action=notifications-feed&num=6',

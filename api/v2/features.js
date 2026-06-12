@@ -283,7 +283,7 @@ async function handleNotificationsFeed(req, res) {
   const useLocalResources = process.env.USE_LOCAL_RESOURCES === "true";
   const sources = [
     ...(useLocalResources ? ["http://localhost:8080/notifications.json"] : []),
-    "https://cdn-materioa.vercel.app/notifications.json",
+    "https://cdn.getmaterio.app/notifications.json",
     "https://cdn-materioa.netlify.app/notifications.json"
   ];
 

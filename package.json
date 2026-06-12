@@ -6,12 +6,17 @@
   "scripts": {
     "vercel-build": "bundle install && node scripts/generate-build-id.js && node scripts/generate-insightroom-fallback.js && bundle exec jekyll build && node scripts/minify-assets.js && node scripts/version-assets.js",
     "generate:oread-icons": "node scripts/generate-oread-icons-css.js",
-    "vercel-dev": "node scripts/vercel dev",
+    "vercel-dev": "vercel dev --listen 4000",
+    "dev": "node scripts/jekyll-tauri-serve.js",
     "build": "node scripts/generate-build-id.js && node scripts/generate-insightroom-fallback.js && bundle exec jekyll build && netlify build",
     "functions": "node scripts/netlify functions:serve --functions=api/v1",
     "minify-js": "uglifyjs assets/scripts/auth.js assets/scripts/login.js assets/scripts/signup.js assets/scripts/forgot-password.js assets/scripts/profile-management.js -o _site/assets/scripts/auth.min.js --source-map --compress --mangle",
     "optimize": "npm run minify-js && npm run copy-min",
-    "copy-min": "shx cp _site/assets/scripts/auth.min.js _site/assets/scripts/auth.min.js.map public/js/"
+    "copy-min": "shx cp _site/assets/scripts/auth.min.js _site/assets/scripts/auth.min.js.map public/js/",
+    "tauri:build-frontend": "node scripts/build-tauri-frontend.js",
+    "tauri:jekyll-dev": "node scripts/jekyll-tauri-serve.js",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
   },
   "dependencies": {
     "@google-analytics/data": "^4.12.1",
@@ -35,6 +40,8 @@
     "web-push": "^3.6.7"
   },
   "devDependencies": {
+    "@tauri-apps/api": "^2.11.0",
+    "@tauri-apps/cli": "^2.11.2",
     "clean-css": "^5.3.3",
     "glob": "^10.3.10",
     "html-minifier-terser": "^7.2.0",

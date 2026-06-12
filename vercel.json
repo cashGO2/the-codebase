@@ -86,55 +86,55 @@
   "rewrites": [
     {
       "source": "/api/v2/login",
-      "destination": "/api/v2/login.js"
+      "destination": "/api/v2/login"
     },
     {
       "source": "/api/v2/search",
-      "destination": "/api/v2/search.js"
+      "destination": "/api/v2/search"
     },
     {
       "source": "/api/v2/features/(.*)",
-      "destination": "/api/v2/features.js?path=$1"
+      "destination": "/api/v2/features?path=$1"
     },
     {
       "source": "/api/v2/health/report",
-      "destination": "/api/v2/health.js?action=report"
+      "destination": "/api/v2/health?action=report"
     },
     {
       "source": "/api/v2/health/alert",
-      "destination": "/api/v2/health.js?action=alert"
+      "destination": "/api/v2/health?action=alert"
     },
     {
       "source": "/api/v2/health/test-incident-email",
-      "destination": "/api/v2/health.js?action=test-incident-email"
+      "destination": "/api/v2/health?action=test-incident-email"
     },
     {
       "source": "/api/v2/health",
-      "destination": "/api/v2/health.js"
+      "destination": "/api/v2/health"
     },
     {
       "source": "/api/v2/invites/sharelink-info",
-      "destination": "/api/v2/invites.js"
+      "destination": "/api/v2/invites"
     },
     {
       "source": "/api/v2/invites/(.*)",
-      "destination": "/api/v2/invites.js?path=$1"
+      "destination": "/api/v2/invites?path=$1"
     },
     {
       "source": "/api/v2/chat/(.*)",
-      "destination": "/api/v2/chat.js?path=$1"
+      "destination": "/api/v2/chat?path=$1"
     },
     {
       "source": "/sharelink-info",
-      "destination": "/api/v2/invites.js"
+      "destination": "/api/v2/invites"
     },
     {
       "source": "/share/llm/(.*)",
-      "destination": "/api/v2/features.js?action=pdf-share&subAction=resolve-llm&llmMaskId=$1"
+      "destination": "/api/v2/features?action=pdf-share&subAction=resolve-llm&llmMaskId=$1"
     },
     {
       "source": "/llm",
-      "destination": "/api/v2/features.js?action=pdf-share&subAction=resolve-llm"
+      "destination": "/api/v2/features?action=pdf-share&subAction=resolve-llm"
     },
     {
       "source": "/invites/:code",
@@ -154,7 +154,7 @@
     },
     {
       "source": "/api/v2/profile",
-      "destination": "/api/v2/profile.js"
+      "destination": "/api/v2/profile"
     },
     {
       "source": "/account",

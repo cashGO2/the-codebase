@@ -1,0 +1,42 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Materio",
+  "version": "2.0.4",
+  "identifier": "app.getmaterio.desktop",
+  "build": {
+    "frontendDist": "../_site",
+    "devUrl": "http://localhost:4000",
+    "beforeDevCommand": "npm run vercel-dev",
+    "beforeBuildCommand": "npm run tauri:build-frontend"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Materio",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 360,
+        "minHeight": 600,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; connect-src 'self' https://getmaterio.app https://*.getmaterio.app https://room.getmaterio.app https://*.vercel.app https://*.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com wss: https:; img-src 'self' https: data: blob:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https: data:; media-src 'self' https: blob:; frame-src https:;"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "android": {
+      "debugApplicationIdSuffix": ".debug"
+    }
+  }
+}

@@ -20,6 +20,19 @@ document.addEventListener('DOMContentLoaded', function () {
     loadFormActivityConfig();
 });
 
+function getDynamicFormModal() {
+    return document.getElementById('dynamicFormModal');
+}
+
+function queryDynamicForm(selector) {
+    return getDynamicFormModal()?.querySelector(selector) || null;
+}
+
+function getIconClass(icon, fallback = 'fa-solid fa-circle-plus') {
+    if (!icon) return fallback;
+    return icon.includes('fa-') ? icon : `fa-solid ${icon}`;
+}
+
 /**
  * Load forms configuration from JSON
  */
@@ -40,7 +53,7 @@ async function loadFormsConfig() {
  */
 async function loadSemesterSubjectMappingsForForms() {
     try {
-        const response = await fetch('https:/cdn-materioa.vercel.app/databases/semester-subjects.json');
+        const response = await fetch('https:/cdn.getmaterio.app/databases/semester-subjects.json');
         if (response.ok) {
             semesterSubjectMappings = await response.json();
         }
@@ -121,9 +134,9 @@ function renderStandardForm(formConfig) {
     const descEl = document.getElementById('dynamicFormDescription');
     const submitTextEl = document.getElementById('dynamicFormSubmitText');
     const submitIconEl = document.getElementById('dynamicFormSubmitIcon');
-    const headerEl = document.querySelector('.dynamic-form-header');
-    const contentWrapper = document.querySelector('.dynamic-form-content-wrapper');
-    const actionsEl = document.querySelector('.dynamic-form-actions');
+    const headerEl = queryDynamicForm('.dynamic-form-header');
+    const contentWrapper = queryDynamicForm('.dynamic-form-content-wrapper');
+    const actionsEl = queryDynamicForm('.dynamic-form-actions');
     const confirmationsContainer = document.getElementById('dynamicFormConfirmations');
     const formContent = document.getElementById('dynamicFormContent');
 
@@ -141,13 +154,13 @@ function renderStandardForm(formConfig) {
     }
 
     // Update header
-    if (iconEl) iconEl.className = `fa-solid ${formConfig.icon} dynamic-form-icon`;
+    if (iconEl) iconEl.className = `${getIconClass(formConfig.icon)} dynamic-form-icon`;
     if (titleEl) titleEl.textContent = formConfig.title;
     if (descEl) descEl.textContent = formConfig.description;
 
     // Update submit button
     if (submitTextEl) submitTextEl.textContent = formConfig.submitButton.text;
-    if (submitIconEl) submitIconEl.className = `fa-solid ${formConfig.submitButton.icon}`;
+    if (submitIconEl) submitIconEl.className = getIconClass(formConfig.submitButton.icon, 'fa-solid fa-paper-plane');
 
     // Render form fields
     renderFormFields(formConfig);
@@ -168,9 +181,6 @@ function renderWizardPage(formConfig, pageIndex) {
     const page = formConfig.wizard.pages[pageIndex];
     const fieldsContainer = document.getElementById('dynamicFormFields');
     const confirmationsContainer = document.getElementById('dynamicFormConfirmations');
-    const headerEl = document.querySelector('.dynamic-form-header');
-    const contentWrapper = document.querySelector('.dynamic-form-content-wrapper');
-    const actionsEl = document.querySelector('.dynamic-form-actions');
 
     fieldsContainer.innerHTML = '';
     if (confirmationsContainer) confirmationsContainer.innerHTML = '';
@@ -190,9 +200,9 @@ function renderWizardPage(formConfig, pageIndex) {
 function renderCoverPage(page, formConfig, pageIndex) {
     const fieldsContainer = document.getElementById('dynamicFormFields');
     const confirmationsContainer = document.getElementById('dynamicFormConfirmations');
-    const headerEl = document.querySelector('.dynamic-form-header');
-    const actionsEl = document.querySelector('.dynamic-form-actions');
-    const contentWrapper = document.querySelector('.dynamic-form-content-wrapper');
+    const headerEl = queryDynamicForm('.dynamic-form-header');
+    const actionsEl = queryDynamicForm('.dynamic-form-actions');
+    const contentWrapper = queryDynamicForm('.dynamic-form-content-wrapper');
     const formContent = document.getElementById('dynamicFormContent');
 
     // Hide default header, actions, and confirmations
@@ -204,7 +214,7 @@ function renderCoverPage(page, formConfig, pageIndex) {
     if (formContent) formContent.style.marginBottom = '0';
 
     // Determine media type from extension
-    const mediaUrl = page.backgroundImage || page.backgroundMedia;
+    const mediaUrl = (page.backgroundImage || page.backgroundMedia || '').replace(/([^:])\/{2,}/g, '$1/');
     let isVideo = false;
     let mediaHtml = '';
 
@@ -240,12 +250,12 @@ function renderCoverPage(page, formConfig, pageIndex) {
             ${mediaHtml}
             ${isVideo && page.backgroundGradient ? `<div class="wizard-cover-overlay" style="background: ${page.backgroundGradient}"></div>` : ''}
             <div class="wizard-cover-content">
-                <i class="${page.icon} wizard-cover-icon"></i>
+                <i class="${getIconClass(page.icon, 'fa-solid fa-gift')} wizard-cover-icon"></i>
                 <h1 class="wizard-cover-title">${page.title}</h1>
                 <p class="wizard-cover-subtitle">${page.subtitle || ''}</p>
                 <button type="button" class="wizard-next-btn" onclick="goToWizardPage(${pageIndex + 1})">
                     ${page.nextButton.text}
-                    ${page.nextButton.icon ? `<i class="fa-solid ${page.nextButton.icon}"></i>` : ''}
+                    ${page.nextButton.icon ? `<i class="${getIconClass(page.nextButton.icon)}"></i>` : ''}
                 </button>
             </div>
         </div>
@@ -257,9 +267,9 @@ function renderCoverPage(page, formConfig, pageIndex) {
  */
 function renderInfoPage(page, formConfig, pageIndex) {
     const fieldsContainer = document.getElementById('dynamicFormFields');
-    const headerEl = document.querySelector('.dynamic-form-header');
-    const actionsEl = document.querySelector('.dynamic-form-actions');
-    const contentWrapper = document.querySelector('.dynamic-form-content-wrapper');
+    const headerEl = queryDynamicForm('.dynamic-form-header');
+    const actionsEl = queryDynamicForm('.dynamic-form-actions');
+    const contentWrapper = queryDynamicForm('.dynamic-form-content-wrapper');
 
     const confirmationsContainer = document.getElementById('dynamicFormConfirmations');
     const formContent = document.getElementById('dynamicFormContent');
@@ -291,7 +301,7 @@ function renderInfoPage(page, formConfig, pageIndex) {
                 if (item.icon) {
                     return `
                         <div class="wizard-info-item">
-                            <div class="wizard-info-icon"><i class="${item.icon}"></i></div>
+                            <div class="wizard-info-icon"><i class="${getIconClass(item.icon)}"></i></div>
                             <div class="wizard-info-text">
                                 ${item.title ? `<h4>${item.title}</h4>` : ''}
                                 <p>${item.description || ''}</p>
@@ -321,10 +331,10 @@ function renderInfoPage(page, formConfig, pageIndex) {
             <div class="wizard-info-actions">
                 <button type="button" class="wizard-continue-btn" onclick="goToWizardPage(${pageIndex + 1})">
                     ${page.continueButton.text}
-                    ${page.continueButton.icon ? `<i class="fa-solid ${page.continueButton.icon}"></i>` : ''}
+                    ${page.continueButton.icon ? `<i class="${getIconClass(page.continueButton.icon)}"></i>` : ''}
                 </button>
                 <button type="button" class="wizard-exit-btn" onclick="closeDynamicForm()">
-                    ${page.exitButton.icon ? `<i class="fa-solid ${page.exitButton.icon}"></i>` : ''}
+                    ${page.exitButton.icon ? `<i class="${getIconClass(page.exitButton.icon)}"></i>` : ''}
                     ${page.exitButton.text}
                 </button>
             </div>
@@ -336,9 +346,9 @@ function renderInfoPage(page, formConfig, pageIndex) {
  * Render the actual form page
  */
 function renderFormPage(page, formConfig) {
-    const headerEl = document.querySelector('.dynamic-form-header');
-    const actionsEl = document.querySelector('.dynamic-form-actions');
-    const contentWrapper = document.querySelector('.dynamic-form-content-wrapper');
+    const headerEl = queryDynamicForm('.dynamic-form-header');
+    const actionsEl = queryDynamicForm('.dynamic-form-actions');
+    const contentWrapper = queryDynamicForm('.dynamic-form-content-wrapper');
     const iconEl = document.getElementById('dynamicFormIcon');
     const titleEl = document.getElementById('dynamicFormTitle');
     const descEl = document.getElementById('dynamicFormDescription');
@@ -362,13 +372,13 @@ function renderFormPage(page, formConfig) {
     }
 
     // Update header with page-specific or form default
-    if (iconEl) iconEl.className = `fa-solid ${formConfig.icon} dynamic-form-icon`;
+    if (iconEl) iconEl.className = `${getIconClass(formConfig.icon)} dynamic-form-icon`;
     if (titleEl) titleEl.textContent = page.title || formConfig.title;
     if (descEl) descEl.textContent = page.description || formConfig.description;
 
     // Update submit button
     if (submitTextEl) submitTextEl.textContent = formConfig.submitButton.text;
-    if (submitIconEl) submitIconEl.className = `fa-solid ${formConfig.submitButton.icon}`;
+    if (submitIconEl) submitIconEl.className = getIconClass(formConfig.submitButton.icon, 'fa-solid fa-paper-plane');
 
     // Render form fields
     renderFormFields(formConfig);

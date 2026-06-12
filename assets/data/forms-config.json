@@ -3,15 +3,15 @@
         "contribution": {
             "id": "contribution",
             "title": "Community Contributions",
-            "icon": "fa-regular fa-users",
+            "icon": "fa-solid fa-users",
             "description": "Help grow materio's content library by contributing your study materials",
             "wizard": {
-                "enabled": true,
+                "enabled": false,
                 "pages": [
                     {
                         "id": "cover",
                         "type": "cover",
-                        "backgroundImage": "/assets//img/gradient.jpg",
+                        "backgroundImage": "/assets/img/gradient.jpg",
                         "title": "Share Your Knowledge",
                         "subtitle": "Help fellow students succeed",
                         "icon": "fa-solid fa-gift",

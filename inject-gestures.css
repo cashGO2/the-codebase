@@ -1,0 +1,11 @@
+/* CSS injected into the desktop app via Pake to enable browser back/forward gestures */
+html, body {
+  overscroll-behavior-x: auto !important;
+  overscroll-behavior-y: auto !important;
+  overscroll-behavior: auto !important;
+}
+
+/* Ensure child containers do not block horizontal scroll/gesture chaining */
+* {
+  overscroll-behavior-x: auto !important;
+}

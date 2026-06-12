@@ -41,64 +41,64 @@ document.addEventListener('DOMContentLoaded', function () {
   const STYLES = ['character', 'shape', 'face'];
 
   function renderMainAvatar(seed = 'User') {
-      if (isCustomUpload) return;
-      
-      const AvvComponent = window.Avvvatars || (window.AvvvatarsReactAlt && window.AvvvatarsReactAlt.Avvvatars) || window.AvvvatarsReactAlt;
-      const FinalComp = (AvvComponent && AvvComponent.default) ? AvvComponent.default : AvvComponent;
-      
-      if (!mainAvatarRoot || !window.React || !window.ReactDOM || !FinalComp) return;
-      
-      const variant = STYLES[currentStyleIndex];
-      if (selectedVariantInput) selectedVariantInput.value = variant;
-      
-      const finalSeed = shuffleCounter > 0 ? `${seed}-${shuffleCounter}` : seed;
+    if (isCustomUpload) return;
 
-      const root = window.reactRoot || (window.ReactDOM.createRoot(mainAvatarRoot));
-      window.reactRoot = root;
+    const AvvComponent = window.Avvvatars || (window.AvvvatarsReactAlt && window.AvvvatarsReactAlt.Avvvatars) || window.AvvvatarsReactAlt;
+    const FinalComp = (AvvComponent && AvvComponent.default) ? AvvComponent.default : AvvComponent;
 
-      root.render(window.React.createElement(FinalComp, {
-          value: finalSeed,
-          style: variant === 'face' ? 'shape' : variant,
-          type: variant === 'face' ? 'face' : undefined,
-          size: 92,
-          radius: 46,
-          shadow: false
-      }));
+    if (!mainAvatarRoot || !window.React || !window.ReactDOM || !FinalComp) return;
+
+    const variant = STYLES[currentStyleIndex];
+    if (selectedVariantInput) selectedVariantInput.value = variant;
+
+    const finalSeed = shuffleCounter > 0 ? `${seed}-${shuffleCounter}` : seed;
+
+    const root = window.reactRoot || (window.ReactDOM.createRoot(mainAvatarRoot));
+    window.reactRoot = root;
+
+    root.render(window.React.createElement(FinalComp, {
+      value: finalSeed,
+      style: variant === 'face' ? 'shape' : variant,
+      type: variant === 'face' ? 'face' : undefined,
+      size: 92,
+      radius: 46,
+      shadow: false
+    }));
   }
 
-          function normalizeHexColor(value, fallback) {
-            if (!value || typeof value !== 'string') return fallback;
-            const color = value.trim();
-            if (color.startsWith('#')) return color;
-            if (/^[0-9a-fA-F]{3}$/.test(color) || /^[0-9a-fA-F]{6}$/.test(color)) return `#${color}`;
-            return color;
-          }
+  function normalizeHexColor(value, fallback) {
+    if (!value || typeof value !== 'string') return fallback;
+    const color = value.trim();
+    if (color.startsWith('#')) return color;
+    if (/^[0-9a-fA-F]{3}$/.test(color) || /^[0-9a-fA-F]{6}$/.test(color)) return `#${color}`;
+    return color;
+  }
 
-          function serializeAvatarFromRoot(rootEl, outputSize = 100) {
-            if (!rootEl) return null;
+  function serializeAvatarFromRoot(rootEl, outputSize = 100) {
+    if (!rootEl) return null;
 
-            const avatarHost = rootEl.querySelector('div[size][color]');
-            const avatarShape = avatarHost ? avatarHost.querySelector('span[size][color]') : null;
-              const avatarSvg = avatarShape ? avatarShape.querySelector('svg') : rootEl.querySelector('[role="img"] svg, svg');
-            if (!avatarSvg) return null;
+    const avatarHost = rootEl.querySelector('div[size][color]');
+    const avatarShape = avatarHost ? avatarHost.querySelector('span[size][color]') : null;
+    const avatarSvg = avatarShape ? avatarShape.querySelector('svg') : rootEl.querySelector('[role="img"] svg, svg');
+    if (!avatarSvg) return null;
 
-            const hostSize = Number.parseFloat(avatarHost?.getAttribute('size')) || Number.parseFloat(avatarSvg.getAttribute('width')) || 92;
-            const shapeSize = Number.parseFloat(avatarShape?.getAttribute('size')) || Number.parseFloat(avatarSvg.getAttribute('width')) || (hostSize * 0.5);
+    const hostSize = Number.parseFloat(avatarHost?.getAttribute('size')) || Number.parseFloat(avatarSvg.getAttribute('width')) || 92;
+    const shapeSize = Number.parseFloat(avatarShape?.getAttribute('size')) || Number.parseFloat(avatarSvg.getAttribute('width')) || (hostSize * 0.5);
 
-            const bgColor = normalizeHexColor(avatarHost?.getAttribute('color'), '#94a3b8');
-            const fgColor = normalizeHexColor(avatarShape?.getAttribute('color'), '#e2e8f0');
+    const bgColor = normalizeHexColor(avatarHost?.getAttribute('color'), '#94a3b8');
+    const fgColor = normalizeHexColor(avatarShape?.getAttribute('color'), '#e2e8f0');
 
-            const ratio = hostSize > 0 ? Math.max(0.3, Math.min(0.95, shapeSize / hostSize)) : 0.5;
-            const iconSize = outputSize * ratio;
-            const iconOffset = (outputSize - iconSize) / 2;
+    const ratio = hostSize > 0 ? Math.max(0.3, Math.min(0.95, shapeSize / hostSize)) : 0.5;
+    const iconSize = outputSize * ratio;
+    const iconOffset = (outputSize - iconSize) / 2;
 
-            const viewBox = avatarSvg.getAttribute('viewBox');
-            const vb = viewBox ? viewBox.split(/\s+/).map(Number) : [0, 0, 32, 32];
-            const vbWidth = vb[2] || 32;
-            const vbHeight = vb[3] || 32;
+    const viewBox = avatarSvg.getAttribute('viewBox');
+    const vb = viewBox ? viewBox.split(/\s+/).map(Number) : [0, 0, 32, 32];
+    const vbWidth = vb[2] || 32;
+    const vbHeight = vb[3] || 32;
 
-            const innerMarkup = avatarSvg.innerHTML;
-            const compositedSvg = `
+    const innerMarkup = avatarSvg.innerHTML;
+    const compositedSvg = `
               <svg xmlns="http://www.w3.org/2000/svg" width="${outputSize}" height="${outputSize}" viewBox="0 0 ${outputSize} ${outputSize}" preserveAspectRatio="xMidYMid meet">
                 <circle cx="${outputSize / 2}" cy="${outputSize / 2}" r="${outputSize / 2}" fill="${bgColor}" />
                 <g transform="translate(${iconOffset}, ${iconOffset}) scale(${iconSize / vbWidth}, ${iconSize / vbHeight})" color="${fgColor}" fill="${fgColor}" stroke="${fgColor}">
@@ -107,32 +107,32 @@ document.addEventListener('DOMContentLoaded', function () {
               </svg>
             `.trim();
 
-            return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(compositedSvg)))}`;
-          }
+    return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(compositedSvg)))}`;
+  }
 
-            function serializeAvatarFallback(rootEl, outputSize = 100) {
-              if (!rootEl) return null;
-                const svgEl = rootEl.querySelector('[role="img"] svg, svg');
-              if (!svgEl) return null;
+  function serializeAvatarFallback(rootEl, outputSize = 100) {
+    if (!rootEl) return null;
+    const svgEl = rootEl.querySelector('[role="img"] svg, svg');
+    if (!svgEl) return null;
 
-              const avatarSurface = svgEl.parentElement || rootEl;
-              const surfaceStyles = window.getComputedStyle(avatarSurface);
-              const bgColor = surfaceStyles.backgroundColor || '#94a3b8';
-              const fgColor = surfaceStyles.color || '#e2e8f0';
+    const avatarSurface = svgEl.parentElement || rootEl;
+    const surfaceStyles = window.getComputedStyle(avatarSurface);
+    const bgColor = surfaceStyles.backgroundColor || '#94a3b8';
+    const fgColor = surfaceStyles.color || '#e2e8f0';
 
-              const svgRect = svgEl.getBoundingClientRect();
-              const surfaceRect = avatarSurface.getBoundingClientRect();
-              const ratio = surfaceRect.width > 0 ? Math.max(0.3, Math.min(0.95, svgRect.width / surfaceRect.width)) : 0.5;
-              const iconSize = outputSize * ratio;
-              const iconOffset = (outputSize - iconSize) / 2;
+    const svgRect = svgEl.getBoundingClientRect();
+    const surfaceRect = avatarSurface.getBoundingClientRect();
+    const ratio = surfaceRect.width > 0 ? Math.max(0.3, Math.min(0.95, svgRect.width / surfaceRect.width)) : 0.5;
+    const iconSize = outputSize * ratio;
+    const iconOffset = (outputSize - iconSize) / 2;
 
-              const viewBox = svgEl.getAttribute('viewBox');
-              const vb = viewBox ? viewBox.split(/\s+/).map(Number) : [0, 0, 32, 32];
-              const vbWidth = vb[2] || 32;
-              const vbHeight = vb[3] || 32;
+    const viewBox = svgEl.getAttribute('viewBox');
+    const vb = viewBox ? viewBox.split(/\s+/).map(Number) : [0, 0, 32, 32];
+    const vbWidth = vb[2] || 32;
+    const vbHeight = vb[3] || 32;
 
-              const innerMarkup = svgEl.innerHTML;
-              const compositedSvg = `
+    const innerMarkup = svgEl.innerHTML;
+    const compositedSvg = `
                 <svg xmlns="http://www.w3.org/2000/svg" width="${outputSize}" height="${outputSize}" viewBox="0 0 ${outputSize} ${outputSize}" preserveAspectRatio="xMidYMid meet">
                   <circle cx="${outputSize / 2}" cy="${outputSize / 2}" r="${outputSize / 2}" fill="${bgColor}" />
                   <g transform="translate(${iconOffset}, ${iconOffset}) scale(${iconSize / vbWidth}, ${iconSize / vbHeight})" color="${fgColor}" fill="${fgColor}" stroke="${fgColor}">
@@ -141,31 +141,31 @@ document.addEventListener('DOMContentLoaded', function () {
                 </svg>
               `.trim();
 
-              return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(compositedSvg)))}`;
-            }
+    return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(compositedSvg)))}`;
+  }
 
-              async function captureCurrentAvatarDataUri(outputSize = 100) {
-                let serialized = serializeAvatarFromRoot(mainAvatarRoot, outputSize) || serializeAvatarFallback(mainAvatarRoot, outputSize);
-                if (serialized) return serialized;
+  async function captureCurrentAvatarDataUri(outputSize = 100) {
+    let serialized = serializeAvatarFromRoot(mainAvatarRoot, outputSize) || serializeAvatarFallback(mainAvatarRoot, outputSize);
+    if (serialized) return serialized;
 
-                const nameValue = document.getElementById('displayName')?.value || document.getElementById('username')?.value || 'User';
-                renderMainAvatar(nameValue);
-                await new Promise((resolve) => requestAnimationFrame(resolve));
-                await new Promise((resolve) => requestAnimationFrame(resolve));
+    const nameValue = document.getElementById('displayName')?.value || document.getElementById('username')?.value || 'User';
+    renderMainAvatar(nameValue);
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    await new Promise((resolve) => requestAnimationFrame(resolve));
 
-                serialized = serializeAvatarFromRoot(mainAvatarRoot, outputSize) || serializeAvatarFallback(mainAvatarRoot, outputSize);
-                return serialized;
-              }
+    serialized = serializeAvatarFromRoot(mainAvatarRoot, outputSize) || serializeAvatarFallback(mainAvatarRoot, outputSize);
+    return serialized;
+  }
 
   if (shuffleBtn) {
-      shuffleBtn.addEventListener('click', () => {
-        avatarDirty = true;
-          isCustomUpload = false;
-          currentStyleIndex = (currentStyleIndex + 1) % STYLES.length;
-          shuffleCounter++;
-          const nameValue = document.getElementById('displayName').value || document.getElementById('username').value || 'User';
-          renderMainAvatar(nameValue);
-      });
+    shuffleBtn.addEventListener('click', () => {
+      avatarDirty = true;
+      isCustomUpload = false;
+      currentStyleIndex = (currentStyleIndex + 1) % STYLES.length;
+      shuffleCounter++;
+      const nameValue = document.getElementById('displayName').value || document.getElementById('username').value || 'User';
+      renderMainAvatar(nameValue);
+    });
   }
 
   if (profilePictureInput && picturePreview) {
@@ -182,8 +182,8 @@ document.addEventListener('DOMContentLoaded', function () {
         reader.onload = function (event) {
           // Replace Avvvatars with image
           if (window.reactRoot) {
-              window.reactRoot.unmount();
-              window.reactRoot = null;
+            window.reactRoot.unmount();
+            window.reactRoot = null;
           }
           mainAvatarRoot.innerHTML = `<img id="picturePreview" src="${event.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
           if (dashboardProfileImage) dashboardProfileImage.src = event.target.result;
@@ -192,12 +192,12 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
-    // Admin invite card reference
+  // Admin invite card reference
   const adminInviteCard = document.getElementById('adminInviteCard');
-    const presetWarnBtn = document.getElementById('presetWarnBtn');
-    const presetBanBtn = document.getElementById('presetBanBtn');
-    const saveModerationBtn = document.getElementById('saveModerationBtn');
-    const refreshModerationBtn = document.getElementById('refreshModerationBtn');
+  const presetWarnBtn = document.getElementById('presetWarnBtn');
+  const presetBanBtn = document.getElementById('presetBanBtn');
+  const saveModerationBtn = document.getElementById('saveModerationBtn');
+  const refreshModerationBtn = document.getElementById('refreshModerationBtn');
 
   // Function to extract username from URL or session storage
   function getProfileUsername() {
@@ -450,35 +450,35 @@ document.addEventListener('DOMContentLoaded', function () {
   if (profileForm) {
     profileForm.addEventListener('submit', async function (e) {
       e.preventDefault();
-      
+
       const formData = new FormData(this);
       const data = Object.fromEntries(formData.entries());
-      
+
       // Filter out the file object if it hasn't changed to avoid serialization errors
       if (!(data.profilePicture instanceof File) || data.profilePicture.size === 0) {
-          delete data.profilePicture;
+        delete data.profilePicture;
       }
 
-        // --- AVATAR CAPTURE LOGIC (Exact SVG serialization to preserve scale/alignment) ---
-          if (avatarDirty) {
-            if (!isCustomUpload) {
-                const serializedSvgDataUri = await captureCurrentAvatarDataUri(100);
-              if (!serializedSvgDataUri) {
-                showNotification('Failed to capture selected avatar. Please shuffle once and try again.', 'error');
-                return;
-              }
-              data.profilePicture = serializedSvgDataUri;
-            } else {
-              // If it was a custom upload, grab from the img inside mainAvatarRoot
-              const previewImg = mainAvatarRoot.querySelector('img');
-              if (!previewImg || !previewImg.src || !previewImg.src.startsWith('data:image')) {
-                showNotification('Invalid uploaded image. Please upload again.', 'error');
-                return;
-              }
-              data.profilePicture = previewImg.src;
-            }
-          } else {
-            delete data.profilePicture;
+      // --- AVATAR CAPTURE LOGIC (Exact SVG serialization to preserve scale/alignment) ---
+      if (avatarDirty) {
+        if (!isCustomUpload) {
+          const serializedSvgDataUri = await captureCurrentAvatarDataUri(100);
+          if (!serializedSvgDataUri) {
+            showNotification('Failed to capture selected avatar. Please shuffle once and try again.', 'error');
+            return;
+          }
+          data.profilePicture = serializedSvgDataUri;
+        } else {
+          // If it was a custom upload, grab from the img inside mainAvatarRoot
+          const previewImg = mainAvatarRoot.querySelector('img');
+          if (!previewImg || !previewImg.src || !previewImg.src.startsWith('data:image')) {
+            showNotification('Invalid uploaded image. Please upload again.', 'error');
+            return;
+          }
+          data.profilePicture = previewImg.src;
+        }
+      } else {
+        delete data.profilePicture;
       }
 
       try {
@@ -488,31 +488,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const response = await makeApiRequest('profile', 'PUT', data, true);
         if (response) {
-            showNotification('Profile updated successfully!', 'success');
+          showNotification('Profile updated successfully!', 'success');
           avatarDirty = false;
-            
-            // Sync dashboard & localStorage
-            if (response.user) {
-                const user = response.user;
-                localStorage.setItem('materio_user', JSON.stringify(user));
-                
-                if (dashboardProfileImage && user.profilePicture) {
-                    dashboardProfileImage.src = user.profilePicture;
-                }
-                if (dashboardDisplayName) {
-                    dashboardDisplayName.textContent = user.displayName || user.username;
-                }
-                if (dashboardUsername) {
-                    dashboardUsername.textContent = '@' + user.username;
-                }
+
+          // Sync dashboard & localStorage
+          if (response.user) {
+            const user = response.user;
+            localStorage.setItem('materio_user', JSON.stringify(user));
+
+            if (dashboardProfileImage && user.profilePicture) {
+              dashboardProfileImage.src = user.profilePicture;
             }
+            if (dashboardDisplayName) {
+              dashboardDisplayName.textContent = user.displayName || user.username;
+            }
+            if (dashboardUsername) {
+              dashboardUsername.textContent = '@' + user.username;
+            }
+          }
         }
       } catch (err) {
-          showNotification(err.message || 'Failed to update profile', 'error');
+        showNotification(err.message || 'Failed to update profile', 'error');
       } finally {
-          const submitBtn = this.querySelector('button[type="submit"]');
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'SAVE CHANGES';
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'SAVE CHANGES';
       }
     });
   }
@@ -778,8 +778,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const originalText = this.textContent;
         this.textContent = 'REDEEMING...';
         if (redeemStatus) {
-            redeemStatus.textContent = 'Checking code...';
-            redeemStatus.style.color = '#64748b';
+          redeemStatus.textContent = 'Checking code...';
+          redeemStatus.style.color = '#64748b';
         }
 
         const response = await makeApiRequest('invites?action=redeem', 'POST', { inviteCode: code }, true);
@@ -800,8 +800,8 @@ document.addEventListener('DOMContentLoaded', function () {
       } catch (error) {
         console.error('Redeem error:', error);
         if (redeemStatus) {
-            redeemStatus.textContent = error.message || 'Failed to redeem code';
-            redeemStatus.style.color = '#ef4444';
+          redeemStatus.textContent = error.message || 'Failed to redeem code';
+          redeemStatus.style.color = '#ef4444';
         }
         showNotification(error.message || 'Failed to redeem code', 'error');
       } finally {
@@ -840,7 +840,7 @@ let abuseModerationInitialized = false;
 function initAbuseModerationSection() {
   if (abuseModerationInitialized) return;
   abuseModerationInitialized = true;
-  
+
   // Attach event listeners
   const saveBtn = document.getElementById('saveModerationBtn');
   if (saveBtn) saveBtn.addEventListener('click', () => saveModerationRule(saveBtn));
@@ -2568,15 +2568,11 @@ async function handleMultiSectionUpload() {
   const commitStatus = commitQueueItem.querySelector('.queue-item-status');
   const stagedJsonFiles = getStagedJsonForCommit();
 
-  if (failedCount > 0) {
-    // If processing failed, don't attempt upload
-    commitIcon.className = 'queue-item-icon error';
-    commitIcon.innerHTML = '<i class="fas fa-ban"></i>';
-    commitStatus.className = 'queue-item-status error';
-    commitStatus.textContent = 'Skipped';
+  if (failedCount > 0 && allStagedFiles.length > 0) {
+    showNotification(`${failedCount} batch(es) failed. Uploading ${allStagedFiles.length} successfully staged file(s)...`, 'warning');
+  }
 
-    showNotification(`Processing failed for ${failedCount} batch(es). Upload cancelled.`, 'error');
-  } else if (allStagedFiles.length === 0 && stagedJsonFiles.length === 0) {
+  if (allStagedFiles.length === 0 && stagedJsonFiles.length === 0) {
     commitIcon.className = 'queue-item-icon error';
     commitIcon.innerHTML = '<i class="fas fa-exclamation"></i>';
     commitStatus.className = 'queue-item-status error';

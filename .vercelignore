@@ -3,3 +3,6 @@ insightroom/
 analytics-api/
 blog-svelte/
 _drafts/
+src-tauri/
+.jekyll-cache/
+_site/

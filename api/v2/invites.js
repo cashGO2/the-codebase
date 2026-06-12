@@ -43,17 +43,17 @@ module.exports = async (req, res) => {
     }
     
     // Determine endpoint type
-    const isValidateEndpoint = pathAction === 'validate' || url.pathname.includes('/invites/validate');
-    const isDiagnosticEndpoint = pathAction === 'diagnostic' || url.pathname.includes('/invites/diagnostic');
-    const isToggleAdminEndpoint = pathAction === 'toggle-admin' || url.pathname.includes('/invites/toggle-admin');
-    const isTogglePlusEndpoint = pathAction === 'toggle-plus' || url.pathname.includes('/invites/toggle-plus');
-    const isDeleteEndpoint = pathAction === 'delete' || url.pathname.includes('/invites/delete');
-    const isModerationEndpoint = pathAction === 'moderation' || url.pathname.includes('/invites/moderation');
+    const isValidateEndpoint = pathAction === 'validate' || url.pathname.includes('/invites/validate') || req.query?.path === 'validate';
+    const isDiagnosticEndpoint = pathAction === 'diagnostic' || url.pathname.includes('/invites/diagnostic') || req.query?.path === 'diagnostic';
+    const isToggleAdminEndpoint = pathAction === 'toggle-admin' || url.pathname.includes('/invites/toggle-admin') || req.query?.path === 'toggle-admin';
+    const isTogglePlusEndpoint = pathAction === 'toggle-plus' || url.pathname.includes('/invites/toggle-plus') || req.query?.path === 'toggle-plus';
+    const isDeleteEndpoint = pathAction === 'delete' || url.pathname.includes('/invites/delete') || req.query?.path === 'delete';
+    const isModerationEndpoint = pathAction === 'moderation' || url.pathname.includes('/invites/moderation') || req.query?.path === 'moderation';
     // Sharelink endpoint moved to features.js
-    const isSharelinkEndpoint = pathAction === 'sharelink' || url.pathname.includes('/sharelink') || bodyAction === 'sharelink';
-    const isSharelinkInfoEndpoint = pathAction === 'sharelink-info' || url.pathname.includes('/sharelink-info');
-    const isDynamicInviteEndpoint = pathAction === 'dynamic' || url.pathname.includes('/invites/dynamic') || req.query.inviteCode;
-    const isRedeemEndpoint = pathAction === 'redeem' || url.pathname.includes('/invites/redeem') || bodyAction === 'redeem' || req.query.action === 'redeem';
+    const isSharelinkEndpoint = pathAction === 'sharelink' || url.pathname.includes('/sharelink') || bodyAction === 'sharelink' || req.query?.path === 'sharelink';
+    const isSharelinkInfoEndpoint = pathAction === 'sharelink-info' || url.pathname.includes('/sharelink-info') || req.query?.path === 'sharelink-info';
+    const isDynamicInviteEndpoint = pathAction === 'dynamic' || url.pathname.includes('/invites/dynamic') || req.query?.inviteCode || req.query?.path === 'dynamic';
+    const isRedeemEndpoint = pathAction === 'redeem' || url.pathname.includes('/invites/redeem') || bodyAction === 'redeem' || req.query?.action === 'redeem' || req.query?.path === 'redeem';
 
     // Route to appropriate handler
     if (isValidateEndpoint && req.method === 'POST') {

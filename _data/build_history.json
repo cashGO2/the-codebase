@@ -1,5 +1,47 @@
 [
   {
+    "build_id": "a295aa89-04b0-4e8a-b2df-5bcf0550d810",
+    "timestamp": "2026-06-07T06:13:32.405Z",
+    "date": "6/7/2026",
+    "time": "11:43:32 AM",
+    "build_number": 80
+  },
+  {
+    "build_id": "a272b3b1-8179-4ef8-9a82-cfbef02a7dde",
+    "timestamp": "2026-06-04T13:15:43.970Z",
+    "date": "6/4/2026",
+    "time": "6:45:43 PM",
+    "build_number": 79
+  },
+  {
+    "build_id": "85fc63b9-644b-481b-af6d-39744c598892",
+    "timestamp": "2026-06-01T10:46:06.685Z",
+    "date": "6/1/2026",
+    "time": "4:16:06 PM",
+    "build_number": 78
+  },
+  {
+    "build_id": "d9883178-111e-42f8-bf63-3bc1e9e156dc",
+    "timestamp": "2026-06-01T10:44:02.253Z",
+    "date": "6/1/2026",
+    "time": "4:14:02 PM",
+    "build_number": 77
+  },
+  {
+    "build_id": "79e33080-d972-41ed-adcd-22975a6b9c0c",
+    "timestamp": "2026-06-01T10:14:21.316Z",
+    "date": "6/1/2026",
+    "time": "3:44:21 PM",
+    "build_number": 76
+  },
+  {
+    "build_id": "ecbffac2-dd75-44c5-8c9f-5cf0ece994a6",
+    "timestamp": "2026-06-01T10:11:30.131Z",
+    "date": "6/1/2026",
+    "time": "3:41:30 PM",
+    "build_number": 75
+  },
+  {
     "build_id": "a9e66757-97cf-48a2-987f-70b7d5f84f1e",
     "timestamp": "2025-12-08T05:18:01.068Z",
     "date": "12/8/2025",

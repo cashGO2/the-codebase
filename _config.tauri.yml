@@ -1,0 +1,5 @@
+# Merged when JEKYLL_ENV=tauri (desktop/mobile app builds).
+tauri_build: true
+disable_service_worker: true
+force_clear_cache: false
+api_origin: "https://getmaterio.app"

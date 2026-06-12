@@ -120,7 +120,7 @@ async function checkSupabase() {
 async function checkCdnAPI() {
   const startTime = Date.now();
   try {
-    const res = await fetch('https://cdn-materioa.vercel.app/api/health', {
+    const res = await fetch('https://cdn.getmaterio.app/api/health', {
       method: 'GET',
       headers: { 'User-Agent': 'Materio-Health-Check' }
     });
@@ -897,7 +897,7 @@ module.exports = async (req, res) => {
     // --- Build info ---
     const build = {
       version: VERSION,
-      commit: BUILD_COMMIT,
+      enviroment: BUILD_COMMIT,
       builtAt: BUILD_TIME,
       buildId: BUILD_ID,
       region: REGION,

@@ -144,20 +144,20 @@
     "hash": "f4c7eee02a"
   },
   "assets/style/style.css": {
-    "mtime": 1766894607545.0247,
-    "hash": "f42558b4fe"
+    "mtime": 1775556034549.9126,
+    "hash": "42d8ca5af8"
   },
   "assets/style/post.css": {
-    "mtime": 1766903689066.3025,
-    "hash": "943054affb"
+    "mtime": 1774496003177.26,
+    "hash": "6d6694c866"
   },
   "assets/scripts/post.js": {
-    "mtime": 1766903150674.8333,
-    "hash": "1076bf0fca"
+    "mtime": 1774100587934.8877,
+    "hash": "2ad432554a"
   },
   "assets/scripts/post-base.js": {
-    "mtime": 1764408366753.2207,
-    "hash": "ad0445a4dd"
+    "mtime": 1775556034560.4612,
+    "hash": "6dcdbbb2cf"
   },
   "assets/style/page.css": {
     "mtime": 1765012657632.7578,
@@ -168,32 +168,32 @@
     "hash": "4e07f98f10"
   },
   "account/css/styles.css": {
-    "mtime": 1764324815654.7646,
-    "hash": "a0150c5014"
+    "mtime": 1774600553839.2563,
+    "hash": "791b0bf2e7"
   },
   "account/css/redesigned-styles.css": {
-    "mtime": 1764324815654.7646,
-    "hash": "5f6870eebf"
+    "mtime": 1775565767017.7053,
+    "hash": "9d44da759a"
   },
   "assets/style/main.css": {
-    "mtime": 1766848241440.464,
-    "hash": "8dd13c21af"
+    "mtime": 1781252291232.184,
+    "hash": "67d6fbd33f"
   },
   "assets/style/notification.css": {
-    "mtime": 1764324816087.8276,
-    "hash": "148f86e556"
+    "mtime": 1774496003171.6597,
+    "hash": "5037ae8ad9"
   },
   "assets/style/gestures.css": {
     "mtime": 1764324816085.26,
     "hash": "4f497e5e66"
   },
   "assets/style/ota-update.css": {
-    "mtime": 1764324816088.3374,
-    "hash": "c361a8488a"
+    "mtime": 1774496003173.2527,
+    "hash": "2b67da370f"
   },
   "assets/scripts/main.js": {
-    "mtime": 1766848938309.0144,
-    "hash": "846238a37c"
+    "mtime": 1781241253816.1345,
+    "hash": "cc5f6d3794"
   },
   "assets/scripts/theme.js": {
     "mtime": 1766743987746.5898,
@@ -204,20 +204,20 @@
     "hash": "d4657907ac"
   },
   "assets/scripts/advanced.js": {
-    "mtime": 1766675642915.3142,
-    "hash": "9da99bdf2a"
+    "mtime": 1775493552637.3926,
+    "hash": "3b0a9c394a"
   },
   "assets/scripts/pdf-downloads.js": {
-    "mtime": 1764324816072.979,
-    "hash": "4d67a7023f"
+    "mtime": 1770544784093.0635,
+    "hash": "c3a945e907"
   },
   "assets/scripts/caching.js": {
-    "mtime": 1764488336115.6787,
-    "hash": "e0cb88a88d"
+    "mtime": 1781240857415.5215,
+    "hash": "00430b8e5b"
   },
   "assets/scripts/downloads-ui.js": {
-    "mtime": 1764324816072.979,
-    "hash": "15a326ac24"
+    "mtime": 1775493552636.391,
+    "hash": "e57c86d7e5"
   },
   "assets/scripts/profile-image.js": {
     "mtime": 1764324816072.979,
@@ -236,64 +236,64 @@
     "hash": "848b8a925f"
   },
   "oread/web/viewer.css": {
-    "mtime": 1766674715973.1284,
-    "hash": "c7c4fd95ab"
+    "mtime": 1780291289703.677,
+    "hash": "e1f23d91e6"
   },
   "oread/web/icons-inline.css": {
     "mtime": 1766673767027.341,
     "hash": "2ebdea4e94"
   },
   "oread/web/themesync.css": {
-    "mtime": 1764324838793.412,
-    "hash": "da04123fbd"
+    "mtime": 1775537078693.9434,
+    "hash": "bf673a323f"
   },
   "oread/web/intelligence.js": {
-    "mtime": 1764477891889.5178,
-    "hash": "e3464cb789"
+    "mtime": 1774518739339.9648,
+    "hash": "5902d068b0"
   },
   "oread/web/showbtnrq.js": {
-    "mtime": 1764478168804.7998,
-    "hash": "09928dc146"
+    "mtime": 1770548067172.9329,
+    "hash": "548a255340"
   },
   "oread/web/overlays.js": {
-    "mtime": 1766673221760.5706,
-    "hash": "a540e7e4bd"
+    "mtime": 1776322817666.42,
+    "hash": "ca79522fd7"
   },
   "oread/web/keybinds.js": {
-    "mtime": 1764324838707.3364,
-    "hash": "fe6f847fec"
+    "mtime": 1780148289053.2715,
+    "hash": "81b96e8008"
   },
   "account/js/auth.js": {
-    "mtime": 1765716107145.4058,
-    "hash": "57ba33bddc"
+    "mtime": 1770356449866.795,
+    "hash": "1002fa8794"
   },
   "account/js/signup.js": {
-    "mtime": 1764324815661.8457,
-    "hash": "8f330c8f50"
+    "mtime": 1775892853361.2932,
+    "hash": "68b76efa8b"
   },
   "account/js/ux-enhancers.js": {
-    "mtime": 1764324815662.359,
-    "hash": "b366955f2a"
+    "mtime": 1774083700895.7146,
+    "hash": "6bf590a706"
   },
   "account/js/profile.js": {
-    "mtime": 1766828861690.671,
-    "hash": "38cdb00a70"
+    "mtime": 1781239456816.0547,
+    "hash": "778fab569f"
   },
   "account/js/login.js": {
-    "mtime": 1765714755740.3225,
-    "hash": "4164ad09dd"
+    "mtime": 1775654403251.555,
+    "hash": "7570248f66"
   },
   "account/js/forgot-password.js": {
-    "mtime": 1764324815659.8237,
-    "hash": "f4c7eee02a"
+    "mtime": 1774613790512.2578,
+    "hash": "8e728642ba"
   },
   "account/js/google-drive.js": {
     "mtime": 1764324815659.8237,
     "hash": "20b7b70f65"
   },
   "assets/scripts/keyboard-shortcuts.js": {
-    "mtime": 1766848938164.3506,
-    "hash": "d28f470739"
+    "mtime": 1770542229833.4558,
+    "hash": "6a7ab977c5"
   },
   "oread/web/locale/locale.json": {
     "mtime": 1764324838744.3965,
@@ -308,23 +308,95 @@
     "hash": "664c230cae"
   },
   "account/js/user-dashboard.js": {
-    "mtime": 1766288491167.3508,
-    "hash": "83a286c241"
+    "mtime": 1777044740730.259,
+    "hash": "4390ace0a5"
   },
   "assets/data/releases.json": {
-    "mtime": 1764739630885.7332,
-    "hash": "20253c725f"
+    "mtime": 1780295203015.881,
+    "hash": "0c909ac511"
   },
   "assets/data/promo.json": {
-    "mtime": 1766904466323.626,
-    "hash": "4c935ab4ca"
+    "mtime": 1780306805284.7327,
+    "hash": "e3224c8759"
   },
   "assets/data/events.json": {
-    "mtime": 1766744685337.5095,
-    "hash": "6256560fe6"
+    "mtime": 1775912628890.2966,
+    "hash": "15fa7a28d1"
   },
   "version.json": {
     "mtime": 1764324839078.4263,
     "hash": "49a464fdfc"
+  },
+  "assets/style/notebook.css": {
+    "mtime": 1774496003170.6604,
+    "hash": "776b00d647"
+  },
+  "assets/scripts/tauri-bridge.js": {
+    "mtime": 1780578578308.7842,
+    "hash": "5a2da8b35b"
+  },
+  "assets/scripts/referral.js": {
+    "mtime": 1770734980586.21,
+    "hash": "a222a699e8"
+  },
+  "assets/style/leaderboard.css": {
+    "mtime": 1779118103195.9487,
+    "hash": "f689b367b7"
+  },
+  "assets/scripts/bundle.js": {
+    "mtime": 1768136927245.2666,
+    "hash": "0195c8c096"
+  },
+  "assets/scripts/forms.js": {
+    "mtime": 1781240857430.4116,
+    "hash": "42b1b0ff8d"
+  },
+  "assets/scripts/exam-card.js": {
+    "mtime": 1781240857425.2385,
+    "hash": "631e5327f0"
+  },
+  "assets/scripts/notebooks-tab.js": {
+    "mtime": 1770903162841.8025,
+    "hash": "b767cdc83a"
+  },
+  "assets/scripts/leaderboard.js": {
+    "mtime": 1779103609800.269,
+    "hash": "e6f28d3998"
+  },
+  "oread/web/thinklet.js": {
+    "mtime": 1780294817744.9246,
+    "hash": "cadca1968e"
+  },
+  "account/js/upgrade.js": {
+    "mtime": 1770006300077.176,
+    "hash": "92ef8b16c8"
+  },
+  "account/css/auth-redesign.css": {
+    "mtime": 1775287152814.7898,
+    "hash": "868270e92c"
+  },
+  "account/css/profile.css": {
+    "mtime": 1777043695811.156,
+    "hash": "4eca4fa96f"
+  },
+  "assets/scripts/sync.js": {
+    "mtime": 1777042533464.944,
+    "hash": "598cd7d3c3"
+  },
+  "assets/data/posts.json": {
+    "mtime": 1774541004107.6284,
+    "hash": "1bbb19d7ed"
+  },
+  "assets/data/forms-config.json": {
+    "mtime": 1780311573249.523,
+    "hash": "50a26753ac"
+  },
+  "assets/data/formActivity.json": {
+    "mtime": 1780311578233.7627,
+    "hash": "6376455975"
+  },
+  "assets/scripts/custom-select.js": {
+    "mtime": 1781252341246.1836,
+    "hash": "375f046b6b"
   }
 }

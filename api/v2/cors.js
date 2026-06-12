@@ -1,27 +1,14 @@
+const { isAllowedOrigin } = require('../_config_shared/cors-origins');
+
 // Handle CORS preflight requests for all functions
 module.exports = async (req, res) => {
   // Return CORS headers for OPTIONS requests
   if (req.method === 'OPTIONS') {
-    // Get the requesting origin
     const origin = req.headers.origin;
 
-    // Determine if this origin should be allowed
-    const allowedOrigins = [
-      'http://localhost:8888',
-      'https://materioa.netlify.app',
-      'https://materioa.vercel.app',
-      'https://materioapp.in',
-      'http://localhost:5173',
-      'http://localhost:1000/',
-      'https://insightroom.vercel.app'
-    ];
-    // Set Origin to the requesting origin if it's allowed, otherwise use wildcard
-    // CORS spec requires a single origin value, not a comma-separated list
     let corsOrigin = '*';
-    if (origin) {
-      if (allowedOrigins.includes(origin) || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
-        corsOrigin = origin;
-      }
+    if (origin && isAllowedOrigin(origin)) {
+      corsOrigin = origin;
     }
 
     console.log(`CORS preflight request from origin: ${origin}, responding with: ${corsOrigin}`);

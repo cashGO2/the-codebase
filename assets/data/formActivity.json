@@ -34,8 +34,8 @@
                 "type": "pageLoad",
                 "delay": 0,
                 "conditions": {
-                    "minVisits": 3,
-                    "minDaysSinceFirstVisit": 1,
+                    "minVisits": 1,
+                    "minDaysSinceFirstVisit": 0,
                     "pages": [
                         "home"
                     ],
@@ -43,7 +43,7 @@
                     "userType": "any"
                 }
             },
-            "frequency": "once",
+            "frequency": "daily",
             "customFrequencyHours": null,
             "showOn": "all",
             "startDate": null,

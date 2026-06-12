@@ -386,7 +386,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <i class="fa-solid fa-triangle-exclamation" style="font-size: 72px; color:#ff8400;"></i>
     <p class="popup-message" style="font-weight:600;">Looks like this one's missing</p>
     <p class="popup-errcode">status: ${getStatusText(headResponse.status)}</p>
-    <button class="btn primary-btn" onclick="openDynamicForm('contribution', true)" style="corner-shape: squircle; border-radius: 25px;">
+    <button class="btn primary-btn" onclick="openDynamicForm('contribution')" style="corner-shape: squircle; border-radius: 25px;">
         <i class="fa-regular fa-circle-plus" style="margin-right:10px;"></i>Contribute
     </button>
     <p style="font-size:12px; font-weight:600; max-width: 400px; word-wrap: break-word;">
@@ -494,10 +494,10 @@ document.addEventListener('DOMContentLoaded', function () {
             // Special handling for Vault (semester 9999)
             if (semester === '9999') {
                 // Format: pdfs/9999/UUID/vault/filename.pdf
-                pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/vault/${topic}.pdf`;
+                pdfUrl = `https://cdn.getmaterio.app/pdfs/${semester}/${subject}/vault/${topic}.pdf`;
             } else {
                 // Normal format: pdfs/semester/subject/topic.pdf
-                pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/${topic}.pdf`;
+                pdfUrl = `https://cdn.getmaterio.app/pdfs/${semester}/${subject}/${topic}.pdf`;
             }
 
             // Transform to local CDN if enabled

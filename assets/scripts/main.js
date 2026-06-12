@@ -627,7 +627,7 @@ function buildApiPdfFallbackUrl(pdfUrl) {
       return null;
     }
 
-    return `https://cdn-materioa.vercel.app/api/pdfs/${relativePdfPath}`;
+    return `https://cdn.getmaterio.app/api/pdfs/${relativePdfPath}`;
   } catch (error) {
     return null;
   }
@@ -820,10 +820,10 @@ submitButton.addEventListener("click", async () => {
     // Special handling for Vault (semester 9999)
     if (semester === "9999") {
       // Format: pdfs/9999/UUID/vault/filename.pdf
-      pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/vault/${topic}.pdf`;
+      pdfUrl = `https://cdn.getmaterio.app/pdfs/${semester}/${subject}/vault/${topic}.pdf`;
     } else {
       // Normal format: pdfs/semester/subject/topic.pdf
-      pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/${topic}.pdf`;
+      pdfUrl = `https://cdn.getmaterio.app/pdfs/${semester}/${subject}/${topic}.pdf`;
     }
 
     // Transform to local CDN if enabled
@@ -843,10 +843,10 @@ submitButton.addEventListener("click", async () => {
     // Special handling for Vault (semester 9999)
     if (semester === "9999") {
       // Format: pdfs/9999/UUID/vault/filename.pdf
-      pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/vault/${topic}.pdf`;
+      pdfUrl = `https://cdn.getmaterio.app/pdfs/${semester}/${subject}/vault/${topic}.pdf`;
     } else {
       // Normal format: pdfs/semester/subject/topic.pdf
-      pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/${topic}.pdf`;
+      pdfUrl = `https://cdn.getmaterio.app/pdfs/${semester}/${subject}/${topic}.pdf`;
     }
 
     // Transform to local CDN if enabled
@@ -880,7 +880,7 @@ popup.addEventListener("animationend", (event) => {
  */
 function materioShareModal(actualUrl) {
   // Extract topic/subject/semester from the CDN URL
-  // Format: https://cdn-materioa.vercel.app/pdfs/{semester}/{subject}/{topic}.pdf
+  // Format: https://cdn.getmaterio.app/pdfs/{semester}/{subject}/{topic}.pdf
   let pdfSemester = "",
     pdfSubject = "",
     pdfTopic = "";
@@ -1242,8 +1242,8 @@ async function checkCustomPdfOpen() {
 document.addEventListener("DOMContentLoaded", function () {
   const libUrl =
     window.MaterioLocalCDN?.transformUrl(
-      "https://cdn-materioa.vercel.app/databases/beta/resource.lib.json",
-    ) || "https://cdn-materioa.vercel.app/databases/beta/resource.lib.json";
+      "https://cdn.getmaterio.app/databases/beta/resource.lib.json",
+    ) || "https://cdn.getmaterio.app/databases/beta/resource.lib.json";
   fetch(libUrl)
     .then((response) => {
       if (!response.ok) {
@@ -1269,7 +1269,7 @@ document.addEventListener("DOMContentLoaded", function () {
         option.textContent = semesterMapping[sem]
           ? semesterMapping[sem]
           : "Semester " + sem;
-        if (sem === "6") {
+        if (sem === "7") {
           option.selected = true;
         }
         semesterSelect.appendChild(option);
@@ -1639,8 +1639,8 @@ window.setIntentionalFullscreenExit = (value) => {
 function loadResourcesData(restoreSemester = null) {
   const libUrl =
     window.MaterioLocalCDN?.transformUrl(
-      "https://cdn-materioa.vercel.app/databases/beta/resource.lib.json",
-    ) || "https://cdn-materioa.vercel.app/databases/beta/resource.lib.json";
+      "https://cdn.getmaterio.app/databases/beta/resource.lib.json",
+    ) || "https://cdn.getmaterio.app/databases/beta/resource.lib.json";
   return fetch(libUrl)
     .then((response) => {
       if (!response.ok) {
@@ -1690,7 +1690,7 @@ function loadResourcesData(restoreSemester = null) {
         finalSemesterSelect.value = currentSemester;
       } else {
         // Default to semester 6
-        finalSemesterSelect.value = "6";
+        finalSemesterSelect.value = "7";
       }
 
       // Chain listeners for automated selection
@@ -2253,7 +2253,7 @@ document.addEventListener("DOMContentLoaded", function () {
     readingForm.reset();
     // Also manually reset selects to be sure (browser might persist values)
     if (semesterSelect) {
-      semesterSelect.value = "6";
+      semesterSelect.value = "7";
       semesterSelect.dispatchEvent(new Event("change"));
     }
     if (subjectSelect) subjectSelect.value = "";
@@ -3874,10 +3874,10 @@ async function openSearchResultPdf(event, semester, subject, topic) {
   let pdfUrl;
   if (semester === "9999") {
     // Special handling for Vault (semester 9999)
-    pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/vault/${topic}.pdf`;
+    pdfUrl = `https://cdn.getmaterio.app/pdfs/${semester}/${subject}/vault/${topic}.pdf`;
   } else {
     // Normal format: pdfs/semester/subject/topic.pdf
-    pdfUrl = `https://cdn-materioa.vercel.app/pdfs/${semester}/${subject}/${topic}.pdf`;
+    pdfUrl = `https://cdn.getmaterio.app/pdfs/${semester}/${subject}/${topic}.pdf`;
   }
 
   // Transform to local CDN if enabled
