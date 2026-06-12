@@ -31,7 +31,11 @@
     backdrop.style.display = 'flex';
     backdrop.style.opacity = '0';
     backdrop.addEventListener('click', (e) => {
-      if (e.target === backdrop) closeModal();
+      // Prevent synthetic clicks from immediately closing the modal
+      const openedTime = parseInt(backdrop.dataset.openedTime || '0', 10);
+      if (e.target === backdrop && Date.now() - openedTime > 400) {
+          closeModal();
+      }
     });
 
     modal = document.createElement('div');
@@ -389,6 +393,9 @@
       backdrop.style.opacity = '1';
       modal.style.transform = '';
       document.body.style.overflow = 'hidden';
+      
+      // Update opened time so synthetic clicks don't close it instantly
+      backdrop.dataset.openedTime = Date.now();
 
       requestAnimationFrame(() => {
           const selected = newView.querySelector('.selected');

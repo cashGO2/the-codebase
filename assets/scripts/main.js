@@ -2646,8 +2646,8 @@ document.addEventListener("DOMContentLoaded", function () {
           recommendedPosts.style.display = "flex";
         }
 
-        // Limit to 5 posts and create HTML
-        const postsToShow = filteredPosts.slice(0, 5);
+        // Show all filtered posts without limit
+        const postsToShow = filteredPosts;
         const postsHTML = postsToShow
           .map((post, index) => createPostHTML(post, index + 1))
           .join("");
