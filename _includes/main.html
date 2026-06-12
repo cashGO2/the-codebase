@@ -1203,6 +1203,28 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="wallpaper-preview-card" data-wallpaper="sereine" data-bg-image="sereine">
+                                <div class="wallpaper-preview sereine-preview" id="sereinePreview"
+                                    style="background-image: url('https://sereine.vercel.app/api/wallpapers/random?fallback=true'); background-size: cover; background-position: center;">
+                                    <div class="wallpaper-overlay">
+                                        <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                                            <span class="wallpaper-name">Sereine Carousel</span>
+                                            <div class="sereine-settings-dropdown-wrapper" id="sereineSettingsDropdownWrapper">
+                                                <button class="sereine-settings-btn" id="sereineSettingsTrigger" title="Carousel Settings">
+                                                    <i class="fa-solid fa-gear"></i>
+                                                </button>
+                                                <div class="sereine-settings-dropdown" id="sereineSettingsDropdown">
+                                                    <div class="sereine-setting-item" data-value="everytime">Everytime</div>
+                                                    <div class="sereine-setting-item" data-value="everyday">Everyday</div>
+                                                    <div class="sereine-setting-item" data-value="random">Random</div>
+                                                    <div class="sereine-setting-item" data-value="3days">Every 3 days</div>
+                                                    <div class="sereine-setting-item" data-value="week">Every week</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <!-- Custom Upload Wallpaper Card -->
                             <div class="wallpaper-preview-card wallpaper-upload-card" data-wallpaper="custom"
                                 id="customWallpaperCard">
@@ -1405,5 +1427,18 @@
             <!-- Results will be populated here -->
         </div>
 
+    </div>
+    
+    <!-- Sereine Carousel Watermark -->
+    <div id="sereineWatermark" style="display: none;">
+        <span id="sereineArtistText">Image by<br><strong id="sereineArtistName"></strong></span>
+        <div class="sereine-actions">
+            <button id="sereineShuffleBtn" title="Shuffle Wallpaper">
+                <i class="fa-solid fa-shuffle"></i>
+            </button>
+            <button id="sereineSaveBtn" title="Save to Store">
+                <i class="fa-regular fa-heart"></i>
+            </button>
+        </div>
     </div>
 </div>

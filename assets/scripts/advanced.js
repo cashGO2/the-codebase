@@ -26,6 +26,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function setWallpaperAsBackground(wallpaperType) {
         const selectedCard = document.querySelector(`[data-wallpaper="${wallpaperType}"]`);
+        const sereineWatermark = document.getElementById('sereineWatermark');
+        if (sereineWatermark) {
+            const currentTab = getCookie("activeTab") || "home";
+            sereineWatermark.style.display = (wallpaperType === 'sereine' && currentTab === 'home') ? 'flex' : 'none';
+        }
+
         if (selectedCard) {
             const bgImage = selectedCard.dataset.bgImage;
             if (wallpaperType === 'dynamic') {
@@ -34,6 +40,9 @@ document.addEventListener('DOMContentLoaded', function () {
             } else if (wallpaperType === 'christmas-dynamic') {
                 // Apply Christmas dynamic wallpaper
                 applyChristmasDynamicWallpaper();
+            } else if (wallpaperType === 'sereine') {
+                // Apply Sereine Carousel
+                applySereineWallpaper();
             } else if (wallpaperType === 'custom') {
                 // Apply custom uploaded wallpaper
                 applyCustomWallpaper();
@@ -303,10 +312,238 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Sereine Carousel Wallpaper Functions
+    let sereineWallpaperInterval = null;
+    let currentSereineImageUrl = null;
+
+    async function fetchSereineWallpaper(force = false) {
+        const frequency = localStorage.getItem('materio_sereine_frequency') || 'everytime';
+        const lastFetchTime = parseInt(localStorage.getItem('materio_sereine_last_fetch') || '0', 10);
+        const cachedWallpaperStr = localStorage.getItem('materio_sereine_cache');
+        const now = Date.now();
+
+        let shouldFetch = force;
+        
+        if (!shouldFetch) {
+            if (frequency === 'everytime') {
+                const sessionFetch = sessionStorage.getItem('materio_sereine_session_fetch');
+                if (!sessionFetch) {
+                    shouldFetch = true;
+                }
+            } else if (frequency === 'everyday') {
+                // Fetch if 24 hours have passed
+                shouldFetch = (now - lastFetchTime) > 24 * 60 * 60 * 1000;
+            } else if (frequency === '3days') {
+                // Fetch if 72 hours have passed
+                shouldFetch = (now - lastFetchTime) > 72 * 60 * 60 * 1000;
+            } else if (frequency === 'week') {
+                // Fetch if 7 days have passed
+                shouldFetch = (now - lastFetchTime) > 7 * 24 * 60 * 60 * 1000;
+            } else if (frequency === 'random') {
+                // For random, we'll assign a random interval next target time in localStorage
+                let nextTarget = parseInt(localStorage.getItem('materio_sereine_next_random') || '0', 10);
+                if (now >= nextTarget) {
+                    shouldFetch = true;
+                }
+            }
+        }
+
+        let wallpaperData = null;
+
+        if (shouldFetch) {
+            try {
+                const response = await fetch('https://sereine.vercel.app/api/wallpapers/random');
+                if (response.ok) {
+                    wallpaperData = await response.json();
+                    localStorage.setItem('materio_sereine_cache', JSON.stringify(wallpaperData));
+                    localStorage.setItem('materio_sereine_last_fetch', now.toString());
+                    if (frequency === 'everytime') {
+                        sessionStorage.setItem('materio_sereine_session_fetch', 'true');
+                    }
+                    
+                    if (frequency === 'random') {
+                        // random between 45 min and 3 days (45 * 60 * 1000 to 72 * 60 * 60 * 1000)
+                        const min = 45 * 60 * 1000;
+                        const max = 72 * 60 * 60 * 1000;
+                        const randomDelay = Math.floor(Math.random() * (max - min + 1) + min);
+                        localStorage.setItem('materio_sereine_next_random', (now + randomDelay).toString());
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to fetch Sereine wallpaper", err);
+            }
+        }
+
+        if (!wallpaperData && cachedWallpaperStr) {
+            try {
+                wallpaperData = JSON.parse(cachedWallpaperStr);
+            } catch (e) {}
+        }
+
+        if (wallpaperData && wallpaperData.imageUrl) {
+            currentSereineImageUrl = wallpaperData.imageUrl;
+            homeElem.style.setProperty("--bg-img", `url('${currentSereineImageUrl}')`);
+            
+            const sereinePreview = document.getElementById('sereinePreview');
+            if (sereinePreview) {
+                sereinePreview.style.backgroundImage = `url('${currentSereineImageUrl}')`;
+            }
+
+            const artistNameElem = document.getElementById('sereineArtistName');
+            if (artistNameElem && wallpaperData.artistName) {
+                artistNameElem.textContent = wallpaperData.artistName;
+            }
+        }
+    }
+
+    function applySereineWallpaper() {
+        // Fetch or apply cached based on rules
+        fetchSereineWallpaper();
+    }
+
+    function startSereineWallpaperTimer() {
+        if (sereineWallpaperInterval) {
+            clearInterval(sereineWallpaperInterval);
+        }
+
+        // Check every 10 minutes if we should fetch (useful for everyday/random/week intervals while app is open)
+        sereineWallpaperInterval = setInterval(() => {
+            const selectedWallpaper = getCookie("selectedWallpaper");
+            if (selectedWallpaper === 'sereine') {
+                const frequency = localStorage.getItem('materio_sereine_frequency') || 'everytime';
+                if (frequency !== 'everytime') {
+                    fetchSereineWallpaper(false);
+                }
+            }
+        }, 10 * 60 * 1000); // 10 mins
+    }
+
+    function stopSereineWallpaperTimer() {
+        if (sereineWallpaperInterval) {
+            clearInterval(sereineWallpaperInterval);
+            sereineWallpaperInterval = null;
+        }
+    }
+
+    // Initialize Sereine UI Interactions
+    function initSereineUI() {
+        const settingsTrigger = document.getElementById('sereineSettingsTrigger');
+        const settingsDropdown = document.getElementById('sereineSettingsDropdown');
+        const wrapper = document.getElementById('sereineSettingsDropdownWrapper');
+        const items = document.querySelectorAll('.sereine-setting-item');
+        const shuffleBtn = document.getElementById('sereineShuffleBtn');
+        const saveBtn = document.getElementById('sereineSaveBtn');
+
+        if (settingsTrigger && settingsDropdown && wrapper) {
+            settingsTrigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                settingsDropdown.classList.toggle('show');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!wrapper.contains(e.target)) {
+                    settingsDropdown.classList.remove('show');
+                }
+            });
+
+            const currentFreq = localStorage.getItem('materio_sereine_frequency') || 'everytime';
+            items.forEach(item => {
+                if (item.dataset.value === currentFreq) {
+                    item.classList.add('selected');
+                }
+
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    items.forEach(i => i.classList.remove('selected'));
+                    item.classList.add('selected');
+                    const newFreq = item.dataset.value;
+                    localStorage.setItem('materio_sereine_frequency', newFreq);
+                    settingsDropdown.classList.remove('show');
+                    
+                    if (newFreq === 'random') {
+                        // Immediately set next target and fetch
+                        localStorage.setItem('materio_sereine_next_random', '0');
+                    } else if (newFreq === 'everytime') {
+                        localStorage.setItem('materio_sereine_last_fetch', '0');
+                        sessionStorage.removeItem('materio_sereine_session_fetch');
+                    }
+                    
+                    const selectedWallpaper = getCookie("selectedWallpaper");
+                    if (selectedWallpaper === 'sereine') {
+                        fetchSereineWallpaper(true);
+                    }
+                });
+            });
+        }
+
+        if (shuffleBtn) {
+            shuffleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                
+                // Add rotation animation
+                shuffleBtn.style.transition = 'transform 0.5s ease';
+                shuffleBtn.style.transform = 'rotate(180deg)';
+                setTimeout(() => { shuffleBtn.style.transform = 'none'; }, 500);
+
+                if (window.MaterioHaptics) {
+                    window.MaterioHaptics.vibrate('tick');
+                }
+                fetchSereineWallpaper(true);
+            });
+        }
+
+        if (saveBtn) {
+            saveBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (currentSereineImageUrl) {
+                    try {
+                        const artistNameElem = document.getElementById('sereineArtistName');
+                        const artistName = artistNameElem ? artistNameElem.textContent : 'Unknown Artist';
+                        addCustomWallpaperToCollection(currentSereineImageUrl, `Sereine - ${artistName}`);
+                        
+                        // Show success
+                        saveBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                        saveBtn.style.color = '#28a745';
+                        setTimeout(() => {
+                            saveBtn.innerHTML = '<i class="fa-regular fa-heart"></i>';
+                            saveBtn.style.color = 'white';
+                        }, 2000);
+                        
+                        if (window.MaterioHaptics) {
+                            window.MaterioHaptics.vibrate('success');
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+            });
+        }
+        
+        // Initialize if currently selected
+        const selectedWallpaper = getCookie("selectedWallpaper");
+        if (selectedWallpaper === 'sereine') {
+            startSereineWallpaperTimer();
+        }
+
+        // Listen for tab changes to show/hide watermark
+        document.addEventListener('tabOpened', function(e) {
+            const watermark = document.getElementById('sereineWatermark');
+            if (watermark) {
+                const currentWallpaper = getCookie("selectedWallpaper");
+                if (e.detail.tab === 'home' && currentWallpaper === 'sereine') {
+                    watermark.style.display = 'flex';
+                } else {
+                    watermark.style.display = 'none';
+                }
+            }
+        });
+    }
+
     // Custom Upload Wallpaper Functions
     const CUSTOM_WALLPAPER_ACTIVE_KEY = 'materio_custom_wallpaper';
     const CUSTOM_WALLPAPER_COLLECTION_KEY = 'materio_custom_wallpapers';
-    const MAX_CUSTOM_WALLPAPERS = 8;
+    const MAX_CUSTOM_WALLPAPERS = 50;
     let customWallpaperStoreModal = null;
 
     function readCustomWallpaperCollection() {
@@ -963,6 +1200,8 @@ document.addEventListener('DOMContentLoaded', function () {
             startDynamicWallpaperTimer();
         } else if (savedWallpaper === 'christmas-dynamic') {
             startChristmasWallpaperTimer();
+        } else if (savedWallpaper === 'sereine') {
+            startSereineWallpaperTimer();
         }
     }
 
@@ -993,12 +1232,19 @@ document.addEventListener('DOMContentLoaded', function () {
             if (wallpaperType === 'dynamic') {
                 startDynamicWallpaperTimer();
                 stopChristmasWallpaperTimer();
+                stopSereineWallpaperTimer();
             } else if (wallpaperType === 'christmas-dynamic') {
                 startChristmasWallpaperTimer();
                 stopDynamicWallpaperTimer();
+                stopSereineWallpaperTimer();
+            } else if (wallpaperType === 'sereine') {
+                startSereineWallpaperTimer();
+                stopDynamicWallpaperTimer();
+                stopChristmasWallpaperTimer();
             } else {
                 stopDynamicWallpaperTimer();
                 stopChristmasWallpaperTimer();
+                stopSereineWallpaperTimer();
             }
 
             // Save the selection
@@ -1782,4 +2028,6 @@ document.addEventListener('DOMContentLoaded', function () {
             setCookie("nightWarmth", value, 30);
         });
     }
+
+    initSereineUI();
 });

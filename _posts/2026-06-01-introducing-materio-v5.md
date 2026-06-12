@@ -10,6 +10,7 @@ no-ads: true
 hide_print: true
 hide_author: true
 ---
+
 ## Search, Reimagined
 Search launched in November 2025 and has been a core part of how people navigate Materio. It worked, but rankings were sometimes off. Queries with abbreviations, garbled text, or subject shorthand often returned vague or mismatched results.
 In v5, we've rebuilt search from the ground up. The core algorithm moves from string similarity matching to a keyword-based ranking model, the same approach used by industry-standard search engines. This means search now handles a much wider range of queries accurately, whether that's "Machine Learning chapter 2", "mad qb", or "DM pyq's".
@@ -26,8 +27,12 @@ Note: AI Mode may be slightly slower due to API processing and inference latency
 You can also ask Materio to suggest something to read. "What should I read today?" or "suggest something random" will return a topic based on your selected semester. Good for when you don't know where to start.
 ![Discovery Mode](https://res.cloudinary.com/dvsdsl7iw/image/upload/v1780284689/insightroom/bnfnjmkvjezruplqhjcz.png)
 
+## New way to Navigate
+Version 5 replaces the old dropdown menus with a new navigation modal. Instead of clicking through each dropdown individually, you tap one field and the rest of the selections transition smoothly on their own. The search bar is built right into this modal too, so browsing and searching now live in one place.
+[video: /assets/media/988b80e5-b239-4e83-a0fc-02d6ce7c2a70.webm]
+This is still early and has a few rough edges, but it will get better with time.
 
-## Thinklet
+## Thinklet [Try Here](https://chat.getmaterio.app/)
 Alongside Materio v5, we're launching Thinklet: an AI chatbot built specifically for studying, with Materio MCP as a first-party integration.
 Because Thinklet is built around Materio's MCP rather than bolted on, it follows tool rules more reliably and executes searches with better accuracy than third-party integrations.
 ![Home](https://res.cloudinary.com/dvsdsl7iw/image/upload/v1780283550/insightroom/m2fw5zy7lofsyij1dmbh.png)
