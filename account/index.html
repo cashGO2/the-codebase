@@ -26,6 +26,56 @@
   <script src="https://materioa.github.io/kit/6a787c7335.js" crossorigin="anonymous"></script>
 
   <script>
+    function isSameSiteCallback(callbackUrl) {
+      if (!callbackUrl) return false;
+      if (callbackUrl.startsWith('/') || callbackUrl.startsWith('.')) {
+        return true;
+      }
+      try {
+        const url = new URL(callbackUrl, window.location.origin);
+        if (url.origin === window.location.origin) {
+          return true;
+        }
+        const targetHost = url.hostname;
+        const mainDomain = 'getmaterio.app';
+        if (targetHost === mainDomain || targetHost.endsWith('.' + mainDomain)) {
+          if (targetHost !== 'sso.' + mainDomain) {
+            return true;
+          }
+        }
+      } catch (e) {
+        return true;
+      }
+      return false;
+    }
+
+    // Run redirect check immediately (before DOMContentLoaded) to prevent flashing
+    (function() {
+      const tokenRow = document.cookie.split('; ').find(row => row.startsWith('materio_auth_token='));
+      const tokenLocal = localStorage.getItem('materio_auth_token');
+      const hasToken = !!(tokenRow || tokenLocal);
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const clientId = urlParams.get('client_id');
+      const callback = urlParams.get('callback');
+
+      if (clientId || (callback && !isSameSiteCallback(callback))) {
+        if (hasToken) {
+          // Sync cookie if only in localStorage
+          if (!tokenRow && tokenLocal) {
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + 30);
+            let cookieString = `materio_auth_token=${tokenLocal}; path=/; expires=${expiryDate.toUTCString()}; SameSite=Lax`;
+            if (window.location.hostname.endsWith('getmaterio.app')) {
+              cookieString += '; domain=.getmaterio.app';
+            }
+            document.cookie = cookieString;
+          }
+          window.location.replace('/account/sso/' + window.location.search);
+        }
+      }
+    })();
+
     // Check for dark mode cookie
     document.addEventListener('DOMContentLoaded', function () {
       const darkModeCookie = document.cookie.split('; ').find(row => row.startsWith('darkMode='));
@@ -33,17 +83,16 @@
         document.body.classList.add('dark-mode');
       }
 
-      // Check if user is already logged in
       const tokenRow = document.cookie.split('; ').find(row => row.startsWith('materio_auth_token='));
+      const tokenLocal = localStorage.getItem('materio_auth_token');
+      const hasToken = !!(tokenRow || tokenLocal);
+
       const urlParams = new URLSearchParams(window.location.search);
       const clientId = urlParams.get('client_id');
       const callback = urlParams.get('callback');
 
-      // If client_id or non-same-site callback is present, redirect to SSO if logged in, otherwise return to show login form
+      // If client_id or non-same-site callback is present, we already redirected or need to stay to show login form
       if (clientId || (callback && !isSameSiteCallback(callback))) {
-        if (tokenRow) {
-          window.location.replace('/account/sso/' + window.location.search);
-        }
         return;
       }
 

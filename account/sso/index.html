@@ -312,7 +312,12 @@
       // Check authentication state: if not logged in, redirect to login page
       const token = getAuthToken();
       if (!token) {
-        window.location.replace('/account' + window.location.search);
+        let loginUrl = '/account';
+        if (window.location.hostname.startsWith('sso.')) {
+          const mainHost = window.location.hostname.substring(4); // Remove 'sso.'
+          loginUrl = `${window.location.protocol}//${mainHost}/account`;
+        }
+        window.location.replace(loginUrl + window.location.search);
         return;
       }
 

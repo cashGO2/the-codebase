@@ -132,7 +132,11 @@ function isAuthenticated() {
     console.log('Cookie missing but localStorage has token - restoring cookie');
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + 30);
-    document.cookie = `${LOCAL_STORAGE_TOKEN_KEY}=${localStorageToken}; path=/; expires=${expiryDate.toUTCString()}; SameSite=Lax`;
+    let cookieString = `${LOCAL_STORAGE_TOKEN_KEY}=${localStorageToken}; path=/; expires=${expiryDate.toUTCString()}; SameSite=Lax`;
+    if (window.location.hostname.endsWith('getmaterio.app')) {
+      cookieString += '; domain=.getmaterio.app';
+    }
+    document.cookie = cookieString;
     return true;
   }
 
@@ -156,14 +160,22 @@ function setAuthToken(token) {
   // Also set it in a cookie for session persistence and server-side compatibility
   const expiryDate = new Date();
   expiryDate.setDate(expiryDate.getDate() + 30); // 30 days expiry
-  document.cookie = `${LOCAL_STORAGE_TOKEN_KEY}=${token}; path=/; expires=${expiryDate.toUTCString()}; SameSite=Lax`;
+  let cookieString = `${LOCAL_STORAGE_TOKEN_KEY}=${token}; path=/; expires=${expiryDate.toUTCString()}; SameSite=Lax`;
+  if (window.location.hostname.endsWith('getmaterio.app')) {
+    cookieString += '; domain=.getmaterio.app';
+  }
+  document.cookie = cookieString;
 }
 
 function clearAuthToken() {
   localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
 
   // Also clear the cookie
-  document.cookie = `${LOCAL_STORAGE_TOKEN_KEY}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
+  let cookieString = `${LOCAL_STORAGE_TOKEN_KEY}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
+  if (window.location.hostname.endsWith('getmaterio.app')) {
+    cookieString += '; domain=.getmaterio.app';
+  }
+  document.cookie = cookieString;
 }
 
 function redirectToProfile() {
