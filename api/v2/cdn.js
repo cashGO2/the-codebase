@@ -192,10 +192,15 @@ async function uploadGitHubFile(req, octokit, owner, repo, origin, res) {
   try {
     console.log('Upload request received');
 
+    // Increase limits if running locally
+    const isLocalhost = req.headers.host && (req.headers.host.includes('localhost') || req.headers.host.includes('127.0.0.1'));
+    const maxAllowedSize = isLocalhost ? 500 * 1024 * 1024 : 4 * 1024 * 1024;
+
     // Use formidable to parse the request
     const form = new formidable.IncomingForm({
       multiples: false, // Single file upload
-      maxFileSize: 4 * 1024 * 1024, // 4MB - Vercel limit
+      maxFileSize: maxAllowedSize,
+      maxTotalFileSize: maxAllowedSize,
       keepExtensions: true,
     });
 
@@ -226,7 +231,7 @@ async function uploadGitHubFile(req, octokit, owner, repo, origin, res) {
     const fileContent = fs.readFileSync(file.filepath);
 
     // Additional file size validation for the actual file content
-    const NETLIFY_LIMIT = 6 * 1024 * 1024; // 6MB actual Netlify limit
+    const NETLIFY_LIMIT = isLocalhost ? 500 * 1024 * 1024 : 6 * 1024 * 1024;
     if (fileContent.length > NETLIFY_LIMIT) {
       return res.status(413).json({
         error: `File "${fileName}" is too large for current hosting. Maximum size is ${Math.round(NETLIFY_LIMIT / 1024 / 1024)}MB due to Netlify Functions limitations. Your file is ${Math.round(fileContent.length / 1024 / 1024)}MB.`
@@ -624,10 +629,15 @@ async function batchUploadGitHubFiles(req, octokit, owner, repo, origin, res) {
   try {
     console.log('Upload request received');
 
+    // Increase limits if running locally
+    const isLocalhost = req.headers.host && (req.headers.host.includes('localhost') || req.headers.host.includes('127.0.0.1'));
+    const maxAllowedSize = isLocalhost ? 500 * 1024 * 1024 : 4 * 1024 * 1024;
+
     // Use formidable to parse the request
     const form = new formidable.IncomingForm({
       multiples: true,
-      maxFileSize: 4 * 1024 * 1024, // 4MB - Vercel limit
+      maxFileSize: maxAllowedSize,
+      maxTotalFileSize: maxAllowedSize,
       keepExtensions: true,
     });
 
@@ -905,9 +915,14 @@ async function stageUploadFiles(req, octokit, owner, repo, origin, res) {
   try {
     console.log('Stage upload request received');
 
+    // Increase limits if running locally
+    const isLocalhost = req.headers.host && (req.headers.host.includes('localhost') || req.headers.host.includes('127.0.0.1'));
+    const maxAllowedSize = isLocalhost ? 500 * 1024 * 1024 : 4 * 1024 * 1024;
+
     const form = new formidable.IncomingForm({
       multiples: true,
-      maxFileSize: 4 * 1024 * 1024, // 4MB - Vercel limit
+      maxFileSize: maxAllowedSize,
+      maxTotalFileSize: maxAllowedSize,
       keepExtensions: true,
     });
 

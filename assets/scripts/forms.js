@@ -53,7 +53,7 @@ async function loadFormsConfig() {
  */
 async function loadSemesterSubjectMappingsForForms() {
     try {
-        const response = await fetch('https:/cdn.getmaterio.app/databases/semester-subjects.json');
+        const response = await fetch('https://cdn.getmaterio.app/databases/semester-subjects.json');
         if (response.ok) {
             semesterSubjectMappings = await response.json();
         }
@@ -106,6 +106,16 @@ function openDynamicForm(formType, skipWizard = false) {
     if (loadingEl) loadingEl.style.display = 'none';
     if (submitBtn) submitBtn.disabled = false;
     selectedFiles = [];
+
+    const buildJsonBtn = document.getElementById('dynamicFormBuildJsonBtn');
+    if (buildJsonBtn) {
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        if (isLocalhost && formType === 'contribution') {
+            buildJsonBtn.style.display = 'flex';
+        } else {
+            buildJsonBtn.style.display = 'none';
+        }
+    }
 
     // Check if this is a wizard form
     if (!skipWizard && formConfig.wizard && formConfig.wizard.enabled && formConfig.wizard.pages) {
@@ -1499,3 +1509,54 @@ window.triggerFormActivityById = triggerFormActivityById;
 window.setFormDoNotDisturb = setFormDoNotDisturb;
 window.goToWizardPage = goToWizardPage;
 
+
+/**
+ * Build JSON Object for manual upload
+ */
+function buildJsonForContribution() {
+    if (!currentFormType || currentFormType !== 'contribution') return;
+
+    const form = document.getElementById('dynamicFormContent');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    const formData = {};
+    const formConfig = formsConfig.forms[currentFormType];
+    
+    formConfig.fields.forEach(field => {
+        if (field.type === 'file') return;
+        const input = document.getElementById(`field-${field.name}`);
+        if (input) {
+            let value = input.value;
+            if (value === '__other__') {
+                const customInput = document.getElementById(`field-${field.name}-custom`);
+                value = customInput ? customInput.value : '';
+            }
+            if (value) formData[field.name] = value;
+        }
+    });
+
+    const fileNames = selectedFiles.map(f => f.name);
+
+    // Structure matching resource.lib.json
+    const jsonObj = {
+        type: formData.category || 'unknown',
+        content: fileNames
+    };
+
+    const jsonStr = JSON.stringify(jsonObj, null, 2);
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(jsonStr).then(() => {
+        showNotification('JSON copied to clipboard!', 'success');
+        document.getElementById('dynamicFormSuccessMessage').textContent = 'JSON copied to clipboard! You can now paste it into resource.lib.json';
+        document.getElementById('dynamicFormSuccess').style.display = 'flex';
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+        showNotification('Failed to copy JSON to clipboard', 'error');
+    });
+}
+
+window.buildJsonForContribution = buildJsonForContribution;

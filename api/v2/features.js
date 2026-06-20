@@ -1367,9 +1367,14 @@ async function handleContribute(req, res) {
 
     const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
+    // Increase limits if running locally
+    const isLocalhost = req.headers.host && (req.headers.host.includes('localhost') || req.headers.host.includes('127.0.0.1'));
+    const maxAllowedSize = isLocalhost ? 500 * 1024 * 1024 : 6 * 1024 * 1024;
+
     const form = new formidable.IncomingForm({
       multiples: true,
-      maxFileSize: 6 * 1024 * 1024,
+      maxFileSize: maxAllowedSize,
+      maxTotalFileSize: maxAllowedSize,
       keepExtensions: true,
     });
 
@@ -1898,11 +1903,14 @@ async function handlePdfShare(req, res, url) {
  * @param {import('vercel').VercelResponse} res
  */
 const ANALYTICS_ALLOWED_ORIGIN_HOSTS = new Set([
+  "getmaterio.app",
+  "www.getmaterio.app",
   "materioa.netlify.app",
   "materioa.vercel.app",
   "materioapp.in",
   "auth-materioa.netlify.app",
   "insightroom.vercel.app",
+  "room.getmaterio.app",
 ]);
 const ANALYTICS_MAX_REQUEST_SECONDS = 2 * 60 * 60;
 const ANALYTICS_MAX_REQUEST_ENGAGEMENT_SECONDS = 3 * 60 * 60;

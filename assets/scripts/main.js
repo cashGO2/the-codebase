@@ -2544,6 +2544,64 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // Function to fetch recommendations dynamically based on semester & subject
+  async function fetchInsightroomRecommendations(semester, subject) {
+    let lastError = null;
+    const params = [];
+    if (semester) params.push(`semester=${encodeURIComponent(semester)}`);
+    if (subject) params.push(`subject=${encodeURIComponent(subject)}`);
+    const queryString = params.length > 0 ? `?${params.join("&")}` : "";
+
+    const endpoints = [
+      `${INSIGHTROOM_BASE_URL}${queryString}`,
+      `https://insightroom.vercel.app/api/posts${queryString}`
+    ];
+
+    for (const endpoint of endpoints) {
+      try {
+        const response = await fetch(endpoint, { redirect: "follow" });
+        if (!response.ok) {
+          throw new Error(`Failed to fetch recommendations from ${endpoint}: ${response.status}`);
+        }
+        const rawPosts = await response.json();
+        
+        // Map to expected format for createPostHTML
+        const mappedPosts = rawPosts.map((post) => ({
+          title: post.title,
+          url: post.link || post.url,
+          date: post.date ? new Date(post.date)
+            .toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })
+            .replace(/\//g, "-") : "",
+          imgUrl: post.imgUrl || "",
+          excerpt_home: post.excerpt || "",
+          excerpt: post.excerpt || "",
+          semester: post.semester || "",
+          subject: post.subject || "",
+          visibility: post.visibility || "public",
+        }));
+
+        // Filter private posts client-side based on user access
+        return mappedPosts.filter((post) => {
+          if (
+            post.visibility === "private" &&
+            !window.materioUserHasPrivateAccess
+          ) {
+            return false;
+          }
+          return true;
+        });
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    throw lastError || new Error("Failed to fetch InsightRoom recommendations from all endpoints");
+  }
+
   // Main function to update smart recommendations (posts + attachments)
   async function updateSmartRecommendations() {
     const selectedSemester = semesterSelect?.value || "";
@@ -2570,54 +2628,61 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Filter posts based on semester and subject
-    const filteredPosts = allPosts.filter((post) => {
-      const selectedSem = String(selectedSemester).toLowerCase().trim();
-      const selectedSub = String(selectedSubject).toLowerCase().trim();
+    let filteredPosts = [];
+    try {
+      filteredPosts = await fetchInsightroomRecommendations(selectedSemester, selectedSubject);
+    } catch (e) {
+      console.error("Failed to fetch recommendations dynamically:", e);
+      // Fallback to local filtering of allPosts in case fetch fails
+      filteredPosts = allPosts.filter((post) => {
+        const selectedSem = String(selectedSemester).toLowerCase().trim();
+        const selectedSub = String(selectedSubject).toLowerCase().trim();
 
-      // Filter out private posts if user doesn't have admin privileges or plus access
-      if (
-        post.visibility === "private" &&
-        !window.materioUserHasPrivateAccess
-      ) {
+        // Filter out private posts if user doesn't have admin privileges or plus access
+        if (
+          post.visibility === "private" &&
+          !window.materioUserHasPrivateAccess
+        ) {
+          return false;
+        }
+
+        // Handle semester matching (can be string or array)
+        let semesterMatch = false;
+        if (selectedSem) {
+          if (Array.isArray(post.semester)) {
+            semesterMatch = post.semester.some(
+              (sem) => String(sem).toLowerCase().trim() === selectedSem,
+            );
+          } else if (post.semester) {
+            semesterMatch =
+              String(post.semester).toLowerCase().trim() === selectedSem;
+          }
+        }
+
+        // Handle subject matching (can be string or array)
+        let subjectMatch = false;
+        if (selectedSub) {
+          if (Array.isArray(post.subject)) {
+            subjectMatch = post.subject.some(
+              (sub) => String(sub).toLowerCase().trim() === selectedSub,
+            );
+          } else if (post.subject) {
+            subjectMatch =
+              String(post.subject).toLowerCase().trim() === selectedSub;
+          }
+        }
+
+        // Match if either both match, or if only one is selected and it matches
+        if (selectedSem && selectedSub) {
+          return semesterMatch && subjectMatch;
+        } else if (selectedSem) {
+          return semesterMatch;
+        } else if (selectedSub) {
+          return subjectMatch;
+        }
         return false;
-      }
-
-      // Handle semester matching (can be string or array)
-      let semesterMatch = false;
-      if (selectedSem) {
-        if (Array.isArray(post.semester)) {
-          semesterMatch = post.semester.some(
-            (sem) => String(sem).toLowerCase().trim() === selectedSem,
-          );
-        } else if (post.semester) {
-          semesterMatch =
-            String(post.semester).toLowerCase().trim() === selectedSem;
-        }
-      }
-
-      // Handle subject matching (can be string or array)
-      let subjectMatch = false;
-      if (selectedSub) {
-        if (Array.isArray(post.subject)) {
-          subjectMatch = post.subject.some(
-            (sub) => String(sub).toLowerCase().trim() === selectedSub,
-          );
-        } else if (post.subject) {
-          subjectMatch =
-            String(post.subject).toLowerCase().trim() === selectedSub;
-        }
-      }
-
-      // Match if either both match, or if only one is selected and it matches
-      if (selectedSem && selectedSub) {
-        return semesterMatch && subjectMatch;
-      } else if (selectedSem) {
-        return semesterMatch;
-      } else if (selectedSub) {
-        return subjectMatch;
-      }
-      return false;
-    });
+      });
+    }
 
     // Update attachments card
     await updateAttachmentsCard();

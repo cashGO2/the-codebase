@@ -3,11 +3,13 @@
  */
 const STATIC_ALLOWED_ORIGINS = [
   'https://getmaterio.app',
+  'https://www.getmaterio.app',
   'https://materioa.netlify.app',
   'https://materioa.vercel.app',
   'https://materioapp.in',
   'https://auth-materioa.netlify.app',
   'https://insightroom.vercel.app',
+  'https://room.getmaterio.app',
   'http://localhost:8888',
   'http://localhost:5173',
   'http://localhost:1000',
