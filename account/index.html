@@ -36,10 +36,10 @@
         if (url.origin === window.location.origin) {
           return true;
         }
-        const targetHost = url.hostname;
-        const mainDomain = 'getmaterio.app';
-        if (targetHost === mainDomain || targetHost.endsWith('.' + mainDomain)) {
-          if (targetHost !== 'sso.' + mainDomain) {
+        const currentHost = window.location.hostname;
+        if (currentHost.startsWith('sso.')) {
+          const parentHost = currentHost.substring(4);
+          if (url.hostname === parentHost) {
             return true;
           }
         }
@@ -96,8 +96,8 @@
         return;
       }
 
-      if (tokenRow) {
-        const authToken = tokenRow.split('=')[1];
+      if (hasToken) {
+        const authToken = tokenRow ? tokenRow.split('=')[1] : tokenLocal;
         const redirectUrl = urlParams.get('callback');
 
         if (redirectUrl) {
@@ -109,6 +109,17 @@
             document.cookie = 'materio_auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
             localStorage.removeItem('materio_auth_token');
             return;
+          }
+
+          // Sync cookie if only in localStorage
+          if (!tokenRow && tokenLocal) {
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + 30);
+            let cookieString = `materio_auth_token=${tokenLocal}; path=/; expires=${expiryDate.toUTCString()}; SameSite=Lax`;
+            if (window.location.hostname.endsWith('getmaterio.app')) {
+              cookieString += '; domain=.getmaterio.app';
+            }
+            document.cookie = cookieString;
           }
 
           console.log('Creating handoff for existing user...');

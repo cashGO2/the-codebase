@@ -47,11 +47,11 @@ function isSameSiteCallback(callbackUrl) {
       return true;
     }
     
-    // Check if it belongs to the getmaterio.app domain tree (excluding sso)
-    const targetHost = url.hostname;
-    const mainDomain = 'getmaterio.app';
-    if (targetHost === mainDomain || targetHost.endsWith('.' + mainDomain)) {
-      if (targetHost !== 'sso.' + mainDomain) {
+    // If we are on sso.domain.com, we also treat domain.com (the parent website) as same-site
+    const currentHost = window.location.hostname;
+    if (currentHost.startsWith('sso.')) {
+      const parentHost = currentHost.substring(4);
+      if (url.hostname === parentHost) {
         return true;
       }
     }
