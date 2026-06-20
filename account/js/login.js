@@ -60,23 +60,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
           showFieldMsg('form', 'Login successful! Redirecting...', 'success');
 
-          // Redirect to profile page after a short delay
-          // Redirect to profile page after a short delay
           setTimeout(() => {
-            // Check for redirect param in URL
             const urlParams = new URLSearchParams(window.location.search);
-            const redirectUrl = urlParams.get('callback');
+            const clientId = urlParams.get('client_id');
+            const callback = urlParams.get('callback');
 
-            if (redirectUrl) {
-              // Append token to redirect URL
-              // Append token to redirect URL
-              const targetUrl = new URL(redirectUrl, window.location.origin);
-              targetUrl.searchParams.set('handoff', response.handoffCode || '');
-              window.location.href = targetUrl.toString();
+            if (clientId || callback) {
+              if (typeof window.showConsentPhase === 'function') {
+                window.showConsentPhase();
+              }
             } else {
               redirectToProfile();
             }
-          }, 1500);
+          }, 1000);
         }
       } catch (error) {
         console.error('Login error:', error);

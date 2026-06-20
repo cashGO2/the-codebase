@@ -24,14 +24,100 @@
 
   <link rel="stylesheet" href="/account/css/auth-redesign.css">
   <script src="https://materioa.github.io/kit/6a787c7335.js" crossorigin="anonymous"></script>
-  <script>
-    // Theme sync - Immediate application
-    (function () {
-      const theme = document.cookie.match(/theme=([^;]+)/)?.[1] ||
-        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-      if (theme === 'dark') document.documentElement.classList.add('dark-mode');
-    })();
-  </script>
+  <style>
+    .consent-card {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 10px 0;
+    }
+    .app-info-banner {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: rgba(255, 84, 0, 0.05);
+      border: 1px solid rgba(255, 84, 0, 0.15);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 8px;
+    }
+    body.dark-mode .app-info-banner {
+      background: rgba(255, 84, 0, 0.1);
+      border: 1px solid rgba(255, 84, 0, 0.2);
+    }
+    .app-icon-placeholder {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: var(--primary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .app-meta {
+      flex: 1;
+      text-align: left;
+    }
+    .app-meta-name {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--text-color);
+    }
+    .app-meta-url {
+      font-size: 0.8rem;
+      color: var(--text-light-color);
+      word-break: break-all;
+    }
+    .permissions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 8px;
+      text-align: left;
+    }
+    .permission-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .permission-icon {
+      color: var(--success-color);
+      margin-top: 2px;
+    }
+    .permission-text {
+      font-size: 0.9rem;
+      color: var(--text-color);
+      line-height: 1.4;
+    }
+    .permission-title {
+      font-weight: 600;
+      color: var(--text-color);
+    }
+    .permission-desc {
+      font-size: 0.8rem;
+      color: var(--text-light-color);
+    }
+    .actions-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .actions-row button {
+      flex: 1;
+    }
+    .error-container {
+      text-align: center;
+      padding: 30px 10px;
+    }
+    .error-icon {
+      font-size: 3rem;
+      color: var(--error-color);
+      margin-bottom: 16px;
+    }
+  </style>
   <script>
     // Check for dark mode cookie
     document.addEventListener('DOMContentLoaded', function () {
@@ -42,10 +128,16 @@
 
       // Check if user is already logged in
       const tokenRow = document.cookie.split('; ').find(row => row.startsWith('materio_auth_token='));
+      const urlParams = new URLSearchParams(window.location.search);
+      const clientId = urlParams.get('client_id');
+
+      // If client_id or callback is present, do not run legacy callbacks or auto-redirects
+      if (clientId || urlParams.get('callback')) {
+        return;
+      }
 
       if (tokenRow) {
         const authToken = tokenRow.split('=')[1];
-        const urlParams = new URLSearchParams(window.location.search);
         const redirectUrl = urlParams.get('callback');
 
         if (redirectUrl) {
@@ -223,6 +315,61 @@
           <p>New here? <a href="/account/signup">Create an account</a></p>
         </div>
         </form>
+
+        <!-- SSO CONSENT/AUTHORIZE PHASE -->
+        <div id="consentPhase" class="hidden">
+          <div class="auth-header" style="text-align: left; padding: 0;">
+            <h1 style="font-size: 1.6rem; margin-bottom: 6px;">Authorize Application</h1>
+            <p style="color: var(--text-light-color); margin-bottom: 20px;">The following application is requesting access to your Materio account.</p>
+          </div>
+
+          <div class="consent-card">
+            <div class="app-info-banner">
+              <div class="app-icon-placeholder" id="appIconLetter">M</div>
+              <div class="app-meta">
+                <div class="app-meta-name" id="appName">Application Name</div>
+                <div class="app-meta-url" id="appRedirectUri">redirect_uri</div>
+              </div>
+            </div>
+
+            <div style="margin: 10px 0;">
+              <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 12px; color: var(--text-color); text-align: left;">This application will be able to:</h4>
+              
+              <div class="permissions-list">
+                <div class="permission-item">
+                  <i class="fas fa-check-circle permission-icon"></i>
+                  <div class="permission-text">
+                    <div class="permission-title">Access Profile Information</div>
+                    <div class="permission-desc">View your username, display name, and email address.</div>
+                  </div>
+                </div>
+                <div class="permission-item">
+                  <i class="fas fa-check-circle permission-icon"></i>
+                  <div class="permission-text">
+                    <div class="permission-title">Gated Feature Access</div>
+                    <div class="permission-desc">Execute server integrations or access resources under your membership level.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p style="font-size: 0.75rem; color: var(--text-light-color); line-height: 1.4; border-top: 1px solid var(--border-color); padding-top: 15px; text-align: left;">
+              By clicking <strong>Authorize</strong>, you agree to grant this application access to your account details in accordance with our Terms of Service and Privacy Policy.
+            </p>
+
+            <div class="actions-row">
+              <button type="button" class="btn-secondary-ghost" id="cancelBtn" style="border: 1px solid var(--border-color);">Cancel</button>
+              <button type="button" class="btn-primary" id="authorizeBtn">Authorize</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SSO ERROR PHASE -->
+        <div id="ssoErrorPhase" class="error-container hidden">
+          <i class="fas fa-exclamation-circle error-icon"></i>
+          <h2 style="margin-bottom: 8px;">SSO Error</h2>
+          <p id="ssoErrorMessage" style="color: var(--text-light-color); margin-bottom: 24px;">An invalid request parameter was provided.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -381,13 +528,23 @@
             }
 
             if (feedback) {
-              feedback.textContent = 'Login successful! Redirecting...';
+              feedback.textContent = 'Login successful!';
               feedback.style.color = '#10b981';
             }
 
             setTimeout(() => {
-              window.location.replace('/account/profile');
-            }, 1500);
+              const urlParams = new URLSearchParams(window.location.search);
+              const clientId = urlParams.get('client_id');
+              const callback = urlParams.get('callback');
+              
+              if (clientId || callback) {
+                if (typeof window.showConsentPhase === 'function') {
+                  window.showConsentPhase();
+                }
+              } else {
+                window.location.replace('/account/profile');
+              }
+            }, 1000);
           } else {
             if (feedback) feedback.textContent = data.error || 'Invalid verification code';
             verifyOtpBtn.disabled = false;
@@ -439,6 +596,208 @@
   <script src="/account/js/auth.js"></script>
   <script src="/account/js/login.js"></script>
   <script src="/account/js/ux-enhancers.js"></script>
+  <script>
+    // SSO Consent Phase logic
+    (async function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const clientId = urlParams.get('client_id');
+      const redirectUri = urlParams.get('redirect_uri') || urlParams.get('callback');
+      const state = urlParams.get('state') || '';
+
+      if (!clientId && !urlParams.get('callback')) {
+        return; // Normal login flow
+      }
+
+      // Hide login footer
+      const authFooter = document.querySelector('.auth-footer');
+      if (authFooter) authFooter.classList.add('hidden');
+
+      const loginHeaderTitle = document.querySelector('.auth-header h1');
+      const loginHeaderSub = document.querySelector('.auth-header p');
+
+      if (loginHeaderTitle) loginHeaderTitle.textContent = 'Log in to authorize';
+      if (loginHeaderSub) loginHeaderSub.textContent = 'Please log in to continue to the application.';
+
+      let appName = '';
+      let displayRedirectUri = redirectUri;
+
+      if (clientId) {
+        // Fetch client application info
+        try {
+          const response = await fetch(`/api/v2/auth?action=oauth_client_info&client_id=${encodeURIComponent(clientId)}`);
+          if (!response.ok) {
+            throw new Error('Verification failed');
+          }
+          
+          const appInfo = await response.json();
+          
+          if (appInfo.redirect_uri !== redirectUri) {
+            showSsoError(`Redirect URI mismatch. Received: "${redirectUri}", expected: "${appInfo.redirect_uri}".`);
+            return;
+          }
+
+          appName = appInfo.name;
+          displayRedirectUri = appInfo.redirect_uri;
+        } catch (err) {
+          showSsoError('Invalid client credentials or application not found.');
+          return;
+        }
+      } else {
+        // Legacy callback flow: extract domain name from callback URL
+        try {
+          const parsedUrl = new URL(redirectUri, window.location.origin);
+          appName = parsedUrl.hostname;
+          displayRedirectUri = redirectUri;
+        } catch (e) {
+          appName = 'External Application';
+          displayRedirectUri = redirectUri;
+        }
+
+        // Customize permissions layout for legacy secure handoff
+        const permissionsList = document.querySelector('.permissions-list');
+        if (permissionsList) {
+          permissionsList.innerHTML = `
+            <div class="permission-item">
+              <i class="fas fa-check-circle permission-icon"></i>
+              <div class="permission-text">
+                <div class="permission-title">Secure Handoff Transfer</div>
+                <div class="permission-desc">Transfer your logged-in session securely to this site.</div>
+              </div>
+            </div>
+            <div class="permission-item">
+              <i class="fas fa-check-circle permission-icon"></i>
+              <div class="permission-text">
+                <div class="permission-title">Access Profile Information</div>
+                <div class="permission-desc">View your display name, username, and email address.</div>
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      // Update UI info
+      document.getElementById('appName').textContent = appName;
+      document.getElementById('appRedirectUri').textContent = displayRedirectUri;
+      document.getElementById('appIconLetter').textContent = appName.charAt(0).toUpperCase();
+
+      if (loginHeaderTitle) {
+        loginHeaderTitle.textContent = `Log in to authorize ${appName}`;
+      }
+
+      // Set up consent phase window-level function
+      window.showConsentPhase = function() {
+        document.getElementById('passwordPhase').classList.add('hidden');
+        document.getElementById('otpPhase').classList.add('hidden');
+        const authHeader = document.querySelector('.auth-header');
+        if (authHeader) authHeader.classList.add('hidden');
+        
+        const consentPhase = document.getElementById('consentPhase');
+        if (consentPhase) consentPhase.classList.remove('hidden');
+      };
+
+      // Check if already authenticated
+      if (typeof isAuthenticated === 'function' && isAuthenticated()) {
+        window.showConsentPhase();
+      }
+
+      // Helper to show errors
+      function showSsoError(msg) {
+        document.getElementById('passwordPhase').classList.add('hidden');
+        document.getElementById('otpPhase').classList.add('hidden');
+        const authHeader = document.querySelector('.auth-header');
+        if (authHeader) authHeader.classList.add('hidden');
+        
+        const ssoErrorPhase = document.getElementById('ssoErrorPhase');
+        const ssoErrorMessage = document.getElementById('ssoErrorMessage');
+        if (ssoErrorPhase && ssoErrorMessage) {
+          ssoErrorMessage.textContent = msg;
+          ssoErrorPhase.classList.remove('hidden');
+        }
+      }
+
+      // Bind consent panel buttons
+      const authorizeBtn = document.getElementById('authorizeBtn');
+      const cancelBtn = document.getElementById('cancelBtn');
+
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+          try {
+            const cancelUrl = new URL(redirectUri, window.location.origin);
+            cancelUrl.searchParams.set('error', 'access_denied');
+            if (state) cancelUrl.searchParams.set('state', state);
+            window.location.replace(cancelUrl.toString());
+          } catch (e) {
+            window.location.replace(redirectUri);
+          }
+        });
+      }
+
+      if (authorizeBtn) {
+        authorizeBtn.addEventListener('click', async () => {
+          try {
+            authorizeBtn.disabled = true;
+            authorizeBtn.textContent = 'Authorizing...';
+            const token = getAuthToken();
+
+            if (clientId) {
+              const response = await fetch('/api/v2/auth?action=oauth_authorize', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                  client_id: clientId,
+                  redirect_uri: redirectUri
+                })
+              });
+
+              const data = await response.json();
+
+              if (response.ok && data.code) {
+                const successUrl = new URL(redirectUri);
+                successUrl.searchParams.set('code', data.code);
+                if (state) successUrl.searchParams.set('state', state);
+                window.location.replace(successUrl.toString());
+              } else {
+                alert(data.error || 'Authorization failed.');
+                authorizeBtn.disabled = false;
+                authorizeBtn.textContent = 'Authorize';
+              }
+            } else {
+              // Legacy Handoff Callback flow
+              const response = await fetch('/api/v2/login', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                  action: 'create'
+                })
+              });
+
+              const data = await response.json();
+
+              if (response.ok && data.handoffCode) {
+                const successUrl = new URL(redirectUri, window.location.origin);
+                successUrl.searchParams.set('handoff', data.handoffCode);
+                window.location.replace(successUrl.toString());
+              } else {
+                alert(data.error || 'Authorization handoff failed.');
+                authorizeBtn.disabled = false;
+                authorizeBtn.textContent = 'Authorize';
+              }
+            }
+          } catch (err) {
+            alert('Failed to authorize application due to connection error.');
+            authorizeBtn.disabled = false;
+            authorizeBtn.textContent = 'Authorize';
+          }
+        });
+      }
+    })();
+  </script>
 </body>
 
 </html>

@@ -21,7 +21,7 @@ permalink: /pages/notebooks
     <div id="notebooksGrid" class="notebooks-grid">
         <!-- Notebook cards will be populated here -->
         <div class="notebook-loading">
-            <i class="fas fa-spinner fa-spin"></i> Loading notebooks...
+            <i class="fa-regular fa-loader fa-spin"></i> Loading notebooks...
         </div>
     </div>
 
@@ -284,7 +284,7 @@ permalink: /pages/notebooks
             const btn = document.getElementById('syncBtn');
             const icon = btn.querySelector('i');
             
-            icon.className = 'fas fa-spinner fa-spin';
+            icon.className = 'fa-regular fa-loader fa-spin';
             btn.disabled = true;
 
             if (window.MaterioNotebook.syncToCloud) {
@@ -299,7 +299,7 @@ permalink: /pages/notebooks
             renderNotebooks();
 
             setTimeout(() => {
-                icon.className = 'fas fa-sync';
+                icon.className = 'fa-regular fa-sync';
                 btn.disabled = false;
             }, 1000);
         };

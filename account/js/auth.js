@@ -192,8 +192,14 @@ document.addEventListener('DOMContentLoaded', function () {
     // Redirect to login if trying to access protected page without auth
     redirectToLogin();
   } else if (nonAuthPages.includes(currentPage) && isAuthenticated()) {
-    // Check if there is a redirect param before sending to profile
     const urlParams = new URLSearchParams(window.location.search);
+    const clientId = urlParams.get('client_id');
+    const callback = urlParams.get('callback');
+    if (clientId || callback) {
+      return;
+    }
+
+    // Check if there is a redirect param before sending to profile
     const redirectUrl = urlParams.get('callback');
 
     if (redirectUrl) {

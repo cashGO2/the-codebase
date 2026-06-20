@@ -19,6 +19,11 @@ document.addEventListener('DOMContentLoaded', function () {
             pane.classList.add('active');
           }
         });
+
+        // Initialize and load OAuth apps if this tab is clicked
+        if (targetTab === 'oauth' && typeof window.initializeOAuthTab === 'function') {
+          window.initializeOAuthTab();
+        }
       });
     });
   }
@@ -397,7 +402,7 @@ document.addEventListener('DOMContentLoaded', function () {
     try {
       const originalText = button.textContent;
       button.disabled = true;
-      button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+      button.innerHTML = '<i class="fa-regular fa-loader fa-spin"></i> Generating...';
 
       const response = await makeApiRequest('invites', 'POST', {
         containsPlusPerks: isPlusInvite
@@ -912,7 +917,7 @@ async function saveModerationRule(triggerBtn) {
   const originalText = triggerBtn?.innerHTML;
   if (triggerBtn) {
     triggerBtn.disabled = true;
-    triggerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    triggerBtn.innerHTML = '<i class="fa-regular fa-loader fa-spin"></i> Saving...';
   }
 
   try {
@@ -988,7 +993,7 @@ async function loadInvites() {
       <tr class="invite-loading">
         <td colspan="6">
           <div class="loading-content">
-            <i class="fas fa-spinner fa-spin"></i>
+            <i class="fa-regular fa-loader fa-spin"></i>
             <p>Loading invites...</p>
           </div>
         </td>
@@ -1295,7 +1300,7 @@ async function loadFiles() {
   try {
     fileList.innerHTML = `
       <div class="file-loading">
-        <i class="fas fa-spinner fa-spin"></i>
+        <i class="fa-regular fa-loader fa-spin"></i>
         <p>Loading files...</p>
       </div>
     `;
@@ -2431,7 +2436,7 @@ async function handleMultiSectionUpload() {
   queueProgress.style.display = 'block';
   batchCommitInfo.style.display = 'none';
   uploadAllBtn.disabled = true;
-  uploadAllBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing files...';
+  uploadAllBtn.innerHTML = '<i class="fa-regular fa-loader fa-spin"></i> Preparing files...';
 
   // Initialize queue display with processing + upload phases
   const totalSteps = batches.length + 1; // batches + 1 processing step
@@ -2483,7 +2488,7 @@ async function handleMultiSectionUpload() {
 
     // Update to processing state
     icon.className = 'queue-item-icon uploading';
-    icon.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    icon.innerHTML = '<i class="fa-regular fa-loader fa-spin"></i>';
     status.className = 'queue-item-status uploading';
     status.textContent = 'Processing...';
 
@@ -2581,9 +2586,9 @@ async function handleMultiSectionUpload() {
     showNotification('No files or JSON edits were staged. Upload cancelled.', 'error');
   } else {
     // Update to uploading state
-    uploadAllBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Finalizing...';
+    uploadAllBtn.innerHTML = '<i class="fa-regular fa-loader fa-spin"></i> Finalizing...';
     commitIcon.className = 'queue-item-icon uploading';
-    commitIcon.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    commitIcon.innerHTML = '<i class="fa-regular fa-loader fa-spin"></i>';
     commitStatus.className = 'queue-item-status uploading';
     commitStatus.textContent = 'Finalizing...';
 
@@ -2914,7 +2919,7 @@ async function deleteInvite(inviteId) {
     // Store original content and disable button
     const originalHTML = deleteButton.innerHTML;
     deleteButton.disabled = true;
-    deleteButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    deleteButton.innerHTML = '<i class="fa-regular fa-loader fa-spin"></i>';
   }
 
   try {
@@ -4053,7 +4058,7 @@ async function updateShareLink() {
 
     // Show loading state
     updateBtn.disabled = true;
-    updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+    updateBtn.innerHTML = '<i class="fa-regular fa-loader fa-spin"></i> Updating...';
 
     console.log('Updating share link for invite code:', currentInviteCode);
     console.log('Custom heading:', customHeading);
@@ -4485,3 +4490,206 @@ function clearStagedJson() {
   localStorage.removeItem(STAGED_JSON_STORAGE_KEY);
   updateStagedJsonCount();
 }
+
+// ==========================================
+// OAuth Tab Management
+// ==========================================
+
+let oauthInitialized = false;
+
+function initializeOAuthTab() {
+  if (oauthInitialized) {
+    loadOAuthApps();
+    return;
+  }
+  
+  oauthInitialized = true;
+  
+  // Bind form submission
+  const registerForm = document.getElementById('oauthRegisterForm');
+  if (registerForm) {
+    registerForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const nameInput = document.getElementById('oauthAppName');
+      const uriInput = document.getElementById('oauthRedirectUri');
+      const submitBtn = this.querySelector('button[type="submit"]');
+      
+      if (!nameInput || !uriInput) return;
+      
+      const name = nameInput.value.trim();
+      const redirectUri = uriInput.value.trim();
+      
+      if (!name || !redirectUri) {
+        showNotification('Please enter both name and redirect URI', 'error');
+        return;
+      }
+      
+      try {
+        submitBtn.disabled = true;
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Registering...';
+        
+        const response = await makeApiRequest('auth?action=oauth_register_app', 'POST', {
+          name,
+          redirectUri
+        }, true);
+        
+        if (response && response.success) {
+          showNotification('Application registered successfully!', 'success');
+          nameInput.value = '';
+          uriInput.value = '';
+          loadOAuthApps();
+        }
+      } catch (error) {
+        console.error('Register OAuth app error:', error);
+        showNotification(error.message || 'Failed to register application', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Register Application';
+      }
+    });
+  }
+  
+  loadOAuthApps();
+}
+
+async function loadOAuthApps() {
+  const loading = document.getElementById('oauthAppsLoading');
+  const empty = document.getElementById('oauthAppsEmpty');
+  const list = document.getElementById('oauthAppsList');
+  
+  if (!loading || !empty || !list) return;
+  
+  loading.style.display = 'block';
+  empty.style.display = 'none';
+  list.style.display = 'none';
+  list.innerHTML = '';
+  
+  try {
+    const response = await makeApiRequest('auth?action=oauth_list_apps', 'GET', null, true);
+    
+    loading.style.display = 'none';
+    
+    if (response && response.apps && response.apps.length > 0) {
+      list.style.display = 'flex';
+      
+      response.apps.forEach(app => {
+        const card = document.createElement('div');
+        card.className = 'oauth-app-card';
+        card.innerHTML = `
+          <div class="oauth-app-header">
+            <span class="oauth-app-title">${escapeHtml(app.name)}</span>
+          </div>
+          <div class="oauth-app-details">
+            <div class="oauth-detail-row">
+              <span class="oauth-detail-label">Client ID</span>
+              <div class="oauth-detail-value-wrapper">
+                <span class="oauth-detail-value" id="client-id-${app.client_id}">${app.client_id}</span>
+                <button type="button" class="oauth-copy-btn" onclick="copyOAuthField('${app.client_id}')" title="Copy Client ID">
+                  <i class="fas fa-copy"></i>
+                </button>
+              </div>
+            </div>
+            <div class="oauth-detail-row">
+              <span class="oauth-detail-label">Client Secret</span>
+              <div class="oauth-detail-value-wrapper">
+                <input type="password" class="oauth-detail-value" id="secret-${app.client_id}" value="${app.client_secret}" readonly style="border: 1px solid var(--border-color); border-radius: 6px;">
+                <button type="button" class="oauth-toggle-btn" onclick="toggleOAuthSecret('${app.client_id}')" title="Toggle Secret Visibility">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button type="button" class="oauth-copy-btn" onclick="copyOAuthSecret('${app.client_id}')" title="Copy Secret">
+                  <i class="fas fa-copy"></i>
+                </button>
+              </div>
+            </div>
+            <div class="oauth-detail-row">
+              <span class="oauth-detail-label">Redirect URI</span>
+              <div class="oauth-detail-value-wrapper">
+                <span class="oauth-detail-value">${escapeHtml(app.redirect_uri)}</span>
+              </div>
+            </div>
+          </div>
+          <div class="oauth-app-actions">
+            <button type="button" class="btn-delete-oauth" onclick="deleteOAuthApp('${app.client_id}')">
+              <i class="fas fa-trash"></i> Delete App
+            </button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    } else {
+      empty.style.display = 'block';
+    }
+  } catch (error) {
+    console.error('Load OAuth apps error:', error);
+    loading.style.display = 'none';
+    showNotification('Failed to load applications', 'error');
+  }
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function copyOAuthField(clientId) {
+  const el = document.getElementById(`client-id-${clientId}`);
+  if (el) {
+    navigator.clipboard.writeText(el.textContent)
+      .then(() => showNotification('Client ID copied to clipboard!', 'success'))
+      .catch(() => showNotification('Failed to copy Client ID', 'error'));
+  }
+}
+
+function toggleOAuthSecret(clientId) {
+  const el = document.getElementById(`secret-${clientId}`);
+  const btn = document.querySelector(`#oauth .oauth-app-card button[onclick="toggleOAuthSecret('${clientId}')"] i`);
+  if (el) {
+    if (el.type === 'password') {
+      el.type = 'text';
+      if (btn) btn.className = 'fas fa-eye-slash';
+    } else {
+      el.type = 'password';
+      if (btn) btn.className = 'fas fa-eye';
+    }
+  }
+}
+
+function copyOAuthSecret(clientId) {
+  const el = document.getElementById(`secret-${clientId}`);
+  if (el) {
+    navigator.clipboard.writeText(el.value)
+      .then(() => showNotification('Client Secret copied to clipboard!', 'success'))
+      .catch(() => showNotification('Failed to copy Client Secret', 'error'));
+  }
+}
+
+async function deleteOAuthApp(clientId) {
+  if (!confirm('Are you sure you want to delete this application? Any client using these credentials will lose access immediately.')) {
+    return;
+  }
+  
+  try {
+    const response = await makeApiRequest('auth?action=oauth_delete_app', 'POST', { clientId }, true);
+    if (response && response.success) {
+      showNotification('Application deleted successfully', 'success');
+      loadOAuthApps();
+    }
+  } catch (error) {
+    console.error('Delete OAuth app error:', error);
+    showNotification('Failed to delete application', 'error');
+  }
+}
+
+// Bind to window for HTML inline event handlers
+window.initializeOAuthTab = initializeOAuthTab;
+window.copyOAuthField = copyOAuthField;
+window.toggleOAuthSecret = toggleOAuthSecret;
+window.copyOAuthSecret = copyOAuthSecret;
+window.deleteOAuthApp = deleteOAuthApp;

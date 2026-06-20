@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         try {
             if (callingBtn) {
                 callingBtn.disabled = true;
-                callingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                callingBtn.innerHTML = '<i class="fa-regular fa-loader fa-spin"></i> Processing...';
             }
 
             // 1. Create Razorpay Order
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 order_id: orderResponse.orderId,
                 handler: async function (response) {
                     try {
-                        if (callingBtn) callingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+                        if (callingBtn) callingBtn.innerHTML = '<i class="fa-regular fa-loader fa-spin"></i> Verifying...';
 
                         // 3. Verify Payment and Upgrade User
                         const verifyResponse = await makeApiRequest('features?action=subscription&subAction=verify-payment', 'POST', {

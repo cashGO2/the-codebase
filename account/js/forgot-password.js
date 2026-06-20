@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (isLoading) {
             btn.disabled = true;
             btn.classList.add('requesting');
-            textEl.innerHTML = '<i class="fa-regular fa-spinner-third fa-spin"></i>';
+            textEl.innerHTML = '<i class="fa-regular fa-loader fa-spin"></i>';
         } else {
             btn.disabled = false;
             btn.classList.remove('requesting');

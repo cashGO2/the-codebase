@@ -68,6 +68,9 @@
         <button id="filesTab" class="sidebar-nav-item" data-tab="files" style="display: none;">
           <i class="fas fa-folder-open"></i> Files
         </button>
+        <button class="sidebar-nav-item" data-tab="oauth">
+          <i class="fas fa-key"></i> OAuth Apps
+        </button>
         <button class="sidebar-nav-item" data-tab="danger">
           <i class="fas fa-exclamation-triangle"></i> Danger Zone
         </button>
@@ -754,7 +757,7 @@
 
                 <div class="file-list" id="fileList">
                   <div class="file-loading">
-                    <i class="fas fa-spinner fa-spin"></i>
+                    <i class="fa-regular fa-loader fa-spin"></i>
                     <p>Loading files...</p>
                   </div>
                 </div>
@@ -895,7 +898,157 @@
             </div>
           </div>
         </div>
-      </div> <!-- Danger Zone Tab -->
+      </div>      <!-- OAuth Apps Tab -->
+      <div id="oauth" class="tab-pane">
+        <style>
+          .oauth-app-card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            background: var(--card-color);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+          }
+          .oauth-app-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+          }
+          .oauth-app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+          }
+          .oauth-app-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+          }
+          .oauth-app-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+          }
+          .oauth-detail-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+          }
+          .oauth-detail-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-light-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+          .oauth-detail-value-wrapper {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+          }
+          .oauth-detail-value {
+            font-family: 'Space Mono', 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            padding: 6px 10px;
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 6px;
+            flex: 1;
+            word-break: break-all;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+          }
+          body.dark-mode .oauth-detail-value {
+            background: rgba(255, 255, 255, 0.03);
+          }
+          .oauth-copy-btn, .oauth-toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-light-color);
+            padding: 6px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, color 0.2s;
+            border: 1px solid var(--border-color);
+            width: 32px;
+            height: 32px;
+          }
+          .oauth-copy-btn:hover, .oauth-toggle-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--primary-color);
+          }
+          body.dark-mode .oauth-copy-btn:hover, body.dark-mode .oauth-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+          }
+          .oauth-app-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 5px;
+          }
+          .btn-delete-oauth {
+            background: var(--error-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: opacity 0.2s;
+          }
+          .btn-delete-oauth:hover {
+            opacity: 0.9;
+          }
+        </style>
+        
+        <div class="card-one">
+          <h3>Register New Application</h3>
+          <p class="form-help" style="margin-bottom: 20px;">Create client credentials to access gated features using your Materio account.</p>
+          <form id="oauthRegisterForm">
+            <div class="form-group">
+              <label for="oauthAppName">Application Name</label>
+              <input type="text" id="oauthAppName" name="name" placeholder="e.g. My Application" required>
+            </div>
+            <div class="form-group">
+              <label for="oauthRedirectUri">Redirect URI</label>
+              <input type="url" id="oauthRedirectUri" name="redirectUri" placeholder="e.g. https://example.com/callback" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top: 10px; width: auto; min-width: 150px;">Register Application</button>
+          </form>
+        </div>
+
+        <div class="card-one" style="margin-top: 24px;">
+          <h3>Your Developer Applications</h3>
+          <p class="form-help" style="margin-bottom: 20px;">Manage access tokens and client secrets for your applications.</p>
+          
+          <div class="oauth-apps-container">
+            <div id="oauthAppsLoading" class="loading-state" style="text-align: center; padding: 20px 0;">
+              <i class="fa-regular fa-loader fa-spin" style="font-size: 24px; color: var(--primary-color);"></i>
+              <p style="margin-top: 8px;">Loading applications...</p>
+            </div>
+            
+            <div id="oauthAppsEmpty" class="empty-state" style="display: none; text-align: center; padding: 20px 0; color: var(--text-light-color);">
+              <i class="fas fa-key" style="font-size: 40px; margin-bottom: 12px; opacity: 0.5;"></i>
+              <p>You haven't registered any applications yet.</p>
+            </div>
+
+            <div id="oauthAppsList" class="oauth-apps-list" style="display: none; display: flex; flex-direction: column; gap: 20px;">
+              <!-- OAuth App cards will be dynamically injected here -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Danger Zone Tab -->
       <div id="danger" class="tab-pane">
         <div class="card-layout">
           <div class="card-header">
@@ -969,7 +1122,7 @@
 
         <div id="filesContainer" class="files-container">
           <div id="filesLoading" class="loading-state">
-            <i class="fas fa-spinner fa-spin"></i>
+            <i class="fa-regular fa-loader fa-spin"></i>
             <p>Loading files...</p>
           </div>
 
@@ -1311,7 +1464,7 @@
               <tr class="invite-loading">
                 <td colspan="7">
                   <div class="loading-content">
-                    <i class="fas fa-spinner fa-spin"></i>
+                    <i class="fa-regular fa-loader fa-spin"></i>
                     <p>Loading invites...</p>
                   </div>
                 </td>
