@@ -9,11 +9,13 @@
 <script src="/assets/scripts/tauri-bridge.js"></script>
 <style>
     /* Injected to allow browser back/forward gestures on Tauri */
-    html, body {
+    html,
+    body {
         overscroll-behavior-x: auto !important;
         overscroll-behavior-y: auto !important;
         overscroll-behavior: auto !important;
     }
+
     * {
         overscroll-behavior-x: auto !important;
     }
@@ -267,31 +269,31 @@
         window.addEventListener('load', function () {
             // Wait for session ID initialized in main.js if needed, or get it directly
             const sessionId = sessionStorage.getItem('materio_session_id');
-            
+
             navigator.serviceWorker.register('/sw.js')
                 .then(function (registration) {
                     if (registration.active) {
-                       registration.active.postMessage({ type: 'SET_SESSION', sessionId: sessionId });
+                        registration.active.postMessage({ type: 'SET_SESSION', sessionId: sessionId });
                     }
                     // Handle case where SW is still installing or waiting
-                    registration.addEventListener('updatefound', function() {
-                      const newWorker = registration.installing;
-                      newWorker.addEventListener('statechange', function() {
-                        if (newWorker.state === 'activated') {
-                          newWorker.postMessage({ type: 'SET_SESSION', sessionId: sessionId });
-                        }
-                      });
+                    registration.addEventListener('updatefound', function () {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', function () {
+                            if (newWorker.state === 'activated') {
+                                newWorker.postMessage({ type: 'SET_SESSION', sessionId: sessionId });
+                            }
+                        });
                     });
                 })
                 .catch(function (registrationError) {
                     console.error('SW registration failed: ', registrationError);
                 });
-            
+
             // Periodically check if we need to sync session ID
             setTimeout(() => {
-              if (navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({ type: 'SET_SESSION', sessionId: sessionId });
-              }
+                if (navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({ type: 'SET_SESSION', sessionId: sessionId });
+                }
             }, 1000);
         });
     }
@@ -311,9 +313,9 @@
                 keys.forEach(k => {
                     if (!preserveKeys.includes(k)) localStorage.removeItem(k);
                 });
-                
+
                 localStorage.setItem('m_last_force_clear', 'Done');
-                
+
                 if (window.caches && caches.keys) {
                     caches.keys().then(function (names) {
                         names.forEach(function (name) { caches.delete(name); });
@@ -390,17 +392,17 @@
                                                                                      %$$$$$:                            
                                              <k@$$c                                  Q$$$$$                             
                                              Q$$$$c                                    '"                               
- t$$o u@$$$$$q[a$$$$$$k;    ?p$$$$$$$$O    ?U&$$$$$$$$J    nB$$$$$$w'    U$$w'Q$$$$O -$$$$M     ;m$$$$$$$C"             
- t$$$$$$$$$$$$$$$$$$$$$$j   U$$$$$$$$$$$Q !$$$$$$$$$$$J  z$$$$$$$$$$$b   U$$$$$$$$$O -$$$$M    W$$$$$$$$$$$$            
- t$$$$&^  z$$$$$:  /$$$$*   zp+     $$$$$  ))k$$$$q)))> ]$$$$a   _$$$$x  U$$$$%]     -$$$$M   w$$$$p   M$$$$8           
- t$$$$p   >$$$$$   l$$$$8      >np#W$$$$$.   Q$$$$c     $$$$$     @$$$a  U$$$$J      -$$$$M   $$$$$     $$$$$           
- t$$$$p   >$$$$$   l$$$$8   #$$$$$$$$$$$$.   Q$$$$c     $$$$$$$$$$$$$$a  U$$$$J      -$$$$M  ;$$$$8     $$$$$           
+ t$$o u@$$$$$q[a$$$$$$k;    ?p$$$$$$$$O    ?U&$$$$$$$$J    nB$$$$$$w'    U$$w'Q$$$$O -$$$$M      ;m$$$$$$$C"             
+ t$$$$$$$$$$$$$$$$$$$$$$j   U$$$$$$$$$$$Q !$$$$$$$$$$$J  z$$$$$$$$$$$b   U$$$$$$$$$O -$$$$M     W$$$$$$$$$$$$            
+ t$$$$&^  z$$$$$:  /$$$$*   zp+     $$$$$  ))k$$$$q)))> ]$$$$a   _$$$$x  U$$$$%]     -$$$$M    w$$$$p   M$$$$8           
+ t$$$$p   >$$$$$   l$$$$8      >np#W$$$$$.   Q$$$$c     $$$$$     @$$$a  U$$$$J      -$$$$M    $$$$$     $$$$$           
+ t$$$$p   >$$$$$   l$$$$8   #$$$$$$$$$$$$.   Q$$$$c     $$$$$$$$$$$$$$a  U$$$$J      -$$$$M   ;$$$$8     $$$$$           
  t$$$$p   >$$$$$   l$$$$8  W$$$B    @$$$$.   Q$$$$c     8$$$$I""""""""\`  U$$$$J      -$$$$M   $$$$$    .$$$$$           
- t$$$$p   >$$$$$   l$$$$8  $$$$%    $$$$$.   Y$$$$8:    <$$$$%:    \`?b:  U$$$$J      -$$$$$]  m$$$$o\` ^%$$$$b  #$$$$/   
- t$$$$p   >$$$$$   l$$$$8  1$$$$$$$$$$$$$.   .$$$$$$$$i  \\$$$$$$$$$$$$:  U$$$$J       8$$$$$   o$$$$$$$$$$$B   $$$$$$   
+ t$$$$p   >$$$$$   l$$$$8  $$$$%    $$$$$.   Y$$$$8:    <$$$$%:    \`?b:  U$$$$J      -$$$$$]  m$$$$o\` ^%$$$$  #$$$$/   
+ t$$$$p   >$$$$$   l$$$$8  1$$$$$$$$$$$$$.   .$$$$$$$$i  \\$$$$$$$$$$$$:  U$$$$J       8$$$$$   o$$$$$$$$$$$B  $$$$$$   
  t$$$$p   >$$$$$   l$$$$8    v$$$$$p. @$$.     +8$$$$$i    !#$$$$$$$b_   U$$$$J        ;a$$$     n$$$$$$@x     :@$$#    
 
-Version: v4.8.0.0
+Version: v5.0.0
 `,
             "color: #ff5200; font-weight: bold;"
         );
