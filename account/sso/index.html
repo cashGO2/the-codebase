@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authorize Application | Materio</title>
+
+  <!-- Open Graph / SEO -->
+  <meta property="og:title" content="Materio - Authorize Application">
+  <meta property="og:description" content="Authorize secure external integrations with your Materio account.">
+  <meta property="og:image" content="https://materioa.vercel.app/assets/img/open-graph.png">
+  <meta property="og:url" content="https://materioa.vercel.app/account/sso">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#333333">
+
+  <!-- Favicon and Icons -->
+  <link rel="icon" href="/assets/img/favico.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="/assets/img/favicon.png" sizes="128x128" type="image/png">
+  <link rel="icon" type="image/x-icon" href="/assets/img/favicon.svg" sizes="32x32" type="image/svg">
+  <link rel="icon" href="/assets/img/i16.svg" sizes="16x16" type="image/svg">
+  <link rel="icon" href="/assets/img/favico.svg" sizes="128x128" type="image/svg">
+
+  <link rel="stylesheet" href="/account/css/auth-redesign.css">
+  <script src="https://materioa.github.io/kit/6a787c7335.js" crossorigin="anonymous"></script>
+  <style>
+    body.sso-mode .auth-illustration {
+      display: none !important;
+    }
+    body.sso-mode .auth-form-side {
+      flex: 0 0 100% !important;
+      max-width: 100% !important;
+      justify-content: center !important;
+    }
+    body.sso-mode .form-content-wrapper {
+      margin: 0 auto;
+    }
+    .consent-card {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 30px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 40px;
+      corner-shape: squircle;
+      background: var(--bg-color);
+      margin-top: 15px;
+    }
+    .app-flow-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .app-flow-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+      transition: all 0.3s ease;
+    }
+    body.dark-mode .app-flow-icon {
+      background: #1a1a1a;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    .app-flow-icon img {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+    }
+    .app-flow-arrow {
+      color: var(--primary-color);
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      animation: pulse-arrow 2s infinite ease-in-out;
+    }
+    @keyframes pulse-arrow {
+      0%, 100% {
+        transform: translateX(0);
+        opacity: 0.6;
+      }
+      50% {
+        transform: translateX(3px);
+        opacity: 1;
+      }
+    }
+    .permissions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 8px;
+      text-align: left;
+    }
+    .permission-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .permission-icon {
+      color: var(--success-color);
+      margin-top: 2px;
+    }
+    .permission-text {
+      font-size: 0.9rem;
+      color: var(--text-color);
+      line-height: 1.4;
+    }
+    .permission-title {
+      font-weight: 600;
+      color: var(--text-color);
+    }
+    .permission-desc {
+      font-size: 0.8rem;
+      color: var(--text-light-color);
+    }
+    .actions-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .actions-row button {
+      flex: 1;
+      margin: 0 !important;
+      padding: 12px 16px !important;
+      height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .error-container {
+      text-align: center;
+      padding: 30px 10px;
+    }
+    .error-icon {
+      font-size: 3rem;
+      color: var(--error-color);
+      margin-bottom: 16px;
+    }
+
+    /* Profiles/Success page styles */
+    .success-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--bg-color);
+      border: 1.5px solid var(--border-color);
+      border-radius: 40px;
+      corner-shape: squircle;
+      padding: 24px;
+      margin: 20px 0;
+      text-align: left;
+    }
+    .success-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary-color);
+    }
+    .success-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .success-name {
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--text-color);
+    }
+    .success-username {
+      font-size: 0.9rem;
+      color: var(--text-light-color);
+    }
+    .countdown-number {
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+  </style>
+  <script>
+    // Apply dark mode cookie
+    document.addEventListener('DOMContentLoaded', function () {
+      const darkModeCookie = document.cookie.split('; ').find(row => row.startsWith('darkMode='));
+      if (darkModeCookie && darkModeCookie.split('=')[1] === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+    });
+  </script>
+</head>
+
+<body class="sso-mode">
+  <div class="auth-container">
+    <div class="auth-form-side">
+      <div class="form-content-wrapper">
+        <div class="auth-logo">
+          <img src="/assets/img/sticker.png" alt="materio.">
+        </div>
+
+        <!-- SSO CONSENT/AUTHORIZE PHASE -->
+        <div id="consentPhase">
+          <div class="auth-header" style="text-align: left; padding: 0;">
+            <h1 style="font-size: 1.6rem; margin-bottom: 6px;">Authorize Application</h1>
+            <p style="color: var(--text-light-color); margin-bottom: 20px; line-height: 1.4;">
+              <a href="" target="_blank" id="appNameLink" style="font-weight: 700; text-decoration: none; color: var(--primary-color);" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Application Name</a> is requesting access to your Materio account.
+            </p>
+          </div>
+
+          <div class="consent-card">
+            <div class="app-flow-container" style="justify-content: center; margin: 10px 0 25px 0;">
+              <div class="app-flow-icon materio-icon" title="Materio">
+                <img src="/assets/img/favicon.png" alt="Materio">
+              </div>
+              <div class="app-flow-arrow">
+                <i class="fa-regular fa-arrow-right"></i>
+              </div>
+              <div class="app-flow-icon target-icon" id="appFaviconContainer">
+                <span id="appIconFallback" style="font-weight: 800; font-size: 1.2rem; display: none; color: var(--primary-color);"></span>
+                <img id="appFavicon" src="" alt="App Favicon" onerror="this.style.display='none'; document.getElementById('appIconFallback').style.display='inline';">
+              </div>
+            </div>
+
+            <div style="margin: 10px 0;">
+              <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 12px; color: var(--text-color); text-align: left;">This application will be able to:</h4>
+              
+              <div class="permissions-list">
+                <div class="permission-item">
+                  <i class="fas fa-check-circle permission-icon"></i>
+                  <div class="permission-text">
+                    <div class="permission-title">Access Profile Information</div>
+                    <div class="permission-desc">View your username, display name, and email address.</div>
+                  </div>
+                </div>
+                <div class="permission-item">
+                  <i class="fas fa-check-circle permission-icon"></i>
+                  <div class="permission-text">
+                    <div class="permission-title">Gated Feature Access</div>
+                    <div class="permission-desc">Execute server integrations or access resources under your membership level.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p style="font-size: 0.75rem; color: var(--text-light-color); line-height: 1.4; border-top: 1px solid var(--border-color); padding-top: 15px; text-align: left;">
+              By clicking <strong>Authorize</strong>, you agree to grant this application access to your account details in accordance with our <a href="https://getmaterio.app/terms" target="_blank" style="color: var(--primary-color); text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Terms of Service</a> and <a href="https://getmaterio.app/privacy" target="_blank" style="color: var(--primary-color); text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Privacy Policy</a>.
+            </p>
+
+            <div class="actions-row">
+              <button type="button" class="btn-secondary-ghost" id="cancelBtn" style="border: 1px solid var(--border-color);">Cancel</button>
+              <button type="button" class="btn-primary" id="authorizeBtn">Authorize</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUCCESS REDIRECT PHASE -->
+        <div id="successPhase" class="hidden" style="text-align: left;">
+          <div class="auth-header" style="text-align: left; padding: 0;">
+            <h1 style="font-size: 1.6rem; margin-bottom: 6px; color: #10b981;">Signed In Successfully</h1>
+            <p style="color: var(--text-light-color); margin-bottom: 10px; line-height: 1.4;">
+              You have been successfully signed in as:
+            </p>
+          </div>
+
+          <div class="success-card">
+            <img id="userAvatar" src="/assets/img/default-avatar.svg" alt="Profile" class="success-avatar">
+            <div class="success-info">
+              <div id="userDisplayName" class="success-name">Display Name</div>
+              <div id="userUsername" class="success-username">@username</div>
+            </div>
+          </div>
+
+          <p style="font-size: 0.9rem; color: var(--text-color); margin-bottom: 12px; line-height: 1.5;" id="autoRedirectNotice">
+            You will be automatically redirected in <span id="countdownSeconds" class="countdown-number">3</span> seconds. If not, <a id="manualRedirectLink" href="#" target="_blank" style="color: var(--primary-color); font-weight: 700; text-decoration: underline;">click here to redirect manually</a>.
+          </p>
+
+          <p style="font-size: 0.8rem; color: var(--text-light-color); border-top: 1px solid var(--border-color); padding-top: 15px;">
+            <i class="fa-regular fa-circle-info"></i> Notice: You may now close this tab.
+          </p>
+        </div>
+
+        <!-- SSO ERROR PHASE -->
+        <div id="ssoErrorPhase" class="error-container hidden">
+          <i class="fas fa-exclamation-circle error-icon"></i>
+          <h2 style="margin-bottom: 8px;">SSO Error</h2>
+          <p id="ssoErrorMessage" style="color: var(--text-light-color); margin-bottom: 24px;">An invalid request parameter was provided.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/account/js/auth.js"></script>
+  <script>
+    (async function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const clientId = urlParams.get('client_id');
+      const redirectUri = urlParams.get('redirect_uri') || urlParams.get('callback');
+      const state = urlParams.get('state') || '';
+
+      if (!clientId && !urlParams.get('callback')) {
+        showSsoError('Client ID or callback URL is required.');
+        return;
+      }
+
+      // Check authentication state: if not logged in, redirect to login page
+      const token = getAuthToken();
+      if (!token) {
+        window.location.replace('/account' + window.location.search);
+        return;
+      }
+
+      // If it is same-site callback and no client_id, bypass consent and redirect back immediately
+      if (!clientId && isSameSiteCallback(redirectUri)) {
+        fetch('/api/v2/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        })
+          .then(res => res.json())
+          .then(data => {
+            const targetUrl = new URL(redirectUri, window.location.origin);
+            if (data.handoffCode) {
+              targetUrl.searchParams.set('handoff', data.handoffCode);
+            }
+            window.location.replace(targetUrl.toString());
+          })
+          .catch(() => {
+            window.location.replace(redirectUri);
+          });
+        return;
+      }
+
+      let appName = '';
+      let displayRedirectUri = redirectUri;
+      let scrapedIcon = '';
+
+      if (clientId) {
+        // Fetch client application info
+        try {
+          const response = await fetch(`/api/v2/auth?action=oauth_client_info&client_id=${encodeURIComponent(clientId)}`);
+          if (!response.ok) {
+            throw new Error('Verification failed');
+          }
+          
+          const appInfo = await response.json();
+          
+          if (appInfo.redirect_uri !== redirectUri) {
+            showSsoError(`Redirect URI mismatch. Received: "${redirectUri}", expected: "${appInfo.redirect_uri}".`);
+            return;
+          }
+
+          appName = appInfo.name;
+          displayRedirectUri = appInfo.redirect_uri;
+        } catch (err) {
+          showSsoError('Invalid client credentials or application not found.');
+          return;
+        }
+      } else {
+        // Legacy callback flow: fetch friendly title from url or params
+        try {
+          const parsedUrl = new URL(redirectUri, window.location.origin);
+          const nameParam = urlParams.get('name') || urlParams.get('app_name') || urlParams.get('client_name');
+          if (nameParam) {
+            appName = nameParam;
+          } else {
+            // Fetch actual site title and custom favicon from backend resolver
+            try {
+              const res = await fetch(`/api/v2/auth?action=fetch_url_title&url=${encodeURIComponent(redirectUri)}`);
+              if (res.ok) {
+                const data = await res.json();
+                appName = data.title;
+                scrapedIcon = data.icon || '';
+              }
+            } catch (err) {
+              // Ignore and use local derivation fallback
+            }
+
+            if (!appName) {
+              let host = parsedUrl.hostname;
+              if (host.startsWith('www.')) host = host.substring(4);
+              const dotIdx = host.indexOf('.');
+              const baseName = dotIdx > 0 ? host.substring(0, dotIdx) : host;
+              appName = baseName.charAt(0).toUpperCase() + baseName.slice(1);
+            }
+          }
+          displayRedirectUri = redirectUri;
+        } catch (e) {
+          appName = 'External Application';
+          displayRedirectUri = redirectUri;
+        }
+
+        // Customize permissions layout for legacy secure handoff
+        const permissionsList = document.querySelector('.permissions-list');
+        if (permissionsList) {
+          permissionsList.innerHTML = `
+            <div class="permission-item">
+              <i class="fas fa-check-circle permission-icon"></i>
+              <div class="permission-text">
+                <div class="permission-title">Secure Handoff Transfer</div>
+                <div class="permission-desc">Transfer your logged-in session securely to this site.</div>
+              </div>
+            </div>
+            <div class="permission-item">
+              <i class="fas fa-check-circle permission-icon"></i>
+              <div class="permission-text">
+                <div class="permission-title">Access Profile Information</div>
+                <div class="permission-desc">View your display name, username, and email address.</div>
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      // Update UI info
+      const appNameLink = document.getElementById('appNameLink');
+      if (appNameLink) {
+        appNameLink.textContent = appName;
+        appNameLink.href = redirectUri || '#';
+      }
+
+      let domain = '';
+      try {
+        const parsedUrl = new URL(redirectUri, window.location.origin);
+        domain = parsedUrl.hostname;
+      } catch (e) {
+        domain = redirectUri || '';
+      }
+
+      // Set fallback text initial
+      const appIconFallback = document.getElementById('appIconFallback');
+      if (appIconFallback) {
+        appIconFallback.textContent = appName ? appName.charAt(0).toUpperCase() : '?';
+        appIconFallback.style.display = 'none';
+      }
+
+      const faviconUrl = scrapedIcon || (domain && !domain.includes('localhost') && domain !== '127.0.0.1'
+        ? `https://www.google.com/s2/favicons?sz=128&domain=${encodeURIComponent(domain)}`
+        : '');
+
+      const appFaviconImg = document.getElementById('appFavicon');
+      if (appFaviconImg) {
+        if (faviconUrl) {
+          appFaviconImg.src = faviconUrl;
+          appFaviconImg.style.display = 'inline';
+          appFaviconImg.title = appName;
+        } else {
+          appFaviconImg.style.display = 'none';
+          if (appIconFallback) {
+            appIconFallback.style.display = 'inline';
+          }
+        }
+      }
+
+      // Helper to show errors
+      function showSsoError(msg) {
+        document.getElementById('consentPhase').classList.add('hidden');
+        document.getElementById('successPhase').classList.add('hidden');
+        const ssoErrorPhase = document.getElementById('ssoErrorPhase');
+        const ssoErrorMessage = document.getElementById('ssoErrorMessage');
+        if (ssoErrorPhase && ssoErrorMessage) {
+          ssoErrorMessage.textContent = msg;
+          ssoErrorPhase.classList.remove('hidden');
+        }
+      }
+
+      // Bind consent panel buttons
+      const authorizeBtn = document.getElementById('authorizeBtn');
+      const cancelBtn = document.getElementById('cancelBtn');
+
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+          try {
+            const cancelUrl = new URL(redirectUri, window.location.origin);
+            cancelUrl.searchParams.set('error', 'access_denied');
+            if (state) cancelUrl.searchParams.set('state', state);
+            window.location.replace(cancelUrl.toString());
+          } catch (e) {
+            window.location.replace(redirectUri);
+          }
+        });
+      }
+
+      if (authorizeBtn) {
+        authorizeBtn.addEventListener('click', async () => {
+          try {
+            authorizeBtn.disabled = true;
+            authorizeBtn.textContent = 'Authorizing...';
+
+            let successUrlString = '';
+
+            if (clientId) {
+              const response = await fetch('/api/v2/auth?action=oauth_authorize', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                  client_id: clientId,
+                  redirect_uri: redirectUri
+                })
+              });
+
+              const data = await response.json();
+
+              if (response.ok && data.code) {
+                const successUrl = new URL(redirectUri);
+                successUrl.searchParams.set('code', data.code);
+                if (state) successUrl.searchParams.set('state', state);
+                successUrlString = successUrl.toString();
+              } else {
+                alert(data.error || 'Authorization failed.');
+                authorizeBtn.disabled = false;
+                authorizeBtn.textContent = 'Authorize';
+                return;
+              }
+            } else {
+              // Legacy Handoff Callback flow
+              const response = await fetch('/api/v2/login', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                  action: 'create'
+                })
+              });
+
+              const data = await response.json();
+
+              if (response.ok && data.handoffCode) {
+                const successUrl = new URL(redirectUri, window.location.origin);
+                successUrl.searchParams.set('handoff', data.handoffCode);
+                successUrlString = successUrl.toString();
+              } else {
+                alert(data.error || 'Authorization handoff failed.');
+                authorizeBtn.disabled = false;
+                authorizeBtn.textContent = 'Authorize';
+                return;
+              }
+            }
+
+            // Fetch user profile data to show on the success interstitial card
+            let userProfile = null;
+            try {
+              const profileRes = await fetch('/api/v2/profile', {
+                headers: { 'Authorization': `Bearer ${token}` }
+              });
+              if (profileRes.ok) {
+                const profileData = await profileRes.json();
+                userProfile = profileData.user;
+              }
+            } catch (err) {
+              // Ignore profile fetch failure
+            }
+
+            // Populate and render success redirect phase
+            document.getElementById('consentPhase').classList.add('hidden');
+            
+            if (userProfile) {
+              document.getElementById('userDisplayName').textContent = userProfile.displayName || userProfile.username;
+              document.getElementById('userUsername').textContent = '@' + userProfile.username;
+              if (userProfile.profilePicture) {
+                document.getElementById('userAvatar').src = userProfile.profilePicture;
+              }
+            } else {
+              document.getElementById('userDisplayName').textContent = 'Authenticated User';
+              document.getElementById('userUsername').textContent = 'Session Verified';
+            }
+
+            const manualLink = document.getElementById('manualRedirectLink');
+            if (manualLink) {
+              manualLink.href = successUrlString;
+            }
+
+            document.getElementById('successPhase').classList.remove('hidden');
+
+            // Countdown timer UI micro-animation
+            let countdown = 3;
+            const countdownEl = document.getElementById('countdownSeconds');
+            
+            const timer = setInterval(() => {
+              countdown--;
+              if (countdownEl) {
+                countdownEl.textContent = countdown;
+              }
+              if (countdown <= 0) {
+                clearInterval(timer);
+                window.location.replace(successUrlString);
+              }
+            }, 1000);
+
+          } catch (err) {
+            alert('Failed to authorize application due to connection error.');
+            authorizeBtn.disabled = false;
+            authorizeBtn.textContent = 'Authorize';
+          }
+        });
+      }
+    })();
+  </script>
+</body>
+
+</html>

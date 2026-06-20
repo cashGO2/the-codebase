@@ -31,6 +31,36 @@ function showNotification(message, type = 'info') {
   }
 }
 
+function isSameSiteCallback(callbackUrl) {
+  if (!callbackUrl) return false;
+  
+  // Local relative paths (like "../" or "/") are always same-site
+  if (callbackUrl.startsWith('/') || callbackUrl.startsWith('.')) {
+    return true;
+  }
+  
+  try {
+    const url = new URL(callbackUrl, window.location.origin);
+    
+    // Check if origin matches exactly (same scheme, hostname, and port)
+    if (url.origin === window.location.origin) {
+      return true;
+    }
+    
+    // Check if it belongs to the getmaterio.app domain tree (excluding sso)
+    const targetHost = url.hostname;
+    const mainDomain = 'getmaterio.app';
+    if (targetHost === mainDomain || targetHost.endsWith('.' + mainDomain)) {
+      if (targetHost !== 'sso.' + mainDomain) {
+        return true;
+      }
+    }
+  } catch (e) {
+    return true;
+  }
+  return false;
+}
+
 // API Calls
 async function makeApiRequest(endpoint, method = 'GET', data = null, requiresAuth = false) {
   try {
