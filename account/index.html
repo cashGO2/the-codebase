@@ -25,52 +25,76 @@
   <link rel="stylesheet" href="/account/css/auth-redesign.css">
   <script src="https://materioa.github.io/kit/6a787c7335.js" crossorigin="anonymous"></script>
   <style>
+    body.sso-mode .auth-illustration {
+      display: none !important;
+    }
+    body.sso-mode .auth-form-side {
+      flex: 0 0 100% !important;
+      max-width: 100% !important;
+      justify-content: center !important;
+    }
+    body.sso-mode .form-content-wrapper {
+      margin: 0 auto;
+    }
     .consent-card {
       display: flex;
       flex-direction: column;
       gap: 20px;
-      padding: 10px 0;
+      padding: 30px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 40px;
+      corner-shape: squircle;
+      background: var(--bg-color);
+      margin-top: 15px;
     }
-    .app-info-banner {
+
+    .app-flow-container {
       display: flex;
       align-items: center;
-      gap: 15px;
-      background: rgba(255, 84, 0, 0.05);
-      border: 1px solid rgba(255, 84, 0, 0.15);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 8px;
+      gap: 10px;
+      flex-shrink: 0;
     }
-    body.dark-mode .app-info-banner {
-      background: rgba(255, 84, 0, 0.1);
-      border: 1px solid rgba(255, 84, 0, 0.2);
-    }
-    .app-icon-placeholder {
+    .app-flow-icon {
       width: 48px;
       height: 48px;
-      border-radius: 10px;
-      background: var(--primary-color);
-      color: white;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.08);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
-      font-weight: bold;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+      transition: all 0.3s ease;
     }
-    .app-meta {
-      flex: 1;
-      text-align: left;
+    body.dark-mode .app-flow-icon {
+      background: #1a1a1a;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     }
-    .app-meta-name {
-      font-weight: 700;
+    .app-flow-icon img {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+    }
+    .app-flow-arrow {
+      color: var(--primary-color);
       font-size: 1.1rem;
-      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      animation: pulse-arrow 2s infinite ease-in-out;
     }
-    .app-meta-url {
-      font-size: 0.8rem;
-      color: var(--text-light-color);
-      word-break: break-all;
+    @keyframes pulse-arrow {
+      0%, 100% {
+        transform: translateX(0);
+        opacity: 0.6;
+      }
+      50% {
+        transform: translateX(3px);
+        opacity: 1;
+      }
     }
+
     .permissions-list {
       display: flex;
       flex-direction: column;
@@ -107,6 +131,12 @@
     }
     .actions-row button {
       flex: 1;
+      margin: 0 !important;
+      padding: 12px 16px !important;
+      height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
     .error-container {
       text-align: center;
@@ -320,15 +350,22 @@
         <div id="consentPhase" class="hidden">
           <div class="auth-header" style="text-align: left; padding: 0;">
             <h1 style="font-size: 1.6rem; margin-bottom: 6px;">Authorize Application</h1>
-            <p style="color: var(--text-light-color); margin-bottom: 20px;">The following application is requesting access to your Materio account.</p>
+            <p style="color: var(--text-light-color); margin-bottom: 20px; line-height: 1.4;">
+              <a href="" target="_blank" id="appNameLink" style="font-weight: 700; text-decoration: none; color: var(--primary-color);" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Application Name</a> is requesting access to your Materio account.
+            </p>
           </div>
 
           <div class="consent-card">
-            <div class="app-info-banner">
-              <div class="app-icon-placeholder" id="appIconLetter">M</div>
-              <div class="app-meta">
-                <div class="app-meta-name" id="appName">Application Name</div>
-                <div class="app-meta-url" id="appRedirectUri">redirect_uri</div>
+            <div class="app-flow-container" style="justify-content: center; margin: 10px 0 25px 0;">
+              <div class="app-flow-icon materio-icon" title="Materio">
+                <img src="/assets/img/favicon.png" alt="Materio">
+              </div>
+              <div class="app-flow-arrow">
+                <i class="fa-regular fa-arrow-right"></i>
+              </div>
+              <div class="app-flow-icon target-icon" id="appFaviconContainer">
+                <span id="appIconFallback" style="font-weight: 800; font-size: 1.2rem; display: none; color: var(--primary-color);"></span>
+                <img id="appFavicon" src="" alt="App Favicon" onerror="this.style.display='none'; document.getElementById('appIconFallback').style.display='inline';">
               </div>
             </div>
 
@@ -354,7 +391,7 @@
             </div>
 
             <p style="font-size: 0.75rem; color: var(--text-light-color); line-height: 1.4; border-top: 1px solid var(--border-color); padding-top: 15px; text-align: left;">
-              By clicking <strong>Authorize</strong>, you agree to grant this application access to your account details in accordance with our Terms of Service and Privacy Policy.
+              By clicking <strong>Authorize</strong>, you agree to grant this application access to your account details in accordance with our <a href="https://getmaterio.app/terms" target="_blank" style="color: var(--primary-color); text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Terms of Service</a> and <a href="https://getmaterio.app/privacy" target="_blank" style="color: var(--primary-color); text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Privacy Policy</a>.
             </p>
 
             <div class="actions-row">
@@ -608,6 +645,8 @@
         return; // Normal login flow
       }
 
+      document.body.classList.add('sso-mode');
+
       // Hide login footer
       const authFooter = document.querySelector('.auth-footer');
       if (authFooter) authFooter.classList.add('hidden');
@@ -620,6 +659,7 @@
 
       let appName = '';
       let displayRedirectUri = redirectUri;
+      let scrapedIcon = '';
 
       if (clientId) {
         // Fetch client application info
@@ -643,20 +683,44 @@
           return;
         }
       } else {
-        // Legacy callback flow: extract domain name from callback URL
+        // Legacy callback flow: fetch actual HTML title from website or fallback to friendly title
         try {
           const parsedUrl = new URL(redirectUri, window.location.origin);
-          appName = parsedUrl.hostname;
+          const nameParam = urlParams.get('name') || urlParams.get('app_name') || urlParams.get('client_name');
+          if (nameParam) {
+            appName = nameParam;
+          } else {
+            // Fetch actual site title and custom favicon from backend resolver
+            try {
+              const res = await fetch(`/api/v2/auth?action=fetch_url_title&url=${encodeURIComponent(redirectUri)}`);
+              if (res.ok) {
+                const data = await res.json();
+                appName = data.title;
+                scrapedIcon = data.icon || '';
+              }
+            } catch (err) {
+              // Ignore and use local derivation fallback
+            }
+
+            if (!appName) {
+              let host = parsedUrl.hostname;
+              if (host.startsWith('www.')) host = host.substring(4);
+              const dotIdx = host.indexOf('.');
+              const baseName = dotIdx > 0 ? host.substring(0, dotIdx) : host;
+              appName = baseName.charAt(0).toUpperCase() + baseName.slice(1);
+            }
+          }
           displayRedirectUri = redirectUri;
         } catch (e) {
           appName = 'External Application';
           displayRedirectUri = redirectUri;
         }
+      }
 
-        // Customize permissions layout for legacy secure handoff
-        const permissionsList = document.querySelector('.permissions-list');
-        if (permissionsList) {
-          permissionsList.innerHTML = `
+      // Customize permissions layout for legacy secure handoff
+      const permissionsList = document.querySelector('.permissions-list');
+      if (permissionsList) {
+        permissionsList.innerHTML = `
             <div class="permission-item">
               <i class="fas fa-check-circle permission-icon"></i>
               <div class="permission-text">
@@ -672,13 +736,48 @@
               </div>
             </div>
           `;
-        }
       }
 
       // Update UI info
-      document.getElementById('appName').textContent = appName;
-      document.getElementById('appRedirectUri').textContent = displayRedirectUri;
-      document.getElementById('appIconLetter').textContent = appName.charAt(0).toUpperCase();
+      const appNameLink = document.getElementById('appNameLink');
+      if (appNameLink) {
+        appNameLink.textContent = appName;
+        appNameLink.href = redirectUri || '#';
+      }
+
+      let domain = '';
+      try {
+        const parsedUrl = new URL(redirectUri, window.location.origin);
+        domain = parsedUrl.hostname;
+      } catch (e) {
+        domain = redirectUri || '';
+      }
+
+      // Set fallback text initial
+      const appIconFallback = document.getElementById('appIconFallback');
+      if (appIconFallback) {
+        appIconFallback.textContent = appName ? appName.charAt(0).toUpperCase() : '?';
+        appIconFallback.style.display = 'none';
+      }
+
+      const faviconUrl = scrapedIcon || (domain && !domain.includes('localhost') && domain !== '127.0.0.1'
+        ? `https://www.google.com/s2/favicons?sz=128&domain=${encodeURIComponent(domain)}`
+        : '');
+
+      const appFaviconImg = document.getElementById('appFavicon');
+      if (appFaviconImg) {
+        if (faviconUrl) {
+          appFaviconImg.src = faviconUrl;
+          appFaviconImg.style.display = 'inline';
+          appFaviconImg.title = appName;
+        } else {
+          // Hide image and show fallback letter if localhost or empty domain
+          appFaviconImg.style.display = 'none';
+          if (appIconFallback) {
+            appIconFallback.style.display = 'inline';
+          }
+        }
+      }
 
       if (loginHeaderTitle) {
         loginHeaderTitle.textContent = `Log in to authorize ${appName}`;

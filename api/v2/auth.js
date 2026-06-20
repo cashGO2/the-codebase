@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
   const action = req.query.action || (req.body && req.body.action);
 
   // Method restrictions
-  const isOauthGet = (action === 'oauth_list_apps' || action === 'oauth_client_info') && req.method === 'GET';
+  const isOauthGet = (action === 'oauth_list_apps' || action === 'oauth_client_info' || action === 'fetch_url_title') && req.method === 'GET';
   if (req.method !== 'POST' && !isOauthGet) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -43,6 +43,8 @@ module.exports = async (req, res) => {
     return handleOAuthDeleteApp(req, res);
   } else if (action === 'oauth_client_info') {
     return handleOAuthClientInfo(req, res);
+  } else if (action === 'fetch_url_title') {
+    return handleFetchUrlTitle(req, res);
   } else if (action === 'oauth_authorize') {
     return handleOAuthAuthorize(req, res);
   } else if (action === 'oauth_token') {
@@ -568,5 +570,112 @@ async function handleOAuthToken(req, res) {
   } catch (error) {
     console.error('oauth_token error:', error);
     return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+async function handleFetchUrlTitle(req, res) {
+  try {
+    const urlStr = req.query.url;
+    if (!urlStr) {
+      return res.status(400).json({ error: 'URL is required' });
+    }
+
+    // Basic URL validation
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(urlStr);
+    } catch (e) {
+      return res.status(400).json({ error: 'Invalid URL' });
+    }
+
+    // SSRF prevention: do not fetch local/private IP addresses or loopbacks
+    const hostname = parsedUrl.hostname.toLowerCase();
+    if (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname === '0.0.0.0' ||
+      hostname.startsWith('192.168.') ||
+      hostname.startsWith('10.') ||
+      hostname.startsWith('172.16.')
+    ) {
+      let host = hostname;
+      const dotIdx = host.indexOf('.');
+      const derived = dotIdx > 0 ? host.substring(0, dotIdx) : host;
+      return res.status(200).json({ title: derived.charAt(0).toUpperCase() + derived.slice(1), icon: '' });
+    }
+
+    // Fetch site title with a 3-second timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+    const response = await fetch(urlStr, {
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      }
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch site');
+    }
+
+    const html = await response.text();
+    const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+    let title = titleMatch ? titleMatch[1].trim() : '';
+
+    if (title) {
+      // Decode HTML entities
+      title = title
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#039;/g, "'");
+    }
+
+    if (!title) {
+      // Fallback: derive friendly title from domain name
+      let host = parsedUrl.hostname;
+      if (host.startsWith('www.')) host = host.substring(4);
+      const dotIdx = host.indexOf('.');
+      const derived = dotIdx > 0 ? host.substring(0, dotIdx) : host;
+      title = derived.charAt(0).toUpperCase() + derived.slice(1);
+    }
+
+    // Search for custom icon link in the fetched HTML
+    let iconUrl = '';
+    const linkMatches = html.match(/<link[^>]+>/gi) || [];
+    for (const linkTag of linkMatches) {
+      const relMatch = linkTag.match(/rel\s*=\s*["']([^"']*icon[^"']*)["']/i);
+      if (relMatch) {
+        const hrefMatch = linkTag.match(/href\s*=\s*["']([^"']+)["']/i);
+        if (hrefMatch) {
+          const href = hrefMatch[1];
+          try {
+            iconUrl = new URL(href, urlStr).href;
+            break; // take the first icon link found
+          } catch (e) {
+            // Ignore resolve error
+          }
+        }
+      }
+    }
+
+    return res.status(200).json({ title, icon: iconUrl });
+  } catch (error) {
+    // Graceful fallback to capitalized hostname on error/timeout
+    try {
+      const parsedUrl = new URL(req.query.url);
+      let host = parsedUrl.hostname;
+      if (host.startsWith('www.')) host = host.substring(4);
+      const dotIdx = host.indexOf('.');
+      const derived = dotIdx > 0 ? host.substring(0, dotIdx) : host;
+      const fallbackTitle = derived.charAt(0).toUpperCase() + derived.slice(1);
+      return res.status(200).json({ title: fallbackTitle, icon: '' });
+    } catch (e) {
+      return res.status(200).json({ title: 'External Application', icon: '' });
+    }
   }
 }
