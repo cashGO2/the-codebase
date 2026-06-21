@@ -501,23 +501,46 @@ async function handleOAuthAuthorize(req, res) {
 
 async function handleOAuthToken(req, res) {
   try {
-    const { client_id, client_secret, code, redirect_uri, grant_type } = req.body || {};
+    // Handle application/x-www-form-urlencoded if req.body is a string
+    let bodyData = req.body || {};
+    if (typeof req.body === 'string') {
+      try {
+        bodyData = JSON.parse(req.body);
+      } catch (e) {
+        bodyData = Object.fromEntries(new URLSearchParams(req.body));
+      }
+    }
+
+    let { client_id, client_secret, code, redirect_uri, grant_type } = bodyData;
+
+    // Check Authorization header for Basic Auth (Standard OAuth2 Client Auth)
+    const authHeader = req.headers.authorization || req.headers.Authorization || '';
+    if (authHeader.startsWith('Basic ')) {
+      const b64auth = authHeader.split(' ')[1];
+      const [user, pass] = Buffer.from(b64auth, 'base64').toString().split(':');
+      if (!client_id) client_id = user;
+      if (!client_secret) client_secret = pass;
+    }
 
     if (grant_type !== 'authorization_code') {
       return res.status(400).json({ error: 'Unsupported grant type. Only authorization_code is supported.' });
     }
 
-    if (!client_id || !client_secret || !code) {
-      return res.status(400).json({ error: 'Client ID, client secret, and authorization code are required' });
+    if (!client_id || !code) {
+      return res.status(400).json({ error: 'Client ID and authorization code are required' });
     }
 
     // Verify client credentials
-    const { data: app, error: appError } = await supabaseAdmin
+    let appQuery = supabaseAdmin
       .from('oauth_apps')
       .select('*')
-      .eq('client_id', client_id)
-      .eq('client_secret', client_secret)
-      .single();
+      .eq('client_id', client_id);
+      
+    if (client_secret) {
+      appQuery = appQuery.eq('client_secret', client_secret);
+    }
+    
+    const { data: app, error: appError } = await appQuery.single();
 
     if (appError || !app) {
       return res.status(401).json({ error: 'Invalid client credentials' });

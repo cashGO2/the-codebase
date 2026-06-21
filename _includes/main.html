@@ -1,8 +1,8 @@
 <script>
     window.MATERIO_CONFIG = Object.assign(window.MATERIO_CONFIG || {}, {
         INSIGHTROOM_API: "{{ site.insightroom_api | default: 'https://room.getmaterio.app/api/posts' }}"{% if site.tauri_build %},
-        IS_TAURI_APP: true,
-        API_ORIGIN: {{ site.api_origin | default: 'https://getmaterio.app' | jsonify }}{% endif %}
+    IS_TAURI_APP: true,
+        API_ORIGIN: { { site.api_origin | default: 'https://getmaterio.app' | jsonify } } {% endif %}
     });
 </script>
 <div class="container">
@@ -24,7 +24,7 @@
                 </svg>
             </a>
 
-             <a href="#3" class="tab-link" data-tab="notifications">
+            <a href="#3" class="tab-link" data-tab="notifications">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor"
                     fill="none" stroke="#141B34" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M15.5 18C15.5 19.933 13.933 21.5 12 21.5C10.067 21.5 8.5 19.933 8.5 18" />
@@ -32,7 +32,7 @@
                         d="M19.2311 18H4.76887C3.79195 18 3 17.208 3 16.2311C3 15.762 3.18636 15.3121 3.51809 14.9803L4.12132 14.3771C4.68393 13.8145 5 13.0514 5 12.2558V9.5C5 5.63401 8.13401 2.5 12 2.5C15.866 2.5 19 5.634 19 9.5V12.2558C19 13.0514 19.3161 13.8145 19.8787 14.3771L20.4819 14.9803C20.8136 15.3121 21 15.762 21 16.2311C21 17.208 20.208 18 19.2311 18Z" />
                 </svg>
             </a>
-           
+
             <a href="#leaderboard" class="tab-link" data-tab="leaderboard">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor"
                     fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -47,7 +47,7 @@
                         d="M12.6911 2.57767L13.395 3.99715C13.491 4.19475 13.7469 4.38428 13.9629 4.42057L15.2388 4.6343C16.0547 4.77141 16.2467 5.36824 15.6587 5.957L14.6668 6.95709C14.4989 7.12646 14.4069 7.4531 14.4589 7.68699L14.7428 8.925C14.9668 9.90492 14.4509 10.284 13.591 9.77185L12.3951 9.05808C12.1791 8.92903 11.8232 8.92903 11.6032 9.05808L10.4073 9.77185C9.5514 10.284 9.03146 9.90089 9.25543 8.925L9.5394 7.68699C9.5914 7.4531 9.49941 7.12646 9.33143 6.95709L8.33954 5.957C7.7556 5.36824 7.94358 4.77141 8.75949 4.6343L10.0353 4.42057C10.2473 4.38428 10.5033 4.19475 10.5993 3.99715L11.3032 2.57767C11.6872 1.80744 12.3111 1.80744 12.6911 2.57767Z" />
                 </svg>
             </a>
-           
+
             <a href="https://room.getmaterio.app" target="_blank">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor"
                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -207,7 +207,8 @@
                             <div class="quick-search-border-glow"></div>
                             <div class="pulse-wave"></div>
                             <i class="far fa-search quick-search-icon-left"></i>
-                            <input type="text" id="quickSearchInput" placeholder="Finder" autocomplete="off" spellcheck="false" autocapitalize="off" />
+                            <input type="text" id="quickSearchInput" placeholder="Finder" autocomplete="off"
+                                spellcheck="false" autocapitalize="off" />
                             <button id="clearSearchBtn" class="clear-search-btn" title="Clear Search"
                                 aria-label="Clear Search" style="display: none;">
                                 <i class="fa-solid fa-xmark"></i>
@@ -246,7 +247,7 @@
                     <div class="ai-banner-right">
                         <div class="ai-icons-group">
                             <img src="https://www.google.com/s2/favicons?sz=128&domain=perplexity.ai" alt="Perplexity"
-                            class="ai-icon perplexity-icon">
+                                class="ai-icon perplexity-icon">
                             <img src="https://www.google.com/s2/favicons?sz=128&domain=chatgpt.com" alt="ChatGPT"
                                 class="ai-icon chatgpt-icon">
                             <img src="https://www.google.com/s2/favicons?sz=128&domain=claude.com" alt="Claude"
@@ -680,7 +681,7 @@
                                 </div>
                             </div>
                             <div style="display: flex; flex-direction: column;">
-                                <a href="https://claude.ai/settings/connectors?modal=add-custom-connector"
+                                <a href="https://claude.ai/customize/connectors?modal=add-custom-connector"
                                     target="_blank" class="mcp-sublink">
                                     <span>Connect</span>
                                     <i class="fas fa-chevron-right"></i>
@@ -704,7 +705,8 @@
                                 </div>
                             </div>
                             <div style="display: flex; flex-direction: column;">
-                                <a href="https://www.perplexity.ai/computer/connectors" target="_blank" class="mcp-sublink">
+                                <a href="https://www.perplexity.ai/computer/connectors" target="_blank"
+                                    class="mcp-sublink">
                                     <span>Connect</span>
                                     <i class="fas fa-chevron-right"></i>
                                 </a>
@@ -773,7 +775,7 @@
         <!-- Notebook Modal -->
         {% include notebook.html %}
 
-       
+
 
         <div id="notifications" class="tab-content">
             <h1>Notifications</h1>
@@ -1207,17 +1209,23 @@
                                 <div class="wallpaper-preview sereine-preview" id="sereinePreview"
                                     style="background-image: url('https://sereine.vercel.app/api/wallpapers/random?fallback=true'); background-size: cover; background-position: center;">
                                     <div class="wallpaper-overlay">
-                                        <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                                        <div
+                                            style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
                                             <span class="wallpaper-name">Sereine Carousel</span>
-                                            <div class="sereine-settings-dropdown-wrapper" id="sereineSettingsDropdownWrapper">
-                                                <button class="sereine-settings-btn" id="sereineSettingsTrigger" title="Carousel Settings">
+                                            <div class="sereine-settings-dropdown-wrapper"
+                                                id="sereineSettingsDropdownWrapper">
+                                                <button class="sereine-settings-btn" id="sereineSettingsTrigger"
+                                                    title="Carousel Settings">
                                                     <i class="fa-solid fa-gear"></i>
                                                 </button>
                                                 <div class="sereine-settings-dropdown" id="sereineSettingsDropdown">
-                                                    <div class="sereine-setting-item" data-value="everytime">Everytime</div>
-                                                    <div class="sereine-setting-item" data-value="everyday">Everyday</div>
+                                                    <div class="sereine-setting-item" data-value="everytime">Everytime
+                                                    </div>
+                                                    <div class="sereine-setting-item" data-value="everyday">Everyday
+                                                    </div>
                                                     <div class="sereine-setting-item" data-value="random">Random</div>
-                                                    <div class="sereine-setting-item" data-value="3days">Every 3 days</div>
+                                                    <div class="sereine-setting-item" data-value="3days">Every 3 days
+                                                    </div>
                                                     <div class="sereine-setting-item" data-value="week">Every week</div>
                                                 </div>
                                             </div>
@@ -1428,7 +1436,7 @@
         </div>
 
     </div>
-    
+
     <!-- Sereine Carousel Watermark -->
     <div id="sereineWatermark" style="display: none;">
         <span id="sereineArtistText">Image by<br><strong id="sereineArtistName"></strong></span>
