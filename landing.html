@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materio | Ace your CS degree</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --dark: #121212;
+            --light: #fcfcf9;
+            --mid-gray: #232323;
+            --off-white: #f8f8f3;
+            --orange: #ff8400;
+            --blue: #6a9bcc;
+            --green: #788c5d;
+            --font-heading: 'Manrope', sans-serif;
+            --font-body: 'Tiempos VF', 'Tiempos Text', Georgia, serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+            font-size: 1.05rem;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        /* Utility */
+        .italic {
+            font-family: var(--font-body);
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        /* Ambient Background */
+        .bg-ambient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 0% 0%, rgba(106, 155, 204, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 100% 0%, rgba(255, 132, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 50% 100%, rgba(120, 140, 93, 0.05) 0%, transparent 50%);
+            filter: blur(80px);
+        }
+
+        /* Premium Navbar */
+        .navbar {
+            position: fixed;
+            top: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1000px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 1.25rem;
+            background-color: rgba(252, 252, 249, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 99px;
+            z-index: 100;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
+        }
+
+        .nav-logo img {
+            height: 24px;
+            display: block;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover { color: var(--orange); }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.7rem 1.4rem;
+            border-radius: 99px;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: none;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background-color: var(--orange);
+            color: var(--light);
+            box-shadow: 0 4px 14px rgba(255, 132, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 132, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: rgba(0,0,0,0.03);
+            color: var(--dark);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(0,0,0,0.06);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 9rem 2rem 4rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+            align-items: center;
+            text-align: center;
+        }
+
+        .badge {
+            background-color: rgba(106, 155, 204, 0.1);
+            color: var(--blue);
+            padding: 0.4rem 0.8rem;
+            border-radius: 99px;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            letter-spacing: -0.03em;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .hero h1 .italic {
+            color: var(--orange);
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 2vw, 1.15rem);
+            max-width: 600px;
+            margin: 0 auto 2.5rem auto;
+            color: #555;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero-visual {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px -15px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,0,0,0.05);
+            background: var(--off-white);
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hero-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Integrations */
+        .integrations {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .integrations p {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            color: #888;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.5rem;
+        }
+
+        .logos {
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+            opacity: 0.7;
+            filter: grayscale(100%);
+            transition: opacity 0.3s ease, filter 0.3s ease;
+        }
+
+        .logos:hover {
+            opacity: 1;
+            filter: grayscale(0%);
+        }
+
+        .logos img {
+            height: 32px;
+            object-fit: contain;
+        }
+
+        /* Features */
+        .features {
+            padding: 6rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 0.5rem;
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+            grid-auto-rows: minmax(280px, auto);
+        }
+
+        .bento-card {
+            background: var(--off-white);
+            border-radius: 24px;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.03);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .bento-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -10px rgba(0,0,0,0.06);
+        }
+
+        .col-span-2 { grid-column: span 2; }
+
+        .bento-card h3 {
+            font-size: 1.6rem;
+            margin-bottom: 0.8rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .bento-card p {
+            color: #555;
+            position: relative;
+            z-index: 2;
+            max-width: 85%;
+            font-size: 1rem;
+        }
+
+        .bento-img {
+            position: absolute;
+            z-index: 1;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .bento-card:hover .bento-img {
+            transform: scale(1.03);
+        }
+
+        .img-notes {
+            bottom: -10px;
+            right: -10px;
+            width: 45%;
+            object-fit: contain;
+        }
+
+        .img-insight {
+            top: 50%;
+            left: 75%;
+            transform: translate(-50%, -50%);
+            width: 50%;
+            opacity: 0.25;
+            object-fit: contain;
+        }
+        
+        .bento-card:hover .img-insight {
+            transform: translate(-50%, -50%) scale(1.03);
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 6rem 2rem;
+            background-color: var(--dark);
+            color: var(--light);
+            margin: 0 1rem;
+            border-radius: 32px;
+        }
+
+        .testimonials .section-header h2 {
+            color: var(--light);
+        }
+
+        .testimonials .section-header .italic {
+            color: var(--green);
+        }
+
+        .testi-grid {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .testi-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 2rem;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .testi-quote {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 2rem;
+        }
+
+        .testi-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .testi-author img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .testi-author-info strong {
+            display: block;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .testi-author-info span {
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 5rem 2rem 2rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-logo img {
+            height: 28px;
+            margin-bottom: 1.2rem;
+        }
+
+        .footer p {
+            color: #666;
+            max-width: 280px;
+            font-size: 0.95rem;
+        }
+
+        .footer h3 {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.2rem;
+            color: var(--dark);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li { margin-bottom: 0.8rem; }
+
+        .footer-links a {
+            color: #666;
+            text-decoration: none;
+            font-family: var(--font-heading);
+            font-weight: 600;
+            transition: color 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        .footer-links a:hover { color: var(--orange); }
+
+        .footer-bottom {
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            text-align: center;
+            color: #888;
+            font-family: var(--font-heading);
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 900px) {
+            .bento-grid { grid-template-columns: 1fr; }
+            .col-span-2 { grid-column: span 1; }
+            .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .testi-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero h1 { font-size: 2.5rem; }
+            .hero-actions { flex-direction: column; }
+            .hero-visual { border-radius: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-ambient"></div>
+
+    <nav class="navbar">
+        <a href="#" class="nav-logo">
+            <img src="assets/img/materio_new_bk.svg" alt="Materio Logo">
+        </a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#insightroom">InsightRoom</a>
+            <a href="#testimonials">Community</a>
+        </div>
+        <a href="#" class="btn btn-primary">Start studying</a>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <div class="badge">
+                <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i>
+                Materio v2.0 is live
+            </div>
+            <h1>Ace your CS degree, <br><span class="italic">without the all-nighters.</span></h1>
+            <p>Your ultimate study SaaS for verified, crowd-curated notes. We organized the syllabus chaos so you can actually focus on passing.</p>
+            <div class="hero-actions">
+                <a href="#" class="btn btn-primary">Get started free</a>
+                <a href="#features" class="btn btn-secondary">Explore features</a>
+            </div>
+        </div>
+
+        <div class="hero-visual">
+            <img src="assets/img/banner.svg" alt="Materio Dashboard Interface">
+        </div>
+    </header>
+
+    <section class="integrations">
+        <p>Powered by the best in AI</p>
+        <div class="logos">
+            <img src="assets/img/chatgpt.webp" alt="ChatGPT">
+            <img src="assets/img/claude.webp" alt="Claude">
+            <img src="assets/img/Perplexity-Diamond-Pro-1x1-v2.webp" alt="Perplexity">
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="section-header">
+            <h2>Why we're the <span class="italic">goat</span></h2>
+        </div>
+        
+        <div class="bento-grid">
+            <div class="bento-card col-span-2">
+                <div class="bento-content">
+                    <h3>Notes that actually make sense.</h3>
+                    <p>Skip the 300-page textbooks. Access organized, crowd-curated materials tailored exactly to your university branch and semester syllabus.</p>
+                </div>
+                <img src="assets/img/note.png" alt="Notes" class="bento-img img-notes">
+            </div>
+
+            <div class="bento-card" style="background-color: var(--dark); color: var(--light);">
+                <div class="bento-content">
+                    <h3 style="color: var(--light);">Vibe-check your reading.</h3>
+                    <p style="color: #aaa;">3AM dark-mode gremlin or e-ink purist? Customize your reading experience perfectly.</p>
+                </div>
+                <div style="position: absolute; bottom: 1.5rem; right: 1.5rem;">
+                    <i data-lucide="moon" style="width: 36px; height: 36px; color: var(--orange);"></i>
+                </div>
+            </div>
+
+            <div class="bento-card">
+                <div class="bento-content">
+                    <h3>Study squad group chat.</h3>
+                    <p>Drop your questions or just vent about your professors in our Giscus-powered discussions.</p>
+                </div>
+                <div style="position: absolute; bottom: 1.5rem; right: 1.5rem; background: var(--orange); padding: 0.8rem; border-radius: 16px;">
+                    <i data-lucide="message-circle" style="width: 24px; height: 24px; color: var(--light);"></i>
+                </div>
+            </div>
+
+            <div class="bento-card col-span-2">
+                <div class="bento-content">
+                    <h3>The InsightRoom (Beta).</h3>
+                    <p>Stuck on that one impossible assignment? Get verified solutions, printable notes, and offline resources to save your grades.</p>
+                </div>
+                <img src="assets/img/The InsightRoom.png" alt="InsightRoom" class="bento-img img-insight">
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials" id="testimonials">
+        <div class="section-header">
+            <h2>Don't just take our <span class="italic">word</span> for it</h2>
+        </div>
+        <div class="testi-grid">
+            <div class="testi-card">
+                <p class="testi-quote">"Bro, you did a great job."</p>
+                <div class="testi-author">
+                    <img src="https://github.com/yagnikkpatel.png" alt="yagnikkpatel">
+                    <div class="testi-author-info">
+                        <strong>yagnikkpatel</strong>
+                        <span>Apr 13, 2025 &middot; via Giscus</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testi-card">
+                <p class="testi-quote">"well done bhai. This is really impressive!"</p>
+                <div class="testi-author">
+                    <img src="https://github.com/3Squ4red.png" alt="3Squ4red">
+                    <div class="testi-author-info">
+                        <strong>3Squ4red</strong>
+                        <span>Apr 27, 2025 &middot; via Giscus</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div>
+                <a href="#" class="footer-logo">
+                    <img src="assets/img/materio_new_bk.svg" alt="Materio Logo">
+                </a>
+                <p>Building the ultimate study toolkit for CS students. Less chaos, better grades.</p>
+            </div>
+            <div>
+                <h3>Core Services</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Study Materials</a></li>
+                    <li><a href="#">The InsightRoom</a></li>
+                    <li><a href="#">Community Chat</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3>Connect & Legal</h3>
+                <ul class="footer-links">
+                    <li><a href="#">GitHub</a></li>
+                    <li><a href="#">LinkedIn</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Materio. All rights reserved. No cap.
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

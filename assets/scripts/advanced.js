@@ -906,13 +906,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 e.stopPropagation();
                 e.preventDefault();
 
-                const activeWallpaper = getActiveCustomWallpaperData();
-                if (activeWallpaper) {
-                    const remaining = readCustomWallpaperCollection().filter(item => item.dataUrl !== activeWallpaper);
-                    writeCustomWallpaperCollection(remaining);
-                }
-
-                // Remove active wallpaper
+                // Remove active wallpaper (but keep it in the collection for later use)
                 localStorage.removeItem(CUSTOM_WALLPAPER_ACTIVE_KEY);
 
                 // Reset UI

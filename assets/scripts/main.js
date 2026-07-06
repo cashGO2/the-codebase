@@ -73,10 +73,23 @@ document.addEventListener("DOMContentLoaded", function () {
     ".callout-caution",
   ];
 
-  // Clean up 'handoff' parameter from URL if present
+  // Clean up 'handoff' and Cloudflare parameters from URL if present
   const urlParams = new URLSearchParams(window.location.search);
+  let paramsChanged = false;
   if (urlParams.has("handoff")) {
     urlParams.delete("handoff");
+    paramsChanged = true;
+  }
+  if (urlParams.has("__cf_chl_f_tk")) {
+    urlParams.delete("__cf_chl_f_tk");
+    paramsChanged = true;
+  }
+  if (urlParams.has("__cf_chl_tk")) {
+    urlParams.delete("__cf_chl_tk");
+    paramsChanged = true;
+  }
+  
+  if (paramsChanged) {
     const newUrl =
       window.location.pathname +
       (urlParams.toString() ? "?" + urlParams.toString() : "") +

@@ -186,21 +186,10 @@
       optionsContainer.style.gap = '8px';
       optionsContainer.style.paddingBottom = '10px';
 
-      // Auto-select first real option if nothing is selected
       const selectOptions = Array.from(select.options);
-      const realOptions = selectOptions.filter(o => o.value);
-      if (!select.value && realOptions.length > 0) {
-          select.value = realOptions[0].value;
-          try {
-              select.dispatchEvent(new Event('change'));
-          } catch(e) {
-              console.warn("Error dispatching change event:", e);
-          }
-      }
+      // Remove auto-select logic to allow empty selection (All / Clear Filter)
 
       selectOptions.forEach((option) => {
-        if (!option.value) return; // skip placeholder
-
         const item = document.createElement('button');
         item.className = 'site-button promo-secondary-btn custom-select-option';
         item.style.width = '100%';
@@ -213,7 +202,13 @@
           item.classList.add('selected');
         }
         
-        item.innerHTML = `<span style="flex: 1;">${option.textContent}</span>`;
+        // If it's a placeholder, style it slightly differently and change text
+        if (!option.value) {
+           item.style.opacity = '0.8';
+        }
+        
+        const displayText = option.value ? option.textContent : "All / Clear Filter";
+        item.innerHTML = `<span style="flex: 1;">${displayText}</span>`;
         
         item.addEventListener('click', () => {
           select.selectedIndex = option.index;
@@ -226,6 +221,11 @@
               const buttons = oldView.querySelectorAll('.custom-select-option');
               buttons.forEach(btn => btn.classList.remove('selected'));
               item.classList.add('selected');
+              
+              const actionBtn = oldView.querySelector('.custom-select-footer .promo-primary-btn');
+              if (actionBtn && stepIndex < SELECT_ORDER.length - 1) {
+                  actionBtn.innerHTML = select.value ? 'Continue <i class="fa-solid fa-chevron-right" style="margin-left:5px"></i>' : 'Apply & Close';
+              }
           }
 
           try {
@@ -234,8 +234,8 @@
               console.warn("Error dispatching change event on option click:", e);
           }
           
-          // Auto-flow to next
-          if (stepIndex < SELECT_ORDER.length - 1) {
+          // Auto-flow to next if a value was selected
+          if (select.value && stepIndex < SELECT_ORDER.length - 1) {
             const nextSelect = document.getElementById(SELECT_ORDER[stepIndex + 1]);
             if (nextSelect && !nextSelect.disabled) {
               setTimeout(() => {
@@ -293,7 +293,7 @@
           });
       } else {
           actionBtn.className = 'site-button promo-primary-btn';
-          actionBtn.innerHTML = 'Continue <i class="fa-solid fa-chevron-right" style="margin-left:5px"></i>';
+          actionBtn.innerHTML = select.value ? 'Continue <i class="fa-solid fa-chevron-right" style="margin-left:5px"></i>' : 'Apply & Close';
           actionBtn.style.flex = '1'; // allow shrinking
           actionBtn.style.background = '#ff5400';
           actionBtn.style.color = '#fff';
@@ -305,13 +305,15 @@
           actionBtn.style.cursor = 'pointer';
           actionBtn.style.borderRadius = btnRadius;
           
-          // Disable next if nothing selected
-          if (!select.value) {
-              actionBtn.style.opacity = '0.5';
-              actionBtn.style.pointerEvents = 'none';
-          } else {
-              actionBtn.addEventListener('click', () => goToStep(stepIndex + 1, true));
-          }
+          actionBtn.addEventListener('click', () => {
+              if (!select.value) {
+                  closeModal();
+                  const submitBtn = document.getElementById('submitButton');
+                  if (submitBtn) submitBtn.click();
+              } else {
+                  goToStep(stepIndex + 1, true);
+              }
+          });
       }
 
       footer.appendChild(prevBtn);
