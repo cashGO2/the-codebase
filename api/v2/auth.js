@@ -530,6 +530,10 @@ async function handleOAuthAuthorize(req, res) {
 
 async function handleOAuthToken(req, res) {
   try {
+    // RFC 6749 Section 5.1/5.2 requires no-store headers for all token responses
+    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Pragma', 'no-cache');
+
     // Handle application/x-www-form-urlencoded if req.body is a string
     let bodyData = req.body || {};
     if (Buffer.isBuffer(req.body)) {
@@ -639,9 +643,6 @@ async function handleOAuthToken(req, res) {
       tokenToReturn = generateToken(user);
     }
 
-    // RFC 6749 Section 5.1 requires these headers for token responses
-    res.setHeader('Cache-Control', 'no-store');
-    res.setHeader('Pragma', 'no-cache');
 
     return res.status(200).json({
       access_token: tokenToReturn,
