@@ -8,7 +8,8 @@
 
   <!-- Open Graph / SEO -->
   <meta property="og:title" content="Materio - Login">
-  <meta property="og:description" content="Official materials you trust, in a way you love — Reach your university account to explore organized study materials.">
+  <meta property="og:description"
+    content="Official materials you trust, in a way you love — Reach your university account to explore organized study materials.">
   <meta property="og:image" content="https://materioa.vercel.app/assets/img/open-graph.png">
   <meta property="og:url" content="https://materioa.vercel.app/account">
   <meta property="og:type" content="website">
@@ -50,7 +51,7 @@
     }
 
     // Run redirect check immediately (before DOMContentLoaded) to prevent flashing
-    (function() {
+    (function () {
       const tokenRow = document.cookie.split('; ').find(row => row.startsWith('materio_auth_token='));
       const tokenLocal = localStorage.getItem('materio_auth_token');
       const hasToken = !!(tokenRow || tokenLocal);
@@ -454,7 +455,7 @@
               const urlParams = new URLSearchParams(window.location.search);
               const clientId = urlParams.get('client_id');
               const callback = urlParams.get('callback');
-              
+
               if (clientId || callback) {
                 if (typeof window.showConsentPhase === 'function') {
                   window.showConsentPhase();
@@ -516,7 +517,7 @@
   <script src="/account/js/ux-enhancers.js"></script>
   <script>
     // SSO Redirect and Init logic
-    (function() {
+    (function () {
       const urlParams = new URLSearchParams(window.location.search);
       const clientId = urlParams.get('client_id');
       const callback = urlParams.get('callback');
@@ -533,7 +534,7 @@
       if (loginHeaderSub) loginHeaderSub.textContent = 'Please log in to continue to the application.';
 
       // Set up consent phase window-level function
-      window.showConsentPhase = function() {
+      window.showConsentPhase = function () {
         if (callback && isSameSiteCallback(callback)) {
           // Bypass SSO, perform direct secure handoff and redirect
           const token = getAuthToken();

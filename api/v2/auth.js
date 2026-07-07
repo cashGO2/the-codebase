@@ -21,7 +21,36 @@ module.exports = async (req, res) => {
     return cors(req, res);
   }
 
-  const action = req.query.action || (req.body && req.body.action);
+  // Parse body data to determine if it is an OAuth token request
+  let bodyData = req.body || {};
+  if (Buffer.isBuffer(req.body)) {
+    try {
+      const bodyStr = req.body.toString('utf8');
+      try {
+        bodyData = JSON.parse(bodyStr);
+      } catch (jsonErr) {
+        bodyData = Object.fromEntries(new URLSearchParams(bodyStr));
+      }
+    } catch (e) {}
+  } else if (typeof req.body === 'string') {
+    try {
+      bodyData = JSON.parse(req.body);
+    } catch (e) {
+      try {
+        bodyData = Object.fromEntries(new URLSearchParams(req.body));
+      } catch (err) {}
+    }
+  }
+
+  let action = req.query.action || bodyData.action;
+
+  // Auto-detect OAuth Token exchange standard requests if action is not specified
+  if (!action && req.method === 'POST') {
+    const grantType = bodyData.grant_type || req.query.grant_type;
+    if (grantType === 'authorization_code' || grantType === 'refresh_token') {
+      action = 'oauth_token';
+    }
+  }
 
   // Method restrictions
   const isOauthGet = (action === 'oauth_list_apps' || action === 'oauth_client_info' || action === 'fetch_url_title') && req.method === 'GET';
@@ -503,6 +532,9 @@ async function handleOAuthToken(req, res) {
   try {
     // Handle application/x-www-form-urlencoded if req.body is a string
     let bodyData = req.body || {};
+    if (Buffer.isBuffer(req.body)) {
+      req.body = req.body.toString('utf8');
+    }
     if (typeof req.body === 'string') {
       try {
         bodyData = JSON.parse(req.body);
@@ -511,74 +543,111 @@ async function handleOAuthToken(req, res) {
       }
     }
 
-    let { client_id, client_secret, code, redirect_uri, grant_type } = bodyData;
+    // Resolve parameters from body or query string
+    let client_id = bodyData.client_id || req.query.client_id;
+    let client_secret = bodyData.client_secret || req.query.client_secret;
+    let code = bodyData.code || req.query.code;
+    let redirect_uri = bodyData.redirect_uri || req.query.redirect_uri;
+    let grant_type = bodyData.grant_type || req.query.grant_type;
+    let refresh_token = bodyData.refresh_token || req.query.refresh_token;
 
     // Check Authorization header for Basic Auth (Standard OAuth2 Client Auth)
     const authHeader = req.headers.authorization || req.headers.Authorization || '';
-    if (authHeader.startsWith('Basic ')) {
-      const b64auth = authHeader.split(' ')[1];
-      const [user, pass] = Buffer.from(b64auth, 'base64').toString().split(':');
-      if (!client_id) client_id = user;
-      if (!client_secret) client_secret = pass;
+    if (authHeader.toLowerCase().startsWith('basic ')) {
+      const b64auth = authHeader.substring(6).trim();
+      const decodedStr = Buffer.from(b64auth, 'base64').toString();
+      const firstColon = decodedStr.indexOf(':');
+      if (firstColon !== -1) {
+        const user = decodeURIComponent(decodedStr.substring(0, firstColon));
+        const pass = decodeURIComponent(decodedStr.substring(firstColon + 1));
+        if (!client_id) client_id = user;
+        if (!client_secret) client_secret = pass;
+      }
     }
 
-    if (grant_type !== 'authorization_code') {
-      return res.status(400).json({ error: 'Unsupported grant type. Only authorization_code is supported.' });
-    }
-
-    if (!client_id || !code) {
-      return res.status(400).json({ error: 'Client ID and authorization code are required' });
+    if (!client_id) {
+      return res.status(400).json({ error: 'Client ID is required' });
     }
 
     // Verify client credentials
-    let appQuery = supabaseAdmin
+    const { data: app, error: appError } = await supabaseAdmin
       .from('oauth_apps')
       .select('*')
-      .eq('client_id', client_id);
-      
-    if (client_secret) {
-      appQuery = appQuery.eq('client_secret', client_secret);
-    }
-    
-    const { data: app, error: appError } = await appQuery.single();
+      .eq('client_id', client_id)
+      .eq('client_secret', client_secret || '')
+      .single();
 
     if (appError || !app) {
       return res.status(401).json({ error: 'Invalid client credentials' });
     }
 
-    // Consume the code
-    const { data: codeRecord, error: codeError } = await supabaseAdmin
-      .from('oauth_codes')
-      .delete()
-      .eq('code', code)
-      .eq('client_id', client_id)
-      .gt('expires_at', new Date().toISOString())
-      .select()
-      .single();
+    let tokenToReturn = null;
+    let userIdToFetch = null;
 
-    if (codeError || !codeRecord) {
-      return res.status(400).json({ error: 'Invalid or expired authorization code' });
-    }
+    if (grant_type === 'authorization_code') {
+      if (!code) {
+        return res.status(400).json({ error: 'Authorization code is required' });
+      }
 
-    if (redirect_uri && codeRecord.redirect_uri !== redirect_uri) {
-      return res.status(400).json({ error: 'Redirect URI mismatch' });
+      // Consume the code
+      const { data: codeRecord, error: codeError } = await supabaseAdmin
+        .from('oauth_codes')
+        .delete()
+        .eq('code', code)
+        .eq('client_id', client_id)
+        .gt('expires_at', new Date().toISOString())
+        .select()
+        .single();
+
+      if (codeError || !codeRecord) {
+        return res.status(400).json({ error: 'Invalid or expired authorization code' });
+      }
+
+      if (redirect_uri && codeRecord.redirect_uri !== redirect_uri) {
+        return res.status(400).json({ error: 'Redirect URI mismatch' });
+      }
+
+      tokenToReturn = codeRecord.token;
+      userIdToFetch = codeRecord.user_id;
+    } else if (grant_type === 'refresh_token') {
+      if (!refresh_token) {
+        return res.status(400).json({ error: 'Refresh token is required' });
+      }
+
+      const decoded = verifyToken(refresh_token);
+      if (!decoded) {
+        return res.status(400).json({ error: 'Invalid or expired refresh token' });
+      }
+
+      userIdToFetch = decoded.id;
+    } else {
+      return res.status(400).json({ error: 'Unsupported grant type. Only authorization_code and refresh_token are supported.' });
     }
 
     // Fetch user details
     const { data: user, error: userError } = await supabaseAdmin
       .from('users')
       .select('id, username, display_name, email, has_admin_privileges, is_plus_user, is_lite_user, profile_picture')
-      .eq('id', codeRecord.user_id)
+      .eq('id', userIdToFetch)
       .single();
 
     if (userError || !user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    if (grant_type === 'refresh_token') {
+      tokenToReturn = generateToken(user);
+    }
+
+    // RFC 6749 Section 5.1 requires these headers for token responses
+    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Pragma', 'no-cache');
+
     return res.status(200).json({
-      access_token: codeRecord.token,
+      access_token: tokenToReturn,
       token_type: 'Bearer',
       expires_in: 86400,
+      refresh_token: tokenToReturn,
       user: {
         id: user.id,
         username: user.username,
