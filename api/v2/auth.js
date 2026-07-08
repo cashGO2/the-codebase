@@ -481,7 +481,7 @@ async function handleOAuthAuthorize(req, res) {
     const user = await getAuthedUser(req, res);
     if (!user) return;
 
-    const { client_id, redirect_uri } = req.body || {};
+    const { client_id, redirect_uri, code_challenge, code_challenge_method } = req.body || {};
 
     if (!client_id || !redirect_uri) {
       return res.status(400).json({ error: 'Client ID and Redirect URI are required' });
@@ -503,7 +503,17 @@ async function handleOAuthAuthorize(req, res) {
     }
 
     const crypto = require('crypto');
-    const code = 'code_' + crypto.randomBytes(16).toString('hex');
+    const randomPart = crypto.randomBytes(16).toString('hex');
+    let code = 'code_' + randomPart;
+    if (code_challenge) {
+      const pkceData = {
+        r: randomPart,
+        c: code_challenge,
+        m: code_challenge_method || 'plain'
+      };
+      code = 'pkce_' + Buffer.from(JSON.stringify(pkceData)).toString('base64url');
+    }
+
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 minutes
 
     const { error: insertError } = await supabaseAdmin
@@ -572,16 +582,33 @@ async function handleOAuthToken(req, res) {
     if (!client_id) {
       return res.status(400).json({ error: 'Client ID is required' });
     }
+    // Parse PKCE code if present to see if we can bypass the client_secret check
+    let expectedChallenge = null;
+    let challengeMethod = null;
+    if (grant_type === 'authorization_code' && code && code.startsWith('pkce_')) {
+      try {
+        const pkceStr = Buffer.from(code.substring(5), 'base64url').toString('utf8');
+        const pkceData = JSON.parse(pkceStr);
+        expectedChallenge = pkceData.c;
+        challengeMethod = pkceData.m;
+      } catch (e) {
+        return res.status(400).json({ error: 'Invalid authorization code format' });
+      }
+    }
 
-    // Verify client credentials
+    // Verify client
     const { data: app, error: appError } = await supabaseAdmin
       .from('oauth_apps')
       .select('*')
       .eq('client_id', client_id)
-      .eq('client_secret', client_secret || '')
       .single();
 
     if (appError || !app) {
+      return res.status(401).json({ error: 'Invalid client credentials' });
+    }
+
+    // Only require client_secret if PKCE is NOT used
+    if (!expectedChallenge && app.client_secret && app.client_secret !== client_secret) {
       return res.status(401).json({ error: 'Invalid client credentials' });
     }
 
@@ -591,6 +618,29 @@ async function handleOAuthToken(req, res) {
     if (grant_type === 'authorization_code') {
       if (!code) {
         return res.status(400).json({ error: 'Authorization code is required' });
+      }
+
+      // If PKCE is used, verify code_verifier against the challenge
+      if (expectedChallenge) {
+        const code_verifier = bodyData.code_verifier || req.query.code_verifier;
+        if (!code_verifier) {
+          return res.status(400).json({ error: 'code_verifier is required for PKCE flow' });
+        }
+
+        const crypto = require('crypto');
+        let calculatedChallenge = '';
+        if (challengeMethod === 'S256') {
+          calculatedChallenge = crypto
+            .createHash('sha256')
+            .update(code_verifier)
+            .digest('base64url');
+        } else {
+          calculatedChallenge = code_verifier;
+        }
+
+        if (calculatedChallenge !== expectedChallenge) {
+          return res.status(400).json({ error: 'Invalid code_verifier' });
+        }
       }
 
       // Consume the code

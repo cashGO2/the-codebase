@@ -303,6 +303,8 @@
       const clientId = urlParams.get('client_id');
       const redirectUri = urlParams.get('redirect_uri') || urlParams.get('callback');
       const state = urlParams.get('state') || '';
+      const codeChallenge = urlParams.get('code_challenge');
+      const codeChallengeMethod = urlParams.get('code_challenge_method');
 
       if (!clientId && !urlParams.get('callback')) {
         showSsoError('Client ID or callback URL is required.');
@@ -511,7 +513,9 @@
                 },
                 body: JSON.stringify({
                   client_id: clientId,
-                  redirect_uri: redirectUri
+                  redirect_uri: redirectUri,
+                  code_challenge: codeChallenge,
+                  code_challenge_method: codeChallengeMethod
                 })
               });
 

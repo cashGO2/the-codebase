@@ -1,11 +1,11 @@
 // Uses global fetch
 
 async function testProd() {
-  console.log("Testing production token endpoint...");
+  console.log("Testing room.getmaterio.app token proxy endpoint...");
   
   // Try sending a dummy request to check how it responds
   try {
-    const res = await fetch('https://getmaterio.app/api/v2/auth?action=oauth_token', {
+    const res = await fetch('https://room.getmaterio.app/token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
