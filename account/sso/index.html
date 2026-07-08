@@ -431,27 +431,6 @@
           displayRedirectUri = redirectUri;
         }
 
-        // Customize permissions layout for legacy secure handoff
-        const permissionsList = document.querySelector('.permissions-list');
-        if (permissionsList) {
-          permissionsList.innerHTML = `
-            <div class="permission-item">
-              <i class="fas fa-check-circle permission-icon"></i>
-              <div class="permission-text">
-                <div class="permission-title">Secure Handoff Transfer</div>
-                <div class="permission-desc">Transfer your logged-in session securely to this site.</div>
-              </div>
-            </div>
-            <div class="permission-item">
-              <i class="fas fa-check-circle permission-icon"></i>
-              <div class="permission-text">
-                <div class="permission-title">Access Profile Information</div>
-                <div class="permission-desc">View your display name, username, and email address.</div>
-              </div>
-            </div>
-          `;
-        }
-      } else {
         // Populate dynamic scopes for standard OAuth flow
         const permissionsList = document.querySelector('.permissions-list');
         if (permissionsList) {
@@ -503,6 +482,60 @@
           }
 
           permissionsList.innerHTML = permissionsHtml;
+        }
+      } else {
+        // Legacy callback flow: fetch friendly title from url or params
+        try {
+          const parsedUrl = new URL(redirectUri, window.location.origin);
+          const nameParam = urlParams.get('name') || urlParams.get('app_name') || urlParams.get('client_name');
+          if (nameParam) {
+            appName = nameParam;
+          } else {
+            // Fetch actual site title and custom favicon from backend resolver
+            try {
+              const res = await fetch(`/api/v2/auth?action=fetch_url_title&url=${encodeURIComponent(redirectUri)}`);
+              if (res.ok) {
+                const data = await res.json();
+                appName = data.title;
+                scrapedIcon = data.icon || '';
+              }
+            } catch (err) {
+              // Ignore and use local derivation fallback
+            }
+
+            if (!appName) {
+              let host = parsedUrl.hostname;
+              if (host.startsWith('www.')) host = host.substring(4);
+              const dotIdx = host.indexOf('.');
+              const baseName = dotIdx > 0 ? host.substring(0, dotIdx) : host;
+              appName = baseName.charAt(0).toUpperCase() + baseName.slice(1);
+            }
+          }
+          displayRedirectUri = redirectUri;
+        } catch (e) {
+          appName = 'External Application';
+          displayRedirectUri = redirectUri;
+        }
+
+        // Customize permissions layout for legacy secure handoff
+        const permissionsList = document.querySelector('.permissions-list');
+        if (permissionsList) {
+          permissionsList.innerHTML = `
+            <div class="permission-item">
+              <i class="fas fa-check-circle permission-icon"></i>
+              <div class="permission-text">
+                <div class="permission-title">Secure Handoff Transfer</div>
+                <div class="permission-desc">Transfer your logged-in session securely to this site.</div>
+              </div>
+            </div>
+            <div class="permission-item">
+              <i class="fas fa-check-circle permission-icon"></i>
+              <div class="permission-text">
+                <div class="permission-title">Access Profile Information</div>
+                <div class="permission-desc">View your display name, username, and email address.</div>
+              </div>
+            </div>
+          `;
         }
       }
 
