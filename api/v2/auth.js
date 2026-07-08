@@ -3,6 +3,10 @@ const {
   supabaseAdmin,
   hashPassword,
   generateToken,
+  generateIdToken,
+  getJwks,
+  generateOpaqueToken,
+  hashToken,
   verifyToken,
   getTokenFromHeaders,
   corsHeaders,
@@ -11,6 +15,91 @@ const {
 const { sendOTPEmail } = require('../_utils_shared/mailer');
 const { getOTPTemplate } = require('../_utils_shared/otp_template');
 const cors = require('./cors');
+const crypto = require('crypto');
+const DEFAULT_ISSUER = 'https://getmaterio.app';
+const DEFAULT_SCOPES = 'openid profile email admin';
+
+function getIssuer(req) {
+  const proto = req.headers['x-forwarded-proto'] || 'https';
+  const host = req.headers['x-forwarded-host'] || req.headers.host;
+  return process.env.OAUTH_ISSUER || (host ? `${proto}://${host}` : DEFAULT_ISSUER);
+}
+
+function getAuthBaseUrl(req) {
+  return process.env.OAUTH_PUBLIC_BASE_URL || getIssuer(req);
+}
+
+function normalizeScope(scope) {
+  const requested = String(scope || '').split(/\s+/).filter(Boolean);
+  const unique = [...new Set(requested.length ? requested : ['admin'])];
+  return unique.join(' ');
+}
+
+function hasScope(scope, value) {
+  return String(scope || '').split(/\s+/).includes(value);
+}
+
+function oauthError(res, status, error, description) {
+  const payload = { error };
+  if (description) payload.error_description = description;
+  return res.status(status).json(payload);
+}
+
+function oauthRedirectError(res, redirectUri, error, description, state) {
+  try {
+    const target = new URL(redirectUri);
+    target.searchParams.set('error', error);
+    if (description) target.searchParams.set('error_description', description);
+    if (state) target.searchParams.set('state', state);
+    return res.redirect(302, target.toString());
+  } catch (e) {
+    return oauthError(res, 400, error, description);
+  }
+}
+
+function parseJsonArray(value, fallback = []) {
+  if (Array.isArray(value)) return value;
+  if (!value) return fallback;
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : fallback;
+  } catch (e) {
+    return fallback;
+  }
+}
+
+function getClientRedirectUris(app) {
+  const uris = parseJsonArray(app?.redirect_uris, []);
+  if (app?.redirect_uri && !uris.includes(app.redirect_uri)) uris.push(app.redirect_uri);
+  return uris;
+}
+
+function isRedirectUriAllowed(app, redirectUri) {
+  const uris = getClientRedirectUris(app);
+  return uris.length === 0 ? false : uris.includes(redirectUri);
+}
+
+function getBasicClientCredentials(req) {
+  const authHeader = req.headers.authorization || req.headers.Authorization || '';
+  if (!authHeader.toLowerCase().startsWith('basic ')) return {};
+  const decodedStr = Buffer.from(authHeader.substring(6).trim(), 'base64').toString();
+  const firstColon = decodedStr.indexOf(':');
+  if (firstColon === -1) return {};
+  return {
+    client_id: decodeURIComponent(decodedStr.substring(0, firstColon)),
+    client_secret: decodeURIComponent(decodedStr.substring(firstColon + 1))
+  };
+}
+
+async function isTokenRevoked(token) {
+  if (!token) return false;
+  const { data } = await supabaseAdmin
+    .from('oauth_revoked_tokens')
+    .select('token_hash')
+    .eq('token_hash', hashToken(token))
+    .maybeSingle();
+  return Boolean(data);
+}
 
 module.exports = async (req, res) => {
   const origin = req.headers.origin || req.headers.Origin;
@@ -53,7 +142,7 @@ module.exports = async (req, res) => {
   }
 
   // Method restrictions
-  const isOauthGet = (action === 'oauth_list_apps' || action === 'oauth_client_info' || action === 'fetch_url_title') && req.method === 'GET';
+  const isOauthGet = (action === 'oauth_list_apps' || action === 'oauth_client_info' || action === 'fetch_url_title' || action === 'oauth_metadata' || action === 'oidc_metadata' || action === 'jwks' || action === 'userinfo') && req.method === 'GET';
   if (req.method !== 'POST' && !isOauthGet) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -78,11 +167,153 @@ module.exports = async (req, res) => {
     return handleOAuthAuthorize(req, res);
   } else if (action === 'oauth_token') {
     return handleOAuthToken(req, res);
+  } else if (action === 'oauth_metadata' || action === 'oidc_metadata') {
+    return handleOAuthMetadata(req, res, action === 'oidc_metadata');
+  } else if (action === 'jwks') {
+    return handleJwks(req, res);
+  } else if (action === 'userinfo') {
+    return handleUserInfo(req, res);
+  } else if (action === 'oauth_revoke') {
+    return handleOAuthRevoke(req, res);
+  } else if (action === 'oauth_introspect') {
+    return handleOAuthIntrospect(req, res);
   } else {
     return res.status(400).json({ error: 'Invalid action' });
   }
 };
 
+async function handleOAuthMetadata(req, res, oidc = false) {
+  const issuer = getIssuer(req);
+  const baseUrl = getAuthBaseUrl(req);
+  const metadata = {
+    issuer,
+    authorization_endpoint: `${baseUrl}/account/sso`,
+    token_endpoint: `${baseUrl}/api/v2/auth`,
+    jwks_uri: `${baseUrl}/api/v2/auth?action=jwks`,
+    registration_endpoint: `${baseUrl}/api/v2/auth?action=oauth_register_app`,
+    revocation_endpoint: `${baseUrl}/api/v2/auth?action=oauth_revoke`,
+    introspection_endpoint: `${baseUrl}/api/v2/auth?action=oauth_introspect`,
+    userinfo_endpoint: `${baseUrl}/api/v2/auth?action=userinfo`,
+    response_types_supported: ['code'],
+    grant_types_supported: ['authorization_code', 'refresh_token'],
+    token_endpoint_auth_methods_supported: ['client_secret_basic', 'client_secret_post', 'none'],
+    code_challenge_methods_supported: ['S256'],
+    scopes_supported: DEFAULT_SCOPES.split(' '),
+    claims_supported: ['sub', 'email', 'email_verified', 'preferred_username', 'name', 'picture', 'auth_time'],
+    subject_types_supported: ['public'],
+    id_token_signing_alg_values_supported: [process.env.OIDC_PRIVATE_KEY || process.env.OIDC_PRIVATE_KEY_B64 ? 'RS256' : 'HS256']
+  };
+
+  if (!oidc) {
+    delete metadata.claims_supported;
+    delete metadata.subject_types_supported;
+    delete metadata.id_token_signing_alg_values_supported;
+  }
+
+  return res.status(200).json(metadata);
+}
+
+async function handleJwks(req, res) {
+  return res.status(200).json(getJwks());
+}
+
+async function handleUserInfo(req, res) {
+  try {
+    const token = getTokenFromHeaders(req.headers);
+    if (!token) return oauthError(res, 401, 'invalid_token', 'Bearer token is required');
+    if (await isTokenRevoked(token)) return oauthError(res, 401, 'invalid_token', 'Token has been revoked');
+
+    const decoded = verifyToken(token);
+    if (!decoded) return oauthError(res, 401, 'invalid_token', 'Token is invalid or expired');
+
+    const { data: user, error } = await supabaseAdmin
+      .from('users')
+      .select('id, username, display_name, email, profile_picture')
+      .eq('id', decoded.id || decoded.sub)
+      .single();
+
+    if (error || !user) return oauthError(res, 404, 'invalid_token', 'User not found');
+
+    return res.status(200).json({
+      sub: String(user.id),
+      email: user.email,
+      email_verified: Boolean(user.email),
+      preferred_username: user.username,
+      name: user.display_name || user.username,
+      picture: user.profile_picture || null
+    });
+  } catch (error) {
+    console.error('userinfo error:', error);
+    return res.status(500).json({ error: 'server_error' });
+  }
+}
+
+async function handleOAuthRevoke(req, res) {
+  try {
+    const body = req.body || {};
+    const token = body.token || req.query.token;
+    const tokenTypeHint = body.token_type_hint || req.query.token_type_hint || null;
+    if (!token) return oauthError(res, 400, 'invalid_request', 'token is required');
+
+    let decoded = verifyToken(token);
+    let userId = decoded?.id || decoded?.sub || null;
+    let clientId = decoded?.client_id || body.client_id || req.query.client_id || null;
+
+    await supabaseAdmin
+      .from('oauth_revoked_tokens')
+      .upsert({
+        token_hash: hashToken(token),
+        token_type_hint: tokenTypeHint,
+        user_id: userId,
+        client_id: clientId,
+        expires_at: decoded?.exp ? new Date(decoded.exp * 1000).toISOString() : null,
+        revoked_at: new Date().toISOString()
+      });
+
+    if (tokenTypeHint === 'refresh_token' || !decoded) {
+      await supabaseAdmin
+        .from('oauth_refresh_tokens')
+        .update({ revoked_at: new Date().toISOString() })
+        .eq('token_hash', hashToken(token));
+    }
+
+    return res.status(200).send('');
+  } catch (error) {
+    console.error('oauth_revoke error:', error);
+    return res.status(500).json({ error: 'server_error' });
+  }
+}
+
+async function handleOAuthIntrospect(req, res) {
+  try {
+    const body = req.body || {};
+    const token = body.token || req.query.token;
+    if (!token) return oauthError(res, 400, 'invalid_request', 'token is required');
+
+    const decoded = verifyToken(token);
+    if (!decoded || await isTokenRevoked(token)) {
+      return res.status(200).json({ active: false });
+    }
+
+    return res.status(200).json({
+      active: true,
+      sub: String(decoded.sub || decoded.id),
+      username: decoded.username,
+      email: decoded.email,
+      client_id: decoded.client_id,
+      scope: decoded.scope,
+      token_type: 'Bearer',
+      exp: decoded.exp,
+      iat: decoded.iat,
+      iss: decoded.iss,
+      aud: decoded.aud,
+      jti: decoded.jti
+    });
+  } catch (error) {
+    console.error('oauth_introspect error:', error);
+    return res.status(500).json({ error: 'server_error' });
+  }
+}
 async function handleForgotPassword(req, res) {
   try {
     const { email, recoveryKey, recoveryCode, otp, newPassword } = req.body;
@@ -383,16 +614,72 @@ async function handleOAuthListApps(req, res) {
 
 async function handleOAuthRegisterApp(req, res) {
   try {
+    const body = req.body || {};
+
+    // RFC 7591-style Dynamic Client Registration. This branch intentionally does
+    // not require a logged-in Materio user because the user grant happens later.
+    if (Array.isArray(body.redirect_uris)) {
+      if (body.redirect_uris.length === 0) {
+        return oauthError(res, 400, 'invalid_client_metadata', 'redirect_uris must contain at least one URI');
+      }
+
+      const clientId = body.client_id || 'client_' + crypto.randomBytes(12).toString('hex');
+      const authMethod = body.token_endpoint_auth_method || 'none';
+      const isPublicClient = authMethod === 'none';
+      const clientSecret = isPublicClient ? null : 'secret_' + crypto.randomBytes(24).toString('hex');
+      const clientName = body.client_name || 'OAuth Client';
+      const scope = normalizeScope(body.scope || 'openid profile email');
+
+      const extendedPayload = {
+        client_id: clientId,
+        client_secret: clientSecret || '',
+        name: clientName,
+        redirect_uri: body.redirect_uris[0],
+        redirect_uris: body.redirect_uris,
+        user_id: null,
+        token_endpoint_auth_method: authMethod,
+        scope,
+        client_uri: body.client_uri || null,
+        logo_uri: body.logo_uri || null,
+        contacts: Array.isArray(body.contacts) ? body.contacts : []
+      };
+
+      const { error } = await supabaseAdmin
+        .from('oauth_apps')
+        .insert(extendedPayload);
+
+      if (error) {
+        return oauthError(res, 500, 'server_error', error.message || 'Failed to register client');
+      }
+
+      const responsePayload = {
+        client_id: clientId,
+        client_name: clientName,
+        redirect_uris: body.redirect_uris,
+        grant_types: body.grant_types || ['authorization_code', 'refresh_token'],
+        response_types: body.response_types || ['code'],
+        token_endpoint_auth_method: authMethod,
+        scope,
+        client_id_issued_at: Math.floor(Date.now() / 1000)
+      };
+
+      if (clientSecret) {
+        responsePayload.client_secret = clientSecret;
+        responsePayload.client_secret_expires_at = 0;
+      }
+
+      return res.status(201).json(responsePayload);
+    }
+
+    // Existing dashboard app registration for authenticated Materio users.
     const user = await getAuthedUser(req, res);
     if (!user) return;
 
-    const { name, redirectUri } = req.body || {};
-
+    const { name, redirectUri } = body;
     if (!name || !redirectUri) {
       return res.status(400).json({ error: 'Application name and redirect URI are required' });
     }
 
-    const crypto = require('crypto');
     const clientId = 'client_' + crypto.randomBytes(8).toString('hex');
     const clientSecret = 'secret_' + crypto.randomBytes(16).toString('hex');
 
@@ -415,10 +702,9 @@ async function handleOAuthRegisterApp(req, res) {
     return res.status(200).json({ success: true, app });
   } catch (error) {
     console.error('oauth_register_app error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'server_error' });
   }
 }
-
 async function handleOAuthDeleteApp(req, res) {
   try {
     const user = await getAuthedUser(req, res);
@@ -481,204 +767,185 @@ async function handleOAuthAuthorize(req, res) {
     const user = await getAuthedUser(req, res);
     if (!user) return;
 
-    const { client_id, redirect_uri, code_challenge, code_challenge_method } = req.body || {};
+    const {
+      client_id,
+      redirect_uri,
+      code_challenge,
+      code_challenge_method,
+      response_type = 'code',
+      scope,
+      state,
+      nonce
+    } = req.body || {};
 
-    if (!client_id || !redirect_uri) {
-      return res.status(400).json({ error: 'Client ID and Redirect URI are required' });
+    if (response_type !== 'code') {
+      return redirect_uri
+        ? oauthRedirectError(res, redirect_uri, 'unsupported_response_type', 'Only authorization code flow is supported', state)
+        : oauthError(res, 400, 'unsupported_response_type', 'Only authorization code flow is supported');
     }
 
-    // Verify client - check pre-registered apps first
+    if (!client_id || !redirect_uri) {
+      return oauthError(res, 400, 'invalid_request', 'client_id and redirect_uri are required');
+    }
+
+    if (code_challenge && code_challenge_method !== 'S256') {
+      return oauthRedirectError(res, redirect_uri, 'invalid_request', 'Only S256 PKCE is supported', state);
+    }
+
     const { data: app, error } = await supabaseAdmin
       .from('oauth_apps')
       .select('*')
       .eq('client_id', client_id)
-      .single();
+      .maybeSingle();
 
-    // For MCP/PKCE clients: allow dynamic clients not in oauth_apps
-    // PKCE provides its own security guarantees for public clients
     const isDynamicClient = (error || !app);
     if (isDynamicClient && !code_challenge) {
-      // Non-PKCE clients MUST be pre-registered
-      return res.status(404).json({ error: 'Application not found' });
+      return oauthRedirectError(res, redirect_uri, 'invalid_client', 'Dynamic clients must use PKCE', state);
     }
 
-    // Only validate redirect_uri for pre-registered apps
-    if (!isDynamicClient && app.redirect_uri && app.redirect_uri !== redirect_uri) {
-      return res.status(400).json({ error: 'Redirect URI mismatch' });
+    if (!isDynamicClient && !isRedirectUriAllowed(app, redirect_uri)) {
+      return oauthError(res, 400, 'invalid_request', 'Redirect URI mismatch');
     }
 
-    const crypto = require('crypto');
-
-    // Auto-register dynamic client in oauth_apps to satisfy database foreign key constraint
     if (isDynamicClient) {
       const clientSecret = 'secret_dynamic_' + crypto.randomBytes(16).toString('hex');
-      let appName = 'MCP Client';
+      let appName = 'Dynamic OAuth Client';
       if (client_id.startsWith('http')) {
-        try {
-          const clientUrl = new URL(client_id);
-          appName = clientUrl.hostname;
-        } catch (e) {}
+        try { appName = new URL(client_id).hostname; } catch (e) {}
       }
 
-      const { error: insertAppError } = await supabaseAdmin
+      const extendedInsertPayload = {
+        client_id,
+        client_secret: clientSecret,
+        name: appName,
+        redirect_uri,
+        redirect_uris: [redirect_uri],
+        user_id: user.id,
+        token_endpoint_auth_method: 'none',
+        scope: normalizeScope(scope || 'admin')
+      };
+      const legacyInsertPayload = {
+        client_id,
+        client_secret: clientSecret,
+        name: appName,
+        redirect_uri,
+        user_id: user.id
+      };
+
+      let { error: insertAppError } = await supabaseAdmin
         .from('oauth_apps')
-        .insert({
-          client_id,
-          client_secret: clientSecret,
-          name: appName,
-          redirect_uri: redirect_uri,
-          user_id: user.id
-        });
+        .insert(extendedInsertPayload);
 
       if (insertAppError) {
-        return res.status(500).json({ error: 'Failed to auto-register dynamic client', details: insertAppError.message });
+        const fallback = await supabaseAdmin.from('oauth_apps').insert(legacyInsertPayload);
+        insertAppError = fallback.error;
+      }
+
+      if (insertAppError) {
+        return oauthRedirectError(res, redirect_uri, 'server_error', 'Failed to register dynamic client', state);
       }
     }
 
-    const randomPart = crypto.randomBytes(16).toString('hex');
-    let code = 'code_' + randomPart;
-    if (code_challenge) {
-      const pkceData = {
-        r: randomPart,
-        c: code_challenge,
-        m: code_challenge_method || 'plain'
-      };
-      code = 'pkce_' + Buffer.from(JSON.stringify(pkceData)).toString('base64url');
-    }
+    const code = generateOpaqueToken(32);
+    const normalizedScope = normalizeScope(scope || app?.scope || 'admin');
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+    const authTime = new Date().toISOString();
+    const token = generateToken(user, {
+      issuer: getIssuer(req),
+      audience: client_id,
+      clientId: client_id,
+      scope: normalizedScope,
+      tokenUse: 'access'
+    });
 
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 minutes
+    const extendedCodePayload = {
+      code,
+      client_id,
+      user_id: user.id,
+      redirect_uri,
+      token,
+      expires_at: expiresAt,
+      code_challenge: code_challenge || null,
+      code_challenge_method: code_challenge_method || null,
+      scope: normalizedScope,
+      nonce: nonce || null,
+      auth_time: authTime
+    };
 
-    const { error: insertError } = await supabaseAdmin
+    let { error: insertError } = await supabaseAdmin
       .from('oauth_codes')
-      .insert({
+      .insert(extendedCodePayload);
+
+    if (insertError) {
+      const legacyPayload = {
         code,
         client_id,
         user_id: user.id,
         redirect_uri,
-        token: generateToken(user),
+        token,
         expires_at: expiresAt
-      });
-
-    if (insertError) {
-      return res.status(500).json({ error: 'Failed to generate authorization code', details: insertError.message });
+      };
+      const fallback = await supabaseAdmin.from('oauth_codes').insert(legacyPayload);
+      insertError = fallback.error;
     }
 
-    return res.status(200).json({ success: true, code });
+    if (insertError) {
+      return oauthRedirectError(res, redirect_uri, 'server_error', 'Failed to generate authorization code', state);
+    }
+
+    return res.status(200).json({ success: true, code, state });
   } catch (error) {
     console.error('oauth_authorize error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'server_error' });
   }
 }
-
 async function handleOAuthToken(req, res) {
   try {
-    // RFC 6749 Section 5.1/5.2 requires no-store headers for all token responses
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('Pragma', 'no-cache');
 
-    // Handle application/x-www-form-urlencoded if req.body is a string
     let bodyData = req.body || {};
-    if (Buffer.isBuffer(req.body)) {
-      req.body = req.body.toString('utf8');
-    }
-    if (typeof req.body === 'string') {
-      try {
-        bodyData = JSON.parse(req.body);
-      } catch (e) {
-        bodyData = Object.fromEntries(new URLSearchParams(req.body));
-      }
+    if (Buffer.isBuffer(req.body)) bodyData = req.body.toString('utf8');
+    if (typeof bodyData === 'string') {
+      try { bodyData = JSON.parse(bodyData); }
+      catch (e) { bodyData = Object.fromEntries(new URLSearchParams(bodyData)); }
     }
 
-    // Resolve parameters from body or query string
-    let client_id = bodyData.client_id || req.query.client_id;
-    let client_secret = bodyData.client_secret || req.query.client_secret;
-    let code = bodyData.code || req.query.code;
-    let redirect_uri = bodyData.redirect_uri || req.query.redirect_uri;
-    let grant_type = bodyData.grant_type || req.query.grant_type;
-    let refresh_token = bodyData.refresh_token || req.query.refresh_token;
+    const basic = getBasicClientCredentials(req);
+    let client_id = bodyData.client_id || req.query.client_id || basic.client_id;
+    let client_secret = bodyData.client_secret || req.query.client_secret || basic.client_secret;
+    const code = bodyData.code || req.query.code;
+    const redirect_uri = bodyData.redirect_uri || req.query.redirect_uri;
+    const grant_type = bodyData.grant_type || req.query.grant_type;
+    const refresh_token = bodyData.refresh_token || req.query.refresh_token;
+    const code_verifier = bodyData.code_verifier || req.query.code_verifier;
 
-    // Check Authorization header for Basic Auth (Standard OAuth2 Client Auth)
-    const authHeader = req.headers.authorization || req.headers.Authorization || '';
-    if (authHeader.toLowerCase().startsWith('basic ')) {
-      const b64auth = authHeader.substring(6).trim();
-      const decodedStr = Buffer.from(b64auth, 'base64').toString();
-      const firstColon = decodedStr.indexOf(':');
-      if (firstColon !== -1) {
-        const user = decodeURIComponent(decodedStr.substring(0, firstColon));
-        const pass = decodeURIComponent(decodedStr.substring(firstColon + 1));
-        if (!client_id) client_id = user;
-        if (!client_secret) client_secret = pass;
-      }
-    }
+    if (!client_id) return oauthError(res, 400, 'invalid_request', 'client_id is required');
 
-    if (!client_id) {
-      return res.status(400).json({ error: 'Client ID is required' });
-    }
-    // Parse PKCE code if present to see if we can bypass the client_secret check
-    let expectedChallenge = null;
-    let challengeMethod = null;
-    if (grant_type === 'authorization_code' && code && code.startsWith('pkce_')) {
-      try {
-        const pkceStr = Buffer.from(code.substring(5), 'base64url').toString('utf8');
-        const pkceData = JSON.parse(pkceStr);
-        expectedChallenge = pkceData.c;
-        challengeMethod = pkceData.m;
-      } catch (e) {
-        return res.status(400).json({ error: 'Invalid authorization code format' });
-      }
-    }
-
-    // Verify client - check pre-registered apps first
     const { data: app, error: appError } = await supabaseAdmin
       .from('oauth_apps')
       .select('*')
       .eq('client_id', client_id)
-      .single();
+      .maybeSingle();
 
-    // For MCP/PKCE dynamic clients: allow if PKCE is in use
-    const isDynamicClient = (appError || !app);
-    if (isDynamicClient && !expectedChallenge) {
-      // Non-PKCE clients MUST be pre-registered
-      return res.status(401).json({ error: 'Invalid client credentials' });
-    }
+    const isDynamicClient = appError || !app;
+    const authMethod = app?.token_endpoint_auth_method || (client_secret ? 'client_secret_post' : 'none');
 
-    // Only require client_secret for pre-registered non-PKCE clients
-    if (!isDynamicClient && !expectedChallenge && app.client_secret && app.client_secret !== client_secret) {
-      return res.status(401).json({ error: 'Invalid client credentials' });
+    const isPkceTokenRequest = grant_type === 'authorization_code' && Boolean(code_verifier);
+    if (!isPkceTokenRequest && !isDynamicClient && authMethod !== 'none' && app.client_secret && app.client_secret !== client_secret) {
+      res.setHeader('WWW-Authenticate', 'Basic realm="Materio OAuth"');
+      return oauthError(res, 401, 'invalid_client', 'Invalid client credentials');
     }
 
     let tokenToReturn = null;
     let userIdToFetch = null;
+    let finalScope = 'admin';
+    let finalNonce = null;
+    let finalAuthTime = null;
 
     if (grant_type === 'authorization_code') {
-      if (!code) {
-        return res.status(400).json({ error: 'Authorization code is required' });
-      }
+      if (!code) return oauthError(res, 400, 'invalid_request', 'code is required');
 
-      // If PKCE is used, verify code_verifier against the challenge
-      if (expectedChallenge) {
-        const code_verifier = bodyData.code_verifier || req.query.code_verifier;
-        if (!code_verifier) {
-          return res.status(400).json({ error: 'code_verifier is required for PKCE flow' });
-        }
-
-        const crypto = require('crypto');
-        let calculatedChallenge = '';
-        if (challengeMethod === 'S256') {
-          calculatedChallenge = crypto
-            .createHash('sha256')
-            .update(code_verifier)
-            .digest('base64url');
-        } else {
-          calculatedChallenge = code_verifier;
-        }
-
-        if (calculatedChallenge !== expectedChallenge) {
-          return res.status(400).json({ error: 'Invalid code_verifier' });
-        }
-      }
-
-      // Consume the code
       const { data: codeRecord, error: codeError } = await supabaseAdmin
         .from('oauth_codes')
         .delete()
@@ -686,54 +953,112 @@ async function handleOAuthToken(req, res) {
         .eq('client_id', client_id)
         .gt('expires_at', new Date().toISOString())
         .select()
-        .single();
+        .maybeSingle();
 
-      if (codeError || !codeRecord) {
-        return res.status(400).json({ error: 'Invalid or expired authorization code' });
+      if (codeError || !codeRecord) return oauthError(res, 400, 'invalid_grant', 'Invalid or expired authorization code');
+      if (redirect_uri && codeRecord.redirect_uri !== redirect_uri) return oauthError(res, 400, 'invalid_grant', 'Redirect URI mismatch');
+
+      let expectedChallenge = codeRecord.code_challenge || null;
+      let challengeMethod = codeRecord.code_challenge_method || null;
+
+      // Backward compatibility for pre-compliance PKCE codes that embedded challenge metadata.
+      if (!expectedChallenge && code.startsWith('pkce_')) {
+        try {
+          const pkceData = JSON.parse(Buffer.from(code.substring(5), 'base64url').toString('utf8'));
+          expectedChallenge = pkceData.c;
+          challengeMethod = pkceData.m;
+        } catch (e) {
+          return oauthError(res, 400, 'invalid_grant', 'Invalid authorization code format');
+        }
       }
 
-      if (redirect_uri && codeRecord.redirect_uri !== redirect_uri) {
-        return res.status(400).json({ error: 'Redirect URI mismatch' });
+      if (expectedChallenge) {
+        if (!code_verifier) return oauthError(res, 400, 'invalid_request', 'code_verifier is required');
+        if (challengeMethod !== 'S256') return oauthError(res, 400, 'invalid_grant', 'Only S256 PKCE is supported');
+        const calculatedChallenge = crypto.createHash('sha256').update(code_verifier).digest('base64url');
+        if (calculatedChallenge !== expectedChallenge) return oauthError(res, 400, 'invalid_grant', 'Invalid code_verifier');
+      } else if (isDynamicClient || authMethod === 'none') {
+        return oauthError(res, 400, 'invalid_grant', 'PKCE is required for public clients');
       }
 
       tokenToReturn = codeRecord.token;
       userIdToFetch = codeRecord.user_id;
+      finalScope = normalizeScope(codeRecord.scope || app?.scope || 'admin');
+      finalNonce = codeRecord.nonce || null;
+      finalAuthTime = codeRecord.auth_time || codeRecord.created_at || null;
     } else if (grant_type === 'refresh_token') {
-      if (!refresh_token) {
-        return res.status(400).json({ error: 'Refresh token is required' });
-      }
+      if (!refresh_token) return oauthError(res, 400, 'invalid_request', 'refresh_token is required');
 
-      const decoded = verifyToken(refresh_token);
-      if (!decoded) {
-        return res.status(400).json({ error: 'Invalid or expired refresh token' });
-      }
+      const refreshHash = hashToken(refresh_token);
+      const { data: storedRefresh } = await supabaseAdmin
+        .from('oauth_refresh_tokens')
+        .select('*')
+        .eq('token_hash', refreshHash)
+        .maybeSingle();
 
-      userIdToFetch = decoded.id;
+      if (storedRefresh) {
+        if (storedRefresh.revoked_at || new Date(storedRefresh.expires_at) < new Date()) {
+          return oauthError(res, 400, 'invalid_grant', 'Refresh token is invalid or expired');
+        }
+        userIdToFetch = storedRefresh.user_id;
+        finalScope = normalizeScope(storedRefresh.scope || app?.scope || 'admin');
+      } else {
+        const decoded = verifyToken(refresh_token);
+        if (!decoded || await isTokenRevoked(refresh_token)) {
+          return oauthError(res, 400, 'invalid_grant', 'Refresh token is invalid or expired');
+        }
+        userIdToFetch = decoded.id || decoded.sub;
+        finalScope = normalizeScope(decoded.scope || app?.scope || 'admin');
+      }
     } else {
-      return res.status(400).json({ error: 'Unsupported grant type. Only authorization_code and refresh_token are supported.' });
+      return oauthError(res, 400, 'unsupported_grant_type', 'Only authorization_code and refresh_token are supported');
     }
 
-    // Fetch user details
     const { data: user, error: userError } = await supabaseAdmin
       .from('users')
       .select('id, username, display_name, email, has_admin_privileges, is_plus_user, is_lite_user, profile_picture')
       .eq('id', userIdToFetch)
       .single();
 
-    if (userError || !user) {
-      return res.status(404).json({ error: 'User not found' });
+    if (userError || !user) return oauthError(res, 400, 'invalid_grant', 'User not found');
+
+    tokenToReturn = generateToken(user, {
+      issuer: getIssuer(req),
+      audience: client_id,
+      clientId: client_id,
+      scope: finalScope,
+      tokenUse: 'access'
+    });
+
+    const newRefreshToken = generateOpaqueToken(48);
+    const refreshExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+    let refreshTokenToReturn = newRefreshToken;
+
+    const refreshInsert = await supabaseAdmin
+      .from('oauth_refresh_tokens')
+      .insert({
+        token_hash: hashToken(newRefreshToken),
+        user_id: user.id,
+        client_id,
+        scope: finalScope,
+        expires_at: refreshExpiresAt
+      });
+
+    if (refreshInsert.error) {
+      refreshTokenToReturn = tokenToReturn;
+    } else if (grant_type === 'refresh_token' && refresh_token) {
+      await supabaseAdmin
+        .from('oauth_refresh_tokens')
+        .update({ revoked_at: new Date().toISOString(), replaced_by_hash: hashToken(newRefreshToken) })
+        .eq('token_hash', hashToken(refresh_token));
     }
 
-    if (grant_type === 'refresh_token') {
-      tokenToReturn = generateToken(user);
-    }
-
-
-    return res.status(200).json({
+    const responsePayload = {
       access_token: tokenToReturn,
       token_type: 'Bearer',
       expires_in: 86400,
-      refresh_token: tokenToReturn,
+      refresh_token: refreshTokenToReturn,
+      scope: finalScope,
       user: {
         id: user.id,
         username: user.username,
@@ -744,13 +1069,23 @@ async function handleOAuthToken(req, res) {
         isLiteUser: user.is_lite_user,
         profilePicture: user.profile_picture
       }
-    });
+    };
+
+    if (hasScope(finalScope, 'openid')) {
+      responsePayload.id_token = generateIdToken(user, {
+        issuer: getIssuer(req),
+        clientId: client_id,
+        nonce: finalNonce,
+        authTime: finalAuthTime
+      });
+    }
+
+    return res.status(200).json(responsePayload);
   } catch (error) {
     console.error('oauth_token error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'server_error' });
   }
 }
-
 async function handleFetchUrlTitle(req, res) {
   try {
     const urlStr = req.query.url;

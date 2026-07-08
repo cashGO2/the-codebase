@@ -305,6 +305,9 @@
       const state = urlParams.get('state') || '';
       const codeChallenge = urlParams.get('code_challenge');
       const codeChallengeMethod = urlParams.get('code_challenge_method');
+      const scope = urlParams.get('scope') || '';
+      const nonce = urlParams.get('nonce') || '';
+      const responseType = urlParams.get('response_type') || 'code';
 
       if (!clientId && !urlParams.get('callback')) {
         showSsoError('Client ID or callback URL is required.');
@@ -538,7 +541,10 @@
                   client_id: clientId,
                   redirect_uri: redirectUri,
                   code_challenge: codeChallenge,
-                  code_challenge_method: codeChallengeMethod
+                  code_challenge_method: codeChallengeMethod,
+                  scope,
+                  nonce,
+                  response_type: responseType
                 })
               });
 

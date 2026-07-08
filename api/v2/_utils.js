@@ -27,16 +27,102 @@ const comparePassword = async (password, hashedPassword) => {
   return await bcrypt.compare(password, hashedPassword);
 };
 
-// Generate JWT token
-const generateToken = (user) => {
+// Generate JWT access token. Extra OAuth/OIDC claims are optional for backwards compatibility.
+const generateToken = (user, options = {}) => {
+  const subject = String(user.id || user.sub || '');
   const payload = {
-    id: user.id,
+    id: subject,
+    sub: subject,
     email: user.email,
-    username: user.username
+    username: user.username,
+    jti: options.jti || uuidv4(),
+    token_use: options.tokenUse || 'access'
   };
 
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  if (options.issuer) payload.iss = options.issuer;
+  if (options.audience) payload.aud = options.audience;
+  if (options.clientId) payload.client_id = options.clientId;
+  if (options.scope) payload.scope = options.scope;
+
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: options.expiresIn || JWT_EXPIRES_IN });
 };
+
+const getOidcSigningKey = () => {
+  if (process.env.OIDC_PRIVATE_KEY_B64) {
+    return Buffer.from(process.env.OIDC_PRIVATE_KEY_B64, 'base64').toString('utf8');
+  }
+  if (process.env.OIDC_PRIVATE_KEY) {
+    return process.env.OIDC_PRIVATE_KEY.replace(/\\n/g, '\n');
+  }
+  return JWT_SECRET;
+};
+
+const getOidcSigningAlg = () => {
+  return process.env.OIDC_PRIVATE_KEY || process.env.OIDC_PRIVATE_KEY_B64 ? 'RS256' : 'HS256';
+};
+
+const generateIdToken = (user, options = {}) => {
+  const now = Math.floor(Date.now() / 1000);
+  const authTime = options.authTime ? Math.floor(new Date(options.authTime).getTime() / 1000) : now;
+  const subject = String(user.id || user.sub || '');
+  const payload = {
+    iss: options.issuer,
+    sub: subject,
+    aud: options.clientId,
+    exp: now + (options.expiresInSeconds || 3600),
+    iat: now,
+    auth_time: authTime,
+    email: user.email,
+    email_verified: Boolean(user.email_verified || user.emailVerified || user.email),
+    preferred_username: user.username,
+    name: user.display_name || user.displayName || user.username,
+    picture: user.profile_picture || user.profilePicture || undefined
+  };
+
+  if (options.nonce) payload.nonce = options.nonce;
+
+  const signOptions = { algorithm: getOidcSigningAlg(), keyid: process.env.OIDC_KEY_ID || 'materio-default' };
+  return jwt.sign(payload, getOidcSigningKey(), signOptions);
+};
+
+const getOidcPublicKey = () => {
+  if (process.env.OIDC_PUBLIC_KEY_B64) {
+    return Buffer.from(process.env.OIDC_PUBLIC_KEY_B64, 'base64').toString('utf8');
+  }
+  if (process.env.OIDC_PUBLIC_KEY) {
+    return process.env.OIDC_PUBLIC_KEY.replace(/\\n/g, '\n');
+  }
+  return null;
+};
+
+const getJwks = () => {
+  if (process.env.OIDC_JWKS) {
+    try {
+      const jwks = JSON.parse(process.env.OIDC_JWKS);
+      if (jwks && Array.isArray(jwks.keys)) return jwks;
+    } catch (e) {
+      console.error('Invalid OIDC_JWKS JSON:', e.message);
+    }
+  }
+
+  const publicKey = getOidcPublicKey();
+  if (publicKey) {
+    try {
+      const jwk = crypto.createPublicKey(publicKey).export({ format: 'jwk' });
+      jwk.use = 'sig';
+      jwk.alg = getOidcSigningAlg();
+      jwk.kid = process.env.OIDC_KEY_ID || 'materio-default';
+      return { keys: [jwk] };
+    } catch (e) {
+      console.error('Invalid OIDC public key:', e.message);
+    }
+  }
+
+  return { keys: [] };
+};
+
+const generateOpaqueToken = (bytes = 32) => crypto.randomBytes(bytes).toString('base64url');
+const hashToken = (token) => crypto.createHash('sha256').update(String(token)).digest('hex');
 
 // Verify JWT token
 const verifyToken = (token) => {
@@ -175,6 +261,10 @@ module.exports = {
   hashPassword,
   comparePassword,
   generateToken,
+  generateIdToken,
+  getJwks,
+  generateOpaqueToken,
+  hashToken,
   verifyToken,
   generateRecoveryKey,
   generateHandoffCode,
