@@ -354,22 +354,45 @@
         // Fetch client application info
         try {
           const response = await fetch(`/api/v2/auth?action=oauth_client_info&client_id=${encodeURIComponent(clientId)}`);
-          if (!response.ok) {
-            throw new Error('Verification failed');
+          if (response.ok) {
+            const appInfo = await response.json();
+            
+            if (appInfo.redirect_uri && appInfo.redirect_uri !== redirectUri) {
+              showSsoError(`Redirect URI mismatch. Received: "${redirectUri}", expected: "${appInfo.redirect_uri}".`);
+              return;
+            }
+
+            appName = appInfo.name;
+            displayRedirectUri = appInfo.redirect_uri || redirectUri;
+          } else {
+            // Dynamic/MCP client not in pre-registered apps — allow if PKCE is used
+            if (codeChallenge) {
+              // Derive a friendly name from the client_id or redirect_uri
+              if (clientId.startsWith('http')) {
+                try {
+                  const clientUrl = new URL(clientId);
+                  appName = clientUrl.hostname;
+                } catch (e) {
+                  appName = clientId.substring(0, 40);
+                }
+              } else {
+                appName = 'MCP Client';
+              }
+              displayRedirectUri = redirectUri;
+            } else {
+              showSsoError('Application not found. Only PKCE-enabled clients can connect dynamically.');
+              return;
+            }
           }
-          
-          const appInfo = await response.json();
-          
-          if (appInfo.redirect_uri !== redirectUri) {
-            showSsoError(`Redirect URI mismatch. Received: "${redirectUri}", expected: "${appInfo.redirect_uri}".`);
+        } catch (err) {
+          // Network error — allow PKCE clients to proceed with fallback UI
+          if (codeChallenge) {
+            appName = 'External Application';
+            displayRedirectUri = redirectUri;
+          } else {
+            showSsoError('Invalid client credentials or application not found.');
             return;
           }
-
-          appName = appInfo.name;
-          displayRedirectUri = appInfo.redirect_uri;
-        } catch (err) {
-          showSsoError('Invalid client credentials or application not found.');
-          return;
         }
       } else {
         // Legacy callback flow: fetch friendly title from url or params

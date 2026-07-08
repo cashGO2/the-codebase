@@ -487,18 +487,23 @@ async function handleOAuthAuthorize(req, res) {
       return res.status(400).json({ error: 'Client ID and Redirect URI are required' });
     }
 
-    // Verify client and redirect_uri
+    // Verify client - check pre-registered apps first
     const { data: app, error } = await supabaseAdmin
       .from('oauth_apps')
       .select('*')
       .eq('client_id', client_id)
       .single();
 
-    if (error || !app) {
+    // For MCP/PKCE clients: allow dynamic clients not in oauth_apps
+    // PKCE provides its own security guarantees for public clients
+    const isDynamicClient = (error || !app);
+    if (isDynamicClient && !code_challenge) {
+      // Non-PKCE clients MUST be pre-registered
       return res.status(404).json({ error: 'Application not found' });
     }
 
-    if (app.redirect_uri !== redirect_uri) {
+    // Only validate redirect_uri for pre-registered apps
+    if (!isDynamicClient && app.redirect_uri && app.redirect_uri !== redirect_uri) {
       return res.status(400).json({ error: 'Redirect URI mismatch' });
     }
 
@@ -596,19 +601,22 @@ async function handleOAuthToken(req, res) {
       }
     }
 
-    // Verify client
+    // Verify client - check pre-registered apps first
     const { data: app, error: appError } = await supabaseAdmin
       .from('oauth_apps')
       .select('*')
       .eq('client_id', client_id)
       .single();
 
-    if (appError || !app) {
+    // For MCP/PKCE dynamic clients: allow if PKCE is in use
+    const isDynamicClient = (appError || !app);
+    if (isDynamicClient && !expectedChallenge) {
+      // Non-PKCE clients MUST be pre-registered
       return res.status(401).json({ error: 'Invalid client credentials' });
     }
 
-    // Only require client_secret if PKCE is NOT used
-    if (!expectedChallenge && app.client_secret && app.client_secret !== client_secret) {
+    // Only require client_secret for pre-registered non-PKCE clients
+    if (!isDynamicClient && !expectedChallenge && app.client_secret && app.client_secret !== client_secret) {
       return res.status(401).json({ error: 'Invalid client credentials' });
     }
 
