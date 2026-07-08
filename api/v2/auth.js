@@ -508,6 +508,33 @@ async function handleOAuthAuthorize(req, res) {
     }
 
     const crypto = require('crypto');
+
+    // Auto-register dynamic client in oauth_apps to satisfy database foreign key constraint
+    if (isDynamicClient) {
+      const clientSecret = 'secret_dynamic_' + crypto.randomBytes(16).toString('hex');
+      let appName = 'MCP Client';
+      if (client_id.startsWith('http')) {
+        try {
+          const clientUrl = new URL(client_id);
+          appName = clientUrl.hostname;
+        } catch (e) {}
+      }
+
+      const { error: insertAppError } = await supabaseAdmin
+        .from('oauth_apps')
+        .insert({
+          client_id,
+          client_secret: clientSecret,
+          name: appName,
+          redirect_uri: redirect_uri,
+          user_id: user.id
+        });
+
+      if (insertAppError) {
+        return res.status(500).json({ error: 'Failed to auto-register dynamic client', details: insertAppError.message });
+      }
+    }
+
     const randomPart = crypto.randomBytes(16).toString('hex');
     let code = 'code_' + randomPart;
     if (code_challenge) {
