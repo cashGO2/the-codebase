@@ -58,13 +58,21 @@ When registered, you will receive:
 
 ## 3. Implementing the Flow (Example: MCP Server)
 
-If you are building an [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server to allow AI assistants (like Claude) to access Materio, integrating the OAuth flow is plug-and-play.
+If you are building an [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server to allow AI assistants (like Claude) to access Materio, integrating the OAuth/OIDC flow is plug-and-play.
 
 ### Step A: Configure the Endpoints
-Your MCP server (or any OAuth client) needs to be configured with Materio's endpoints:
+
+Materio supports standard OpenID Connect (OIDC) Discovery. If your OAuth client supports auto-discovery, you can simply point it to our metadata endpoint:
+- **OIDC Discovery URL:** `https://getmaterio.app/.well-known/openid-configuration`
+
+Alternatively, you can configure the endpoints manually:
 - **Authorization URL:** `https://getmaterio.app/account/sso`
-- **Token URL:** `https://getmaterio.app/api/v2/auth?action=oauth_token`
-- **Grant Type:** `authorization_code`
+- **Token URL:** `https://getmaterio.app/api/v2/auth?action=oauth_token` (or standard `POST` to `https://getmaterio.app/api/v2/auth` with `grant_type`)
+- **Userinfo URL:** `https://getmaterio.app/api/v2/auth?action=userinfo`
+- **JWKS URL:** `https://getmaterio.app/.well-known/jwks.json`
+- **Supported Grant Types:** `authorization_code`, `refresh_token`
+
+*(Note: Standard PKCE parameters like `code_challenge`, `code_challenge_method`, `nonce`, and `state` are natively supported. The `code_challenge_method` must be `S256` for public clients per OAuth 2.1 specifications. The `state` and `nonce` parameters are preserved and returned securely.)*
 
 ### Step B: The Authorization Redirect
 Your client should construct a URL and redirect the user's browser to:
@@ -73,14 +81,15 @@ https://getmaterio.app/account/sso
   ?client_id=YOUR_CLIENT_ID
   &redirect_uri=YOUR_REGISTERED_CALLBACK
   &response_type=code
+  &scope=openid profile email
+  &code_challenge=CHALLENGE
+  &code_challenge_method=S256
 ```
-
-*(Note: Standard PKCE parameters like `code_challenge`, `code_challenge_method`, and `state` are natively supported. They will be safely parsed and the `state` parameter will be preserved and passed back to your callback.)*
 
 ### Step C: The Token Exchange
 When the user approves the request, Materio will redirect them back to your `redirect_uri` with a `?code=...` parameter (and `state` if provided). 
 
-Your server must immediately exchange this code for an access token by making a `POST` request. Materio supports both JSON bodies and standard OAuth 2.0 `application/x-www-form-urlencoded` payloads with `Authorization: Basic` headers (which most AI clients like Claude and Perplexity use by default):
+Your server must immediately exchange this code for an access token (and optionally an OIDC ID token and refresh token) by making a `POST` request. Materio supports both JSON bodies and standard OAuth 2.0 `application/x-www-form-urlencoded` payloads with `Authorization: Basic` headers (which most AI clients like Claude and Perplexity use by default):
 
 ```javascript
 const credentials = btoa('YOUR_CLIENT_ID:YOUR_CLIENT_SECRET');
@@ -94,12 +103,15 @@ const response = await fetch('https://getmaterio.app/api/v2/auth?action=oauth_to
   body: new URLSearchParams({
     grant_type: 'authorization_code',
     code: 'code_received_from_url',
-    redirect_uri: 'YOUR_REGISTERED_CALLBACK'
+    redirect_uri: 'YOUR_REGISTERED_CALLBACK',
+    code_verifier: 'YOUR_PKCE_VERIFIER'
   })
 });
 
 const data = await response.json();
 // data.access_token contains your Bearer token!
+// data.id_token contains the OIDC identity payload if 'openid' scope was requested!
+// data.refresh_token contains the refresh token (if supported)!
 ```
 
 ---
