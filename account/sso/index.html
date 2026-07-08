@@ -43,7 +43,6 @@
       padding: 30px;
       border: 1.5px solid var(--border-color);
       border-radius: 40px;
-      corner-shape: squircle;
       background: var(--bg-color);
       margin-top: 15px;
     }
@@ -154,7 +153,6 @@
       background: var(--bg-color);
       border: 1.5px solid var(--border-color);
       border-radius: 40px;
-      corner-shape: squircle;
       padding: 24px;
       margin: 20px 0;
       text-align: left;
@@ -396,39 +394,6 @@
             showSsoError('Invalid client credentials or application not found.');
             return;
           }
-        }
-      } else {
-        // Legacy callback flow: fetch friendly title from url or params
-        try {
-          const parsedUrl = new URL(redirectUri, window.location.origin);
-          const nameParam = urlParams.get('name') || urlParams.get('app_name') || urlParams.get('client_name');
-          if (nameParam) {
-            appName = nameParam;
-          } else {
-            // Fetch actual site title and custom favicon from backend resolver
-            try {
-              const res = await fetch(`/api/v2/auth?action=fetch_url_title&url=${encodeURIComponent(redirectUri)}`);
-              if (res.ok) {
-                const data = await res.json();
-                appName = data.title;
-                scrapedIcon = data.icon || '';
-              }
-            } catch (err) {
-              // Ignore and use local derivation fallback
-            }
-
-            if (!appName) {
-              let host = parsedUrl.hostname;
-              if (host.startsWith('www.')) host = host.substring(4);
-              const dotIdx = host.indexOf('.');
-              const baseName = dotIdx > 0 ? host.substring(0, dotIdx) : host;
-              appName = baseName.charAt(0).toUpperCase() + baseName.slice(1);
-            }
-          }
-          displayRedirectUri = redirectUri;
-        } catch (e) {
-          appName = 'External Application';
-          displayRedirectUri = redirectUri;
         }
 
         // Populate dynamic scopes for standard OAuth flow
