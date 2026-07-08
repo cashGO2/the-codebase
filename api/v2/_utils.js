@@ -2,6 +2,7 @@ const { createClient } = require('@supabase/supabase-js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 require('dotenv').config();
 
 // Get config from our config file
