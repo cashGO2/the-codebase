@@ -451,6 +451,59 @@
             </div>
           `;
         }
+      } else {
+        // Populate dynamic scopes for standard OAuth flow
+        const permissionsList = document.querySelector('.permissions-list');
+        if (permissionsList) {
+          let permissionsHtml = '';
+          const scopesArray = scope.split(/\s+/).filter(Boolean);
+          
+          const hasOpenId = scopesArray.includes('openid');
+          const hasProfile = scopesArray.includes('profile');
+          const hasEmail = scopesArray.includes('email');
+          const hasAdmin = scopesArray.includes('admin') || scopesArray.length === 0;
+
+          if (hasOpenId || hasProfile || hasEmail) {
+            permissionsHtml += `
+              <div class="permission-item">
+                <i class="fas fa-check-circle permission-icon"></i>
+                <div class="permission-text">
+                  <div class="permission-title">Access Profile & Identity</div>
+                  <div class="permission-desc">View your unique user ID${hasEmail ? ', email address' : ''}${hasProfile ? ', username, and display name' : ''}.</div>
+                </div>
+              </div>
+            `;
+          }
+          
+          if (hasAdmin) {
+            permissionsHtml += `
+              <div class="permission-item">
+                <i class="fas fa-check-circle permission-icon"></i>
+                <div class="permission-text">
+                  <div class="permission-title">Gated Feature & API Access</div>
+                  <div class="permission-desc">Perform API integrations and manage resources under your user level.</div>
+                </div>
+              </div>
+            `;
+          }
+
+          // Custom scopes
+          for (const s of scopesArray) {
+            if (s !== 'openid' && s !== 'profile' && s !== 'email' && s !== 'admin') {
+              permissionsHtml += `
+                <div class="permission-item">
+                  <i class="fas fa-check-circle permission-icon"></i>
+                  <div class="permission-text">
+                    <div class="permission-title">Custom Permission: ${s}</div>
+                    <div class="permission-desc">Access to resources under the "${s}" scope.</div>
+                  </div>
+                </div>
+              `;
+            }
+          }
+
+          permissionsList.innerHTML = permissionsHtml;
+        }
       }
 
       // Update UI info
@@ -554,6 +607,8 @@
                 const successUrl = new URL(redirectUri);
                 successUrl.searchParams.set('code', data.code);
                 if (state) successUrl.searchParams.set('state', state);
+                // RFC 9207 Mix-Up Attack Mitigation: Append Issuer parameter
+                successUrl.searchParams.set('iss', window.location.origin);
                 successUrlString = successUrl.toString();
               } else {
                 alert(data.error || 'Authorization failed.');

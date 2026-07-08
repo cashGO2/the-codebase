@@ -177,6 +177,8 @@ module.exports = async (req, res) => {
     return handleOAuthRevoke(req, res);
   } else if (action === 'oauth_introspect') {
     return handleOAuthIntrospect(req, res);
+  } else if (action === 'logout') {
+    return handleLogout(req, res);
   } else {
     return res.status(400).json({ error: 'Invalid action' });
   }
@@ -194,6 +196,7 @@ async function handleOAuthMetadata(req, res, oidc = false) {
     revocation_endpoint: `${baseUrl}/api/v2/auth?action=oauth_revoke`,
     introspection_endpoint: `${baseUrl}/api/v2/auth?action=oauth_introspect`,
     userinfo_endpoint: `${baseUrl}/api/v2/auth?action=userinfo`,
+    end_session_endpoint: `${baseUrl}/api/v2/auth?action=logout`,
     response_types_supported: ['code'],
     grant_types_supported: ['authorization_code', 'refresh_token'],
     token_endpoint_auth_methods_supported: ['client_secret_basic', 'client_secret_post', 'none'],
@@ -290,9 +293,41 @@ async function handleOAuthIntrospect(req, res) {
     const token = body.token || req.query.token;
     if (!token) return oauthError(res, 400, 'invalid_request', 'token is required');
 
+    // Resolve client credentials from Authorization header or body
+    const basic = getBasicClientCredentials(req);
+    const client_id = body.client_id || req.query.client_id || basic.client_id;
+    const client_secret = body.client_secret || req.query.client_secret || basic.client_secret;
+
+    if (!client_id) {
+      return oauthError(res, 401, 'invalid_client', 'client_id is required for introspection');
+    }
+
+    // Look up client app
+    const { data: app, error: appError } = await supabaseAdmin
+      .from('oauth_apps')
+      .select('*')
+      .eq('client_id', client_id)
+      .maybeSingle();
+
+    if (appError || !app) {
+      return oauthError(res, 401, 'invalid_client', 'Client not found');
+    }
+
+    // Authenticate client
+    const authMethod = app.token_endpoint_auth_method || (client_secret ? 'client_secret_post' : 'none');
+    if (authMethod !== 'none' && app.client_secret && app.client_secret !== client_secret) {
+      res.setHeader('WWW-Authenticate', 'Basic realm="Materio OAuth"');
+      return oauthError(res, 401, 'invalid_client', 'Invalid client credentials');
+    }
+
     const decoded = verifyToken(token);
     if (!decoded || await isTokenRevoked(token)) {
       return res.status(200).json({ active: false });
+    }
+
+    // Check that the client calling introspection is the client to which the token was issued
+    if (decoded.client_id !== client_id) {
+      return oauthError(res, 403, 'forbidden', 'Token was not issued to this client');
     }
 
     return res.status(200).json({
@@ -312,6 +347,55 @@ async function handleOAuthIntrospect(req, res) {
   } catch (error) {
     console.error('oauth_introspect error:', error);
     return res.status(500).json({ error: 'server_error' });
+  }
+}
+
+async function handleLogout(req, res) {
+  try {
+    const postLogoutRedirectUri = req.query.post_logout_redirect_uri || '/';
+    const state = req.query.state || '';
+
+    // Clear standard cookie
+    res.setHeader('Set-Cookie', [
+      'materio_auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax',
+      'materio_auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax; domain=.getmaterio.app'
+    ]);
+
+    // Construct redirect URL
+    let targetUrl;
+    try {
+      targetUrl = new URL(postLogoutRedirectUri);
+      if (state) targetUrl.searchParams.set('state', state);
+    } catch (e) {
+      targetUrl = new URL('/', getIssuer(req));
+    }
+
+    // Return page to clear localStorage on the main domain
+    res.setHeader('Content-Type', 'text/html');
+    return res.status(200).send(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Logging out...</title>
+        <script>
+          try {
+            localStorage.removeItem('materio_auth_token');
+            localStorage.removeItem('materio_user');
+          } catch (e) {
+            console.error('Failed to clear local storage:', e);
+          }
+          window.location.replace(${JSON.stringify(targetUrl.toString())});
+        </script>
+      </head>
+      <body>
+        <p>Logging out, please wait...</p>
+      </body>
+      </html>
+    `);
+  } catch (error) {
+    console.error('Logout handler error:', error);
+    return res.status(500).send('Internal Server Error');
   }
 }
 async function handleForgotPassword(req, res) {
@@ -623,6 +707,20 @@ async function handleOAuthRegisterApp(req, res) {
         return oauthError(res, 400, 'invalid_client_metadata', 'redirect_uris must contain at least one URI');
       }
 
+      const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+      const { count, error: countError } = await supabaseAdmin
+        .from('oauth_registration_logs')
+        .select('*', { count: 'exact', head: true })
+        .eq('ip_address', ip)
+        .gte('created_at', oneHourAgo);
+
+      if (countError) {
+        console.error('Failed to query registration logs:', countError);
+      } else if (count && count >= 5) {
+        return oauthError(res, 429, 'slow_down', 'Too many registration attempts. Please try again later.');
+      }
+
       const clientId = body.client_id || 'client_' + crypto.randomBytes(12).toString('hex');
       const authMethod = body.token_endpoint_auth_method || 'none';
       const isPublicClient = authMethod === 'none';
@@ -651,6 +749,11 @@ async function handleOAuthRegisterApp(req, res) {
       if (error) {
         return oauthError(res, 500, 'server_error', error.message || 'Failed to register client');
       }
+
+      // Log successful registration for rate limiting
+      await supabaseAdmin
+        .from('oauth_registration_logs')
+        .insert({ ip_address: ip });
 
       const responsePayload = {
         client_id: clientId,
