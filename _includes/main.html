@@ -932,59 +932,59 @@
             <!-- Theme mode dropdown -->
             <div class="card-layout" id="themeCard" style="overflow: visible;">
                 <div class="toggle-container" style="position: relative; flex-direction: column; align-items: stretch; gap: 8px; overflow: visible;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; position: relative;">
                         <div class="paper-mode-info">
                             <div class="paper-mode-title">Theme Mode</div>
                             <div class="paper-mode-description" id="smartDarkModeStatus">Auto switch based on time</div>
                         </div>
                         
-                        <div class="accent-color-selector" id="themeModeSelector" style="flex-shrink: 0; white-space: nowrap;">
+                        <div class="accent-color-selector" id="themeModeSelector" style="flex-shrink: 0;">
                             <i class="fa-solid fa-circle-half-stroke" id="currentThemeIcon" style="font-size: 13px; color: var(--color-primary); margin-right: 4px;"></i>
                             <span id="currentThemeText" style="font-size: 13px; font-weight: 500; margin-left: 4px;">System</span>
                             <i class="fa-solid fa-chevron-down" style="font-size: 11px; margin-left: 4px; color: #666;"></i>
                         </div>
-                    </div>
-                    
-                    <!-- Theme Dropdown Menu -->
-                    <div id="themeDropdown" class="accent-dropdown">
-                        <div class="theme-dropdown-item active" data-theme="system">
-                            <div class="theme-dropdown-item-left">
-                                <i class="fa-solid fa-circle-half-stroke" style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
-                                <span>System</span>
+                        
+                        <!-- Theme Dropdown Menu -->
+                        <div id="themeDropdown" class="accent-dropdown">
+                            <div class="theme-dropdown-item active" data-theme="system">
+                                <div class="theme-dropdown-item-left">
+                                    <i class="fa-solid fa-circle-half-stroke" style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
+                                    <span>System</span>
+                                </div>
+                                <i class="fa-regular fa-check accent-check"></i>
                             </div>
-                            <i class="fa-regular fa-check accent-check"></i>
-                        </div>
-                        <div class="theme-dropdown-item" data-theme="light">
-                            <div class="theme-dropdown-item-left">
-                                <i class="fa-solid fa-sun" style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
-                                <span>Light</span>
+                            <div class="theme-dropdown-item" data-theme="light">
+                                <div class="theme-dropdown-item-left">
+                                    <i class="fa-solid fa-sun" style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
+                                    <span>Light</span>
+                                </div>
+                                <i class="fa-regular fa-check accent-check"></i>
                             </div>
-                            <i class="fa-regular fa-check accent-check"></i>
-                        </div>
-                        <div class="theme-dropdown-item" data-theme="dark">
-                            <div class="theme-dropdown-item-left">
-                                <i class="fa-solid fa-moon" style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
-                                <span>Dark</span>
+                            <div class="theme-dropdown-item" data-theme="dark">
+                                <div class="theme-dropdown-item-left">
+                                    <i class="fa-solid fa-moon" style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
+                                    <span>Dark</span>
+                                </div>
+                                <i class="fa-regular fa-check accent-check"></i>
                             </div>
-                            <i class="fa-regular fa-check accent-check"></i>
-                        </div>
-                        <div class="theme-dropdown-item" data-theme="coffee">
-                            <div class="theme-dropdown-item-left">
-                                <i class="fa-solid fa-mug-hot" style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
-                                <span>Coffee</span>
-                            </div>
-                            <div class="coffee-toggle-container" style="display: flex; align-items: center; margin-left: auto;">
-                                <label class="coffee-toggle-switch" title="Toggle dark espresso / light latte" style="position: relative; display: inline-block; width: 28px; height: 16px; margin-right: 8px;">
-                                    <input type="checkbox" id="coffeeDarkModeToggle" style="opacity: 0; width: 0; height: 0;">
-                                    <span class="coffee-toggle-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--color-border-medium); transition: .2s; border-radius: 16px;"></span>
-                                </label>
-                                <i class="fa-regular fa-check accent-check" style="margin-left: 0;"></i>
+                            <div class="theme-dropdown-item" data-theme="coffee">
+                                <div class="theme-dropdown-item-left">
+                                    <i class="fa-solid fa-mug-hot" style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
+                                    <span>Coffee</span>
+                                </div>
+                                <div class="coffee-toggle-container" style="display: flex; align-items: center; margin-left: auto;">
+                                    <label class="coffee-toggle-switch" title="Toggle dark espresso / light latte" style="position: relative; display: inline-block; width: 28px; height: 16px; margin-right: 8px;">
+                                        <input type="checkbox" id="coffeeDarkModeToggle" style="opacity: 0; width: 0; height: 0;">
+                                        <span class="coffee-toggle-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--color-border-medium); transition: .2s; border-radius: 16px;"></span>
+                                    </label>
+                                    <i class="fa-regular fa-check accent-check" style="margin-left: 0;"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Pure Light Mode Option (shown when Light is selected) -->
-                    <div id="pureLightModeOptions" style="display: none; flex-wrap: nowrap; justify-content: space-between; align-items: center; gap: 12px; border-top: 1px solid var(--color-border-light); padding-top: 8px; margin-top: 4px; width: 100%; min-width: 0;">
+                    <div id="pureLightModeOptions" style="display: none; flex-wrap: nowrap; gap: 12px; justify-content: space-between; align-items: center; border-top: 1px solid var(--color-border-light); padding-top: 8px; margin-top: 4px; width: 100%;">
                         <div class="paper-mode-info" style="min-width: 0;">
                             <div class="paper-mode-title" style="font-size: 13px;">Pure Light Mode</div>
                             <div class="paper-mode-description" style="font-size: 11px;">Keep light even at night</div>
