@@ -2,7 +2,9 @@
 <html lang="en">
 
 <head> {% include head.html %}
-    <link rel="stylesheet" href="{{ '/assets/style/main.css' | relative_url }}">
+    <link
+        rel="stylesheet"
+        href="{{ '/assets/style/main.css' | relative_url }}?v={{ site.data.build_id.build_id | default: 'dev-local' }}">
     <link rel="stylesheet" href="{{ '/assets/style/leaderboard.css' | relative_url }}">
     <link rel="stylesheet" href="{{ '/assets/style/notification.css' | relative_url }}">
     <link rel="stylesheet" href="{{ '/assets/style/gestures.css' | relative_url }}">
@@ -62,7 +64,9 @@
         {% include main.html %}
     </main>
 
-    <script type="module" src="{{ '/assets/scripts/bundle.js' | relative_url }}"></script>
+    <script
+        type="module"
+        src="{{ '/assets/scripts/bundle.js' | relative_url }}?v={{ site.data.build_id.build_id | default: 'dev-local' }}"></script>
 
     <!-- Classic scripts - loaded in dependency order -->
     <script src="{{ '/assets/scripts/keyboard-shortcuts.js' | relative_url }}" defer></script>
