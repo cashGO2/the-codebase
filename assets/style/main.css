@@ -378,7 +378,7 @@ body.coffee-dark-mode .custom-select-trigger {
 }
 
 header.coffee-mode, header.coffee-dark-mode {
-    background-color: var(--color-bg-card);
+    background-color: var(--color-bg-overlay);
     border-color: var(--color-border-light);
 }
 
