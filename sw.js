@@ -3,7 +3,7 @@
  * 🔋 Optimized High-Precision PDF.js Asset Caching & Push Notifications
  */
 
-const VERSION = 'v4.2.4-network-home';
+const VERSION = 'v4.2.5-network-home';
 const CORE_CACHE = 'materio-core-' + VERSION;
 const PDFJS_CACHE_PREFIX = 'pdfjs-assets-';
 const META_CACHE = 'materio-meta-' + VERSION;
