@@ -24,18 +24,23 @@
     --tone4: #ff7800;
 
     /* Primary Colors */
-    --color-primary: #ff8400;
-    --color-primary-hover: #e67300;
-    --color-primary-light: rgba(255, 130, 0, 0.1);
-    --color-primary-lighter: rgba(255, 130, 0, 0.05);
+    --color-primary: #e07200;
+    --color-primary-hover: #c96600;
+    --color-primary-light: rgba(224, 114, 0, 0.1);
+    --color-primary-lighter: rgba(224, 114, 0, 0.05);
     --smart-rec-card-width: 260px;
     --smart-rec-card-height: 300px;
     --smart-rec-card-width-tablet: 240px;
     --smart-rec-card-height-tablet: 280px;
     --smart-rec-card-width-mobile: 240px;
     --smart-rec-card-height-mobile: 260px;
-    --color-primary-alt: #ff8200;
-    --color-primary-dark: #df7800;
+    --color-primary-alt: #d96e00;
+    --color-primary-dark: #b85e00;
+    --color-primary-contrast: #ffffff;
+    --color-primary-border: rgba(224, 114, 0, 0.25);
+    --color-primary-hover-light: rgba(224, 114, 0, 0.2);
+    --color-primary-shimmer: #cccccc;
+    --color-primary-shimmer-highlight: #acacac;
 
     /* Secondary / Accent Colors */
     --color-secondary: #8dac49;
@@ -232,6 +237,272 @@ body.dark-mode {
     --frame-overlay-color: rgba(33, 33, 33, 0.5);
     --color-border-light: var(--color-dark-border-light);
     --color-border-medium: var(--color-dark-border-medium);
+
+    /* Brighter orange for dark backgrounds */
+    --color-primary: #ff8400;
+    --color-primary-hover: #e67300;
+    --color-primary-alt: #ff8200;
+    --color-primary-dark: #df7800;
+    --color-primary-light: rgba(255, 130, 0, 0.15);
+    --color-primary-lighter: rgba(255, 130, 0, 0.08);
+    --color-primary-border: rgba(255, 130, 0, 0.3);
+    --color-primary-hover-light: rgba(255, 130, 0, 0.25);
+}
+
+/* Coffee Mode Variable Overrides (Warm Light Theme) */
+body.coffee-mode {
+    --color-text-primary: #4a3b32;
+    --color-text-secondary: #655348;
+    --color-text-tertiary: #8a7b72;
+    --color-text-muted: #a69991;
+    --color-bg-body: #fdf6e3;
+    --color-bg-card: #eee8d5;
+    --color-bg-overlay: rgba(238, 232, 213, 0.7);
+    --frame-overlay-color: rgba(238, 232, 213, 0.7);
+    --color-border-light: #dcd3b6;
+    --color-border-medium: #c7bc99;
+
+    /* Olive/Coffee accents for default theme in coffee mode */
+    --color-primary: #8a6c52;
+    --color-primary-hover: #735942;
+    --color-primary-alt: #94775d;
+    --color-primary-dark: #5c4735;
+    --color-primary-light: rgba(138, 108, 82, 0.15);
+    --color-primary-lighter: rgba(138, 108, 82, 0.08);
+    --color-primary-border: rgba(138, 108, 82, 0.3);
+    --color-primary-hover-light: rgba(138, 108, 82, 0.25);
+}
+
+/* Coffee Dark Mode Variable Overrides (Warm Roasted Coffee Theme) */
+body.coffee-dark-mode {
+    --color-text-primary: #ebdcd0;
+    --color-text-secondary: #cbb8ac;
+    --color-text-tertiary: #a59185;
+    --color-text-muted: #826f63;
+    --color-bg-body: #1a1412;       /* Rich roasted coffee beans */
+    --color-bg-card: #251c19;       /* Lighter espresso bean */
+    --color-bg-overlay: rgba(37, 28, 25, 0.85);
+    --frame-overlay-color: rgba(37, 28, 25, 0.85);
+    --color-border-light: #362924;
+    --color-border-medium: #4a3832;
+    --color-bg-input: rgba(47, 35, 31, 0.6);
+    --color-bg-white: #251c19;
+
+    /* Warm Caramel/Coffee accents */
+    --color-primary: #cf9d75;
+    --color-primary-hover: #e6b88a;
+    --color-primary-alt: #c29263;
+    --color-primary-dark: #b58052;
+    --color-primary-light: rgba(207, 157, 117, 0.15);
+    --color-primary-lighter: rgba(207, 157, 117, 0.08);
+    --color-primary-border: rgba(207, 157, 117, 0.3);
+    --color-primary-hover-light: rgba(207, 157, 117, 0.25);
+
+    /* Override the specific dark-mode variables */
+    --color-dark-bg-body: #1a1412;
+    --color-dark-bg-card: #251c19;
+    --color-dark-bg-overlay: rgba(37, 28, 25, 0.85);
+    --color-dark-bg-overlay-alt: rgba(37, 28, 25, 0.75);
+    --color-dark-bg-card-alt: #2f231f;
+    --color-dark-bg-input: rgba(47, 35, 31, 0.6);
+    --color-dark-text-primary: #ebdcd0;
+    --color-dark-text-secondary: #cbb8ac;
+    --color-dark-text-tertiary: #a59185;
+    --color-dark-text-muted: #826f63;
+    --color-dark-border-light: #362924;
+    --color-dark-border-medium: #4a3832;
+}
+
+/* Coffee Dark Dropdown Styling Override */
+body.coffee-dark-mode .accent-dropdown {
+    background: #251c19;
+    border-color: #362924;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+body.coffee-dark-mode .theme-dropdown-item:hover, 
+body.coffee-dark-mode .accent-dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+/* Coffee Dark Component Specific Overrides to decouple from dark-mode rules */
+body.coffee-dark-mode .card-one {
+    background-color: var(--color-bg-overlay) !important;
+    color: var(--color-text-primary) !important;
+    border-color: var(--color-border-light) !important;
+}
+
+body.coffee-dark-mode .card-one h1,
+body.coffee-dark-mode .card-one h2,
+body.coffee-dark-mode .card-one h3 {
+    color: var(--color-text-primary) !important;
+}
+
+body.coffee-dark-mode #readingSelectionForm select {
+    background-color: var(--color-bg-input) !important;
+    color: var(--color-text-primary) !important;
+    border-color: var(--color-border-light) !important;
+}
+
+body.coffee-dark-mode .navbar a {
+    color: var(--color-text-secondary) !important;
+}
+
+body.coffee-dark-mode .navbar a.active {
+    color: var(--color-primary) !important;
+}
+
+body.coffee-dark-mode .navbar a i,
+body.coffee-dark-mode .navbar a svg {
+    color: inherit !important;
+}
+
+body.coffee-dark-mode .settings-container,
+body.coffee-dark-mode .settings-card,
+body.coffee-dark-mode .custom-select-trigger {
+    background-color: var(--color-bg-card) !important;
+    color: var(--color-text-primary) !important;
+    border-color: var(--color-border-light) !important;
+}
+
+
+/* Coffee Theme specific element styles */
+#popup.coffee-mode, #popup.coffee-dark-mode {
+    background-color: var(--color-bg-overlay);
+    color: var(--color-text-primary);
+}
+
+.navbar.coffee-mode, .navbar.coffee-dark-mode {
+    background-color: var(--color-bg-overlay);
+    border-color: var(--color-border-light);
+}
+
+header.coffee-mode, header.coffee-dark-mode {
+    background-color: var(--color-bg-card);
+    border-color: var(--color-border-light);
+}
+
+
+/* ================================================
+   ACCENT COLOR THEMES
+   ================================================ */
+
+/* Blue Theme */
+body.accent-blue, body.accent-blue.dark-mode {
+    --color-primary: #3f6bbd;
+    --color-primary-hover: #325596;
+    --color-primary-alt: #3860a8;
+    --color-primary-dark: #284478;
+    --color-primary-light: rgba(63, 107, 189, 0.15);
+    --color-primary-lighter: rgba(63, 107, 189, 0.08);
+    --color-primary-border: rgba(63, 107, 189, 0.3);
+    --color-primary-hover-light: rgba(63, 107, 189, 0.25);
+}
+
+/* Green Theme */
+body.accent-green, body.accent-green.dark-mode {
+    --color-primary: #257d2d;
+    --color-primary-hover: #1d6123;
+    --color-primary-alt: #206e27;
+    --color-primary-dark: #164a1a;
+    --color-primary-light: rgba(37, 125, 45, 0.15);
+    --color-primary-lighter: rgba(37, 125, 45, 0.08);
+    --color-primary-border: rgba(37, 125, 45, 0.3);
+    --color-primary-hover-light: rgba(37, 125, 45, 0.25);
+}
+
+/* Teal Theme */
+body.accent-teal, body.accent-teal.dark-mode {
+    --color-primary: #3ab49b;
+    --color-primary-hover: #2f917c;
+    --color-primary-alt: #34a18a;
+    --color-primary-dark: #246e5e;
+    --color-primary-light: rgba(58, 180, 155, 0.15);
+    --color-primary-lighter: rgba(58, 180, 155, 0.08);
+    --color-primary-border: rgba(58, 180, 155, 0.3);
+    --color-primary-hover-light: rgba(58, 180, 155, 0.25);
+}
+
+/* Pink Theme */
+body.accent-pink, body.accent-pink.dark-mode {
+    --color-primary: #f47272;
+    --color-primary-hover: #e85c5c;
+    --color-primary-alt: #eb6666;
+    --color-primary-dark: #d14d4d;
+    --color-primary-light: rgba(244, 114, 114, 0.15);
+    --color-primary-lighter: rgba(244, 114, 114, 0.08);
+    --color-primary-border: rgba(244, 114, 114, 0.3);
+    --color-primary-hover-light: rgba(244, 114, 114, 0.25);
+}
+
+/* Purple Theme */
+body.accent-purple, body.accent-purple.dark-mode {
+    --color-primary: #967bb6;
+    --color-primary-hover: #8164a3;
+    --color-primary-alt: #8a6fb0;
+    --color-primary-dark: #654985;
+    --color-primary-light: rgba(150, 123, 182, 0.15);
+    --color-primary-lighter: rgba(150, 123, 182, 0.08);
+    --color-primary-border: rgba(150, 123, 182, 0.3);
+    --color-primary-hover-light: rgba(150, 123, 182, 0.25);
+}
+
+/* Lilac Theme */
+body.accent-lilac, body.accent-lilac.dark-mode {
+    --color-primary: #c8a2c8;
+    --color-primary-hover: #b388b3;
+    --color-primary-alt: #bf95bf;
+    --color-primary-dark: #946794;
+    --color-primary-light: rgba(200, 162, 200, 0.15);
+    --color-primary-lighter: rgba(200, 162, 200, 0.08);
+    --color-primary-border: rgba(200, 162, 200, 0.3);
+    --color-primary-hover-light: rgba(200, 162, 200, 0.25);
+}
+
+/* Orange Theme */
+body.accent-orange, body.accent-orange.dark-mode {
+    --color-primary: #ff6138;
+    --color-primary-hover: #e65129;
+    --color-primary-alt: #f25830;
+    --color-primary-dark: #b33d1e;
+    --color-primary-light: rgba(255, 97, 56, 0.15);
+    --color-primary-lighter: rgba(255, 97, 56, 0.08);
+    --color-primary-border: rgba(255, 97, 56, 0.3);
+    --color-primary-hover-light: rgba(255, 97, 56, 0.25);
+}
+
+/* Yellow Theme */
+body.accent-yellow {
+    --color-primary: #d19815;
+    --color-primary-hover: #b58312;
+    --color-primary-alt: #c48e14;
+    --color-primary-dark: #946b0e;
+    --color-primary-light: rgba(209, 152, 21, 0.15);
+    --color-primary-lighter: rgba(209, 152, 21, 0.08);
+    --color-primary-border: rgba(209, 152, 21, 0.3);
+    --color-primary-hover-light: rgba(209, 152, 21, 0.25);
+}
+body.accent-yellow.dark-mode {
+    --color-primary: #f1b539;
+    --color-primary-hover: #e0a42a;
+    --color-primary-alt: #e8ad32;
+    --color-primary-dark: #b3811f;
+    --color-primary-light: rgba(241, 181, 57, 0.15);
+    --color-primary-lighter: rgba(241, 181, 57, 0.08);
+    --color-primary-border: rgba(241, 181, 57, 0.3);
+    --color-primary-hover-light: rgba(241, 181, 57, 0.25);
+}
+
+/* Grey Theme */
+body.accent-grey, body.accent-grey.dark-mode {
+    --color-primary: #8a8d91;
+    --color-primary-hover: #75787d;
+    --color-primary-alt: #82858a;
+    --color-primary-dark: #5c5f63;
+    --color-primary-light: rgba(138, 141, 145, 0.15);
+    --color-primary-lighter: rgba(138, 141, 145, 0.08);
+    --color-primary-border: rgba(138, 141, 145, 0.3);
+    --color-primary-hover-light: rgba(138, 141, 145, 0.25);
 }
 
 /* ================================================
@@ -549,7 +820,7 @@ body::after {
 .navbar a {
     color: var(--color-text-primary);
     text-decoration: none;
-    padding: var(--spacing-md);
+    padding: var(--spacing-md) 0;
     width: 100%;
     text-align: center;
     display: flex;
@@ -560,6 +831,7 @@ body::after {
     transition: var(--transition-smooth);
     transform: scale(1);
 }
+
 
 header {
     position: fixed;
@@ -862,7 +1134,7 @@ p {
 .navbar a.active .fa,
 .navbar a.active svg {
     position: relative;
-    color: var(--nav-icon-active-color, var(--color-primary));
+    color: var(--color-primary);
     /* primary active color */
     transition: var(--transition-normal);
     transform: translateZ(0);
@@ -870,7 +1142,7 @@ p {
 
 /* SVG-specific active state: use filter for drop-shadow since text-shadow doesn't apply to SVGs */
 .navbar a.active svg {
-    stroke: var(--nav-icon-active-color, var(--color-primary));
+    stroke: var(--color-primary);
 }
 
 @keyframes slideIn {
@@ -1085,7 +1357,7 @@ i span {
 
 #submitButton {
     background-color: var(--color-primary);
-    color: var(--color-bg-white);
+    color: var(--color-primary-contrast, var(--color-bg-white));
     border: none;
     padding: 0 var(--spacing-xl);
     height: 45px;
@@ -1163,9 +1435,18 @@ i span {
 .switch {
     position: relative;
     display: inline-block;
-    width: 40px;
-
+    width: 48px;
     height: 24px;
+}
+
+/* Expand touch target to 48x48 minimum for mobile compliance */
+.switch::after {
+    content: "";
+    position: absolute;
+    top: -12px;
+    bottom: -12px;
+    left: -12px;
+    right: -12px;
 }
 
 .switch input {
@@ -1181,31 +1462,32 @@ i span {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--color-slider-track);
+    background-color: var(--color-bg-white);
+    border: 2px solid var(--color-border-medium);
     transition: var(--transition-slow);
-    border-radius: var(--radius-2xl);
+    border-radius: 12px;
 }
 
 .slider:before {
     position: absolute;
     content: "";
-    height: 18px;
-
+    height: 14px;
     width: 18px;
-
     left: 3px;
-    bottom: 3px;
-    background-color: var(--color-bg-white);
+    top: 3px;
+    background-color: #d1d1d6;
     transition: var(--transition-slow);
-    border-radius: var(--radius-circle);
+    border-radius: 7px;
 }
 
 input:checked+.slider {
+    border-color: var(--color-primary);
     background-color: var(--color-primary);
 }
 
 input:checked+.slider:before {
-    transform: translateX(16px);
+    background-color: var(--color-bg-white);
+    transform: translateX(20px);
 }
 
 .toggle-container {
@@ -1217,19 +1499,21 @@ input:checked+.slider:before {
 
 /* Dark mode toggle switch styles */
 body.dark-mode .slider {
-    background-color: var(--color-dark-border-medium);
+    background-color: var(--color-bg-card);
+    border-color: var(--color-dark-border-medium);
 }
 
 body.dark-mode .slider:before {
-    background-color: var(--color-dark-text-secondary);
+    background-color: #4e4e50;
 }
 
 body.dark-mode input:checked+.slider {
+    border-color: var(--color-primary);
     background-color: var(--color-primary);
 }
 
 body.dark-mode input:checked+.slider:before {
-    background-color: var(--color-bg-white);
+    background-color: var(--color-dark-text-primary);
 }
 
 body.dark-mode {
@@ -1703,10 +1987,10 @@ body.dark-mode #gh .contribute-button span {
 .popup-controls {
     position: absolute;
     top: 2px;
-    right: 10px;
+    right: 12px;
     display: inline-flex;
     align-items: center;
-    gap: 15px;
+    gap: 16px;
     z-index: 10;
 }
 
@@ -2068,12 +2352,12 @@ body.dark-mode .info-icon .tooltip::before {
 }
 
 body.dark-mode .icon-button {
-    background: rgba(255, 130, 0, 0.15) !important;
-    border-color: rgba(255, 130, 0, 0.4) !important;
+    background: var(--color-primary-light) !important;
+    border-color: var(--color-primary-border) !important;
 }
 
 body.dark-mode .icon-button:hover {
-    background: rgba(255, 130, 0, 0.25) !important;
+    background: var(--color-primary-hover-light) !important;
 }
 
 body.dark-mode .tooltip-text {
@@ -3901,13 +4185,13 @@ body.dark-mode .promo-date-info {
 
 .shimmer-button .shimmer-text {
     background: linear-gradient(90deg,
-            var(--color-bg-white) 0%,
-            var(--color-bg-white) 30%,
-            #cccccc 40%,
-            #acacac 50%,
-            #cccccc 60%,
-            var(--color-bg-white) 70%,
-            var(--color-bg-white) 100%);
+            var(--color-primary-contrast, var(--color-bg-white)) 0%,
+            var(--color-primary-contrast, var(--color-bg-white)) 30%,
+            var(--color-primary-shimmer, #cccccc) 40%,
+            var(--color-primary-shimmer-highlight, #acacac) 50%,
+            var(--color-primary-shimmer, #cccccc) 60%,
+            var(--color-primary-contrast, var(--color-bg-white)) 70%,
+            var(--color-primary-contrast, var(--color-bg-white)) 100%);
     background-size: 200% 100%;
     background-clip: text;
     -webkit-background-clip: text;
@@ -4024,12 +4308,12 @@ body.dark-mode .shimmer-button {
 }
 
 .dropdown-item i {
-    font-size: 14px !important;
-    width: 16px;
+    font-size: 15px !important;
+    width: 20px;
     text-align: center;
     transition: color 0.15s ease;
     flex-shrink: 0;
-    /* Prevent icon from shrinking */
+    line-height: 1;
 }
 
 /* Responsive icon sizing for mobile */
@@ -4049,9 +4333,6 @@ body.dark-mode .shimmer-button {
 /* Submenu / Nested Dropdown Styles */
 .dropdown-item.has-submenu {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     padding-right: 12px;
 }
 
@@ -5310,9 +5591,9 @@ body.dark-mode .quick-search-wrapper.ai-mode::after {
     padding: 0 14px;
     border-radius: 17px; /* Nested concentric corner radius: Ri = Ro - d = 24px - 7px = 17px */
     corner-shape: squircle;
-    border: 1px solid rgba(255, 115, 0, 0.4); /* Darker, more defined border */
-    background: rgba(255, 115, 0, 0.18); /* Richer, darker orange tint */
-    color: #d45d00; /* Darker, high-contrast orange text color */
+    border: 1px solid var(--color-primary-border);
+    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
     cursor: var(--f-cursor-pointer);
     display: flex;
     align-items: center;
@@ -5328,19 +5609,19 @@ body.dark-mode .quick-search-wrapper.ai-mode::after {
 }
 
 body.dark-mode .ai-search-toggle {
-    background: rgba(255, 115, 0, 0.26) !important; /* Richer, higher-visibility dark mode background */
-    color: #ff8c1a !important; /* Richer, highly legible orange color in dark mode */
-    border: 1px solid rgba(255, 115, 0, 0.5) !important;
+    background: var(--color-primary-light) !important;
+    color: var(--color-primary) !important;
+    border: 1px solid var(--color-primary-border) !important;
     box-shadow: none !important;
 }
 
 .ai-search-toggle:hover {
     transform: translateY(-50%) scale(1.02);
-    background: rgba(255, 115, 0, 0.25);
+    background: var(--color-primary-hover-light);
 }
 
 body.dark-mode .ai-search-toggle:hover {
-    background: rgba(255, 115, 0, 0.35) !important;
+    background: var(--color-primary-hover-light) !important;
 }
 
 .ai-search-toggle:active {
@@ -6552,13 +6833,13 @@ body.dark-mode .insight-card-date {
 
 .view-more-btn {
     text-decoration: none;
-    color: var(--color-primary-alt);
+    color: var(--color-text-primary);
     font-weight: var(--font-weight-semibold);
     background: var(--color-primary-light);
     padding: 6px 14px;
     border-radius: var(--radius-3xl);
     backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 130, 0, 0.3);
+    border: 1px solid var(--color-primary-border, rgba(255, 130, 0, 0.25));
     transition: var(--transition-medium);
     display: inline-flex;
     align-items: center;
@@ -6567,11 +6848,12 @@ body.dark-mode .insight-card-date {
 }
 
 .view-more-btn:hover {
-    background: rgba(255, 130, 0, 0.2);
+    background: var(--color-primary-hover-light, rgba(255, 130, 0, 0.2));
+    color: var(--color-primary);
 }
 
 body.dark-mode .view-more-btn {
-    color: var(--color-primary-alt);
+    color: var(--color-text-primary);
 }
 
 @media (max-width: 768px) {
@@ -9967,3 +10249,146 @@ body.dark-mode .sereine-setting-item:hover {
     border-bottom-left-radius: 23px;
     border-bottom-right-radius: 23px;
 }
+
+/* ================================================
+   ACCENT COLOR DROPDOWN
+   ================================================ */
+
+.accent-color-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: background 0.15s ease;
+}
+
+.accent-color-selector:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+body.dark-mode .accent-color-selector:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.accent-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+    margin: 0 2px;
+}
+
+.accent-dropdown {
+    position: absolute;
+    top: calc(100% + 5px);
+    right: 0;
+    background: rgb(245, 245, 240);
+    border: 1px solid rgb(209, 209, 209);
+    border-radius: 12px;
+    min-width: 160px;
+    padding: 6px 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+}
+
+body.dark-mode .accent-dropdown {
+    background: rgb(40, 40, 40);
+    border-color: rgb(68, 68, 68);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.accent-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.accent-dropdown-item, .theme-dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    color: var(--color-text-primary);
+    font-size: 14px;
+}
+
+.accent-dropdown-item:hover, .theme-dropdown-item:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+body.dark-mode .accent-dropdown-item:hover, body.dark-mode .theme-dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.accent-dropdown-item-left, .theme-dropdown-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.accent-check {
+    opacity: 0;
+    color: var(--color-primary);
+    transition: opacity 0.15s ease;
+}
+
+.accent-dropdown-item.active .accent-check, .theme-dropdown-item.active .accent-check {
+    opacity: 1;
+}
+
+/* Embedded Coffee Mode Toggle Switch */
+.coffee-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 28px;
+    height: 16px;
+    margin-right: 4px;
+}
+
+.coffee-toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.coffee-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-border-medium);
+    transition: .2s;
+    border-radius: 16px;
+}
+
+.coffee-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 2px;
+    bottom: 2px;
+    background-color: #fff;
+    transition: .2s;
+    border-radius: 50%;
+}
+
+.coffee-toggle-switch input:checked + .coffee-toggle-slider {
+    background-color: var(--color-primary);
+}
+
+.coffee-toggle-switch input:checked + .coffee-toggle-slider:before {
+    transform: translateX(12px);
+}
+

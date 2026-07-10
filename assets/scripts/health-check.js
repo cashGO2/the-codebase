@@ -18,6 +18,16 @@ async function checkHealth() {
     const healthStatusText = document.getElementById('healthStatusText');
     if (!healthIndicator) return;
 
+    function updateStatus(text) {
+        if (healthStatusText) {
+            healthStatusText.textContent = text;
+            const container = healthStatusText.closest('.health-status-container');
+            if (container) {
+                container.setAttribute('aria-label', `System Status: ${text}`);
+            }
+        }
+    }
+
     try {
         const response = await fetch(HEALTH_API_URL);
         const data = await response.json();
@@ -34,16 +44,16 @@ async function checkHealth() {
             // Map impact to indicator class
             if (impact === 'major_outage') {
                 healthIndicator.classList.add('error');
-                if (healthStatusText) healthStatusText.textContent = 'Outage';
+                updateStatus('Outage');
             } else if (impact === 'partial_outage') {
                 healthIndicator.classList.add('partial-outage');
-                if (healthStatusText) healthStatusText.textContent = 'Partial Outage';
+                updateStatus('Partial Outage');
             } else if (impact === 'degraded_performance' || impact === 'maintenance') {
                 healthIndicator.classList.add('degraded');
-                if (healthStatusText) healthStatusText.textContent = 'Degraded';
+                updateStatus('Degraded');
             } else {
                 healthIndicator.classList.add('partial-outage');
-                if (healthStatusText) healthStatusText.textContent = 'Issues';
+                updateStatus('Issues');
             }
             healthIndicator.title = incident.name || 'Active incident';
             return;
@@ -53,7 +63,7 @@ async function checkHealth() {
         if (status === 'offline') {
             healthIndicator.classList.add('degraded'); // or a new 'offline' class if styles exist
             healthIndicator.title = data.message || 'Please check your internet connection';
-            if (healthStatusText) healthStatusText.textContent = 'Offline';
+            updateStatus('Offline');
             return;
         }
 
@@ -61,25 +71,25 @@ async function checkHealth() {
         if (status === 'degraded') {
             healthIndicator.classList.add('degraded');
             healthIndicator.title = data.message || 'Systems are experiencing issues';
-            if (healthStatusText) healthStatusText.textContent = 'Degraded';
+            updateStatus('Degraded');
             return;
         }
 
         // No incidents - all systems operational
         healthIndicator.classList.add('ok');
         healthIndicator.title = 'All systems operational';
-        if (healthStatusText) healthStatusText.textContent = 'Operational';
+        updateStatus('Operational');
     } catch (error) {
         // If we can't reach our health API
         if (!navigator.onLine) {
             healthIndicator.classList.add('degraded');
             healthIndicator.title = 'You are currently offline';
-            if (healthStatusText) healthStatusText.textContent = 'Offline';
+            updateStatus('Offline');
         } else {
             // If online but API failed, show as ok (don't alarm users)
             healthIndicator.classList.add('ok');
             healthIndicator.title = 'All systems operational';
-            if (healthStatusText) healthStatusText.textContent = 'Operational';
+            updateStatus('Operational');
         }
     }
 }

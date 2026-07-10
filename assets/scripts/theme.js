@@ -30,10 +30,10 @@ const THEME_ELEMENT_IDS = [
 ];
 
 /**
- * Apply theme to all elements
- * @param {boolean} isDark - Whether to apply dark mode
+ * Apply actual theme mode classes
+ * @param {string} actualMode - 'light', 'dark', 'coffee', or 'coffee-dark'
  */
-function applyTheme(isDark) {
+function applyThemeModeClass(actualMode) {
     const elements = [
         document.body,
         document.querySelector('header'),
@@ -46,9 +46,18 @@ function applyTheme(isDark) {
     const notifyCards = document.querySelectorAll('#notify');
     notifyCards.forEach(card => elements.push(card));
 
+    const isDark = (actualMode === 'dark' || actualMode === 'coffee-dark');
+
     elements.forEach(el => {
         if (el) {
-            isDark ? el.classList.add('dark-mode') : el.classList.remove('dark-mode');
+            el.classList.remove('dark-mode', 'light-mode', 'coffee-mode', 'coffee-dark-mode');
+            if (actualMode === 'dark') el.classList.add('dark-mode');
+            if (actualMode === 'light') el.classList.add('light-mode');
+            if (actualMode === 'coffee') el.classList.add('coffee-mode');
+            if (actualMode === 'coffee-dark') {
+                el.classList.add('coffee-dark-mode');
+                el.classList.add('dark-mode');
+            }
         }
     });
 
@@ -71,257 +80,263 @@ function applyTheme(isDark) {
         try {
             pdfIframe.contentWindow.postMessage({
                 type: 'themeMode',
-                isDark: isDark
+                isDark: isDark,
+                actualMode: actualMode
             }, '*');
         } catch (e) {
             // Silently fail
         }
     }
+    
+    updateThemeColor(actualMode);
 }
 
-/**
- * Check if current time is within smart dark mode hours (19:00 - 6:45)
- * @returns {boolean}
- */
-function isSmartDarkModeTime() {
+function resolveSystemTheme() {
+    // Pure light mode cookie overrides system/smart dark mode
+    if (getCookie('pureLightMode') === 'true') return 'light';
+    
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+    
     const now = new Date();
-    const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
-    const startTimeInMinutes = SMART_DARK_START_HOUR * 60 + SMART_DARK_START_MINUTE;
-    const endTimeInMinutes = SMART_DARK_END_HOUR * 60 + SMART_DARK_END_MINUTE;
-
-    // Time range spans midnight: 19:00 to 6:45
-    return currentTimeInMinutes >= startTimeInMinutes || currentTimeInMinutes < endTimeInMinutes;
+    const current = now.getHours() * 60 + now.getMinutes();
+    const start = SMART_DARK_START_HOUR * 60 + SMART_DARK_START_MINUTE;
+    const end = SMART_DARK_END_HOUR * 60 + SMART_DARK_END_MINUTE;
+    
+    if (current >= start || current < end) return 'dark';
+    return 'light';
 }
 
-/**
- * Check if system prefers dark mode
- * @returns {boolean}
- */
-function systemPrefersDark() {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
-}
-
-/**
- * Determine if smart dark mode should be active
- * @returns {boolean}
- */
-function shouldApplySmartDarkMode() {
-    const userTheme = getCookie('theme');
-    const pureLightMode = getCookie('pureLightMode') === 'true';
-
-    // Smart dark mode only applies when:
-    // 1. Dark mode toggle is OFF (userTheme !== "dark")
-    // 2. System is NOT in dark mode
-    // 3. Pure light mode is NOT enabled
-    if (userTheme === 'dark') return false;
-    if (systemPrefersDark()) return false;
-    if (pureLightMode) return false;
-
-    return isSmartDarkModeTime();
-}
-
-/**
- * Update status text display
- */
-function updateSmartDarkModeStatus() {
-    const smartDarkModeStatus = document.getElementById('smartDarkModeStatus');
-    if (!smartDarkModeStatus) return;
-
-    const userTheme = getCookie('theme');
-    const pureLightMode = getCookie('pureLightMode') === 'true';
-
-    if (userTheme === 'dark') {
-        smartDarkModeStatus.textContent = 'Dark mode active';
-    } else if (systemPrefersDark()) {
-        smartDarkModeStatus.textContent = 'Following system preference';
-    } else if (pureLightMode) {
-        smartDarkModeStatus.textContent = 'Pure light mode active';
-    } else if (isSmartDarkModeTime()) {
-        smartDarkModeStatus.textContent = 'Smart Dark mode - will auto switch based on time';
-    } else {
-        smartDarkModeStatus.textContent = 'Light mode - will auto switch based on time';
-    }
-}
-
-/**
- * Show/hide pure light mode options
- */
-function updatePureLightModeVisibility() {
-    const pureLightModeOptions = document.getElementById('pureLightModeOptions');
-    if (!pureLightModeOptions) return;
-
-    const userTheme = getCookie('theme');
-    pureLightModeOptions.style.display = userTheme !== 'dark' ? 'block' : 'none';
-}
-
-/**
- * Apply theme based on all conditions
- */
 function applyThemeBasedOnConditions() {
-    const themeToggle = document.getElementById('themeToggle');
-    const userTheme = getCookie('theme');
-
-    if (userTheme === 'dark') {
-        if (themeToggle) themeToggle.checked = true;
-        applyTheme(true);
-    } else if (userTheme === 'light') {
-        if (shouldApplySmartDarkMode()) {
-            if (themeToggle) themeToggle.checked = false;
-            applyTheme(true);
-        } else {
-            if (themeToggle) themeToggle.checked = false;
-            applyTheme(false);
-        }
-    } else {
-        // No explicit theme
-        if (systemPrefersDark()) {
-            if (themeToggle) themeToggle.checked = true;
-            applyTheme(true);
-        } else if (shouldApplySmartDarkMode()) {
-            if (themeToggle) themeToggle.checked = false;
-            applyTheme(true);
-        } else {
-            if (themeToggle) themeToggle.checked = false;
-            applyTheme(false);
+    let mode = getCookie('theme') || 'system';
+    
+    // Handle old cookies (if it was 'dark'/'light' boolean strings before dropdown)
+    if (mode === 'true' || mode === 'false') {
+        mode = mode === 'true' ? 'dark' : 'light';
+        setCookie('theme', mode, 365);
+    }
+    
+    let actualMode = mode;
+    if (mode === 'system') {
+        actualMode = resolveSystemTheme();
+    }
+    
+    // Apply Pure Light Mode check if mode is forced 'light'
+    if (mode === 'light' && getCookie('pureLightMode') === 'true') {
+        actualMode = 'light';
+    }
+    
+    // Coffee sub-theme switch (light vs dark coffee)
+    if (actualMode === 'coffee') {
+        const isCoffeeDark = getCookie('coffeeDarkMode') === 'true';
+        if (isCoffeeDark) {
+            actualMode = 'coffee-dark';
         }
     }
-
-    updateSmartDarkModeStatus();
-    updatePureLightModeVisibility();
+    
+    applyThemeModeClass(actualMode);
+    updateSmartDarkModeStatus(mode);
+    updateDropdownUI(mode, actualMode);
+    updateSubTogglesVisibility(mode);
 }
 
-/**
- * Initialize pure light mode toggle
- */
-function initPureLightMode() {
-    const pureLightModeToggle = document.getElementById('pureLightModeToggle');
-    if (!pureLightModeToggle) return;
-
-    const pureLightMode = getCookie('pureLightMode') === 'true';
-    pureLightModeToggle.checked = pureLightMode;
-
-    pureLightModeToggle.addEventListener('change', function () {
-        // Haptic feedback
-        if (window.MaterioHaptics) {
-            window.MaterioHaptics.vibrate(this.checked ? 'toggleOn' : 'toggleOff');
+function updateDropdownUI(mode, actualMode) {
+    const currentText = document.getElementById('currentThemeText');
+    const currentIcon = document.getElementById('currentThemeIcon');
+    
+    if (currentText) {
+        const labels = { system: 'System', light: 'Light', dark: 'Dark', coffee: 'Coffee' };
+        currentText.textContent = labels[mode] || 'System';
+    }
+    
+    if (currentIcon) {
+        currentIcon.className = ''; // Reset classes
+        if (mode === 'system') {
+            currentIcon.className = 'fa-solid fa-circle-half-stroke';
+        } else if (mode === 'light') {
+            currentIcon.className = 'fa-solid fa-sun';
+        } else if (mode === 'dark') {
+            currentIcon.className = 'fa-solid fa-moon';
+        } else if (mode === 'coffee') {
+            currentIcon.className = 'fa-solid fa-mug-hot';
         }
-
-        setCookie('pureLightMode', this.checked ? 'true' : 'false', 30);
-        applyThemeBasedOnConditions();
+        currentIcon.style.color = 'var(--color-primary)';
+    }
+    
+    document.querySelectorAll('#themeDropdown .theme-dropdown-item').forEach(item => {
+        if (item.dataset.theme === mode) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
     });
 }
 
-/**
- * Start smart dark mode checker
- */
-function startSmartDarkModeChecker() {
-    if (smartDarkModeInterval) {
-        clearInterval(smartDarkModeInterval);
-    }
+function updateSmartDarkModeStatus(mode) {
+    const statusEl = document.getElementById('smartDarkModeStatus');
+    if (!statusEl) return;
 
+    if (mode === 'system') {
+        statusEl.textContent = 'Auto switch based on time/OS';
+    } else if (mode === 'dark') {
+        statusEl.textContent = 'Dark mode active';
+    } else if (mode === 'light') {
+        statusEl.textContent = 'Light mode active';
+    } else if (mode === 'coffee') {
+        const isCoffeeDark = getCookie('coffeeDarkMode') === 'true';
+        statusEl.textContent = isCoffeeDark ? 'Coffee Espresso (Dark) active' : 'Coffee Latte (Light) active';
+    }
+}
+
+function updateSubTogglesVisibility(mode) {
+    const pureLightEl = document.getElementById('pureLightModeOptions');
+    
+    if (pureLightEl) {
+        pureLightEl.style.display = (mode === 'system' || mode === 'light') ? 'flex' : 'none';
+    }
+}
+
+function updateThemeColor(actualMode) {
+    const metaThemeColor = document.querySelector('meta[name=theme-color]');
+    if (!metaThemeColor) return;
+
+    if (actualMode === 'dark' || actualMode === 'coffee-dark') {
+        metaThemeColor.setAttribute('content', actualMode === 'coffee-dark' ? '#1c1510' : '#121212');
+    } else if (actualMode === 'coffee') {
+        metaThemeColor.setAttribute('content', '#fdf6e3');
+    } else {
+        metaThemeColor.setAttribute('content', '#faf9f5');
+    }
+}
+
+function initThemeDropdown() {
+    const selector = document.getElementById('themeModeSelector');
+    const dropdown = document.getElementById('themeDropdown');
+    
+    if (selector && dropdown) {
+        // Toggle dropdown
+        selector.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isShowing = dropdown.classList.contains('show');
+            
+            // Close other dropdowns
+            document.querySelectorAll('.show').forEach(el => {
+                if (el !== dropdown) el.classList.remove('show');
+            });
+            
+            if (isShowing) {
+                dropdown.classList.remove('show');
+            } else {
+                dropdown.classList.add('show');
+            }
+        });
+        
+        // Handle selection
+        document.querySelectorAll('#themeDropdown .theme-dropdown-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                // If clicking the toggle switch or its container, do not select theme or close dropdown
+                if (e.target.closest('.coffee-toggle-switch') || e.target.closest('.coffee-toggle-container')) {
+                    return;
+                }
+                
+                e.stopPropagation();
+                const mode = item.dataset.theme;
+                
+                setCookie('theme', mode, 365);
+                applyThemeBasedOnConditions();
+                
+                if (window.MaterioHaptics) {
+                    window.MaterioHaptics.vibrate('tap');
+                }
+                
+                dropdown.classList.remove('show');
+            });
+        });
+        
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!selector.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+    }
+}
+
+function initSubToggles() {
+    const pureLightToggle = document.getElementById('pureLightModeToggle');
+    const coffeeDarkToggle = document.getElementById('coffeeDarkModeToggle');
+    
+    if (pureLightToggle) {
+        pureLightToggle.checked = getCookie('pureLightMode') === 'true';
+        pureLightToggle.addEventListener('change', function () {
+            if (window.MaterioHaptics) {
+                window.MaterioHaptics.vibrate(this.checked ? 'toggleOn' : 'toggleOff');
+            }
+            setCookie('pureLightMode', this.checked ? 'true' : 'false', 365);
+            applyThemeBasedOnConditions();
+        });
+    }
+    
+    if (coffeeDarkToggle) {
+        // Prevent click events on the toggle from propagating and triggering theme selection
+        const toggleWrapper = coffeeDarkToggle.closest('.coffee-toggle-switch');
+        if (toggleWrapper) {
+            toggleWrapper.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
+
+        coffeeDarkToggle.checked = getCookie('coffeeDarkMode') === 'true';
+        coffeeDarkToggle.addEventListener('change', function (e) {
+            e.stopPropagation();
+            if (window.MaterioHaptics) {
+                window.MaterioHaptics.vibrate(this.checked ? 'toggleOn' : 'toggleOff');
+            }
+            setCookie('coffeeDarkMode', this.checked ? 'true' : 'false', 365);
+            applyThemeBasedOnConditions();
+        });
+    }
+}
+
+function startSmartDarkModeChecker() {
+    if (smartDarkModeInterval) clearInterval(smartDarkModeInterval);
     smartDarkModeInterval = setInterval(() => {
-        applyThemeBasedOnConditions();
+        const mode = getCookie('theme') || 'system';
+        if (mode === 'system') {
+            applyThemeBasedOnConditions();
+        }
     }, 60000);
 }
 
-/**
- * Update browser theme color meta tag
- */
-function updateThemeColor() {
-    const isDarkMode = document.body.classList.contains('dark-mode');
-    const metaThemeColor = document.querySelector('meta[name=theme-color]');
-
-    if (metaThemeColor) {
-        metaThemeColor.setAttribute('content', isDarkMode ? '#1a1a1a' : '#f2f2eb');
-    }
-}
-
-/**
- * Initialize theme toggle handler
- */
-function initThemeToggle() {
-    const themeToggle = document.getElementById('themeToggle');
-    if (!themeToggle) return;
-
-    themeToggle.addEventListener('change', function () {
-        const isDark = this.checked;
-
-        // Haptic feedback
-        if (window.MaterioHaptics) {
-            window.MaterioHaptics.vibrate(isDark ? 'toggleOn' : 'toggleOff');
-        }
-
-        setCookie('theme', isDark ? 'dark' : 'light', 30);
-        applyTheme(isDark);
-        updateSmartDarkModeStatus();
-        updatePureLightModeVisibility();
-    });
-
-    // Also handle click for theme color update
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        updateThemeColor();
-    });
-}
-
-/**
- * Setup system theme change listener
- */
 function setupSystemThemeListener() {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
-        const userTheme = getCookie('theme');
-
-        // Only auto-switch if using system theme
-        if (!userTheme) {
-            const isDark = e.matches;
-
-            // Update PDF iframe
-            const pdfIframe = document.getElementById('pdf-iframe');
-            if (pdfIframe?.contentWindow) {
-                try {
-                    pdfIframe.contentWindow.postMessage({
-                        type: 'themeMode',
-                        isDark: isDark
-                    }, '*');
-                } catch (err) {
-                    // Silently fail
-                }
-            }
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        const mode = getCookie('theme') || 'system';
+        if (mode === 'system') {
+            applyThemeBasedOnConditions();
         }
     });
 }
 
-/**
- * Initialize theme module
- */
 function init() {
-    initPureLightMode();
-    initThemeToggle();
+    initThemeDropdown();
+    initSubToggles();
     applyThemeBasedOnConditions();
     startSmartDarkModeChecker();
-    updateThemeColor();
     setupSystemThemeListener();
 }
 
-// Initialize when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
 } else {
     init();
 }
 
-// Expose for testing
 window.applyThemeBasedOnConditions = applyThemeBasedOnConditions;
 
-// Export for module use
 export {
     init,
-    applyTheme,
+    applyThemeModeClass as applyTheme,
     applyThemeBasedOnConditions,
-    isSmartDarkModeTime,
-    systemPrefersDark,
-    shouldApplySmartDarkMode,
+    resolveSystemTheme,
     updateThemeColor,
-    updateSmartDarkModeStatus,
-    updatePureLightModeVisibility
+    updateSmartDarkModeStatus
 };

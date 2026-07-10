@@ -43,22 +43,31 @@
       }
 
       // Initialize theme
-      let userTheme = getCookie("theme");
-      if (userTheme === "dark") {
-        applyTheme(true);
-      } else if (userTheme === "light") {
-        applyTheme(false);
-      } else if (userTheme === "system") {
-        const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        applyTheme(systemPrefersDark);
+      if (window.applyThemeBasedOnConditions) {
+        // Handled by global theme.js
       } else {
-        // Default to system preference if no theme is set
-        const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        applyTheme(systemPrefersDark);
+        let userTheme = getCookie("theme");
+        if (userTheme === "dark") {
+          applyTheme(true);
+        } else if (userTheme === "light") {
+          applyTheme(false);
+        } else if (userTheme === "system") {
+          const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          applyTheme(systemPrefersDark);
+        } else {
+          // Default to system preference if no theme is set
+          const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          applyTheme(systemPrefersDark);
+        }
       }
 
       // Global function for footer theme buttons
       window.setTheme = function (theme) {
+        if (window.applyThemeBasedOnConditions) {
+          setCookie("theme", theme, 30);
+          window.applyThemeBasedOnConditions();
+          return;
+        }
         if (theme === 'dark') {
           setCookie("theme", "dark", 30);
           applyTheme(true);
@@ -74,6 +83,9 @@
 
       // Listen for system theme changes when using system mode
       window.matchMedia("(prefers-color-scheme: dark)").addEventListener('change', function (e) {
+        if (window.applyThemeBasedOnConditions) {
+          return; // Handled by global theme.js
+        }
         if (getCookie("theme") === "system") {
           applyTheme(e.matches);
         }

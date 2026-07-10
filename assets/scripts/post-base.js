@@ -339,6 +339,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Global function for footer theme buttons
   window.setTheme = function (theme) {
+    if (window.applyThemeBasedOnConditions) {
+      setCookie("theme", theme, 30);
+      window.applyThemeBasedOnConditions();
+      return;
+    }
     if (theme === 'dark') {
       setCookie("theme", "dark", 30);
       applyTheme(true);
@@ -353,18 +358,25 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   // Initialize theme
-  let userTheme = getCookie("theme");
-  if (userTheme === "dark") {
-    applyTheme(true);
-  } else if (userTheme === "light") {
-    applyTheme(false);
+  if (window.applyThemeBasedOnConditions) {
+    // Handled by global theme.js
   } else {
-    const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    applyTheme(systemPrefersDark);
+    let userTheme = getCookie("theme");
+    if (userTheme === "dark") {
+      applyTheme(true);
+    } else if (userTheme === "light") {
+      applyTheme(false);
+    } else {
+      const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      applyTheme(systemPrefersDark);
+    }
   }
 
   // Listen for system theme changes when using system mode
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener('change', function (e) {
+    if (window.applyThemeBasedOnConditions) {
+      return; // Handled by global theme.js
+    }
     if (getCookie("theme") === "system") {
       applyTheme(e.matches);
     }

@@ -866,7 +866,7 @@ submitButton.addEventListener("click", async () => {
     pdfUrl = window.MaterioLocalCDN?.transformUrl(pdfUrl) || pdfUrl;
     pdfUrl = await resolvePdfSourceUrl(pdfUrl);
     document.getElementById("popupContent").innerHTML =
-      `<iframe id="pdf-iframe" scrolling='no' allowfullscreen webkitallowfullscreen style="border:none; width:100%; height:calc(100% - 17px); border-radius:25px; margin-top:22px; corner-shape: squircle;"
+      `<iframe id="pdf-iframe" scrolling='no' allowfullscreen webkitallowfullscreen style="border:none; width:100%; height:calc(100% - 54px); border-radius:25px; margin-top:54px; corner-shape: squircle;"
         src="/oread/web/viewer.html?disableStream=false&disableRange=false&rangeChunkSize=1048576&file=${encodeURIComponent(pdfUrl)}"></iframe>`;
 
     popup.classList.remove("closing");
@@ -1179,7 +1179,7 @@ async function checkSharedPdf() {
         window.loadPdfWithCache(resolvedPdfUrl);
       } else {
         document.getElementById("popupContent").innerHTML =
-          `<iframe id="pdf-iframe" scrolling='no' allowfullscreen webkitallowfullscreen style="border:none; width:100%; height:calc(100% - 17px); border-radius:25px; margin-top:22px; corner-shape: squircle;"
+          `<iframe id="pdf-iframe" scrolling='no' allowfullscreen webkitallowfullscreen style="border:none; width:100%; height:calc(100% - 54px); border-radius:25px; margin-top:54px; corner-shape: squircle;"
                 src="/oread/web/viewer.html?file=${encodeURIComponent(resolvedPdfUrl)}"></iframe>`;
       }
       if (popup) {
@@ -3972,7 +3972,7 @@ async function openSearchResultPdf(event, semester, subject, topic) {
   } else {
     // Fallback to original behavior
     document.getElementById("popupContent").innerHTML =
-      `<iframe id="pdf-iframe" scrolling='no' allowfullscreen webkitallowfullscreen style="border:none; width:100%; height:calc(100% - 17px); border-radius:25px; margin-top:22px; corner-shape: squircle;"
+      `<iframe id="pdf-iframe" scrolling='no' allowfullscreen webkitallowfullscreen style="border:none; width:100%; height:calc(100% - 54px); border-radius:25px; margin-top:54px; corner-shape: squircle;"
         src="/oread/web/viewer.html?disableStream=false&disableRange=false&rangeChunkSize=1048576&file=${encodeURIComponent(pdfUrl)}"></iframe>`;
 
     popup.classList.remove("closing");

@@ -196,3 +196,30 @@ body.light-mode {
   --input-border-color: rgb(204, 204, 204);
   --toolbar-icon-color: rgb(61, 61, 61);
 }
+
+/* Coffee Latte (Light) mode */
+body.coffee-mode {
+  --page-bg-color: #fdf6e3;
+  --viewer-bg-color: #eee8d5;
+  --sidebar-bg-color: #e4dbcd;
+  --toolbar-bg-color: #eee8d5;
+  --text-primary-color: #4a3b32;
+  --border-color: #dcd3b6;
+  --button-hover-color: rgba(74, 59, 50, 0.1);
+  --input-border-color: #c7bc99;
+  --toolbar-icon-color: #655348;
+}
+
+/* Coffee Espresso (Dark) mode */
+body.coffee-dark-mode {
+  --page-bg-color: #1a1412;
+  --viewer-bg-color: #251c19;
+  --sidebar-bg-color: #201815;
+  --toolbar-bg-color: #251c19;
+  --text-primary-color: #ebdcd0;
+  --border-color: #362924;
+  --button-hover-color: rgba(235, 220, 208, 0.08);
+  --input-border-color: #4a3832;
+  --toolbar-icon-color: #cbb8ac;
+}
+

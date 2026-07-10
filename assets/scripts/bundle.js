@@ -15,6 +15,7 @@ import './profile-image.js';   // Depends on utils.js
 import './notify.js';          // Depends on utils.js
 import './haptics.js';         // No dependencies, exposes window.MaterioHaptics
 import './theme.js';           // Depends on utils.js
+import './accent.js';          // Accent color handling
 import './lazy-loader.js';     // No dependencies, exposes window.LazyLoader
 import './notebook.js';        // Notebook feature
 

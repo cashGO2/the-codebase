@@ -59,19 +59,26 @@
             }
         }        // Handle theme synchronization
         if (event.data && event.data.type === 'themeMode') {
-            const { isDark } = event.data;
+            const { isDark, actualMode } = event.data;
 
             if (typeof isDark === 'boolean') {
-                if (isDark) {
+                document.body.classList.remove('dark-mode', 'light-mode', 'coffee-mode', 'coffee-dark-mode');
+                
+                if (actualMode === 'coffee') {
+                    document.body.classList.add('coffee-mode');
+                    document.documentElement.classList.remove('is-dark');
+                    document.documentElement.classList.add('is-light');
+                } else if (actualMode === 'coffee-dark') {
+                    document.body.classList.add('coffee-dark-mode');
                     document.body.classList.add('dark-mode');
-                    document.body.classList.remove('light-mode');
-                    // Also update the HTML element for PDF.js's built-in theme detection
+                    document.documentElement.classList.add('is-dark');
+                    document.documentElement.classList.remove('is-light');
+                } else if (isDark) {
+                    document.body.classList.add('dark-mode');
                     document.documentElement.classList.add('is-dark');
                     document.documentElement.classList.remove('is-light');
                 } else {
-                    document.body.classList.remove('dark-mode');
                     document.body.classList.add('light-mode');
-                    // Also update the HTML element for PDF.js's built-in theme detection
                     document.documentElement.classList.remove('is-dark');
                     document.documentElement.classList.add('is-light');
                 }

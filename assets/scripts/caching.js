@@ -905,13 +905,13 @@ document.addEventListener('DOMContentLoaded', function () {
             if (isDownloaded) {
                 // Solid bookmark for downloaded PDFs
                 icon.className = 'fa-solid fa-bookmark-plus';
-                downloadButton.style.color = '#8dac49';
+                downloadButton.style.color = 'var(--color-success, #8dac49)';
                 downloadButton.title = 'Downloaded for offline reading';
                 downloadButton.style.cursor = 'default';
             } else {
                 // Regular bookmark for non-downloaded PDFs
                 icon.className = 'fa-regular fa-bookmark-plus';
-                downloadButton.style.color = '#ff8200';
+                downloadButton.style.color = ''; // Inherits var(--color-primary) from CSS to adapt to theme/accent
                 downloadButton.title = 'Download for offline reading';
                 downloadButton.style.cursor = 'pointer';
             }
