@@ -938,7 +938,7 @@
                             <div class="paper-mode-description" id="smartDarkModeStatus">Auto switch based on time</div>
                         </div>
                         
-                        <div class="accent-color-selector" id="themeModeSelector">
+                        <div class="accent-color-selector" id="themeModeSelector" style="flex-shrink: 0; white-space: nowrap;">
                             <i class="fa-solid fa-circle-half-stroke" id="currentThemeIcon" style="font-size: 13px; color: var(--color-primary); margin-right: 4px;"></i>
                             <span id="currentThemeText" style="font-size: 13px; font-weight: 500; margin-left: 4px;">System</span>
                             <i class="fa-solid fa-chevron-down" style="font-size: 11px; margin-left: 4px; color: #666;"></i>
@@ -984,12 +984,12 @@
                     </div>
 
                     <!-- Pure Light Mode Option (shown when Light is selected) -->
-                    <div id="pureLightModeOptions" style="display: none; justify-content: space-between; align-items: center; border-top: 1px solid var(--color-border-light); padding-top: 8px; margin-top: 4px; width: 100%;">
-                        <div class="paper-mode-info">
+                    <div id="pureLightModeOptions" style="display: none; flex-wrap: nowrap; justify-content: space-between; align-items: center; gap: 12px; border-top: 1px solid var(--color-border-light); padding-top: 8px; margin-top: 4px; width: 100%; min-width: 0;">
+                        <div class="paper-mode-info" style="min-width: 0;">
                             <div class="paper-mode-title" style="font-size: 13px;">Pure Light Mode</div>
                             <div class="paper-mode-description" style="font-size: 11px;">Keep light even at night</div>
                         </div>
-                        <label class="switch">
+                        <label class="switch" style="flex: 0 0 auto;">
                             <input type="checkbox" id="pureLightModeToggle">
                             <span class="slider round"></span>
                         </label>

@@ -2667,6 +2667,7 @@ body.dark-mode .account-link {
 .paper-mode-info {
     display: flex;
     flex-direction: column;
+    min-width: 0;
 }
 
 .paper-mode-title {
@@ -10259,9 +10260,13 @@ body.dark-mode .sereine-setting-item:hover {
     align-items: center;
     gap: 8px;
     cursor: pointer;
+    flex-shrink: 0;
+    white-space: nowrap;
     padding: 6px 12px;
     border-radius: 8px;
     transition: background 0.15s ease;
+    position: relative;
+    z-index: 1;
 }
 
 .accent-color-selector:hover {
