@@ -242,7 +242,7 @@
                 <div class="ai-banner-content">
                     <span class="ai-banner-text">
                         <span class="desktop-only-text">Connectors now work with ChatGPT, Claude, and Perplexity.</span>
-                        <span class="mobile-only">Perplexity support has arrived.</span>
+                        <span class="mobile-only">Try Thinklet</span>
                     </span>
                     <div class="ai-banner-right">
                         <div class="ai-icons-group">
@@ -252,6 +252,8 @@
                                 class="ai-icon chatgpt-icon">
                             <img src="https://www.google.com/s2/favicons?sz=128&domain=claude.com" alt="Claude"
                                 class="ai-icon claude-icon">
+                            <img src="https://chat.getmaterio.app/favicon.png" alt="Thinklet"
+                                class="ai-icon thinklet-icon">
                         </div>
                         <i class="fas fa-chevron-right ai-banner-chevron"></i>
                     </div>
@@ -378,7 +380,8 @@
 
                         <!-- Loading state -->
                         <div id="postsLoading" class="posts-loading">
-                            <i class="fa-regular fa-loader fa-spin" style="font-size: 24px; color: var(--color-primary);"></i>
+                            <i class="fa-regular fa-loader fa-spin"
+                                style="font-size: 24px; color: var(--color-primary);"></i>
                             <p style="margin-top: 12px; color: #666;">Just a sec...</p>
                         </div>
                         <!-- Posts will be populated by JavaScript as post cards -->
@@ -921,61 +924,81 @@
                 </div>
             </div>
             <!-- Appearance & Customization Section -->
-            <div class="settings-group-header" style="display: flex; align-items: center; gap: 8px; margin: 24px 0 12px 4px; font-size: 15px; font-weight: 600; color: var(--color-text-primary); opacity: 0.9;">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="var(--color-primary)" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle;">
-                    <path d="M10 4C10 2.89543 10.8954 2 12 2H13C14.1046 2 15 2.89543 15 4V6.55337C15 7.86603 15.8534 9.02626 17.1065 9.41722L17.8935 9.66278C19.1466 10.0537 20 11.214 20 12.5266V14C20 14.5523 19.5523 15 19 15H6C5.44772 15 5 14.5523 5 14V12.5266C5 11.214 5.85339 10.0537 7.10648 9.66278L7.89352 9.41722C9.14661 9.02626 10 7.86603 10 6.55337V4Z"></path>
-                    <path d="M6.00217 15C6.15797 16.3082 5.4957 19.5132 4 21.8679C4 21.8679 14.2924 23.0594 15.6851 17.9434V19.8712C15.6851 20.8125 15.6851 21.2831 15.9783 21.5755C16.5421 22.1377 19.1891 22.1531 19.7538 21.5521C20.0504 21.2363 20.0207 20.7819 19.9611 19.8731C19.8629 18.3746 19.5932 16.4558 18.8523 15" stroke-linecap="round" stroke-linejoin="round"></path>
+            <div class="settings-group-header"
+                style="display: flex; align-items: center; gap: 8px; margin: 24px 0 12px 4px; font-size: 15px; font-weight: 600; color: var(--color-text-primary); opacity: 0.9;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"
+                    color="var(--color-primary)" fill="none" stroke="currentColor" stroke-width="2"
+                    style="display: inline-block; vertical-align: middle;">
+                    <path
+                        d="M10 4C10 2.89543 10.8954 2 12 2H13C14.1046 2 15 2.89543 15 4V6.55337C15 7.86603 15.8534 9.02626 17.1065 9.41722L17.8935 9.66278C19.1466 10.0537 20 11.214 20 12.5266V14C20 14.5523 19.5523 15 19 15H6C5.44772 15 5 14.5523 5 14V12.5266C5 11.214 5.85339 10.0537 7.10648 9.66278L7.89352 9.41722C9.14661 9.02626 10 7.86603 10 6.55337V4Z">
+                    </path>
+                    <path
+                        d="M6.00217 15C6.15797 16.3082 5.4957 19.5132 4 21.8679C4 21.8679 14.2924 23.0594 15.6851 17.9434V19.8712C15.6851 20.8125 15.6851 21.2831 15.9783 21.5755C16.5421 22.1377 19.1891 22.1531 19.7538 21.5521C20.0504 21.2363 20.0207 20.7819 19.9611 19.8731C19.8629 18.3746 19.5932 16.4558 18.8523 15"
+                        stroke-linecap="round" stroke-linejoin="round"></path>
                 </svg>
                 <span>Appearance & Customization</span>
             </div>
 
             <!-- Theme mode dropdown -->
             <div class="card-layout" id="themeCard" style="overflow: visible;">
-                <div class="toggle-container" style="position: relative; flex-direction: column; align-items: stretch; gap: 8px; overflow: visible;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; position: relative;">
+                <div class="toggle-container"
+                    style="position: relative; flex-direction: column; align-items: stretch; gap: 8px; overflow: visible;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; width: 100%; position: relative;">
                         <div class="paper-mode-info">
                             <div class="paper-mode-title">Theme Mode</div>
                             <div class="paper-mode-description" id="smartDarkModeStatus">Auto switch based on time</div>
                         </div>
-                        
+
                         <div class="accent-color-selector" id="themeModeSelector" style="flex-shrink: 0;">
-                            <i class="fa-solid fa-circle-half-stroke" id="currentThemeIcon" style="font-size: 13px; color: var(--color-primary); margin-right: 4px;"></i>
-                            <span id="currentThemeText" style="font-size: 13px; font-weight: 500; margin-left: 4px;">System</span>
-                            <i class="fa-solid fa-chevron-down" style="font-size: 11px; margin-left: 4px; color: #666;"></i>
+                            <i class="fa-solid fa-circle-half-stroke" id="currentThemeIcon"
+                                style="font-size: 13px; color: var(--color-primary); margin-right: 4px;"></i>
+                            <span id="currentThemeText"
+                                style="font-size: 13px; font-weight: 500; margin-left: 4px;">System</span>
+                            <i class="fa-solid fa-chevron-down"
+                                style="font-size: 11px; margin-left: 4px; color: #666;"></i>
                         </div>
-                        
+
                         <!-- Theme Dropdown Menu -->
                         <div id="themeDropdown" class="accent-dropdown">
                             <div class="theme-dropdown-item active" data-theme="system">
                                 <div class="theme-dropdown-item-left">
-                                    <i class="fa-solid fa-circle-half-stroke" style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
+                                    <i class="fa-solid fa-circle-half-stroke"
+                                        style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
                                     <span>System</span>
                                 </div>
                                 <i class="fa-regular fa-check accent-check"></i>
                             </div>
                             <div class="theme-dropdown-item" data-theme="light">
                                 <div class="theme-dropdown-item-left">
-                                    <i class="fa-solid fa-sun" style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
+                                    <i class="fa-solid fa-sun"
+                                        style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
                                     <span>Light</span>
                                 </div>
                                 <i class="fa-regular fa-check accent-check"></i>
                             </div>
                             <div class="theme-dropdown-item" data-theme="dark">
                                 <div class="theme-dropdown-item-left">
-                                    <i class="fa-solid fa-moon" style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
+                                    <i class="fa-solid fa-moon"
+                                        style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
                                     <span>Dark</span>
                                 </div>
                                 <i class="fa-regular fa-check accent-check"></i>
                             </div>
                             <div class="theme-dropdown-item" data-theme="coffee">
                                 <div class="theme-dropdown-item-left">
-                                    <i class="fa-solid fa-mug-hot" style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
+                                    <i class="fa-solid fa-mug-hot"
+                                        style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
                                     <span>Coffee</span>
                                 </div>
-                                <div class="coffee-toggle-container" style="display: flex; align-items: center; margin-left: auto;">
-                                    <label class="coffee-toggle-switch" title="Toggle dark espresso / light latte" style="position: relative; display: inline-block; width: 28px; height: 16px; margin-right: 8px;">
-                                        <input type="checkbox" id="coffeeDarkModeToggle" style="opacity: 0; width: 0; height: 0;">
-                                        <span class="coffee-toggle-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--color-border-medium); transition: .2s; border-radius: 16px;"></span>
+                                <div class="coffee-toggle-container"
+                                    style="display: flex; align-items: center; margin-left: auto;">
+                                    <label class="coffee-toggle-switch" title="Toggle dark espresso / light latte"
+                                        style="position: relative; display: inline-block; width: 28px; height: 16px; margin-right: 8px;">
+                                        <input type="checkbox" id="coffeeDarkModeToggle"
+                                            style="opacity: 0; width: 0; height: 0;">
+                                        <span class="coffee-toggle-slider"
+                                            style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--color-border-medium); transition: .2s; border-radius: 16px;"></span>
                                     </label>
                                     <i class="fa-regular fa-check accent-check" style="margin-left: 0;"></i>
                                 </div>
@@ -984,7 +1007,8 @@
                     </div>
 
                     <!-- Pure Light Mode Option (shown when Light is selected) -->
-                    <div id="pureLightModeOptions" style="display: none; flex-direction: row; flex-wrap: nowrap; gap: 12px; justify-content: space-between; align-items: center; border-top: 1px solid var(--color-border-light); padding-top: 8px; margin-top: 4px; width: 100%;">
+                    <div id="pureLightModeOptions"
+                        style="display: none; flex-direction: row; flex-wrap: nowrap; gap: 12px; justify-content: space-between; align-items: center; border-top: 1px solid var(--color-border-light); padding-top: 8px; margin-top: 4px; width: 100%;">
                         <div class="paper-mode-info" style="min-width: 0;">
                             <div class="paper-mode-title" style="font-size: 13px;">Pure Light Mode</div>
                             <div class="paper-mode-description" style="font-size: 11px;">Keep light even at night</div>
@@ -1003,11 +1027,13 @@
                     <div class="paper-mode-info">
                         <div class="paper-mode-title">Accent color</div>
                     </div>
-                    
+
                     <div class="accent-color-selector" id="accentColorSelector">
-                        <span class="accent-dot" id="currentAccentDot" style="background-color: var(--color-primary);"></span>
+                        <span class="accent-dot" id="currentAccentDot"
+                            style="background-color: var(--color-primary);"></span>
                         <span id="currentAccentText" style="font-size: 14px; font-weight: 500;">Default</span>
-                        <i class="fa-regular fa-chevron-down" style="font-size: 12px; margin-left: 4px; opacity: 0.7;"></i>
+                        <i class="fa-regular fa-chevron-down"
+                            style="font-size: 12px; margin-left: 4px; opacity: 0.7;"></i>
                     </div>
 
                     <div id="accentDropdown" class="accent-dropdown">
@@ -1223,7 +1249,8 @@
                                 <div class="schedule-toggle-group">
                                     <span>Auto Schedule</span>
                                     <label class="switch small-switch">
-                                        <input type="checkbox" id="nightScheduleToggle" aria-label="Auto Schedule Night Mode">
+                                        <input type="checkbox" id="nightScheduleToggle"
+                                            aria-label="Auto Schedule Night Mode">
                                         <span class="slider"></span>
                                     </label>
                                 </div>
@@ -1467,7 +1494,8 @@
                             </div>
                         </div>
                         <label class="switch">
-                            <input type="checkbox" id="notificationsToggle" class="setting-toggle" checked aria-label="Notifications">
+                            <input type="checkbox" id="notificationsToggle" class="setting-toggle" checked
+                                aria-label="Notifications">
                             <span class="slider"></span>
                         </label>
                     </div>
