@@ -578,8 +578,12 @@
             },
 
             toggleDarkMode: () => {
-                const toggle = document.getElementById('themeToggle');
-                if (toggle) toggle.click();
+                if (typeof window.cycleTheme === 'function') {
+                    window.cycleTheme();
+                } else {
+                    const toggle = document.getElementById('themeToggle');
+                    if (toggle) toggle.click();
+                }
             },
 
             toggleWallpaper: () => {

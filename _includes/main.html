@@ -947,13 +947,25 @@
                     <div
                         style="display: flex; justify-content: space-between; align-items: center; width: 100%; position: relative;">
                         <div class="paper-mode-info">
-                            <div class="paper-mode-title">Theme Mode</div>
-                            <div class="paper-mode-description" id="smartDarkModeStatus">Auto switch based on time</div>
+                            <div class="paper-mode-title">Theme</div>
+                            <div class="paper-mode-description" id="smartDarkModeStatus">Changes with the daylight
+                            </div>
                         </div>
 
                         <div class="accent-color-selector" id="themeModeSelector" style="flex-shrink: 0;">
-                            <i class="fa-solid fa-circle-half-stroke" id="currentThemeIcon"
-                                style="font-size: 13px; color: var(--color-primary); margin-right: 4px;"></i>
+                            <span id="currentThemeIcon"
+                                style="display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; color: var(--color-primary); margin-right: 4px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14"
+                                    color="currentColor" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path
+                                        d="M14 21H16M14 21C13.1716 21 12.5 20.3284 12.5 19.5V17L12 17M14 21H10M10 21H8M10 21C10.8284 21 11.5 20.3284 11.5 19.5V17L12 17M12 17V21">
+                                    </path>
+                                    <path
+                                        d="M16 3H8C5.17157 3 3.75736 3 2.87868 3.87868C2 4.75736 2 6.17157 2 9V11C2 13.8284 2 15.2426 2.87868 16.1213C3.75736 17 5.17157 17 8 17H16C18.8284 17 20.2426 17 21.1213 16.1213C22 15.2426 22 13.8284 22 11V9C22 6.17157 22 4.75736 21.1213 3.87868C20.2426 3 18.8284 3 16 3Z">
+                                    </path>
+                                </svg>
+                            </span>
                             <span id="currentThemeText"
                                 style="font-size: 13px; font-weight: 500; margin-left: 4px;">System</span>
                             <i class="fa-solid fa-chevron-down"
@@ -964,32 +976,68 @@
                         <div id="themeDropdown" class="accent-dropdown">
                             <div class="theme-dropdown-item active" data-theme="system">
                                 <div class="theme-dropdown-item-left">
-                                    <i class="fa-solid fa-circle-half-stroke"
-                                        style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"
+                                        color="var(--color-text-secondary)" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        style="flex-shrink: 0; display: inline-block; vertical-align: middle;">
+                                        <path
+                                            d="M14 21H16M14 21C13.1716 21 12.5 20.3284 12.5 19.5V17L12 17M14 21H10M10 21H8M10 21C10.8284 21 11.5 20.3284 11.5 19.5V17L12 17M12 17V21">
+                                        </path>
+                                        <path
+                                            d="M16 3H8C5.17157 3 3.75736 3 2.87868 3.87868C2 4.75736 2 6.17157 2 9V11C2 13.8284 2 15.2426 2.87868 16.1213C3.75736 17 5.17157 17 8 17H16C18.8284 17 20.2426 17 21.1213 16.1213C22 15.2426 22 13.8284 22 11V9C22 6.17157 22 4.75736 21.1213 3.87868C20.2426 3 18.8284 3 16 3Z">
+                                        </path>
+                                    </svg>
                                     <span>System</span>
                                 </div>
                                 <i class="fa-regular fa-check accent-check"></i>
                             </div>
                             <div class="theme-dropdown-item" data-theme="light">
                                 <div class="theme-dropdown-item-left">
-                                    <i class="fa-solid fa-sun"
-                                        style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"
+                                        color="var(--color-text-secondary)" fill="none" stroke="currentColor"
+                                        stroke-width="2"
+                                        style="flex-shrink: 0; display: inline-block; vertical-align: middle;">
+                                        <path
+                                            d="M17 12C17 14.7614 14.7614 17 12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7C14.7614 7 17 9.23858 17 12Z">
+                                        </path>
+                                        <path
+                                            d="M12 2V3.5M12 20.5V22M19.0708 19.0713L18.0101 18.0106M5.98926 5.98926L4.9286 4.9286M22 12H20.5M3.5 12H2M19.0713 4.92871L18.0106 5.98937M5.98975 18.0107L4.92909 19.0714"
+                                            stroke-linecap="round"></path>
+                                    </svg>
                                     <span>Light</span>
                                 </div>
                                 <i class="fa-regular fa-check accent-check"></i>
                             </div>
                             <div class="theme-dropdown-item" data-theme="dark">
                                 <div class="theme-dropdown-item-left">
-                                    <i class="fa-solid fa-moon"
-                                        style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"
+                                        color="var(--color-text-secondary)" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        style="flex-shrink: 0; display: inline-block; vertical-align: middle;">
+                                        <path
+                                            d="M21.5 14.0784C20.3003 14.7189 18.9301 15.0821 17.4751 15.0821C12.7491 15.0821 8.91792 11.2509 8.91792 6.52485C8.91792 5.06986 9.28105 3.69968 9.92163 2.5C5.66765 3.49698 2.5 7.31513 2.5 11.8731C2.5 17.1899 6.8101 21.5 12.1269 21.5C16.6849 21.5 20.503 18.3324 21.5 14.0784Z">
+                                        </path>
+                                    </svg>
                                     <span>Dark</span>
                                 </div>
                                 <i class="fa-regular fa-check accent-check"></i>
                             </div>
                             <div class="theme-dropdown-item" data-theme="coffee">
                                 <div class="theme-dropdown-item-left">
-                                    <i class="fa-solid fa-mug-hot"
-                                        style="font-size: 14px; width: 16px; text-align: center; color: var(--color-text-secondary);"></i>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"
+                                        color="var(--color-text-secondary)" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round"
+                                        style="flex-shrink: 0; display: inline-block; vertical-align: middle;">
+                                        <path
+                                            d="M18.2505 10.5H19.6403C21.4918 10.5 22.0421 10.7655 21.9975 12.0838C21.9237 14.2674 20.939 16.8047 17 17.5">
+                                        </path>
+                                        <path
+                                            d="M5.94627 20.6145C2.57185 18.02 2.07468 14.3401 2.00143 10.5001C1.96979 8.8413 2.45126 8.5 4.65919 8.5H15.3408C17.5487 8.5 18.0302 8.8413 17.9986 10.5001C17.9253 14.3401 17.4281 18.02 14.0537 20.6145C13.0934 21.3528 12.2831 21.5 10.9194 21.5H9.08064C7.71686 21.5 6.90658 21.3528 5.94627 20.6145Z">
+                                        </path>
+                                        <path
+                                            d="M11.3089 2.5C10.7622 2.83861 10.0012 4 10.0012 5.5M7.53971 4C7.53971 4 7 4.5 7 5.5M14.0012 4C13.7279 4.1693 13.5 5 13.5 5.5"
+                                            stroke-linejoin="round"></path>
+                                    </svg>
                                     <span>Coffee</span>
                                 </div>
                                 <div class="coffee-toggle-container"
@@ -1019,110 +1067,99 @@
                             <span class="slider round"></span>
                         </label>
                     </div>
+
+                    <!-- Accent Color Options (Merged) -->
+                    <div id="accentColorSection"
+                        style="display: flex; flex-direction: row; flex-wrap: nowrap; justify-content: space-between; align-items: center; border-top: 1px solid var(--color-border-light); padding-top: 8px; margin-top: 4px; width: 100%; position: relative;">
+                        <div class="paper-mode-info" style="min-width: 0;">
+                            <div class="paper-mode-title" style="font-size: 13px;">Accent</div>
+                        </div>
+
+                        <div class="accent-color-selector" id="accentColorSelector" style="flex-shrink: 0;">
+                            <span class="accent-dot" id="currentAccentDot"
+                                style="background-color: var(--color-primary);"></span>
+                            <span id="currentAccentText"
+                                style="font-size: 13px; font-weight: 500; margin-left: 4px;">Default</span>
+                            <i class="fa-solid fa-chevron-down"
+                                style="font-size: 11px; margin-left: 4px; color: #666;"></i>
+                        </div>
+
+                        <!-- Accent Dropdown Menu -->
+                        <div id="accentDropdown" class="accent-dropdown">
+                            <div class="accent-dropdown-item active" data-color="default">
+                                <div class="accent-dropdown-item-left">
+                                    <span style="margin-left: 28px;">Default</span>
+                                </div>
+                                <i class="fa-regular fa-check accent-check"></i>
+                            </div>
+                            <div class="accent-dropdown-item" data-color="lilac">
+                                <div class="accent-dropdown-item-left">
+                                    <span class="accent-dot" style="background-color: #c8a2c8;"></span>
+                                    <span>Lilac</span>
+                                </div>
+                                <i class="fa-regular fa-check accent-check"></i>
+                            </div>
+                            <div class="accent-dropdown-item" data-color="purple">
+                                <div class="accent-dropdown-item-left">
+                                    <span class="accent-dot" style="background-color: #967bb6;"></span>
+                                    <span>Purple</span>
+                                </div>
+                                <i class="fa-regular fa-check accent-check"></i>
+                            </div>
+                            <div class="accent-dropdown-item" data-color="blue">
+                                <div class="accent-dropdown-item-left">
+                                    <span class="accent-dot" style="background-color: #3f6bbd;"></span>
+                                    <span>Blue</span>
+                                </div>
+                                <i class="fa-regular fa-check accent-check"></i>
+                            </div>
+                            <div class="accent-dropdown-item" data-color="teal">
+                                <div class="accent-dropdown-item-left">
+                                    <span class="accent-dot" style="background-color: #3ab49b;"></span>
+                                    <span>Teal</span>
+                                </div>
+                                <i class="fa-regular fa-check accent-check"></i>
+                            </div>
+                            <div class="accent-dropdown-item" data-color="green">
+                                <div class="accent-dropdown-item-left">
+                                    <span class="accent-dot" style="background-color: #257d2d;"></span>
+                                    <span>Green</span>
+                                </div>
+                                <i class="fa-regular fa-check accent-check"></i>
+                            </div>
+                            <div class="accent-dropdown-item" data-color="yellow">
+                                <div class="accent-dropdown-item-left">
+                                    <span class="accent-dot" style="background-color: #f1b539;"></span>
+                                    <span>Yellow</span>
+                                </div>
+                                <i class="fa-regular fa-check accent-check"></i>
+                            </div>
+                            <div class="accent-dropdown-item" data-color="orange">
+                                <div class="accent-dropdown-item-left">
+                                    <span class="accent-dot" style="background-color: #ff6138;"></span>
+                                    <span>Orange</span>
+                                </div>
+                                <i class="fa-regular fa-check accent-check"></i>
+                            </div>
+                            <div class="accent-dropdown-item" data-color="pink">
+                                <div class="accent-dropdown-item-left">
+                                    <span class="accent-dot" style="background-color: #f47272;"></span>
+                                    <span>Pink</span>
+                                </div>
+                                <i class="fa-regular fa-check accent-check"></i>
+                            </div>
+                            <div class="accent-dropdown-item" data-color="grey">
+                                <div class="accent-dropdown-item-left">
+                                    <span class="accent-dot" style="background-color: #8a8d91;"></span>
+                                    <span>Grey</span>
+                                </div>
+                                <i class="fa-regular fa-check accent-check"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <!-- Accent Color -->
-            <div class="card-layout" id="accentColorCard" style="overflow: visible;">
-                <div class="toggle-container" style="justify-content: space-between; position: relative;">
-                    <div class="paper-mode-info">
-                        <div class="paper-mode-title">Accent color</div>
-                    </div>
-
-                    <div class="accent-color-selector" id="accentColorSelector">
-                        <span class="accent-dot" id="currentAccentDot"
-                            style="background-color: var(--color-primary);"></span>
-                        <span id="currentAccentText" style="font-size: 14px; font-weight: 500;">Default</span>
-                        <i class="fa-regular fa-chevron-down"
-                            style="font-size: 12px; margin-left: 4px; opacity: 0.7;"></i>
-                    </div>
-
-                    <div id="accentDropdown" class="accent-dropdown">
-                        <div class="accent-dropdown-item active" data-color="default">
-                            <div class="accent-dropdown-item-left">
-                                <span style="margin-left: 28px;">Default</span>
-                            </div>
-                            <i class="fa-regular fa-check accent-check"></i>
-                        </div>
-                        <div class="accent-dropdown-item" data-color="lilac">
-                            <div class="accent-dropdown-item-left">
-                                <span class="accent-dot" style="background-color: #c8a2c8;"></span>
-                                <span>Lilac</span>
-                            </div>
-                            <i class="fa-regular fa-check accent-check"></i>
-                        </div>
-                        <div class="accent-dropdown-item" data-color="purple">
-                            <div class="accent-dropdown-item-left">
-                                <span class="accent-dot" style="background-color: #967bb6;"></span>
-                                <span>Purple</span>
-                            </div>
-                            <i class="fa-regular fa-check accent-check"></i>
-                        </div>
-                        <div class="accent-dropdown-item" data-color="blue">
-                            <div class="accent-dropdown-item-left">
-                                <span class="accent-dot" style="background-color: #3f6bbd;"></span>
-                                <span>Blue</span>
-                            </div>
-                            <i class="fa-regular fa-check accent-check"></i>
-                        </div>
-                        <div class="accent-dropdown-item" data-color="teal">
-                            <div class="accent-dropdown-item-left">
-                                <span class="accent-dot" style="background-color: #3ab49b;"></span>
-                                <span>Teal</span>
-                            </div>
-                            <i class="fa-regular fa-check accent-check"></i>
-                        </div>
-                        <div class="accent-dropdown-item" data-color="green">
-                            <div class="accent-dropdown-item-left">
-                                <span class="accent-dot" style="background-color: #257d2d;"></span>
-                                <span>Green</span>
-                            </div>
-                            <i class="fa-regular fa-check accent-check"></i>
-                        </div>
-                        <div class="accent-dropdown-item" data-color="yellow">
-                            <div class="accent-dropdown-item-left">
-                                <span class="accent-dot" style="background-color: #f1b539;"></span>
-                                <span>Yellow</span>
-                            </div>
-                            <i class="fa-regular fa-check accent-check"></i>
-                        </div>
-                        <div class="accent-dropdown-item" data-color="orange">
-                            <div class="accent-dropdown-item-left">
-                                <span class="accent-dot" style="background-color: #ff6138;"></span>
-                                <span>Orange</span>
-                            </div>
-                            <i class="fa-regular fa-check accent-check"></i>
-                        </div>
-                        <div class="accent-dropdown-item" data-color="pink">
-                            <div class="accent-dropdown-item-left">
-                                <span class="accent-dot" style="background-color: #f47272;"></span>
-                                <span>Pink</span>
-                            </div>
-                            <i class="fa-regular fa-check accent-check"></i>
-                        </div>
-                        <div class="accent-dropdown-item" data-color="grey">
-                            <div class="accent-dropdown-item-left">
-                                <span class="accent-dot" style="background-color: #8a8d91;"></span>
-                                <span>Grey</span>
-                            </div>
-                            <i class="fa-regular fa-check accent-check"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Contributions -->
-            <div class="card-layout" id="gh">
-                <div class="toggle-container">
-                    <button onclick="openDynamicForm('contribution')" class="contribute-button"
-                        style="border: none; background: transparent; width: 100%; text-align: left; cursor: var(--f-cursor-pointer);">
-                        <i class="fas fa-circle-plus" style="margin-right: 15px;"></i>
-                        <span
-                            style="font-weight: 600; color: var(--text-primary, #333); text-decoration: none;">Contribute
-                            Materials</span>
-                        <i class="fas fa-chevron-right" style="position: absolute; right: 30px; margin-right: 0;"></i>
-                    </button>
-                </div>
-            </div>
+            <!-- Contributions Gone-->
             <!-- Tabs -->
             <div class="card-layout" id="tabSwitcherCard">
                 <div class="tab-switcher-container">

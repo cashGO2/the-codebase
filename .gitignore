@@ -52,3 +52,4 @@ pdfs/*
 
 # Tauri
 src-tauri/target/
+.env*.local
