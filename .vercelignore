@@ -6,3 +6,5 @@ _drafts/
 src-tauri/
 .jekyll-cache/
 _site/
+api/config/
+api/utils/
