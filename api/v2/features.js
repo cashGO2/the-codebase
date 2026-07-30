@@ -3,6 +3,7 @@ const { BetaAnalyticsDataClient } = require("@google-analytics/data");
 const fs = require("fs");
 const path = require("path");
 const formidable = require("formidable");
+const yaml = require("js-yaml");
 const {
   verifyToken,
   corsHeaders,
@@ -103,6 +104,7 @@ module.exports = async (req, res) => {
     const isNotebooks = url.pathname.includes("/notebooks");
     const isSubscription = url.pathname.includes("/subscription");
     const isWebPush = url.pathname.includes("/web-push");
+    const isPosts = url.pathname.includes("/posts");
 
     // Check query param action
     const action = queryParams.action || req.query?.action;
@@ -201,6 +203,14 @@ module.exports = async (req, res) => {
       return await handlePdfShare(req, res, url);
     }
 
+    if (
+      isPosts ||
+      action === "posts" ||
+      pathParam.includes("posts")
+    ) {
+      return await handlePosts(req, res, url);
+    }
+
     return res.status(404).json({
       error: "Feature not found",
       debug: {
@@ -222,6 +232,7 @@ module.exports = async (req, res) => {
           "analytics-views",
           "analytics-leaderboard",
           "notifications-feed",
+          "posts",
         ],
       },
     });
@@ -2763,5 +2774,118 @@ async function handleAnalyticsLeaderboard(req, res, url) {
   } catch (error) {
     console.error("Analytics Leaderboard Error:", error);
     return res.status(500).json({ error: "Failed to compute leaderboard" });
+  }
+}
+
+async function handlePosts(req, res, url) {
+  // CORS setup
+  const origin = req.headers.origin || req.headers.Origin;
+  const headers = corsHeaders(origin);
+  Object.entries(headers).forEach(([key, value]) => {
+    res.setHeader(key, value);
+  });
+  res.setHeader("Cache-Control", "public, max-age=300, s-maxage=600");
+
+  try {
+    const postsDir = path.join(process.cwd(), "_posts");
+    
+    // Parse query parameters
+    const queryParams = {};
+    url.searchParams.forEach((value, key) => {
+      queryParams[key] = value;
+    });
+    
+    const queryCategory = (req.query?.category || queryParams.category || "").trim().toLowerCase();
+    
+    if (!fs.existsSync(postsDir)) {
+      return res.status(200).json([]);
+    }
+
+    const files = fs.readdirSync(postsDir);
+    const posts = [];
+
+    for (const file of files) {
+      if (!file.endsWith(".md")) continue;
+
+      // Parse date and slug from filename
+      const filenameMatch = file.match(/^(\d{4}-\d{2}-\d{2})-(.+)\.md$/);
+      let dateFromFilename = "";
+      let slug = "";
+      if (filenameMatch) {
+        dateFromFilename = filenameMatch[1];
+        slug = filenameMatch[2];
+      } else {
+        slug = file.replace(/\.md$/, "");
+      }
+
+      const filePath = path.join(postsDir, file);
+      const fileContent = fs.readFileSync(filePath, "utf8");
+      
+      const frontmatterRegex = /^---\r?\n([\s\S]*?)\r?\n---/;
+      const match = fileContent.match(frontmatterRegex);
+      
+      let frontmatter = {};
+      if (match) {
+        try {
+          frontmatter = yaml.load(match[1]) || {};
+        } catch (e) {
+          console.error(`Error parsing YAML in ${file}:`, e);
+        }
+      }
+
+      // Merge filename data and frontmatter
+      const postData = {
+        slug,
+        dateFromFilename,
+        ...frontmatter
+      };
+
+      // Ensure tags is always an array
+      if (postData.tags) {
+        if (!Array.isArray(postData.tags)) {
+          postData.tags = [postData.tags];
+        }
+      } else {
+        postData.tags = [];
+      }
+
+      // Check category filter
+      if (queryCategory) {
+        let postCategory = postData.category || "";
+        let postCategories = Array.isArray(postData.categories)
+          ? postData.categories
+          : (typeof postData.categories === "string" ? [postData.categories] : []);
+        
+        if (postCategory) {
+          postCategories.push(postCategory);
+        }
+
+        const normalizedPostCategories = postCategories.map(cat => String(cat).trim().toLowerCase());
+        
+        const isMatch = normalizedPostCategories.some(cat => {
+          return cat === queryCategory ||
+                 cat.replace(/[\s_]+/g, "-") === queryCategory ||
+                 cat === queryCategory.replace(/[\s_]+/g, "-");
+        });
+
+        if (!isMatch) {
+          continue;
+        }
+      }
+
+      posts.push(postData);
+    }
+
+    // Sort posts by date descending
+    posts.sort((a, b) => {
+      const dateA = new Date(a.date || a.dateFromFilename || 0);
+      const dateB = new Date(b.date || b.dateFromFilename || 0);
+      return dateB - dateA;
+    });
+
+    return res.status(200).json(posts);
+  } catch (error) {
+    console.error("Error in handlePosts:", error);
+    return res.status(500).json({ error: "Failed to load posts", details: error.message });
   }
 }
