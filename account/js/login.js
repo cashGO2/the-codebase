@@ -68,6 +68,8 @@ document.addEventListener('DOMContentLoaded', function () {
             if (clientId || callback) {
               if (typeof window.showConsentPhase === 'function') {
                 window.showConsentPhase();
+              } else {
+                window.location.replace(callback || '/account/profile');
               }
             } else {
               redirectToProfile();

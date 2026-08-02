@@ -1,0 +1,158 @@
+---
+layout: base
+---
+
+<main class="changelogs-page" style="font-family: 'Manrope', sans-serif; padding: 3rem 1rem;">
+  <header class="changelogs-header" style="text-align:center; margin-bottom:3rem;">
+    <h1
+      style="font-size:2.5rem; font-weight:600; font-family: 'PP Mori', sans-serif; margin: 0; letter-spacing: -0.02em;">
+      Documentation</h1>
+    <p
+      style="color:var(--muted,#61616a); font-size:1.1rem; margin: 0.5rem 0 0 0; font-family: 'Tiempos Text VF', serif; line-height: 1.45;">
+      Developer references for integrating systems.</p>
+  </header>
+
+  <section class="docs-grid-section" style="max-width: 1100px; margin: 0 auto; width: 100%;">
+    {% assign docs = site.posts | where_exp: "p", "p.category == 'Documentation' or p.categories contains
+    'Documentation'" %}
+
+    <div class="docs-grid">
+      {% for post in docs %}
+      <div class="doc-grid-cell">
+        <article class="changelog-item"
+          style="display:flex; flex-direction:column; height:100%; padding:1.25rem; border-radius:12px; border: 1px solid var(--border, #e5e7eb); transition: border-color 0.2s ease, box-shadow 0.2s ease;">
+
+          <div class="doc-cover-container" style="margin-bottom:1rem; position:relative;">
+            {% if post.cover or post.image %}
+            <a href="{{ post.url | relative_url }}"><img src="{{ post.cover | default: post.image }}"
+                alt="{{ post.title }} cover"
+                style="width:100%; height:160px; object-fit:cover; border-radius:6px; display:block;"></a>
+            {% else %}
+            <a href="{{ post.url | relative_url }}">
+              <div
+                style="width:100%; height:160px; background:var(--card-bg, #f2f2f4); border-radius:6px; display:flex; align-items:center; justify-content:center; color:#999; font-family: 'JetBrains Mono', monospace; font-size: 1.25rem; font-weight: 600;">
+                materio.
+              </div>
+            </a>
+            {% endif %}
+          </div>
+
+          <div style="margin-bottom:0.75rem; display:flex; align-items:center; gap:0.5rem;">
+            <a class="date-link" href="{{ post.url | relative_url }}" aria-label="Open {{ post.title }}">
+              <span class="date-pill"
+                style="font-size:0.75rem; padding:0.25rem 0.5rem; border-radius:4px; display:inline-block; text-align:center; transition:background .18s ease, color .18s ease;">{{
+                post.date | date: "%d.%m.%Y" }}</span>
+            </a>
+          </div>
+
+          <h2
+            style="margin:0 0 0.75rem 0; font-size:1.25rem; font-family: 'PP Mori', sans-serif; font-weight: 600; line-height: 1.35;">
+            <a href="{{ post.url | relative_url }}" style="color:inherit; text-decoration:none;">{{ post.title }}</a>
+          </h2>
+
+          <div class="changelog-body"
+            style="display:flex; flex-direction:column; flex-grow:1; justify-content:space-between;">
+            <a class="excerpt-link" href="{{ post.url | relative_url }}"
+              style="text-decoration:none; color:inherit; display:block; margin-bottom:1rem;">
+              <p class="changelog-excerpt"
+                style="margin:0; color:var(--muted,#61616a); font-size:0.92rem; line-height:1.5; font-family: 'Tiempos Text VF', serif; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">
+                {{ post.excerpt | strip_html | truncate: 160 }}</p>
+            </a>
+
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <a class="read-more" href="{{ post.url | relative_url }}"
+                style="font-weight:600; color:inherit; text-decoration:none; display:inline-flex; align-items:center; gap:0.5rem; font-size: 0.9rem; font-family: 'PP Mori', sans-serif;">
+                <span>Read guide</span>
+                <span class="read-arrow" aria-hidden="true"
+                  style="display:inline-block; transition:transform .18s ease, margin-left .18s ease;">
+                  <span class="short-arrow"></span>
+                </span>
+              </a>
+            </div>
+          </div>
+
+        </article>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if docs == empty %}
+    <p style="text-align:center; color:var(--muted,#666); margin:3rem 0; font-family: 'Tiempos Text VF', serif;">No
+      documentation guides found.</p>
+    {% endif %}
+  </section>
+</main>
+
+<style>
+  .docs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2.5rem;
+  }
+
+  .changelog-item {
+    background: var(--card-bg, #ffffff);
+  }
+
+  .changelog-item:hover {
+    border-color: #d97706 !important;
+  }
+
+  .read-more .short-arrow {
+    display: inline-block;
+    transition: all .18s ease;
+  }
+
+  .read-arrow .short-arrow::after {
+    content: '>';
+    display: inline-block;
+  }
+
+  .changelog-item:hover .read-arrow .short-arrow::after {
+    content: '->';
+    margin-left: 6px;
+  }
+
+  .date-pill {
+    background: #E8E8E4;
+    color: #3a3a3a;
+  }
+
+  .date-pill.active {
+    background: #d97706 !important;
+    color: #fff !important;
+  }
+
+  .date-link:hover .date-pill,
+  .date-pill:hover,
+  .date-pill:focus {
+    background: #d97706;
+    color: #fff;
+  }
+
+  /* dark-mode overrides */
+  body.dark .date-pill,
+  body.dark-mode .date-pill {
+    background: var(--date-pill-bg-dark, #2b2b2b);
+    color: var(--date-pill-fg-dark, #d8d8d8);
+  }
+
+  body.dark .changelog-item,
+  body.dark-mode .changelog-item {
+    background: #1e1e1e;
+    border-color: #333333 !important;
+  }
+
+  body.dark .changelog-item:hover,
+  body.dark-mode .changelog-item:hover {
+    border-color: #d97706 !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  .date-pill,
+  .date-link .date-pill {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+</style>
