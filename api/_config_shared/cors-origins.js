@@ -26,6 +26,9 @@ function isAllowedOrigin(origin) {
   if (STATIC_ALLOWED_ORIGINS.includes(origin)) {
     return true;
   }
+  if (origin === 'https://getmaterio.app' || origin.endsWith('.getmaterio.app')) {
+    return true;
+  }
   if (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
     return true;
   }

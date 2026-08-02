@@ -2,14 +2,24 @@ const {
   supabase, 
   hashPassword, 
   generateToken, 
-  generateRecoveryKey 
+  generateRecoveryKey,
+  addCorsHeaders
 } = require('./_utils');
+const cors = require('./cors');
 
 /**
  * API Endpoint: /api/v2/signup
  * Handles university-exclusive signup with OTP verification.
  */
 module.exports = async (req, res) => {
+  // Add CORS headers to all responses
+  addCorsHeaders(res, req.headers.origin);
+
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return cors(req, res);
+  }
+
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });

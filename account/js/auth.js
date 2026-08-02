@@ -47,6 +47,11 @@ function isSameSiteCallback(callbackUrl) {
       return true;
     }
     
+    // Treat parent domain and any subdomain under getmaterio.app as same-site
+    if (url.hostname === 'getmaterio.app' || url.hostname.endsWith('.getmaterio.app')) {
+      return true;
+    }
+    
     // If we are on sso.domain.com, we also treat domain.com (the parent website) as same-site
     const currentHost = window.location.hostname;
     if (currentHost.startsWith('sso.')) {

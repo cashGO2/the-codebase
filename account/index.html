@@ -37,6 +37,9 @@
         if (url.origin === window.location.origin) {
           return true;
         }
+        if (url.hostname === 'getmaterio.app' || url.hostname.endsWith('.getmaterio.app')) {
+          return true;
+        }
         const currentHost = window.location.hostname;
         if (currentHost.startsWith('sso.')) {
           const parentHost = currentHost.substring(4);
