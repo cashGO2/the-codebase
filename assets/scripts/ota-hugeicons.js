@@ -412,51 +412,10 @@
     }
 
     /**
-     * Initialize OTA update button
+     * Initialize OTA update button (Deprecated - Hugeicons SVG migration planned)
      */
     function initOTAButton() {
-        // Only show for Plus/Super users
-        if (!isPlusOrSuperUser()) {
-            return;
-        }
-
-        const button = document.getElementById('otaUpdateButton');
-        if (!button) {
-            return;
-        }
-
-        // Check if already installed - if so, don't show the button at all
-        if (isOTAInstalled()) {
-            button.style.display = 'none';
-            return;
-        }
-
-        // Show the button only if not installed
-        button.style.display = 'flex';
-
-        // Add click handler
-        button.addEventListener('click', async function () {
-            if (this.disabled) return;
-
-            this.disabled = true;
-            const originalHTML = this.innerHTML;
-            this.innerHTML = '<i class="hgi-stroke hgi-loading"></i><span>Installing...</span>';
-
-            const success = await applyOTAUpdate();
-
-            if (success) {
-                // Remove the button instead of showing installed state
-                this.style.display = 'none';
-
-                // Reload page after 2 seconds to apply all changes
-                setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
-            } else {
-                this.innerHTML = originalHTML;
-                this.disabled = false;
-            }
-        });
+        // Deprecated - OTA button removed from Settings UI
     }
 
     // Auto-apply on page load if already installed

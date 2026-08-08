@@ -132,7 +132,16 @@
       return id;
     }
 
-    _readUserId() { try { return JSON.parse(localStorage.getItem('materio_user'))?.id || null; } catch { return null; } }
+    _readUserId() { 
+      try { 
+        const raw = localStorage.getItem('materio_user');
+        if (!raw) return null;
+        const u = JSON.parse(raw);
+        return u?.id || u?.user_id || u?.uuid || null;
+      } catch { 
+        return null; 
+      } 
+    }
 
     _init() {
       this._retryPending();
@@ -463,6 +472,7 @@
       if (!hasMetrics && !hasEngagement && !hasSession) return;
 
       this._lastFlushAt = Date.now();
+      this.userId = this._readUserId();
       
       this.metricsDiff = { total_reading_sec: 0, pdf_counts: {} };
       this.usermetaDiff.total_engagement_sec = 0; this.usermetaDiff.session = null; this.usermetaDiff.engagement = { clicks: {}, scroll: 0, zoom: 0, shortcuts: {} }; this.usermetaDiff.state = null;

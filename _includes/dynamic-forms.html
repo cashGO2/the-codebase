@@ -81,9 +81,10 @@
 
     .dynamic-form-modal {
         flex-direction: column;
-        max-width: 440px;
-        width: min(92vw, 440px);
-        border-radius: 28px;
+        max-width: 680px;
+        width: min(92vw, 680px);
+        border-radius: 40px !important;
+        corner-shape: squircle !important;
     }
 
     .dynamic-form-content-wrapper {
@@ -111,12 +112,12 @@
     }
 
     .dynamic-form-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 16px;
-        background: rgba(255, 130, 0, 0.12);
-        font-size: 24px;
-        color: #ff8200;
+        width: auto;
+        height: auto;
+        border-radius: 0;
+        background: transparent;
+        font-size: 32px;
+        color: var(--color-primary, #ff8200);
         margin-bottom: 14px;
         display: inline-flex;
         align-items: center;
@@ -145,7 +146,7 @@
 
     .dynamic-form-loading i {
         font-size: 24px;
-        color: #ff8200;
+        color: var(--color-primary, #ff8200);
     }
 
     .dynamic-form-fields {
@@ -192,8 +193,8 @@
     .dynamic-form-group select:focus,
     .dynamic-form-group textarea:focus {
         outline: none;
-        border-color: #ff8200;
-        box-shadow: 0 0 0 3px rgba(255, 130, 0, 0.1);
+        border-color: var(--color-primary, #ff8200);
+        box-shadow: 0 0 0 3px var(--color-primary-light, rgba(255, 130, 0, 0.15));
     }
 
     .dynamic-form-group textarea {

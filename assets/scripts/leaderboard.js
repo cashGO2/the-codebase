@@ -380,6 +380,11 @@ function maybeShowModerationNotice(data) {
 }
 
 function maybeShowTop50Nudge(data) {
+  const isUserLoggedIn = !!(localStorage.getItem('materio_user') || localStorage.getItem('materio_auth_token'));
+  if (isUserLoggedIn) {
+    return;
+  }
+
   const rank = Number(data?.requester?.rank || 0);
   const isAnonymous = data?.requester?.isAnonymous === true;
   if (!rank || rank > 50 || !isAnonymous) {

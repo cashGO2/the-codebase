@@ -2281,7 +2281,7 @@ async function handleAnalytics(req, res) {
       return res.status(403).json({ error: "User identity mismatch in analytics payload" });
     }
 
-    data.p_user_id = decoded?.id || null;
+    data.p_user_id = decoded?.id || (data.rawUserId && ANALYTICS_UUID_REGEX.test(data.rawUserId) ? data.rawUserId : null);
     delete data.rawUserId;
 
     const matchedBan = await findActiveModerationRule({

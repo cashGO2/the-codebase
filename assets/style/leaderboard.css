@@ -17,20 +17,16 @@
 
 #leaderboard.tab-content,
 #leaderboard.tab-content.active {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
+    padding-top: 16px;
 }
 
 #leaderboard .leaderboard-shell {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
+    padding-top: 4px;
 }
 
 #leaderboard .leaderboard-shell > :first-child,
 #leaderboard .leaderboard-shell > h1 {
-    margin: 0 0 8px !important;
-    margin-top: 0 !important;
-    margin-block-start: 0 !important;
+    margin: 12px 0 8px !important;
 }
 
 .leaderboard-shell::before {
@@ -360,6 +356,94 @@ body.dark-mode .leaderboard-shell {
     --lb-table-head: #1b1d1f;
     --lb-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     --lb-blend-rgb: 18, 18, 18; /* #121212 */
+}
+
+body.coffee-mode .leaderboard-shell {
+    --lb-text: #4a3b32;
+    --lb-muted: #655348;
+    --lb-surface: #eee8d5;
+    --lb-grid-line: rgba(74, 59, 50, 0.15);
+    --lb-border: rgba(74, 59, 50, 0.18);
+    --lb-table-border: rgba(74, 59, 50, 0.14);
+    --lb-table-head: #e4dcc7;
+    --lb-shadow: 0 8px 24px rgba(74, 59, 50, 0.1);
+    --lb-blend-rgb: 253, 246, 227; /* #fdf6e3 */
+}
+
+body.coffee-mode .leaderboard-nudge-card {
+    border-color: rgba(74, 59, 50, 0.2);
+    background: #eee8d5;
+    box-shadow: 0 4px 12px rgba(74, 59, 50, 0.12);
+}
+
+body.coffee-mode .leaderboard-nudge-text,
+body.coffee-mode .leaderboard-nudge-btn {
+    color: #4a3b32;
+}
+
+body.coffee-mode .leaderboard-stage.stage-first {
+    background: linear-gradient(170deg, #d8bc80 0%, #b89855 48%, #967839 100%);
+}
+
+body.coffee-mode .leaderboard-stage.stage-second {
+    background: linear-gradient(170deg, #c5b6a7 0%, #a89887 48%, #8a7b6c 100%);
+}
+
+body.coffee-mode .leaderboard-stage.stage-third {
+    background: linear-gradient(170deg, #bfa088 0%, #a3826b 50%, #856650 100%);
+}
+
+body.coffee-mode .leaderboard-controls {
+    background: rgba(74, 59, 50, 0.08);
+}
+
+body.coffee-mode .leaderboard-filter-btn.active {
+    background: #eee8d5;
+    color: #4a3b32;
+}
+
+body.coffee-dark-mode .leaderboard-shell {
+    --lb-text: #ebdcd0;
+    --lb-muted: #cbb8ac;
+    --lb-surface: #251c19;
+    --lb-grid-line: rgba(235, 220, 208, 0.15);
+    --lb-border: rgba(235, 220, 208, 0.16);
+    --lb-table-border: rgba(235, 220, 208, 0.14);
+    --lb-table-head: #1e1614;
+    --lb-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    --lb-blend-rgb: 26, 20, 18; /* #1a1412 */
+}
+
+body.coffee-dark-mode .leaderboard-nudge-card {
+    border-color: rgba(235, 220, 208, 0.15);
+    background: #251c19;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+body.coffee-dark-mode .leaderboard-nudge-text,
+body.coffee-dark-mode .leaderboard-nudge-btn {
+    color: #ebdcd0;
+}
+
+body.coffee-dark-mode .leaderboard-stage.stage-first {
+    background: linear-gradient(170deg, #8a6d36 0%, #6e5424 48%, #523c14 100%);
+}
+
+body.coffee-dark-mode .leaderboard-stage.stage-second {
+    background: linear-gradient(170deg, #5c4d44 0%, #463931 48%, #322720 100%);
+}
+
+body.coffee-dark-mode .leaderboard-stage.stage-third {
+    background: linear-gradient(170deg, #6b4938 0%, #523526 50%, #3d2417 100%);
+}
+
+body.coffee-dark-mode .leaderboard-controls {
+    background: rgba(235, 220, 208, 0.08);
+}
+
+body.coffee-dark-mode .leaderboard-filter-btn.active {
+    background: #251c19;
+    color: #ebdcd0;
 }
 
 body.dark-mode .leaderboard-nudge-card {

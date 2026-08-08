@@ -275,9 +275,9 @@
       const actionBtn = document.createElement('button');
       if (stepIndex === SELECT_ORDER.length - 1) {
           actionBtn.className = 'site-button promo-primary-btn';
-          actionBtn.innerHTML = 'Start Reading';
+          actionBtn.innerHTML = 'Start Reading <kbd style="margin-left: 6px; padding: 2px 7px; font-size: 11px; border-radius: 6px; background: rgba(255,255,255,0.22); border: 1px solid rgba(255,255,255,0.35); font-family: system-ui, sans-serif; display: inline-flex; align-items: center; line-height: 1;">↵</kbd>';
           actionBtn.style.flex = '1'; // flex 1 instead of 1 0 auto to allow shrinking and prevent overflow clipping
-          actionBtn.style.background = '#ff5400';
+          actionBtn.style.background = 'var(--color-primary, #ff5400)';
           actionBtn.style.color = '#fff';
           actionBtn.style.border = 'none';
           actionBtn.style.padding = '12px 20px';
@@ -295,7 +295,7 @@
           actionBtn.className = 'site-button promo-primary-btn';
           actionBtn.innerHTML = select.value ? 'Continue <i class="fa-solid fa-chevron-right" style="margin-left:5px"></i>' : 'Apply & Close';
           actionBtn.style.flex = '1'; // allow shrinking
-          actionBtn.style.background = '#ff5400';
+          actionBtn.style.background = 'var(--color-primary, #ff5400)';
           actionBtn.style.color = '#fff';
           actionBtn.style.border = 'none';
           actionBtn.style.padding = '12px 20px';
@@ -324,6 +324,19 @@
       view.appendChild(optionsContainer);
       view.appendChild(footer);
 
+      if (!isMobile()) {
+          const kbHint = document.createElement('div');
+          kbHint.className = 'custom-select-keyboard-hint';
+          kbHint.style.textAlign = 'center';
+          kbHint.style.fontSize = '10px';
+          kbHint.style.opacity = '0.5';
+          kbHint.style.paddingTop = '10px';
+          kbHint.style.marginTop = '4px';
+          kbHint.style.flexShrink = '0';
+          kbHint.innerHTML = '<i class="fa-solid fa-keyboard" style="margin-right: 4px;"></i> <kbd style="padding: 1px 4px; border-radius: 3px; border: 1px solid currentColor;">←</kbd> <kbd style="padding: 1px 4px; border-radius: 3px; border: 1px solid currentColor;">→</kbd> <kbd style="padding: 1px 4px; border-radius: 3px; border: 1px solid currentColor;">↑</kbd> <kbd style="padding: 1px 4px; border-radius: 3px; border: 1px solid currentColor;">↓</kbd> & <kbd style="padding: 1px 4px; border-radius: 3px; border: 1px solid currentColor;">Enter</kbd> to navigate';
+          view.appendChild(kbHint);
+      }
+
       return view;
     } catch(err) {
       alert("renderWizardStep Error: " + err.message + "\n" + err.stack);
@@ -335,28 +348,49 @@
   function goToStep(newIndex, forward = true) {
     if (!modal) return;
     const container = modal.querySelector('.custom-select-wizard-container');
+    if (!container) return;
     
     // Force remove any old views that got stuck
     const stuckViews = container.querySelectorAll('.custom-select-wizard-view[class*="slide-out"]');
     stuckViews.forEach(v => v.remove());
     
     const oldView = container.querySelector('.custom-select-wizard-view:not([class*="slide-out"])');
+    const startHeight = container.getBoundingClientRect().height;
+    if (startHeight > 0) {
+        container.style.height = `${startHeight}px`;
+    }
     
     currentStepIndex = newIndex;
     const newView = renderWizardStep(newIndex, forward ? 'wizard-slide-in-right' : 'wizard-slide-in-left');
     
     if (oldView) {
+        oldView.style.position = 'absolute';
+        oldView.style.top = '0';
+        oldView.style.left = '0';
+        oldView.style.right = '0';
+        oldView.style.width = '100%';
+        oldView.style.zIndex = '0';
+        oldView.style.pointerEvents = 'none';
         oldView.classList.add(forward ? 'wizard-slide-out-left' : 'wizard-slide-out-right');
         setTimeout(() => {
             if (oldView && oldView.parentNode) {
                 oldView.remove();
             }
-        }, 350);
+        }, 280);
     }
     
     container.appendChild(newView);
     
     requestAnimationFrame(() => {
+        const targetHeight = newView.getBoundingClientRect().height;
+        if (targetHeight > 0) {
+            container.style.height = `${targetHeight}px`;
+        }
+        
+        setTimeout(() => {
+            if (container) container.style.height = '';
+        }, 300);
+
         const selected = newView.querySelector('.selected');
         if (selected) {
             const optionsContainer = newView.querySelector('.custom-select-options');
@@ -562,6 +596,18 @@
       const optionsContainer = activeView.querySelector('.custom-select-options');
       if (optionsContainer) {
           optionsContainer.scrollTop = options[prevIndex].offsetTop - optionsContainer.offsetTop - 20;
+      }
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      if (currentStepIndex > 0) {
+        goToStep(currentStepIndex - 1, false);
+      }
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      const selectId = SELECT_ORDER[currentStepIndex];
+      const select = document.getElementById(selectId);
+      if (select && select.value && currentStepIndex < SELECT_ORDER.length - 1) {
+        goToStep(currentStepIndex + 1, true);
       }
     } else if (e.key === 'Enter') {
       e.preventDefault();
