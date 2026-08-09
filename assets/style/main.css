@@ -3709,7 +3709,7 @@ body.dark-mode #notices a {
     .exam-modal-overlay,
     .modal-overlay,
     .keyboard-shortcuts-modal {
-        padding: 5px !important;
+        padding: 0 !important;
         box-sizing: border-box !important;
     }
 
@@ -3730,23 +3730,34 @@ body.dark-mode #notices a {
     .dynamic-form-content-wrapper,
     .keyboard-shortcuts-content,
     .notebook-modal-content {
-        padding: 5px !important;
+        padding: 54px 5px 15px 5px !important;
         box-sizing: border-box !important;
     }
 }
 
 @media (max-width: 500px) {
-    .promo-modal-overlay {
+    .promo-modal-overlay,
+    .dynamic-form-overlay,
+    .search-results-overlay,
+    .exam-modal-overlay,
+    .modal-overlay,
+    .keyboard-shortcuts-modal {
         align-items: flex-end;
-        padding: 5px !important;
+        padding: 0 !important;
     }
 
-    .promo-modal {
+    .promo-modal,
+    .dynamic-form-modal,
+    .search-results-modal,
+    .exam-modal,
+    .keyboard-shortcuts-dialog,
+    .notebook-modal,
+    .wallpaper-store-modal {
         flex-direction: column;
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 auto;
-        border-radius: 28px;
+        border-radius: 20px 20px 0 0 !important;
         corner-shape: squircle;
         max-height: 85vh;
         overflow-y: auto;
@@ -3797,8 +3808,11 @@ body.dark-mode #notices a {
         order: 1;
     }
 
-    .promo-content {
-        padding: 5px !important;
+    .promo-content,
+    .dynamic-form-content-wrapper,
+    .keyboard-shortcuts-content,
+    .notebook-modal-content {
+        padding: 54px 5px 15px 5px !important;
         order: 2;
     }
 
@@ -10648,15 +10662,15 @@ body.dark-mode .sereine-setting-item:hover {
     }
 }
 
-/* Fix dropdown being cut off by overflow: hidden on the card */
+/* Fix overflow to clip image and overlay to card corners */
 .wallpaper-preview-card[data-wallpaper="sereine"],
 .wallpaper-preview-card[data-wallpaper="sereine"] .wallpaper-preview {
-    overflow: visible !important;
+    overflow: hidden !important;
 }
 
 .wallpaper-preview-card[data-wallpaper="sereine"] .wallpaper-overlay {
-    border-bottom-left-radius: 23px;
-    border-bottom-right-radius: 23px;
+    background: transparent !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 1px 2px rgba(0, 0, 0, 0.9);
 }
 
 /* ================================================
@@ -10855,3 +10869,192 @@ body.coffee-dark-mode .profile-dropdown .dropdown-item {
     color: var(--color-text-primary, #ebdcd0) !important;
 }
 
+/* ==========================================================================
+   Skeuomorphic Frame/Lightbox and Uniform Dropdowns Overrides
+   ========================================================================== */
+
+/* Skeuomorphic Frame */
+.skeuomorphic-frame {
+    background: #f4efe9;
+    border: 6px solid #eae5dd;
+    border-radius: 18px;
+    padding: 10px;
+    box-shadow: 
+        inset 0 1px 3px rgba(255,255,255,0.9),
+        0 4px 14px rgba(0, 0, 0, 0.08),
+        0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    border-top-color: #f1ede7;
+    border-left-color: #ece8e0;
+}
+
+.skeuomorphic-frame-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    border: 1px solid #dcd7ce;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.06);
+    overflow: hidden;
+    background: #000;
+}
+
+/* Dark mode skeuomorphic frame */
+body.dark-mode .skeuomorphic-frame {
+    background: #2a2a2a;
+    border-color: #383838;
+    box-shadow: 
+        inset 0 1px 1px rgba(255,255,255,0.1),
+        0 4px 14px rgba(0,0,0,0.4);
+    border-top-color: #404040;
+    border-left-color: #3c3c3c;
+}
+
+body.dark-mode .skeuomorphic-frame-inner {
+    border-color: #222;
+}
+
+/* Coffee mode skeuomorphic frame */
+body.coffee-mode .skeuomorphic-frame {
+    background: #eee8d5;
+    border-color: #e4dcbe;
+    box-shadow: 
+        inset 0 1px 3px rgba(255,255,255,0.8),
+        0 4px 14px rgba(0,0,0,0.08);
+    border-top-color: #ebdcb6;
+}
+
+body.coffee-mode .skeuomorphic-frame-inner {
+    border-color: #dcd3b6;
+}
+
+/* Coffee dark mode skeuomorphic frame */
+body.coffee-dark-mode .skeuomorphic-frame {
+    background: #251c19;
+    border-color: #362924;
+    box-shadow: 
+        inset 0 1px 1px rgba(255,255,255,0.08),
+        0 4px 14px rgba(0,0,0,0.5);
+    border-top-color: #3e2e28;
+}
+
+body.coffee-dark-mode .skeuomorphic-frame-inner {
+    border-color: #1e1715;
+}
+
+/* Uniform Dropdowns (Paper Texture and Feed View) */
+.paper-texture-dropdown,
+.view-style-dropdown {
+    position: absolute !important;
+    top: calc(100% + 5px) !important;
+    right: 0 !important;
+    bottom: auto !important;
+    left: auto !important;
+    background: rgb(245, 245, 240) !important;
+    border: 1px solid rgb(209, 209, 209) !important;
+    border-radius: 12px !important;
+    min-width: 160px !important;
+    padding: 6px 0 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000 !important;
+    margin: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+}
+
+.paper-texture-dropdown.show,
+.view-style-dropdown.show {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+}
+
+/* Dark mode overrides */
+body.dark-mode .paper-texture-dropdown,
+body.dark-mode .view-style-dropdown {
+    background: rgb(40, 40, 40) !important;
+    border-color: rgb(68, 68, 68) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Coffee mode overrides */
+body.coffee-mode .paper-texture-dropdown,
+body.coffee-mode .view-style-dropdown {
+    background: #eee8d5 !important;
+    border-color: #dcd3b6 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Coffee dark mode overrides */
+body.coffee-dark-mode .paper-texture-dropdown,
+body.coffee-dark-mode .view-style-dropdown {
+    background: #251c19 !important;
+    border-color: #362924 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Items inside these dropdowns */
+.paper-texture-item,
+.view-style-item {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 10px 14px !important;
+    cursor: pointer !important;
+    transition: background 0.15s ease !important;
+    color: var(--color-text-primary) !important;
+    font-size: 14px !important;
+    text-decoration: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+}
+
+.paper-texture-item:hover,
+.view-style-item:hover {
+    background: rgba(0, 0, 0, 0.05) !important;
+}
+
+body.dark-mode .paper-texture-item:hover,
+body.dark-mode .view-style-item:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+body.coffee-mode .paper-texture-item:hover,
+body.coffee-mode .view-style-item:hover {
+    background: rgba(0, 0, 0, 0.05) !important;
+}
+
+body.coffee-dark-mode .paper-texture-item:hover,
+body.coffee-dark-mode .view-style-item:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Selected state - adapts to accent color primary */
+.paper-texture-item.selected,
+.view-style-item.selected {
+    background: var(--color-primary-light, rgba(255, 130, 0, 0.15)) !important;
+    color: var(--color-primary, #ff8200) !important;
+}
+
+.paper-texture-item.selected i,
+.view-style-item.selected i {
+    color: var(--color-primary, #ff8200) !important;
+}
+
+
+/* Specific Mobile overrides for Wallpaper Store & Sereine Modal to guarantee heading clearance */
+@media (max-width: 768px) {
+    .wallpaper-store-modal .promo-content {
+        padding-top: 60px !important;
+    }
+    .wallpaper-store-modal .promo-close-btn {
+        top: 15px !important;
+        right: 15px !important;
+    }
+}

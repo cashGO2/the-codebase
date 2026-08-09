@@ -768,6 +768,41 @@
             </div>
         </div>
 
+        <!-- Sereine Wallpaper Modal -->
+        <div class="promo-modal-overlay" id="sereineWallpaperModal" role="dialog" aria-hidden="true"
+            style="display: none;">
+            <div class="promo-modal dynamic-form-modal wallpaper-store-modal">
+                <i class="fas fa-times promo-close-btn" onclick="closeSereineWallpaperModal()" aria-hidden="true">{% include hugeicon.html name="cancel-01" %}</i>
+                <div class="promo-content dynamic-form-content-wrapper">
+                    <div class="paper-mode-info" style="margin-bottom: 14px;">
+                        <div class="paper-mode-title">Sereine Settings</div>
+                    </div>
+                    <!-- Sereine image wrapped in skeuomorphic frame -->
+                    <div class="skeuomorphic-frame">
+                        <div class="skeuomorphic-frame-inner">
+                            <div id="sereineModalPreview" style="width: 100%; height: 200px; background-size: cover; background-position: center; background-image: url('https://sereine.vercel.app/api/wallpapers/random?fallback=true');"></div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 20px;">
+                        <button class="promo-secondary-btn" id="sereineModalShuffleBtn" style="flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; padding: 12px; border-radius: 12px; cursor: pointer;">
+                            <i class="fa-solid fa-shuffle" style="margin-right: 8px;">{% include hugeicon.html name="shuffle" %}</i> Shuffle
+                        </button>
+                        <button class="promo-secondary-btn" id="sereineModalSaveBtn" style="flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; padding: 12px; border-radius: 12px; cursor: pointer;">
+                            <i class="fa-regular fa-heart" style="margin-right: 8px;">{% include hugeicon.html name="favourite" %}</i> Save
+                        </button>
+                    </div>
+                    <div class="paper-mode-title" style="font-size: 14px; margin-bottom: 10px;">Update Frequency</div>
+                    <div class="sereine-modal-frequency-options" id="sereineModalFreqContainer" style="display: flex; flex-direction: column; gap: 8px;">
+                        <div class="sereine-setting-item modal-freq-item" data-value="everytime" style="position: static;">Everytime</div>
+                        <div class="sereine-setting-item modal-freq-item" data-value="everyday" style="position: static;">Everyday</div>
+                        <div class="sereine-setting-item modal-freq-item" data-value="random" style="position: static;">Random</div>
+                        <div class="sereine-setting-item modal-freq-item" data-value="3days" style="position: static;">Every 3 days</div>
+                        <div class="sereine-setting-item modal-freq-item" data-value="week" style="position: static;">Every week</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script>
             function openMcpModal() {
                 const modal = document.getElementById('mcpConnectorsModal');
@@ -1235,7 +1270,7 @@
                                     <span id="paperTextureSelectedText">Black Paper</span>
                                     <i class="fas fa-chevron-down" aria-hidden="true">{% include hugeicon.html name="arrow-down-01" %}</i>
                                 </button>
-                                <div class="profile-dropdown paper-texture-dropdown" id="paperTextureDropdown">
+                                <div class="paper-texture-dropdown" id="paperTextureDropdown">
                                     <a href="#" class="dropdown-item paper-texture-item selected"
                                         data-value="black-paper">
                                         <span>Black Paper</span>
@@ -1431,27 +1466,7 @@
                                 <div class="wallpaper-preview sereine-preview" id="sereinePreview"
                                     style="background-image: url('https://sereine.vercel.app/api/wallpapers/random?fallback=true'); background-size: cover; background-position: center;">
                                     <div class="wallpaper-overlay">
-                                        <div
-                                            style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
-                                            <span class="wallpaper-name">Sereine Carousel</span>
-                                            <div class="sereine-settings-dropdown-wrapper"
-                                                id="sereineSettingsDropdownWrapper">
-                                                <button class="sereine-settings-btn" id="sereineSettingsTrigger"
-                                                    title="Carousel Settings">
-                                                    <i class="fa-solid fa-gear" aria-hidden="true">{% include hugeicon.html name="settings-01" %}</i>
-                                                </button>
-                                                <div class="sereine-settings-dropdown" id="sereineSettingsDropdown">
-                                                    <div class="sereine-setting-item" data-value="everytime">Everytime
-                                                    </div>
-                                                    <div class="sereine-setting-item" data-value="everyday">Everyday
-                                                    </div>
-                                                    <div class="sereine-setting-item" data-value="random">Random</div>
-                                                    <div class="sereine-setting-item" data-value="3days">Every 3 days
-                                                    </div>
-                                                    <div class="sereine-setting-item" data-value="week">Every week</div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <span class="wallpaper-name">Sereine Carousel</span>
                                     </div>
                                 </div>
                             </div>
@@ -1504,7 +1519,7 @@
                                     <span id="viewStyleSelectedText">Normal</span>
                                     <i class="fas fa-chevron-down" aria-hidden="true">{% include hugeicon.html name="arrow-down-01" %}</i>
                                 </button>
-                                <div class="profile-dropdown view-style-dropdown" id="viewStyleDropdown">
+                                <div class="view-style-dropdown" id="viewStyleDropdown">
                                     <a href="#" class="dropdown-item view-style-item" data-value="normal">
                                         <i class="far fa-rectangle-wide" aria-hidden="true">{% include hugeicon.html name="square-arrow-diagonal-01" %}</i>
                                         <span>Normal</span>

@@ -114,13 +114,6 @@ function loadAdvanced() {
     return loadScript('/assets/scripts/advanced.js');
 }
 
-/**
- * Load OTA updates checker
- * @returns {Promise}
- */
-function loadOTA() {
-    return loadScript('/assets/scripts/ota-hugeicons.js');
-}
 
 /**
  * Load analytics
@@ -164,7 +157,6 @@ function loadNonCriticalScripts() {
     const nonCritical = [
         '/assets/scripts/sync.js',
         '/assets/scripts/ga.js',
-        '/assets/scripts/ota-hugeicons.js',
         '/account/js/ux-enhancers.js',
         '/assets/scripts/promotions.js'
     ];
@@ -220,7 +212,6 @@ const LazyLoader = {
     loadPromotions,
     loadGestures,
     loadAdvanced,
-    loadOTA,
     loadAnalytics,
     loadUXEnhancers,
     loadNonCritical,
@@ -240,7 +231,6 @@ export {
     loadPromotions,
     loadGestures,
     loadAdvanced,
-    loadOTA,
     loadAnalytics,
     loadUXEnhancers,
     loadNonCritical,

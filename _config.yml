@@ -75,3 +75,4 @@ timezone: Asia/Kolkata
 
 # Insightroom API
 insightroom_api: https://room.getmaterio.app/api/posts
+enable_bmc: false

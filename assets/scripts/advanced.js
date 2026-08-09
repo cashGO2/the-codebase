@@ -24,13 +24,25 @@ document.addEventListener('DOMContentLoaded', function () {
         return null;
     }
 
+    function updateSereineWatermarkVisibility() {
+        const watermark = document.getElementById('sereineWatermark');
+        if (watermark) {
+            const homeElem = document.getElementById('home');
+            const currentWallpaper = getCookie("selectedWallpaper");
+            const isHomeActive = homeElem && homeElem.classList.contains('active');
+            
+            // Only show watermark if wallpaper is sereine AND home tab is active
+            if (currentWallpaper === 'sereine' && isHomeActive) {
+                watermark.style.display = 'flex';
+            } else {
+                watermark.style.display = 'none';
+            }
+        }
+    }
+
     function setWallpaperAsBackground(wallpaperType) {
         const selectedCard = document.querySelector(`[data-wallpaper="${wallpaperType}"]`);
-        const sereineWatermark = document.getElementById('sereineWatermark');
-        if (sereineWatermark) {
-            const currentTab = getCookie("activeTab") || "home";
-            sereineWatermark.style.display = (wallpaperType === 'sereine' && currentTab === 'home') ? 'flex' : 'none';
-        }
+        updateSereineWatermarkVisibility();
 
         if (selectedCard) {
             const bgImage = selectedCard.dataset.bgImage;
@@ -389,6 +401,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 sereinePreview.style.backgroundImage = `url('${currentSereineImageUrl}')`;
             }
 
+            const sereineModalPreview = document.getElementById('sereineModalPreview');
+            if (sereineModalPreview) {
+                sereineModalPreview.style.backgroundImage = `url('${currentSereineImageUrl}')`;
+            }
+
             const artistNameElem = document.getElementById('sereineArtistName');
             if (artistNameElem && wallpaperData.artistName) {
                 artistNameElem.textContent = wallpaperData.artistName;
@@ -425,76 +442,74 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    window.closeSereineWallpaperModal = function() {
+        const modal = document.getElementById('sereineWallpaperModal');
+        if (modal) modal.style.display = 'none';
+    };
+
     // Initialize Sereine UI Interactions
     function initSereineUI() {
-        const settingsTrigger = document.getElementById('sereineSettingsTrigger');
-        const settingsDropdown = document.getElementById('sereineSettingsDropdown');
-        const wrapper = document.getElementById('sereineSettingsDropdownWrapper');
         const items = document.querySelectorAll('.sereine-setting-item');
-        const shuffleBtn = document.getElementById('sereineShuffleBtn');
-        const saveBtn = document.getElementById('sereineSaveBtn');
+        const shuffleBtns = [document.getElementById('sereineShuffleBtn'), document.getElementById('sereineModalShuffleBtn')].filter(Boolean);
+        const saveBtns = [document.getElementById('sereineSaveBtn'), document.getElementById('sereineModalSaveBtn')].filter(Boolean);
 
-        if (settingsTrigger && settingsDropdown && wrapper) {
-            settingsTrigger.addEventListener('click', (e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                settingsDropdown.classList.toggle('show');
-            });
-
-            document.addEventListener('click', (e) => {
-                if (!wrapper.contains(e.target)) {
-                    settingsDropdown.classList.remove('show');
-                }
-            });
-
-            const currentFreq = localStorage.getItem('materio_sereine_frequency') || 'everytime';
-            items.forEach(item => {
-                if (item.dataset.value === currentFreq) {
-                    item.classList.add('selected');
-                }
-
-                item.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    items.forEach(i => i.classList.remove('selected'));
-                    item.classList.add('selected');
-                    const newFreq = item.dataset.value;
-                    localStorage.setItem('materio_sereine_frequency', newFreq);
-                    settingsDropdown.classList.remove('show');
-                    
-                    if (newFreq === 'random') {
-                        // Immediately set next target and fetch
-                        localStorage.setItem('materio_sereine_next_random', '0');
-                    } else if (newFreq === 'everytime') {
-                        localStorage.setItem('materio_sereine_last_fetch', '0');
-                        sessionStorage.removeItem('materio_sereine_session_fetch');
+        const sereinePreview = document.getElementById('sereinePreview');
+        if (sereinePreview) {
+            sereinePreview.addEventListener('click', (e) => {
+                const modal = document.getElementById('sereineWallpaperModal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    const preview = document.getElementById('sereineModalPreview');
+                    if (preview && currentSereineImageUrl) {
+                        preview.style.backgroundImage = `url('${currentSereineImageUrl}')`;
                     }
-                    
-                    const selectedWallpaper = getCookie("selectedWallpaper");
-                    if (selectedWallpaper === 'sereine') {
-                        fetchSereineWallpaper(true);
-                    }
-                });
+                }
             });
         }
 
-        if (shuffleBtn) {
-            shuffleBtn.addEventListener('click', (e) => {
+        const currentFreq = localStorage.getItem('materio_sereine_frequency') || 'everytime';
+        items.forEach(item => {
+            if (item.dataset.value === currentFreq) {
+                item.classList.add('selected');
+            }
+
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                items.forEach(i => i.classList.remove('selected'));
+                item.classList.add('selected');
+                const newFreq = item.dataset.value;
+                localStorage.setItem('materio_sereine_frequency', newFreq);
+                
+                if (newFreq === 'random') {
+                    // Immediately set next target and fetch
+                    localStorage.setItem('materio_sereine_next_random', '0');
+                } else if (newFreq === 'everytime') {
+                    localStorage.setItem('materio_sereine_last_fetch', '0');
+                    sessionStorage.removeItem('materio_sereine_session_fetch');
+                }
+            });
+        });
+
+        shuffleBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 
+                const icon = btn.querySelector('i') || btn;
+                
                 // Add rotation animation
-                shuffleBtn.style.transition = 'transform 0.5s ease';
-                shuffleBtn.style.transform = 'rotate(180deg)';
-                setTimeout(() => { shuffleBtn.style.transform = 'none'; }, 500);
+                icon.style.transition = 'transform 0.5s ease';
+                icon.style.transform = 'rotate(180deg)';
+                setTimeout(() => { icon.style.transform = 'none'; }, 500);
 
                 if (window.MaterioHaptics) {
                     window.MaterioHaptics.vibrate('tick');
                 }
                 fetchSereineWallpaper(true);
             });
-        }
+        });
 
-        if (saveBtn) {
-            saveBtn.addEventListener('click', (e) => {
+        saveBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (currentSereineImageUrl) {
                     try {
@@ -503,11 +518,33 @@ document.addEventListener('DOMContentLoaded', function () {
                         addCustomWallpaperToCollection(currentSereineImageUrl, `Sereine - ${artistName}`);
                         
                         // Show success
-                        saveBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
-                        saveBtn.style.color = '#28a745';
+                        const svgIcon = btn.querySelector('svg');
+                        const textNode = Array.from(btn.childNodes).find(node => node.nodeType === 3); // Node.TEXT_NODE
+                        const originalText = textNode ? textNode.textContent : ' Save';
+                        
+                        if (svgIcon) {
+                            svgIcon.style.fill = '#ff4d4f';
+                            svgIcon.style.stroke = '#ff4d4f';
+                            svgIcon.style.color = '#ff4d4f';
+                        }
+                        btn.style.borderColor = '#ff4d4f';
+                        btn.style.color = '#ff4d4f';
+                        
+                        if (textNode) {
+                            textNode.textContent = ' Liked';
+                        }
+                        
                         setTimeout(() => {
-                            saveBtn.innerHTML = '<i class="fa-regular fa-heart"></i>';
-                            saveBtn.style.color = 'white';
+                            if (svgIcon) {
+                                svgIcon.style.fill = '';
+                                svgIcon.style.stroke = '';
+                                svgIcon.style.color = '';
+                            }
+                            btn.style.borderColor = '';
+                            btn.style.color = '';
+                            if (textNode) {
+                                textNode.textContent = originalText;
+                            }
                         }, 2000);
                         
                         if (window.MaterioHaptics) {
@@ -518,7 +555,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             });
-        }
+        });
         
         // Initialize if currently selected
         const selectedWallpaper = getCookie("selectedWallpaper");
@@ -526,17 +563,20 @@ document.addEventListener('DOMContentLoaded', function () {
             startSereineWallpaperTimer();
         }
 
-        // Listen for tab changes to show/hide watermark
+        // Listen for tab changes via class mutations on #home tab
+        const homeTab = document.getElementById('home');
+        if (homeTab) {
+            const observer = new MutationObserver(() => {
+                updateSereineWatermarkVisibility();
+            });
+            observer.observe(homeTab, { attributes: true, attributeFilter: ['class'] });
+        }
+        // Initial check
+        updateSereineWatermarkVisibility();
+        
+        // Listen for tab changes just as a fallback
         document.addEventListener('tabOpened', function(e) {
-            const watermark = document.getElementById('sereineWatermark');
-            if (watermark) {
-                const currentWallpaper = getCookie("selectedWallpaper");
-                if (e.detail.tab === 'home' && currentWallpaper === 'sereine') {
-                    watermark.style.display = 'flex';
-                } else {
-                    watermark.style.display = 'none';
-                }
-            }
+            updateSereineWatermarkVisibility();
         });
     }
 
@@ -703,7 +743,10 @@ document.addEventListener('DOMContentLoaded', function () {
         addCard.innerHTML = `
             <div class="wallpaper-preview custom-preview">
                 <div class="wallpaper-upload-content">
-                    <i class="fa-solid fa-plus"></i>
+                    <svg class="hgi hgi-plus-sign-circle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" color="currentColor" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 8V16M16 12H8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" />
+                    </svg>
                     <span class="wallpaper-upload-text">Add</span>
                 </div>
             </div>
@@ -735,7 +778,9 @@ document.addEventListener('DOMContentLoaded', function () {
             remove.type = 'button';
             remove.className = 'custom-wallpaper-remove';
             remove.title = 'Remove wallpaper';
-            remove.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            remove.innerHTML = `<svg class="hgi hgi-cancel-01" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" color="currentColor" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M19.0005 4.99988L5.00049 18.9999M5.00049 4.99988L19.0005 18.9999" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
             remove.addEventListener('click', async (e) => {
                 e.stopPropagation();
 

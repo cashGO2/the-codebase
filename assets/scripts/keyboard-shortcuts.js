@@ -355,6 +355,10 @@
     function executeAction(shortcut) {
         const actions = {
             navigateToTab: (tab) => {
+                if (tab === 'chat') {
+                    window.location.href = 'https://chat.getmaterio.app';
+                    return;
+                }
                 const tabLink = document.querySelector(`.tab-link[data-tab="${tab}"]`);
                 if (tabLink) tabLink.click();
             },
