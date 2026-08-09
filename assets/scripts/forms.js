@@ -164,13 +164,19 @@ function renderStandardForm(formConfig) {
     }
 
     // Update header
-    if (iconEl) iconEl.className = `${getIconClass(formConfig.icon)} dynamic-form-icon`;
+    if (iconEl) {
+        iconEl.className = `${getIconClass(formConfig.icon)} dynamic-form-icon`;
+        updateDynamicIcon(iconEl, formConfig.icon);
+    }
     if (titleEl) titleEl.textContent = formConfig.title;
     if (descEl) descEl.textContent = formConfig.description;
 
     // Update submit button
     if (submitTextEl) submitTextEl.textContent = formConfig.submitButton.text;
-    if (submitIconEl) submitIconEl.className = getIconClass(formConfig.submitButton.icon, 'fa-solid fa-paper-plane');
+    if (submitIconEl) {
+        submitIconEl.className = getIconClass(formConfig.submitButton.icon, 'fa-solid fa-paper-plane');
+        updateDynamicIcon(submitIconEl, formConfig.submitButton.icon || 'fa-solid fa-paper-plane');
+    }
 
     // Render form fields
     renderFormFields(formConfig);
@@ -260,12 +266,12 @@ function renderCoverPage(page, formConfig, pageIndex) {
             ${mediaHtml}
             ${isVideo && page.backgroundGradient ? `<div class="wizard-cover-overlay" style="background: ${page.backgroundGradient}"></div>` : ''}
             <div class="wizard-cover-content">
-                <i class="${getIconClass(page.icon, 'fa-solid fa-gift')} wizard-cover-icon"></i>
+                ${getIconHtml(page.icon || 'fa-solid fa-gift', 'wizard-cover-icon')}
                 <h1 class="wizard-cover-title">${page.title}</h1>
                 <p class="wizard-cover-subtitle">${page.subtitle || ''}</p>
                 <button type="button" class="wizard-next-btn" onclick="goToWizardPage(${pageIndex + 1})">
                     ${page.nextButton.text}
-                    ${page.nextButton.icon ? `<i class="${getIconClass(page.nextButton.icon)}"></i>` : ''}
+                    ${page.nextButton.icon ? getIconHtml(page.nextButton.icon) : ''}
                 </button>
             </div>
         </div>
@@ -311,7 +317,7 @@ function renderInfoPage(page, formConfig, pageIndex) {
                 if (item.icon) {
                     return `
                         <div class="wizard-info-item">
-                            <div class="wizard-info-icon"><i class="${getIconClass(item.icon)}"></i></div>
+                            <div class="wizard-info-icon">${getIconHtml(item.icon)}</div>
                             <div class="wizard-info-text">
                                 ${item.title ? `<h4>${item.title}</h4>` : ''}
                                 <p>${item.description || ''}</p>
@@ -341,10 +347,10 @@ function renderInfoPage(page, formConfig, pageIndex) {
             <div class="wizard-info-actions">
                 <button type="button" class="wizard-continue-btn" onclick="goToWizardPage(${pageIndex + 1})">
                     ${page.continueButton.text}
-                    ${page.continueButton.icon ? `<i class="${getIconClass(page.continueButton.icon)}"></i>` : ''}
+                    ${page.continueButton.icon ? getIconHtml(page.continueButton.icon) : ''}
                 </button>
                 <button type="button" class="wizard-exit-btn" onclick="closeDynamicForm()">
-                    ${page.exitButton.icon ? `<i class="${getIconClass(page.exitButton.icon)}"></i>` : ''}
+                    ${page.exitButton.icon ? getIconHtml(page.exitButton.icon) : ''}
                     ${page.exitButton.text}
                 </button>
             </div>
@@ -382,13 +388,19 @@ function renderFormPage(page, formConfig) {
     }
 
     // Update header with page-specific or form default
-    if (iconEl) iconEl.className = `${getIconClass(formConfig.icon)} dynamic-form-icon`;
+    if (iconEl) {
+        iconEl.className = `${getIconClass(formConfig.icon)} dynamic-form-icon`;
+        updateDynamicIcon(iconEl, formConfig.icon);
+    }
     if (titleEl) titleEl.textContent = page.title || formConfig.title;
     if (descEl) descEl.textContent = page.description || formConfig.description;
 
     // Update submit button
     if (submitTextEl) submitTextEl.textContent = formConfig.submitButton.text;
-    if (submitIconEl) submitIconEl.className = getIconClass(formConfig.submitButton.icon, 'fa-solid fa-paper-plane');
+    if (submitIconEl) {
+        submitIconEl.className = getIconClass(formConfig.submitButton.icon, 'fa-solid fa-paper-plane');
+        updateDynamicIcon(submitIconEl, formConfig.submitButton.icon || 'fa-solid fa-paper-plane');
+    }
 
     // Render form fields
     renderFormFields(formConfig);
@@ -1254,309 +1266,48 @@ function formatFileSize(bytes) {
 }
 
 // ==========================================
-// Form Activity Trigger System
+// HUGEICONS DYNAMIC SVG MIGRATION
 // ==========================================
+const HUGEICONS_DYNAMIC_PATHS = {
+    "fa-users": "<path d=\"M15.5 11C15.5 9.067 13.933 7.5 12 7.5C10.067 7.5 8.5 9.067 8.5 11C8.5 12.933 10.067 14.5 12 14.5C13.933 14.5 15.5 12.933 15.5 11Z\" stroke=\"currentColor\"  stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\r <path d=\"M15.4827 11.3499C15.8047 11.4475 16.1462 11.5 16.5 11.5C18.433 11.5 20 9.933 20 8C20 6.067 18.433 4.5 16.5 4.5C14.6851 4.5 13.1928 5.8814 13.0173 7.65013\" stroke=\"currentColor\"  stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\r <path d=\"M10.9827 7.65013C10.8072 5.8814 9.31492 4.5 7.5 4.5C5.567 4.5 4 6.067 4 8C4 9.933 5.567 11.5 7.5 11.5C7.85381 11.5 8.19535 11.4475 8.51727 11.3499\" stroke=\"currentColor\"  stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\r <path d=\"M22 16.5C22 13.7386 19.5376 11.5 16.5 11.5\" stroke=\"currentColor\"  stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\r <path d=\"M17.5 19.5C17.5 16.7386 15.0376 14.5 12 14.5C8.96243 14.5 6.5 16.7386 6.5 19.5\" stroke=\"currentColor\"  stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\r <path d=\"M7.5 11.5C4.46243 11.5 2 13.7386 2 16.5\" stroke=\"currentColor\"  stroke-linecap=\"round\" stroke-linejoin=\"round\"/>",
+    "fa-gift": "<path d=\"M4 11V15C4 18.2998 4 19.9497 5.02513 20.9749C6.05025 22 7.70017 22 11 22H13C16.2998 22 17.9497 22 18.9749 20.9749C20 19.9497 20 18.2998 20 15V11\" stroke=\"currentColor\"  stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\r <path d=\"M3 9C3 8.25231 3 7.87846 3.20096 7.6C3.33261 7.41758 3.52197 7.26609 3.75 7.16077C4.09808 7 4.56538 7 5.5 7H18.5C19.4346 7 19.9019 7 20.25 7.16077C20.478 7.26609 20.6674 7.41758 20.799 7.6C21 7.87846 21 8.25231 21 9C21 9.74769 21 10.1215 20.799 10.4C20.6674 10.5824 20.478 10.7339 20.25 10.8392C19.9019 11 19.4346 11 18.5 11H5.5C4.56538 11 4.09808 11 3.75 10.8392C3.52197 10.7339 3.33261 10.5824 3.20096 10.4C3 10.1215 3 9.74769 3 9Z\" stroke=\"currentColor\"  stroke-linejoin=\"round\"/>\r <path d=\"M6 3.78571C6 2.79949 6.79949 2 7.78571 2H8.14286C10.2731 2 12 3.7269 12 5.85714V7H9.21429C7.43908 7 6 5.56091 6 3.78571Z\" stroke=\"currentColor\"  stroke-linejoin=\"round\"/>\r <path d=\"M18 3.78571C18 2.79949 17.2005 2 16.2143 2H15.8571C13.7269 2 12 3.7269 12 5.85714V7H14.7857C16.5609 7 18 5.56091 18 3.78571Z\" stroke=\"currentColor\"  stroke-linejoin=\"round\"/>\r <path d=\"M12 11L12 22\" stroke=\"currentColor\"  stroke-linecap=\"round\" stroke-linejoin=\"round\"/>",
+    "fa-arrow-right": "<path d=\"M9.00005 6C9.00005 6 15 10.4189 15 12C15 13.5812 9 18 9 18\" stroke=\"currentColor\"  stroke-linecap=\"round\" stroke-linejoin=\"round\"/>",
+    "fa-comment-dots": "<path d=\"M22 11.5667C22 16.8499 17.5222 21.1334 12 21.1334C11.3507 21.1343 10.7032 21.0742 10.0654 20.9545C9.60633 20.8682 9.37678 20.8251 9.21653 20.8496C9.05627 20.8741 8.82918 20.9948 8.37499 21.2364C7.09014 21.9197 5.59195 22.161 4.15111 21.893C4.69874 21.2194 5.07275 20.4112 5.23778 19.5448C5.33778 19.0148 5.09 18.5 4.71889 18.1231C3.03333 16.4115 2 14.1051 2 11.5667C2 6.28357 6.47778 2 12 2C17.5222 2 22 6.28357 22 11.5667Z\" stroke=\"currentColor\"  stroke-linejoin=\"round\"/>\r <path d=\"M11.9955 12H12.0045M15.991 12H16M8 12H8.00897\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>",
+    "fa-paper-plane": "<path d=\"M21.0477 3.05293C18.8697 0.707363 2.48648 6.4532 2.50001 8.551C2.51535 10.9299 8.89809 11.6617 10.6672 12.1581C11.7311 12.4565 12.016 12.7625 12.2613 13.8781C13.3723 18.9305 13.9301 21.4435 15.2014 21.4996C17.2278 21.5892 23.1733 5.342 21.0477 3.05293Z\" stroke=\"currentColor\" />\r <path d=\"M11.5 12.5L15 9\" stroke=\"currentColor\"  stroke-linecap=\"round\" stroke-linejoin=\"round\"/>",
+    "fa-flask": "<path d=\"M17.5 21C15.567 21 14 19.433 14 17.5L14 3L21 3L21 17.5C21 19.433 19.433 21 17.5 21Z\" stroke=\"currentColor\" />\r <path d=\"M22 3L13 3\" stroke=\"currentColor\"  stroke-linecap=\"round\"/>\r <path d=\"M17 7H14\" stroke=\"currentColor\"  stroke-linecap=\"round\"/>\r <path d=\"M10 16.875C10 19.9126 8 21 6 21C4 21 2 19.9126 2 16.875C2 13.8374 6 10 6 10C6 10 10 13.8374 10 16.875Z\" stroke=\"currentColor\"  stroke-linejoin=\"round\"/>\r <path d=\"M14 12C15.083 11.1336 16.2974 9.87843 17.771 10.7626C19.0014 11.5009 20.0342 10.7244 21 10\" stroke=\"currentColor\"  stroke-linecap=\"round\"/>",
+    "fa-check": "<path d=\"M5 14.5C5 14.5 6.5 14.5 8.5 18C8.5 18 14.0588 8.83333 19 7\" stroke=\"currentColor\"  stroke-linecap=\"round\" stroke-linejoin=\"round\"/>",
+    "fa-heart": "<path d=\"M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z\" stroke=\"currentColor\"  stroke-linecap=\"round\" stroke-linejoin=\"round\"/>",
+    "fa-bug": "<path d=\"M3.01309 4.99084C2.89323 6.05084 3.55249 8.42285 6.48923 8.42285\" stroke=\"currentColor\"  stroke-linecap=\"round\"/>\r <path d=\"M17.5951 8.38081C18.8357 8.57881 21.1132 7.49881 20.9957 5.00281\" stroke=\"currentColor\"  stroke-linecap=\"round\"/>\r <path d=\"M20.9928 20.9989C21.0528 19.9429 20.1777 17.5549 17.599 17.4229\" stroke=\"currentColor\"  stroke-linecap=\"round\"/>\r <path d=\"M6.45163 17.4708C5.65013 17.2308 3.01306 18.3348 3.01306 20.9988\" stroke=\"currentColor\"  stroke-linecap=\"round\"/>\r <path d=\"M9.3299 6.11884C9.35388 5.09884 9.84533 2.99884 12.0029 2.99884C13.9208 2.99884 14.5861 4.61884 14.676 6.11884M6.26131 9.41884C6.38118 8.63884 7.29216 6.81484 9.36586 6.63484C11.4635 6.55564 14.3403 6.58684 14.8797 6.67084C15.5869 6.73377 17.2951 7.43884 17.7506 9.41884C17.9124 10.4388 17.8285 11.8788 17.8524 12.7188C17.8165 13.5588 17.9207 15.2623 17.7565 16.1388C17.6367 17.0988 16.9894 18.4668 16.1024 19.3068C14.7838 20.7228 11.1639 22.2108 8.03534 19.4508C6.41713 17.8908 6.30925 16.3788 6.18939 15.7788C6.15725 15.4571 6.15875 13.8763 6.16541 12.3588C6.14144 11.046 6.17235 9.78063 6.26131 9.41884Z\" stroke=\"currentColor\" />\r <path d=\"M3.01306 12.8988H5.9498\" stroke=\"currentColor\"  stroke-linecap=\"round\"/>\r <path d=\"M20.9929 12.8988L18.1161 12.8988\" stroke=\"currentColor\"  stroke-linecap=\"round\"/>\r <path d=\"M12.0033 16.4988L12.0033 20.2788\" stroke=\"currentColor\"  stroke-linecap=\"round\"/>",
+    "fa-circle-plus": "<path d=\"M12 8V16M16 12H8\" stroke=\"currentColor\"  stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\r <circle cx=\"12\" cy=\"12\" r=\"10\" stroke=\"currentColor\" />",
+    "fa-plus-circle": "<path d=\"M12 8V16M16 12H8\" stroke=\"currentColor\"  stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\r <circle cx=\"12\" cy=\"12\" r=\"10\" stroke=\"currentColor\" />"
+};
 
-/**
- * Load form activity configuration
- */
-async function loadFormActivityConfig() {
-    try {
-        const response = await fetch('/assets/data/formActivity.json');
-        if (response.ok) {
-            formActivityConfig = await response.json();
-
-            // Wait a bit for other configs to load, then check triggers
-            setTimeout(() => {
-                checkFormActivityTriggers();
-            }, 1000);
-        }
-    } catch (error) {
-        // Form activity config not found or disabled
-    }
+function getHugeiconSvgHtml(faClass) {
+    const innerPath = HUGEICONS_DYNAMIC_PATHS[faClass] || HUGEICONS_DYNAMIC_PATHS['fa-circle-plus'];
+    return `<svg class="hgi hgi-dynamic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" color="currentColor" fill="none" stroke="currentColor"  stroke-linecap="round" stroke-linejoin="round">${innerPath}</svg>`;
 }
 
-/**
- * Check and process form activity triggers
- */
-function checkFormActivityTriggers() {
-    if (!formActivityConfig || !formActivityConfig.enabled) return;
-    if (!formsConfig) {
-        // Forms config not loaded yet, retry
-        setTimeout(checkFormActivityTriggers, 500);
-        return;
-    }
-
-    const settings = formActivityConfig.settings || {};
-    const maxFormsPerSession = settings.maxFormsPerSession || 1;
-
-    // Check if we've shown max forms this session
-    if (formsShownThisSession >= maxFormsPerSession) return;
-
-    // Check do not disturb
-    if (settings.respectDoNotDisturb) {
-        const dndKey = settings.doNotDisturbKey || 'materio_dnd_forms';
-        if (localStorage.getItem(dndKey) === 'true') return;
-    }
-
-    // Get enabled activities sorted by priority
-    const activities = (formActivityConfig.activities || [])
-        .filter(a => a.enabled)
-        .sort((a, b) => (a.priority || 99) - (b.priority || 99));
-
-    for (const activity of activities) {
-        if (shouldShowFormActivity(activity)) {
-            triggerFormActivity(activity);
-            break; // Only show one form
-        }
-    }
-}
-
-/**
- * Check if a form activity should be shown
- * @param {Object} activity - Activity configuration
- * @returns {boolean}
- */
-function shouldShowFormActivity(activity) {
-    // Check if form type exists
-    if (!formsConfig.forms[activity.formType]) return false;
-
-    // Check date range
-    const now = new Date();
-    if (activity.startDate && new Date(activity.startDate) > now) return false;
-    if (activity.endDate && new Date(activity.endDate) < now) return false;
-
-    // Check device/showOn
-    if (activity.showOn && activity.showOn !== 'all') {
-        const isMobile = window.innerWidth < 768;
-        if (activity.showOn === 'mobile' && !isMobile) return false;
-        if (activity.showOn === 'desktop' && isMobile) return false;
-    }
-
-    // Check frequency
-    if (!checkFormFrequency(activity)) return false;
-
-    // Check trigger conditions
-    const conditions = activity.trigger?.conditions || {};
-
-    // Check min visits
-    if (conditions.minVisits) {
-        const visits = parseInt(localStorage.getItem('materio_visit_count') || '1');
-        if (visits < conditions.minVisits) return false;
-    }
-
-    // Check min days since first visit
-    if (conditions.minDaysSinceFirstVisit) {
-        const firstVisit = localStorage.getItem('materio_first_visit');
-        if (firstVisit) {
-            const daysSince = (now - new Date(firstVisit)) / (1000 * 60 * 60 * 24);
-            if (daysSince < conditions.minDaysSinceFirstVisit) return false;
-        }
-    }
-
-    // Check pages
-    if (conditions.pages && conditions.pages.length > 0) {
-        const currentPage = getCurrentPageType();
-        if (!conditions.pages.includes(currentPage)) return false;
-    }
-
-    // Check exclude pages
-    if (conditions.excludePages && conditions.excludePages.length > 0) {
-        const currentPage = getCurrentPageType();
-        if (conditions.excludePages.includes(currentPage)) return false;
-    }
-
-    // Check user type
-    if (conditions.userType && conditions.userType !== 'any') {
-        const isAuthenticated = !!localStorage.getItem('materio_user');
-        if (conditions.userType === 'authenticated' && !isAuthenticated) return false;
-        if (conditions.userType === 'anonymous' && isAuthenticated) return false;
-    }
-
-    return true;
-}
-
-/**
- * Check if form should be shown based on frequency
- * @param {Object} activity - Activity configuration
- * @returns {boolean}
- */
-function checkFormFrequency(activity) {
-    const storageKey = `form_activity_${activity.id}`;
-    const lastShown = localStorage.getItem(storageKey);
-
-    if (!lastShown && activity.frequency !== 'once') return true;
-    if (!lastShown && activity.frequency === 'once') return true;
-    if (lastShown && activity.frequency === 'once') return false;
-
-    const lastShownDate = new Date(lastShown);
-    const now = new Date();
-    const hoursSinceShown = (now - lastShownDate) / (1000 * 60 * 60);
-
-    switch (activity.frequency) {
-        case 'everytime':
-        case 'every-visit':
-            return true;
-        case 'every-12hr':
-            return hoursSinceShown >= 12;
-        case 'every-24hr':
-        case 'daily':
-            return hoursSinceShown >= 24;
-        case 'every-7days':
-        case 'weekly':
-            return hoursSinceShown >= 168;
-        case 'every-30days':
-        case 'monthly':
-            return hoursSinceShown >= 720;
-        case 'custom':
-            const customHours = activity.customFrequencyHours || 24;
-            return hoursSinceShown >= customHours;
-        default:
-            return true;
-    }
-}
-
-/**
- * Get current page type for condition matching
- * @returns {string}
- */
-function getCurrentPageType() {
-    const path = window.location.pathname.toLowerCase();
-    if (path === '/' || path === '/index.html') return 'home';
-    if (path.includes('/account')) return 'account';
-    if (path.includes('/blog') || path.includes('/posts')) return 'blog';
-    if (path.includes('/about')) return 'about';
-    if (path.includes('/changelog')) return 'changelog';
-    return 'other';
-}
-
-/**
- * Trigger a form activity - show the form
- * @param {Object} activity - Activity configuration
- */
-function triggerFormActivity(activity) {
-    const delay = activity.trigger?.delay || 0;
-    const settings = formActivityConfig.settings || {};
-    const minTimeBetween = settings.minTimeBetweenForms || 0;
-
-    // Check minimum time between forms
-    if (lastFormShownTime && (Date.now() - lastFormShownTime) < minTimeBetween) {
-        return;
-    }
-
-    setTimeout(() => {
-        // Double check the modal isn't already open
-        const modal = document.getElementById('dynamicFormModal');
-        if (modal && modal.classList.contains('show')) return;
-
-        // Don't show if promo modal is open
-        const promoModal = document.getElementById('promoModal');
-        if (promoModal && promoModal.style.display !== 'none' && promoModal.style.display !== '') return;
-
-        // Show the form
-        openDynamicForm(activity.formType);
-
-        // Record that we showed this form
-        const storageKey = `form_activity_${activity.id}`;
-        localStorage.setItem(storageKey, new Date().toISOString());
-        formsShownThisSession++;
-        lastFormShownTime = Date.now();
-    }, delay);
-}
-
-/**
- * Manually trigger a form activity by ID
- * @param {string} activityId - Activity ID from formActivity.json
- */
-function triggerFormActivityById(activityId) {
-    if (!formActivityConfig) return;
-    const activity = formActivityConfig.activities.find(a => a.id === activityId);
-    if (activity && formsConfig.forms[activity.formType]) {
-        openDynamicForm(activity.formType);
-    }
-}
-
-/**
- * Set do not disturb for forms
- * @param {boolean} enabled - Whether to enable DND
- */
-function setFormDoNotDisturb(enabled) {
-    const dndKey = formActivityConfig?.settings?.doNotDisturbKey || 'materio_dnd_forms';
-    if (enabled) {
-        localStorage.setItem(dndKey, 'true');
-    } else {
-        localStorage.removeItem(dndKey);
-    }
-}
-
-// Track visits for condition checking
-(function () {
-    const visitCount = parseInt(localStorage.getItem('materio_visit_count') || '0') + 1;
-    localStorage.setItem('materio_visit_count', visitCount.toString());
-
-    if (!localStorage.getItem('materio_first_visit')) {
-        localStorage.setItem('materio_first_visit', new Date().toISOString());
-    }
-})();
-
-// Expose functions globally
-window.openDynamicForm = openDynamicForm;
-window.closeDynamicForm = closeDynamicForm;
-window.resetDynamicForm = resetDynamicForm;
-window.submitDynamicForm = submitDynamicForm;
-window.removeSelectedFile = removeSelectedFile;
-window.triggerFormActivityById = triggerFormActivityById;
-window.setFormDoNotDisturb = setFormDoNotDisturb;
-window.goToWizardPage = goToWizardPage;
-
-
-/**
- * Build JSON Object for manual upload
- */
-function buildJsonForContribution() {
-    if (!currentFormType || currentFormType !== 'contribution') return;
-
-    const form = document.getElementById('dynamicFormContent');
-    if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-    }
-
-    const formData = {};
-    const formConfig = formsConfig.forms[currentFormType];
+function getIconHtml(iconClass, extraClasses = '') {
+    if (!iconClass) return '';
+    // Extract fa- class
+    const classes = iconClass.split(/\s+/);
+    const faClass = classes.find(c => c.startsWith('fa-') && !['fa-solid', 'fa-regular', 'fa-light', 'fa-thin', 'fa-brands', 'fa-duotone', 'fa-sharp', 'fa-spin'].includes(c));
     
-    formConfig.fields.forEach(field => {
-        if (field.type === 'file') return;
-        const input = document.getElementById(`field-${field.name}`);
-        if (input) {
-            let value = input.value;
-            if (value === '__other__') {
-                const customInput = document.getElementById(`field-${field.name}-custom`);
-                value = customInput ? customInput.value : '';
-            }
-            if (value) formData[field.name] = value;
-        }
-    });
-
-    const fileNames = selectedFiles.map(f => f.name);
-
-    // Structure matching resource.lib.json
-    const jsonObj = {
-        type: formData.category || 'unknown',
-        content: fileNames
-    };
-
-    const jsonStr = JSON.stringify(jsonObj, null, 2);
-    
-    // Copy to clipboard
-    navigator.clipboard.writeText(jsonStr).then(() => {
-        showNotification('JSON copied to clipboard!', 'success');
-        document.getElementById('dynamicFormSuccessMessage').textContent = 'JSON copied to clipboard! You can now paste it into resource.lib.json';
-        document.getElementById('dynamicFormSuccess').style.display = 'flex';
-    }).catch(err => {
-        console.error('Failed to copy: ', err);
-        showNotification('Failed to copy JSON to clipboard', 'error');
-    });
+    if (faClass && HUGEICONS_DYNAMIC_PATHS[faClass]) {
+        return `<i class="${iconClass} ${extraClasses}" aria-hidden="true">${getHugeiconSvgHtml(faClass)}</i>`;
+    }
+    // Fallback to default tag structure
+    return `<i class="${iconClass} ${extraClasses}" aria-hidden="true"></i>`;
 }
 
-window.buildJsonForContribution = buildJsonForContribution;
+function updateDynamicIcon(iconEl, iconClass) {
+    if (!iconEl) return;
+    if (!iconClass) return;
+
+    const classes = iconClass.split(/\s+/);
+    const faClass = classes.find(c => c.startsWith('fa-') && !['fa-solid', 'fa-regular', 'fa-light', 'fa-thin', 'fa-brands', 'fa-duotone', 'fa-sharp', 'fa-spin'].includes(c));
+    
+    if (faClass && HUGEICONS_DYNAMIC_PATHS[faClass]) {
+        iconEl.innerHTML = getHugeiconSvgHtml(faClass);
+    }
+}

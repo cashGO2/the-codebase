@@ -67,6 +67,7 @@
                 {
                     "id": 4,
                     "subject": "Big Data Analytics",
+                    "global": true,
                     "aliases": [
                         "BDA",
                         "Big Data",
@@ -79,6 +80,23 @@
                     "syllabus": [
                         "Unit 1",
                         "Unit 2"
+                    ]
+                },
+                {
+                    "id": 5,
+                    "subject": "High Performance Computing",
+                    "global": true,
+                    "aliases": [
+                        "HPC"
+                    ],
+                    "code": "303105355",
+                    "date": "2026-08-20",
+                    "time": "12:30",
+                    "duration": "1.5 hours",
+                    "syllabus": [
+                        "Unit 1",
+                        "Unit 2",
+                        "Unit 3"
                     ]
                 }
             ]

@@ -718,6 +718,76 @@ function displayExamCard(data, semesterData) {
     }
 }
 
+function isExamMatch(exam, subjectName) {
+    if (!exam || !subjectName) return false;
+    
+    // If the exam is marked as global, bypass subject matching and show for everyone
+    if (exam.global === true) return true;
+    
+    const normalizeForMatch = (str) => str.toLowerCase().replace(/[^a-z0-9]/g, ' ').trim();
+    const subjectNorm = normalizeForMatch(subjectName);
+    const examNorm = normalizeForMatch(exam.subject);
+    
+    // Check subject name
+    if (examNorm.includes(subjectNorm) || subjectNorm.includes(examNorm)) {
+        return true;
+    }
+
+    // Check aliases if available
+    if (exam.aliases && Array.isArray(exam.aliases)) {
+        for (const alias of exam.aliases) {
+            const aliasNorm = normalizeForMatch(alias);
+            if (aliasNorm.includes(subjectNorm) || subjectNorm.includes(aliasNorm)) {
+                return true;
+            }
+        }
+    }
+
+    // Check exam code
+    if (exam.code && subjectNorm.includes(exam.code.toLowerCase())) {
+        return true;
+    }
+    
+    return false;
+}
+
+function findExamMatchingSubject(examsList, selectedSubject) {
+    if (!selectedSubject || !examsList || examsList.length === 0) return null;
+    return examsList.find(e => isExamMatch(e, selectedSubject));
+}
+
+function getAvailableSubjectNames() {
+    const subjectSelect = document.getElementById('subjectSelect');
+    if (!subjectSelect) return [];
+    return Array.from(subjectSelect.options)
+        .map(opt => opt.text || opt.value)
+        .filter(val => val && val.trim() !== '' && !val.toLowerCase().includes('select subject'));
+}
+
+function getBestExamForUser(examsList) {
+    if (!examsList || examsList.length === 0) return null;
+    
+    const selectedSubject = getSelectedSubjectName();
+    const availableSubjects = getAvailableSubjectNames();
+    
+    // 1. Try to find exam matching currently selected subject
+    if (selectedSubject) {
+        const match = findExamMatchingSubject(examsList, selectedSubject);
+        if (match) return match;
+    }
+    
+    // 2. Try to find exam matching any subject in the dropdown list (their branch)
+    if (availableSubjects && availableSubjects.length > 0) {
+        const branchMatch = examsList.find(e => {
+            return availableSubjects.some(sub => isExamMatch(e, sub));
+        });
+        if (branchMatch) return branchMatch;
+    }
+    
+    // 3. Fallback to the first exam in the list
+    return examsList[0];
+}
+
 function showPreExamView(exams, data, isDefault = false) {
     const suffix = isDefault ? 'Default' : '';
     hideAllExamViews(suffix);
@@ -741,49 +811,8 @@ function showPreExamView(exams, data, isDefault = false) {
     const now = new Date();
     const upcomingExams = effectiveExams.filter(e => new Date(e.date) >= now);
 
-    // Check if a specific subject is selected
-    const selectedSubject = getSelectedSubjectName();
-    let targetExam = null;
-
-    if (selectedSubject) {
-        // Normalize for comparison
-        const normalizeForMatch = (str) => str.toLowerCase().replace(/[^a-z0-9]/g, ' ').trim();
-        const selectedNorm = normalizeForMatch(selectedSubject);
-
-
-
-        // Find exam matching the selected subject or any of its aliases
-        targetExam = upcomingExams.find(e => {
-            const examNorm = normalizeForMatch(e.subject);
-
-            // Check subject name
-            if (examNorm.includes(selectedNorm) || selectedNorm.includes(examNorm)) {
-                return true;
-            }
-
-            // Check aliases if available
-            if (e.aliases && Array.isArray(e.aliases)) {
-                for (const alias of e.aliases) {
-                    const aliasNorm = normalizeForMatch(alias);
-                    if (aliasNorm.includes(selectedNorm) || selectedNorm.includes(aliasNorm)) {
-
-                        return true;
-                    }
-                }
-            }
-
-            // Check exam code
-            if (e.code && selectedNorm.includes(e.code.toLowerCase())) {
-                return true;
-            }
-
-            return false;
-        });
-
-
-    }
-
-    // Fallback to first upcoming exam
+    // Get the most relevant exam for the user based on their selected or available subjects
+    let targetExam = getBestExamForUser(upcomingExams);
     if (!targetExam) {
         targetExam = upcomingExams[0] || effectiveExams[0];
     }
@@ -856,21 +885,25 @@ function showOngoingViews(exams, data, isDefault = false) {
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    // Find today's and tomorrow's exams
-    let todayExam = exams.find(e => {
+    // Find all today's and tomorrow's exams
+    const todayExamsList = exams.filter(e => {
         const examDate = new Date(e.date);
         return examDate.toDateString() === today.toDateString();
     });
+
+    const tomorrowExamsList = exams.filter(e => {
+        const examDate = new Date(e.date);
+        return examDate.toDateString() === tomorrow.toDateString();
+    });
+
+    // Get the most relevant exam for the user based on selected/available subjects
+    let todayExam = getBestExamForUser(todayExamsList);
+    let tomorrowExam = getBestExamForUser(tomorrowExamsList);
 
     // If today's exam exists, check if it's already finished
     if (todayExam && isExamFinished(todayExam, now)) {
         todayExam = null; // Treat as already past
     }
-
-    const tomorrowExam = exams.find(e => {
-        const examDate = new Date(e.date);
-        return examDate.toDateString() === tomorrow.toDateString();
-    });
 
     // Get next upcoming exam (strictly in the future from 'now')
     const upcomingExams = exams.filter(e => {
@@ -880,7 +913,8 @@ function showOngoingViews(exams, data, isDefault = false) {
         }
         return examDate > now;
     });
-    const nextExam = upcomingExams[0];
+    
+    const nextExam = getBestExamForUser(upcomingExams);
 
     // Show ongoing view first
     showOngoingView(todayExam, tomorrowExam, nextExam, exams, isDefault);
@@ -990,7 +1024,7 @@ function showTimelineView(exams, isDefault = false) {
     }
 
     // Filter to show ONLY today's (if not finished) and upcoming exams
-    const relevantExams = sourceExams.filter(e => {
+    let relevantExams = sourceExams.filter(e => {
         const examDate = new Date(e.date);
         const examDateOnly = new Date(examDate.getFullYear(), examDate.getMonth(), examDate.getDate());
 
@@ -1001,6 +1035,17 @@ function showTimelineView(exams, isDefault = false) {
 
         return examDateOnly > today;
     });
+
+    // For non-viva exams, filter to show only exams relevant to user's branch
+    if (!isVivaExam) {
+        const availableSubjects = getAvailableSubjectNames();
+        const selectedSubject = getSelectedSubjectName();
+        if (availableSubjects && availableSubjects.length > 0) {
+            relevantExams = relevantExams.filter(e => {
+                return isExamMatch(e, selectedSubject) || availableSubjects.some(sub => isExamMatch(e, sub));
+            });
+        }
+    }
 
     // Generate mini timeline HTML for the next 2 exams
     let timelineHTML = '';
@@ -1069,7 +1114,15 @@ function setupViewRotation(exams, data) {
     }
 
     let subIndex = 0;
-    const upcomingExams = exams.filter(e => new Date(e.date) >= today);
+    const availableSubjects = getAvailableSubjectNames();
+    const selectedSubject = getSelectedSubjectName();
+    let branchExams = exams;
+    if (availableSubjects && availableSubjects.length > 0) {
+        branchExams = exams.filter(e => {
+            return isExamMatch(e, selectedSubject) || availableSubjects.some(sub => isExamMatch(e, sub));
+        });
+    }
+    const upcomingExams = branchExams.filter(e => new Date(e.date) >= today);
 
     examViewRotationTimer = setInterval(() => {
         // Refresh 'now' for date calculations inside interval
@@ -1109,9 +1162,13 @@ function setupViewRotation(exams, data) {
                 tomorrow.setDate(tomorrow.getDate() + 1);
 
                 // Refetch focusing only on what's current - NO rotation of subjects here
-                const todayExam = exams.find(e => new Date(e.date).toDateString() === innerToday.toDateString());
-                const tomorrowExam = exams.find(e => new Date(e.date).toDateString() === tomorrow.toDateString());
-                const nextUpcoming = exams.filter(e => new Date(e.date) > innerToday)[0];
+                const todayExamsList = exams.filter(e => new Date(e.date).toDateString() === innerToday.toDateString());
+                const tomorrowExamsList = exams.filter(e => new Date(e.date).toDateString() === tomorrow.toDateString());
+                const upcomingList = exams.filter(e => new Date(e.date) > innerToday);
+
+                const todayExam = getBestExamForUser(todayExamsList);
+                const tomorrowExam = getBestExamForUser(tomorrowExamsList);
+                const nextUpcoming = getBestExamForUser(upcomingList);
 
                 showOngoingView(todayExam, tomorrowExam, nextUpcoming, exams, false);
                 showOngoingView(todayExam, tomorrowExam, nextUpcoming, exams, true);
@@ -1403,7 +1460,17 @@ async function generateExamTimeline() {
     }
 
     const selectedDivision = isVivaExam ? getSelectedDivision() : '';
-    const timelineExams = isVivaExam ? buildVivaTimelineEntries(selectedDivision) : sortedExams;
+    let timelineExams = isVivaExam ? buildVivaTimelineEntries(selectedDivision) : sortedExams;
+
+    if (!isVivaExam) {
+        const availableSubjects = getAvailableSubjectNames();
+        const selectedSubject = getSelectedSubjectName();
+        if (availableSubjects && availableSubjects.length > 0) {
+            timelineExams = sortedExams.filter(e => {
+                return isExamMatch(e, selectedSubject) || availableSubjects.some(sub => isExamMatch(e, sub));
+            });
+        }
+    }
 
     updateDivisionClearButtonVisibility();
 

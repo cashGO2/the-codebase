@@ -2487,12 +2487,33 @@ function getRowDateKey(row) {
 }
 
 function filterRowsByTimeframe(rows, timeframe, requestedDateKey) {
-  if (timeframe !== "today") {
+  if (timeframe !== "today" && timeframe !== "weekly") {
     return rows;
   }
 
-  const todayKey = toDateKey(requestedDateKey) || new Date().toISOString().slice(0, 10);
-  return (rows || []).filter((row) => getRowDateKey(row) === todayKey);
+  const baseDateStr = toDateKey(requestedDateKey) || new Date().toISOString().slice(0, 10);
+
+  if (timeframe === "today") {
+    return (rows || []).filter((row) => getRowDateKey(row) === baseDateStr);
+  }
+
+  if (timeframe === "weekly") {
+    const baseDate = new Date(baseDateStr + "T00:00:00Z");
+    if (Number.isNaN(baseDate.getTime())) return rows;
+    
+    return (rows || []).filter((row) => {
+      const rowDateKey = getRowDateKey(row);
+      if (!rowDateKey) return false;
+      const rowDate = new Date(rowDateKey + "T00:00:00Z");
+      if (Number.isNaN(rowDate.getTime())) return false;
+      
+      const diffTime = baseDate.getTime() - rowDate.getTime();
+      const diffDays = diffTime / (1000 * 3600 * 24);
+      return diffDays >= 0 && diffDays < 7;
+    });
+  }
+
+  return rows;
 }
 
 function isSuspiciousLeaderboardAggregate(entry, timeframe) {

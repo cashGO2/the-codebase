@@ -6,7 +6,9 @@
  * @module health-check
  */
 
-const HEALTH_API_URL = '/api/v2/health';
+const HEALTH_API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+    ? 'http://localhost:1000/api/v2/health' 
+    : '/api/v2/health';
 
 /**
  * Check system health and update indicator
@@ -29,10 +31,19 @@ async function checkHealth() {
     }
 
     try {
-        const response = await fetch(HEALTH_API_URL);
+        const response = await fetch(`${HEALTH_API_URL}?t=${Date.now()}`);
         const data = await response.json();
 
         healthIndicator.classList.remove('ok', 'degraded', 'partial-outage', 'error');
+
+        // Update Build ID if present in API response
+        const liveBuildId = data.build?.buildId || data.buildId;
+        if (liveBuildId) {
+            const buildIdEl = document.getElementById('buildId');
+            if (buildIdEl) {
+                buildIdEl.textContent = liveBuildId;
+            }
+        }
 
         // Check for active incident from our health API response
         const incident = data.incident;

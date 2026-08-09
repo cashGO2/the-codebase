@@ -34,7 +34,7 @@
       // Prevent synthetic clicks from immediately closing the modal
       const openedTime = parseInt(backdrop.dataset.openedTime || '0', 10);
       if (e.target === backdrop && Date.now() - openedTime > 400) {
-          closeModal();
+        closeModal();
       }
     });
 
@@ -43,10 +43,10 @@
     modal.style.maxWidth = '450px';
     modal.style.width = '90%';
     modal.style.maxHeight = '85vh';
-    
+
     // We omit the promo-image to make it a content-only modal
     modal.innerHTML = `
-      <i class="fas fa-times promo-close-btn" style="z-index:10; cursor:pointer;" onclick="document.querySelector('.custom-select-backdrop').click()"></i>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" class="promo-close-btn" style="z-index:10; cursor:pointer;" onclick="document.querySelector('.custom-select-backdrop').click()"><path d="M19.0005 4.99988L5.00049 18.9999M5.00049 4.99988L19.0005 18.9999" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>
       <div class="promo-content custom-select-wizard-container" style="width: 100%; box-sizing: border-box; position: relative; min-height: 350px;">
         <!-- The wizard view will be injected here -->
       </div>
@@ -54,9 +54,9 @@
 
     // Global scrollbar styles injected into head to guarantee visibility over any wildcard overrides
     if (!document.getElementById('custom-select-scrollbar-styles')) {
-        const style = document.createElement('style');
-        style.id = 'custom-select-scrollbar-styles';
-        style.textContent = `
+      const style = document.createElement('style');
+      style.id = 'custom-select-scrollbar-styles';
+      style.textContent = `
             .custom-select-options {
                 scrollbar-width: thin !important;
                 scrollbar-color: rgba(0, 0, 0, 0.2) transparent !important;
@@ -80,7 +80,7 @@
                 background-color: rgba(255, 255, 255, 0.2) !important;
             }
         `;
-        document.head.appendChild(style);
+      document.head.appendChild(style);
     }
 
     document.body.appendChild(backdrop);
@@ -97,7 +97,7 @@
       // Check if we are scrolling inside the options container
       const optionsContainer = e.target.closest('.custom-select-options');
       if (optionsContainer && optionsContainer.scrollTop > 0) {
-          return; // Let the container scroll natively
+        return; // Let the container scroll natively
       }
 
       currentY = e.touches[0].clientY;
@@ -144,22 +144,22 @@
       searchBox.className = 'custom-select-search-box';
       searchBox.style.margin = '0';
       searchBox.style.flex = '1';
-      searchBox.innerHTML = '<i class="fa-solid fa-magnifying-glass" style="opacity: 0.5; margin-right: 8px;"></i> <span style="opacity: 0.5;">Finder / AI Mode</span>';
+      searchBox.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" style="display:inline-block;vertical-align:middle;margin-right:8px;opacity:0.5;"><path d="M17 17L21 21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><path d="M19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19C15.4183 19 19 15.4183 19 11Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg> <span style="opacity: 0.5;">Finder / AI Mode</span>';
       searchBox.addEventListener('click', () => {
         closeModal();
         // Trigger the search modal by focusing the actual search trigger or opening search directly
         const actualSearchInput = document.getElementById('searchTrigger');
         if (actualSearchInput) {
-           actualSearchInput.focus();
-           actualSearchInput.click();
+          actualSearchInput.focus();
+          actualSearchInput.click();
         } else if (typeof openSearchModal === 'function') {
-           openSearchModal();
+          openSearchModal();
         }
       });
 
       const closeBtn = document.createElement('button');
       closeBtn.className = 'custom-select-close-icon';
-      closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+      closeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" style="display:inline-block;vertical-align:middle;"><path d="M19.0005 4.99988L5.00049 18.9999M5.00049 4.99988L19.0005 18.9999" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>';
       closeBtn.style.background = 'transparent';
       closeBtn.style.border = 'none';
       closeBtn.style.fontSize = '20px';
@@ -196,44 +196,44 @@
         item.style.textAlign = 'left';
         item.style.justifyContent = 'flex-start';
         item.style.padding = '12px 20px';
-        
+
         // Highlight selected option
         if (option.value === select.value) {
           item.classList.add('selected');
         }
-        
+
         // If it's a placeholder, style it slightly differently and change text
         if (!option.value) {
-           item.style.opacity = '0.8';
+          item.style.opacity = '0.8';
         }
-        
+
         const displayText = option.value ? option.textContent : "All / Clear Filter";
         item.innerHTML = `<span style="flex: 1;">${displayText}</span>`;
-        
+
         item.addEventListener('click', () => {
           select.selectedIndex = option.index;
           select.value = option.value;
-          
+
           // Show selection immediately
           const container = modal.querySelector('.custom-select-wizard-container');
           const oldView = container.querySelector('.custom-select-wizard-view:not([class*="slide-out"])');
           if (oldView) {
-              const buttons = oldView.querySelectorAll('.custom-select-option');
-              buttons.forEach(btn => btn.classList.remove('selected'));
-              item.classList.add('selected');
-              
-              const actionBtn = oldView.querySelector('.custom-select-footer .promo-primary-btn');
-              if (actionBtn && stepIndex < SELECT_ORDER.length - 1) {
-                  actionBtn.innerHTML = select.value ? 'Continue <i class="fa-solid fa-chevron-right" style="margin-left:5px"></i>' : 'Apply & Close';
-              }
+            const buttons = oldView.querySelectorAll('.custom-select-option');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            item.classList.add('selected');
+
+            const actionBtn = oldView.querySelector('.custom-select-footer .promo-primary-btn');
+            if (actionBtn && stepIndex < SELECT_ORDER.length - 1) {
+              actionBtn.innerHTML = select.value ? 'Continue <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" style="display:inline-block;vertical-align:middle;margin-left:5px"><path d="M9.00005 6C9.00005 6 15 10.4189 15 12C15 13.5812 9 18 9 18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>' : 'Apply & Close';
+            }
           }
 
           try {
-              select.dispatchEvent(new Event('change', { bubbles: true }));
-          } catch(e) {
-              console.warn("Error dispatching change event on option click:", e);
+            select.dispatchEvent(new Event('change', { bubbles: true }));
+          } catch (e) {
+            console.warn("Error dispatching change event on option click:", e);
           }
-          
+
           // Auto-flow to next if a value was selected
           if (select.value && stepIndex < SELECT_ORDER.length - 1) {
             const nextSelect = document.getElementById(SELECT_ORDER[stepIndex + 1]);
@@ -252,68 +252,68 @@
       const footer = document.createElement('div');
       footer.className = 'custom-select-footer';
       footer.style.flexWrap = 'nowrap';
-      
+
       // Buttons roundness formula: inner_radius = outer_radius(40px) - padding(20px) = 20px
       const btnRadius = '20px';
 
       // Prev Button
       const prevBtn = document.createElement('button');
       prevBtn.className = 'site-button promo-secondary-btn';
-      prevBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+      prevBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M15 6C15 6 9.00001 10.4189 9 12C8.99999 13.5812 15 18 15 18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>';
       prevBtn.style.padding = '12px 15px';
       prevBtn.style.flex = '0 0 auto';
       prevBtn.style.width = 'auto';
       prevBtn.style.borderRadius = btnRadius;
       if (stepIndex === 0) {
-          prevBtn.style.opacity = '0.5';
-          prevBtn.style.pointerEvents = 'none';
+        prevBtn.style.opacity = '0.5';
+        prevBtn.style.pointerEvents = 'none';
       } else {
-          prevBtn.addEventListener('click', () => goToStep(stepIndex - 1, false));
+        prevBtn.addEventListener('click', () => goToStep(stepIndex - 1, false));
       }
 
       // Next Button / Start Reading
       const actionBtn = document.createElement('button');
       if (stepIndex === SELECT_ORDER.length - 1) {
-          actionBtn.className = 'site-button promo-primary-btn';
-          actionBtn.innerHTML = 'Start Reading <kbd style="margin-left: 6px; padding: 2px 7px; font-size: 11px; border-radius: 6px; background: rgba(255,255,255,0.22); border: 1px solid rgba(255,255,255,0.35); font-family: system-ui, sans-serif; display: inline-flex; align-items: center; line-height: 1;">↵</kbd>';
-          actionBtn.style.flex = '1'; // flex 1 instead of 1 0 auto to allow shrinking and prevent overflow clipping
-          actionBtn.style.background = 'var(--color-primary, #ff5400)';
-          actionBtn.style.color = '#fff';
-          actionBtn.style.border = 'none';
-          actionBtn.style.padding = '12px 20px';
-          actionBtn.style.fontWeight = 'bold';
-          actionBtn.style.fontFamily = 'inherit';
-          actionBtn.style.whiteSpace = 'nowrap';
-          actionBtn.style.cursor = 'pointer';
-          actionBtn.style.borderRadius = btnRadius;
-          actionBtn.addEventListener('click', () => {
-              closeModal();
-              const submitBtn = document.getElementById('submitButton');
-              if (submitBtn) submitBtn.click();
-          });
+        actionBtn.className = 'site-button promo-primary-btn';
+        actionBtn.innerHTML = 'Start Reading <kbd style="margin-left: 6px; padding: 2px 7px; font-size: 11px; border-radius: 6px; background: rgba(255,255,255,0.22); border: 1px solid rgba(255,255,255,0.35); font-family: system-ui, sans-serif; display: inline-flex; align-items: center; line-height: 1;">↵</kbd>';
+        actionBtn.style.flex = '1'; // flex 1 instead of 1 0 auto to allow shrinking and prevent overflow clipping
+        actionBtn.style.background = 'var(--color-primary, #ff5400)';
+        actionBtn.style.color = '#fff';
+        actionBtn.style.border = 'none';
+        actionBtn.style.padding = '12px 20px';
+        actionBtn.style.fontWeight = 'bold';
+        actionBtn.style.fontFamily = 'inherit';
+        actionBtn.style.whiteSpace = 'nowrap';
+        actionBtn.style.cursor = 'pointer';
+        actionBtn.style.borderRadius = btnRadius;
+        actionBtn.addEventListener('click', () => {
+          closeModal();
+          const submitBtn = document.getElementById('submitButton');
+          if (submitBtn) submitBtn.click();
+        });
       } else {
-          actionBtn.className = 'site-button promo-primary-btn';
-          actionBtn.innerHTML = select.value ? 'Continue <i class="fa-solid fa-chevron-right" style="margin-left:5px"></i>' : 'Apply & Close';
-          actionBtn.style.flex = '1'; // allow shrinking
-          actionBtn.style.background = 'var(--color-primary, #ff5400)';
-          actionBtn.style.color = '#fff';
-          actionBtn.style.border = 'none';
-          actionBtn.style.padding = '12px 20px';
-          actionBtn.style.fontWeight = 'bold';
-          actionBtn.style.fontFamily = 'inherit';
-          actionBtn.style.whiteSpace = 'nowrap';
-          actionBtn.style.cursor = 'pointer';
-          actionBtn.style.borderRadius = btnRadius;
-          
-          actionBtn.addEventListener('click', () => {
-              if (!select.value) {
-                  closeModal();
-                  const submitBtn = document.getElementById('submitButton');
-                  if (submitBtn) submitBtn.click();
-              } else {
-                  goToStep(stepIndex + 1, true);
-              }
-          });
+        actionBtn.className = 'site-button promo-primary-btn';
+        actionBtn.innerHTML = select.value ? 'Continue <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" style="display:inline-block;vertical-align:middle;margin-left:5px"><path d="M9.00005 6C9.00005 6 15 10.4189 15 12C15 13.5812 9 18 9 18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>' : 'Apply & Close';
+        actionBtn.style.flex = '1'; // allow shrinking
+        actionBtn.style.background = 'var(--color-primary, #ff5400)';
+        actionBtn.style.color = '#fff';
+        actionBtn.style.border = 'none';
+        actionBtn.style.padding = '12px 20px';
+        actionBtn.style.fontWeight = 'bold';
+        actionBtn.style.fontFamily = 'inherit';
+        actionBtn.style.whiteSpace = 'nowrap';
+        actionBtn.style.cursor = 'pointer';
+        actionBtn.style.borderRadius = btnRadius;
+
+        actionBtn.addEventListener('click', () => {
+          if (!select.value) {
+            closeModal();
+            const submitBtn = document.getElementById('submitButton');
+            if (submitBtn) submitBtn.click();
+          } else {
+            goToStep(stepIndex + 1, true);
+          }
+        });
       }
 
       footer.appendChild(prevBtn);
@@ -325,20 +325,20 @@
       view.appendChild(footer);
 
       if (!isMobile()) {
-          const kbHint = document.createElement('div');
-          kbHint.className = 'custom-select-keyboard-hint';
-          kbHint.style.textAlign = 'center';
-          kbHint.style.fontSize = '10px';
-          kbHint.style.opacity = '0.5';
-          kbHint.style.paddingTop = '10px';
-          kbHint.style.marginTop = '4px';
-          kbHint.style.flexShrink = '0';
-          kbHint.innerHTML = '<i class="fa-solid fa-keyboard" style="margin-right: 4px;"></i> <kbd style="padding: 1px 4px; border-radius: 3px; border: 1px solid currentColor;">←</kbd> <kbd style="padding: 1px 4px; border-radius: 3px; border: 1px solid currentColor;">→</kbd> <kbd style="padding: 1px 4px; border-radius: 3px; border: 1px solid currentColor;">↑</kbd> <kbd style="padding: 1px 4px; border-radius: 3px; border: 1px solid currentColor;">↓</kbd> & <kbd style="padding: 1px 4px; border-radius: 3px; border: 1px solid currentColor;">Enter</kbd> to navigate';
-          view.appendChild(kbHint);
+        const kbHint = document.createElement('div');
+        kbHint.className = 'custom-select-keyboard-hint';
+        kbHint.style.textAlign = 'center';
+        kbHint.style.fontSize = '10px';
+        kbHint.style.opacity = '0.5';
+        kbHint.style.paddingTop = '10px';
+        kbHint.style.marginTop = '4px';
+        kbHint.style.flexShrink = '0';
+        kbHint.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" style="display:inline-block;vertical-align:middle;margin-right:4px;margin-bottom:2px;"><path d="M14.5 7H9.5C6.21252 7 4.56878 7 3.46243 7.90796C3.25989 8.07418 3.07418 8.25989 2.90796 8.46243C2 9.56878 2 11.2125 2 14.5C2 17.7875 2 19.4312 2.90796 20.5376C3.07418 20.7401 3.25989 20.9258 3.46243 21.092C4.56878 22 6.21252 22 9.5 22H14.5C17.7875 22 19.4312 22 20.5376 21.092C20.7401 20.9258 20.9258 20.7401 21.092 20.5376C22 19.4312 22 17.7875 22 14.5C22 11.2125 22 9.56878 21.092 8.46243C20.9258 8.25989 20.7401 8.07418 20.5376 7.90796C19.4312 7 17.7875 7 14.5 7Z" stroke="currentColor" stroke-linecap="round"/><path d="M12 7V5C12 4.44772 12.4477 4 13 4C13.5523 4 14 3.55228 14 3V2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 12L8 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.5 12L12.5 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 12L17 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 17L17 17" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg> Use&#8201;<kbd style="padding: 1px 4px; border-radius: 3px; border: 1px solid currentColor;">←</kbd> <kbd style="padding: 1px 4px; border-radius: 3px; border: 1px solid currentColor;">→</kbd> <kbd style="padding: 1px 4px; border-radius: 3px; border: 1px solid currentColor;">↑</kbd> <kbd style="padding: 1px 4px; border-radius: 3px; border: 1px solid currentColor;">↓</kbd> & <kbd style="padding: 1px 4px; border-radius: 3px; border: 1px solid currentColor;">Enter</kbd> to navigate';
+        view.appendChild(kbHint);
       }
 
       return view;
-    } catch(err) {
+    } catch (err) {
       alert("renderWizardStep Error: " + err.message + "\n" + err.stack);
       console.error(err);
       return null;
@@ -349,76 +349,76 @@
     if (!modal) return;
     const container = modal.querySelector('.custom-select-wizard-container');
     if (!container) return;
-    
+
     // Force remove any old views that got stuck
     const stuckViews = container.querySelectorAll('.custom-select-wizard-view[class*="slide-out"]');
     stuckViews.forEach(v => v.remove());
-    
+
     const oldView = container.querySelector('.custom-select-wizard-view:not([class*="slide-out"])');
     const startHeight = container.getBoundingClientRect().height;
     if (startHeight > 0) {
-        container.style.height = `${startHeight}px`;
+      container.style.height = `${startHeight}px`;
     }
-    
+
     currentStepIndex = newIndex;
     const newView = renderWizardStep(newIndex, forward ? 'wizard-slide-in-right' : 'wizard-slide-in-left');
-    
-    if (oldView) {
-        oldView.style.position = 'absolute';
-        oldView.style.top = '0';
-        oldView.style.left = '0';
-        oldView.style.right = '0';
-        oldView.style.width = '100%';
-        oldView.style.zIndex = '0';
-        oldView.style.pointerEvents = 'none';
-        oldView.classList.add(forward ? 'wizard-slide-out-left' : 'wizard-slide-out-right');
-        setTimeout(() => {
-            if (oldView && oldView.parentNode) {
-                oldView.remove();
-            }
-        }, 280);
-    }
-    
-    container.appendChild(newView);
-    
-    requestAnimationFrame(() => {
-        const targetHeight = newView.getBoundingClientRect().height;
-        if (targetHeight > 0) {
-            container.style.height = `${targetHeight}px`;
-        }
-        
-        setTimeout(() => {
-            if (container) container.style.height = '';
-        }, 300);
 
-        const selected = newView.querySelector('.selected');
-        if (selected) {
-            const optionsContainer = newView.querySelector('.custom-select-options');
-            if (optionsContainer) {
-                optionsContainer.scrollTop = selected.offsetTop - optionsContainer.offsetTop - 20;
-            }
+    if (oldView) {
+      oldView.style.position = 'absolute';
+      oldView.style.top = '0';
+      oldView.style.left = '0';
+      oldView.style.right = '0';
+      oldView.style.width = '100%';
+      oldView.style.zIndex = '0';
+      oldView.style.pointerEvents = 'none';
+      oldView.classList.add(forward ? 'wizard-slide-out-left' : 'wizard-slide-out-right');
+      setTimeout(() => {
+        if (oldView && oldView.parentNode) {
+          oldView.remove();
         }
+      }, 280);
+    }
+
+    container.appendChild(newView);
+
+    requestAnimationFrame(() => {
+      const targetHeight = newView.getBoundingClientRect().height;
+      if (targetHeight > 0) {
+        container.style.height = `${targetHeight}px`;
+      }
+
+      setTimeout(() => {
+        if (container) container.style.height = '';
+      }, 300);
+
+      const selected = newView.querySelector('.selected');
+      if (selected) {
+        const optionsContainer = newView.querySelector('.custom-select-options');
+        if (optionsContainer) {
+          optionsContainer.scrollTop = selected.offsetTop - optionsContainer.offsetTop - 20;
+        }
+      }
     });
   }
 
   function openModal(selectId) {
     try {
       if (closeTimeout) {
-          clearTimeout(closeTimeout);
-          closeTimeout = null;
+        clearTimeout(closeTimeout);
+        closeTimeout = null;
       }
 
       const select = document.getElementById(selectId);
       if (!select || select.disabled) return;
 
       createModal();
-      
+
       const targetIndex = SELECT_ORDER.indexOf(selectId);
       currentStepIndex = targetIndex !== -1 ? targetIndex : 0;
-      
+
       const container = modal.querySelector('.custom-select-wizard-container');
       container.innerHTML = ''; // Clear previous state
-      
+
       const newView = renderWizardStep(currentStepIndex, '');
       container.appendChild(newView);
 
@@ -429,18 +429,18 @@
       backdrop.style.opacity = '1';
       modal.style.transform = '';
       document.body.style.overflow = 'hidden';
-      
+
       // Update opened time so synthetic clicks don't close it instantly
       backdrop.dataset.openedTime = Date.now();
 
       requestAnimationFrame(() => {
-          const selected = newView.querySelector('.selected');
-          if (selected) {
-              const optionsContainer = newView.querySelector('.custom-select-options');
-              if (optionsContainer) {
-                  optionsContainer.scrollTop = selected.offsetTop - optionsContainer.offsetTop - 20;
-              }
+        const selected = newView.querySelector('.selected');
+        if (selected) {
+          const optionsContainer = newView.querySelector('.custom-select-options');
+          if (optionsContainer) {
+            optionsContainer.scrollTop = selected.offsetTop - optionsContainer.offsetTop - 20;
           }
+        }
       });
     } catch (err) {
       alert("openModal Error: " + err.message + "\n" + err.stack);
@@ -456,8 +456,8 @@
       backdrop.style.display = 'none';
       document.body.style.overflow = '';
       if (modal) {
-          const container = modal.querySelector('.custom-select-wizard-container');
-          if (container) container.innerHTML = '';
+        const container = modal.querySelector('.custom-select-wizard-container');
+        if (container) container.innerHTML = '';
       }
     }, 400); // match promo transition
   }
@@ -469,50 +469,50 @@
   function handleSelectIntercept(e) {
     try {
       SELECT_ORDER.forEach(id => {
-          const select = document.getElementById(id);
-          if (!select) return;
-          const wrapper = select.parentElement;
-          
-          let clickedLabel = false;
-          const label = e.target.closest('label');
-          if (label && label.htmlFor === id) {
-              clickedLabel = true;
-          }
+        const select = document.getElementById(id);
+        if (!select) return;
+        const wrapper = select.parentElement;
 
-          const isTarget = (e.target === select || (wrapper && wrapper.contains(e.target)));
+        let clickedLabel = false;
+        const label = e.target.closest('label');
+        if (label && label.htmlFor === id) {
+          clickedLabel = true;
+        }
 
-          if (clickedLabel || isTarget) {
-              if (!select.disabled) {
-                  if (e.cancelable) {
-                      e.preventDefault();
-                  }
-                  e.stopPropagation();
-                  
-                  const now = Date.now();
-                  if (now - lastTriggeredTime > 200) {
-                      lastTriggeredTime = now;
-                      openModal(id);
-                  }
-              }
+        const isTarget = (e.target === select || (wrapper && wrapper.contains(e.target)));
+
+        if (clickedLabel || isTarget) {
+          if (!select.disabled) {
+            if (e.cancelable) {
+              e.preventDefault();
+            }
+            e.stopPropagation();
+
+            const now = Date.now();
+            if (now - lastTriggeredTime > 200) {
+              lastTriggeredTime = now;
+              openModal(id);
+            }
           }
+        }
       });
-    } catch(err) {
+    } catch (err) {
       alert("handleSelectIntercept Error: " + err.message + "\n" + err.stack);
     }
   }
 
   INTERCEPT_EVENTS.forEach(eventName => {
-      document.addEventListener(eventName, handleSelectIntercept, true);
+    document.addEventListener(eventName, handleSelectIntercept, true);
   });
 
   // Intercept focus events to prevent native browser selects from opening/getting focus
   document.addEventListener('focus', (e) => {
-      if (SELECT_ORDER.includes(e.target.id)) {
-          e.target.blur();
-          if (!e.target.disabled) {
-              openModal(e.target.id);
-          }
+    if (SELECT_ORDER.includes(e.target.id)) {
+      e.target.blur();
+      if (!e.target.disabled) {
+        openModal(e.target.id);
       }
+    }
   }, true);
 
   // Setup pointer-events to auto initially (allowing direct pointer capture)
@@ -520,38 +520,38 @@
     SELECT_ORDER.forEach(id => {
       const select = document.getElementById(id);
       if (select) {
-          select.style.pointerEvents = 'auto'; // allow JS to catch it directly
-          select.setAttribute('tabindex', '-1');
-          
-          if (!select._customIntercepted) {
-              select._customIntercepted = true;
-              
-              const blockAndOpen = (e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  select.blur(); // immediately remove focus to stop native UI
-                  
-                  const now = Date.now();
-                  if (now - lastTriggeredTime > 200 && !select.disabled) {
-                      lastTriggeredTime = now;
-                      openModal(id);
-                  }
-              };
-              
-              select.addEventListener('touchstart', blockAndOpen, {passive: false, capture: true});
-              select.addEventListener('mousedown', blockAndOpen, {capture: true});
-              select.addEventListener('click', blockAndOpen, {capture: true});
-              
-              // Also catch clicks on the wrapper just in case
-              const wrapper = select.parentElement;
-              if (wrapper) {
-                  wrapper.addEventListener('click', (e) => {
-                      if (e.target !== select) {
-                          blockAndOpen(e);
-                      }
-                  });
+        select.style.pointerEvents = 'auto'; // allow JS to catch it directly
+        select.setAttribute('tabindex', '-1');
+
+        if (!select._customIntercepted) {
+          select._customIntercepted = true;
+
+          const blockAndOpen = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            select.blur(); // immediately remove focus to stop native UI
+
+            const now = Date.now();
+            if (now - lastTriggeredTime > 200 && !select.disabled) {
+              lastTriggeredTime = now;
+              openModal(id);
+            }
+          };
+
+          select.addEventListener('touchstart', blockAndOpen, { passive: false, capture: true });
+          select.addEventListener('mousedown', blockAndOpen, { capture: true });
+          select.addEventListener('click', blockAndOpen, { capture: true });
+
+          // Also catch clicks on the wrapper just in case
+          const wrapper = select.parentElement;
+          if (wrapper) {
+            wrapper.addEventListener('click', (e) => {
+              if (e.target !== select) {
+                blockAndOpen(e);
               }
+            });
           }
+        }
       }
     });
   }
@@ -583,7 +583,7 @@
       options[nextIndex].classList.add('selected');
       const optionsContainer = activeView.querySelector('.custom-select-options');
       if (optionsContainer) {
-          optionsContainer.scrollTop = options[nextIndex].offsetTop - optionsContainer.offsetTop - 20;
+        optionsContainer.scrollTop = options[nextIndex].offsetTop - optionsContainer.offsetTop - 20;
       }
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
@@ -595,7 +595,7 @@
       options[prevIndex].classList.add('selected');
       const optionsContainer = activeView.querySelector('.custom-select-options');
       if (optionsContainer) {
-          optionsContainer.scrollTop = options[prevIndex].offsetTop - optionsContainer.offsetTop - 20;
+        optionsContainer.scrollTop = options[prevIndex].offsetTop - optionsContainer.offsetTop - 20;
       }
     } else if (e.key === 'ArrowLeft') {
       e.preventDefault();
@@ -614,13 +614,13 @@
       if (currentIndex !== -1) {
         options[currentIndex].click();
       }
-      
+
       const actionBtn = activeView.querySelector('.custom-select-footer .promo-primary-btn');
       if (actionBtn && !actionBtn.style.pointerEvents) {
-          const isLastStep = actionBtn.textContent.includes('Start Reading');
-          if (isLastStep || currentIndex === -1) {
-              actionBtn.click();
-          }
+        const isLastStep = actionBtn.textContent.includes('Start Reading');
+        if (isLastStep || currentIndex === -1) {
+          actionBtn.click();
+        }
       }
     }
   });

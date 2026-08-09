@@ -41,16 +41,21 @@ function getUserIdentityPayload() {
 }
 
 function formatLeaderboardValue(entry) {
-  const readHours = formatHours(entry.totalReadSec || 0);
+  const readTime = formatTime(entry.totalReadSec || 0);
   const uniques = Number(entry.uniquePdfs || 0).toLocaleString();
-  return `${readHours}h • ${uniques} unique`;
+  return `${readTime} • ${uniques} unique`;
 }
 
-function formatHours(seconds) {
+function formatTime(seconds) {
   const safeSeconds = Math.max(0, Number(seconds) || 0);
+  if (safeSeconds < 3600) {
+    const minutes = Math.floor(safeSeconds / 60);
+    return `${minutes}m`;
+  }
   const hours = safeSeconds / 3600;
   const rounded = Math.round(hours * 10) / 10;
-  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+  const formattedHours = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+  return `${formattedHours}h`;
 }
 
 function escapeHtml(value) {
@@ -174,14 +179,14 @@ function renderOtherRows(entries) {
     .map((entry) => {
       const rank = Number(entry.rank);
       const name = escapeHtml(entry.displayName || `Reader ${rank}`);
-      const readHours = escapeHtml(formatHours(entry.totalReadSec || 0));
+      const readTime = escapeHtml(formatTime(entry.totalReadSec || 0));
       const uniques = Number(entry.uniquePdfs || 0).toLocaleString();
 
       return `
         <tr>
           <td class="leaderboard-table-rank">#${rank}</td>
           <td class="leaderboard-table-name" title="${name}">${name}</td>
-          <td class="leaderboard-table-metric">${readHours}h</td>
+          <td class="leaderboard-table-metric">${readTime}</td>
           <td class="leaderboard-table-metric">${uniques}</td>
         </tr>
       `;
@@ -194,7 +199,7 @@ function renderOtherRows(entries) {
         <tr>
           <th>Rank</th>
           <th>Name</th>
-          <th style="text-align:right;">Time (hrs)</th>
+          <th style="text-align:right;">Time</th>
           <th style="text-align:right;">Unique</th>
         </tr>
       </thead>
@@ -438,7 +443,7 @@ function updateLeaderboardSubtitle() {
     return;
   }
 
-  subtitle.textContent = 'Showing summed data across all recorded daily entries.';
+  subtitle.textContent = 'Showing summed data for the last 7 days.';
 }
 
 async function loadLeaderboardData(rangeMode = leaderboardRangeMode) {

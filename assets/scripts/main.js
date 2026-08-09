@@ -2081,6 +2081,9 @@ async function loadInsightroomPosts() {
     // Hide loading
     if (loadingEl) loadingEl.style.display = "none";
 
+    // Keep the exam card if it exists in the default view
+    const examCardDefault = defaultPostsContainer.querySelector("#examCardDefault");
+
     // Replace any server-rendered fallback cards so the live feed stays authoritative.
     defaultPostsContainer.innerHTML = "";
 
@@ -2126,6 +2129,10 @@ async function loadInsightroomPosts() {
             `;
       defaultPostsContainer.insertAdjacentHTML("beforeend", postHTML);
     });
+
+    if (examCardDefault) {
+      defaultPostsContainer.prepend(examCardDefault);
+    }
 
     // Populate allPostsData for filtering/recommendations
     const postsData = publicPosts.map((post) => ({

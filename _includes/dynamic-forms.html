@@ -4,13 +4,13 @@
     aria-labelledby="dynamicFormTitle">
     <div class="promo-modal dynamic-form-modal">
         <!-- Close Button -->
-        <i class="fas fa-times promo-close-btn" onclick="closeDynamicForm()"></i>
+        <i class="fas fa-times promo-close-btn" onclick="closeDynamicForm()" aria-hidden="true">{% include hugeicon.html name="cancel-01" %}</i>
 
         <!-- Content Panel (no image panel for forms) -->
         <div class="promo-content dynamic-form-content-wrapper">
             <!-- Header -->
             <div class="dynamic-form-header">
-                <i id="dynamicFormIcon" class="fa-solid fa-circle-plus dynamic-form-icon"></i>
+                <i id="dynamicFormIcon" class="fa-solid fa-circle-plus dynamic-form-icon" aria-hidden="true">{% include hugeicon.html name="plus-sign-circle" %}</i>
                 <h2 id="dynamicFormTitle">Form Title</h2>
                 <p id="dynamicFormDescription" class="promo-description">Form description goes here</p>
             </div>
@@ -19,7 +19,7 @@
             <form id="dynamicFormContent" class="dynamic-form-fields-container">
                 <!-- Loading State -->
                 <div id="dynamicFormLoading" class="dynamic-form-loading" style="display: none;">
-                    <i class="fa-regular fa-loader fa-spin"></i>
+                    <i class="fa-regular fa-loader fa-spin" aria-hidden="true">{% include hugeicon.html name="loader" %}</i>
                     <span>Loading form...</span>
                 </div>
 
@@ -34,12 +34,12 @@
             <div class="promo-actions dynamic-form-actions">
                 <button type="button" id="dynamicFormSubmitBtn" class="site-button promo-primary-btn"
                     onclick="submitDynamicForm()">
-                    <i id="dynamicFormSubmitIcon" class="fa-solid fa-paper-plane" style="margin-right: 8px;"></i>
+                    <i id="dynamicFormSubmitIcon" class="fa-solid fa-paper-plane" style="margin-right: 8px;" aria-hidden="true">{% include hugeicon.html name="paper-plane" %}</i>
                     <span id="dynamicFormSubmitText">Submit</span>
                 </button>
                 <button type="button" id="dynamicFormBuildJsonBtn" class="site-button promo-secondary-btn" 
                     onclick="buildJsonForContribution()" style="display: none; margin-top: 10px; width: 100%; justify-content: center;">
-                    <i class="fa-solid fa-code" style="margin-right: 8px;"></i>
+                    <i class="fa-solid fa-code" style="margin-right: 8px;" aria-hidden="true">{% include hugeicon.html name="code-01" %}</i>
                     <span>Build JSON Object</span>
                 </button>
             </div>
@@ -47,7 +47,7 @@
             <!-- Success State -->
             <div id="dynamicFormSuccess" class="dynamic-form-result" style="display: none;">
                 <div class="result-icon success-icon">
-                    <i class="fas fa-check-circle"></i>
+                    <i class="fas fa-check-circle" aria-hidden="true">{% include hugeicon.html name="checkmark-circle-01" %}</i>
                 </div>
                 <h3>Thank You!</h3>
                 <p id="dynamicFormSuccessMessage">Your submission has been received.</p>
@@ -58,7 +58,7 @@
             <!-- Error State -->
             <div id="dynamicFormError" class="dynamic-form-result" style="display: none;">
                 <div class="result-icon error-icon">
-                    <i class="fas fa-exclamation-circle"></i>
+                    <i class="fas fa-exclamation-circle" aria-hidden="true">{% include hugeicon.html name="alert-circle" %}</i>
                 </div>
                 <h3>Something went wrong</h3>
                 <p id="dynamicFormErrorMessage">Please try again later.</p>
@@ -413,16 +413,24 @@
         margin: 0 0 24px;
     }
 
-    /* Mobile Bottom Sheet */
-    @media (max-width: 500px) {
+    /* Mobile Bottom Sheet & Form Modals */
+    @media (max-width: 768px) {
+        .dynamic-form-overlay {
+            padding: 5px !important;
+            box-sizing: border-box !important;
+        }
+
         .dynamic-form-modal {
-            max-width: calc(100% - 20px);
-            width: calc(100% - 20px);
+            max-width: calc(100% - 10px) !important;
+            width: calc(100% - 10px) !important;
+            padding: 0 !important;
             border-radius: 24px;
+            box-sizing: border-box !important;
         }
 
         .dynamic-form-content-wrapper {
-            padding: 22px 18px 18px;
+            padding: 5px !important;
+            box-sizing: border-box !important;
         }
 
         .dynamic-form-icon-wrapper {

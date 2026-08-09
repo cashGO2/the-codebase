@@ -26,9 +26,16 @@ build_id: "${buildId}"
 build_timestamp: "${timestamp}"
 `;
 
-// Write to Jekyll data file
+// Write to Jekyll data files (YAML and JSON)
 const outputPath = path.join(dataDir, 'build_id.yml');
 fs.writeFileSync(outputPath, yamlContent, 'utf8');
+
+const jsonContent = JSON.stringify({
+    build_id: buildId,
+    build_timestamp: timestamp
+}, null, 2);
+const jsonOutputPath = path.join(dataDir, 'build_id.json');
+fs.writeFileSync(jsonOutputPath, jsonContent, 'utf8');
 
 // Maintain build history in JSON format
 const historyPath = path.join(dataDir, 'build_history.json');

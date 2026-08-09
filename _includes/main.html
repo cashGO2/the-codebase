@@ -92,7 +92,7 @@
             <div class="profile-icon-container">
                 <a href="#" class="tab-link profile-icon" data-tab="settings" role="button"
                     aria-label="Profile and Settings">
-                    <i id="settings-icon" class="far fa-cog"></i>
+                    <i id="settings-icon" class="far fa-cog" aria-hidden="true">{% include hugeicon.html name="settings-01" %}</i>
                     <img id="profile-image" src="/assets/img/default-avatar.svg" style="display: none;"
                         alt="Profile Picture">
                 </a>
@@ -102,55 +102,53 @@
                 <div id="profile-dropdown" class="profile-dropdown" role="menu" aria-hidden="true">
                     <div id="profile-menu-item" class="dropdown-item" role="menuitem" tabindex="-1"
                         onclick="if(!this.classList.contains('has-submenu')&&!localStorage.getItem('materio_auth_token')&&!localStorage.getItem('materio_user')){window.location.href='/account?callback=../';}">
-                        <i class="fa-regular fa-user" aria-hidden="true"></i>
+                        <i class="dropdown-icon" aria-hidden="true">{% include hugeicon.html name="user" %}</i>
                         <span id="profile-item-text">Account</span>
-                        <i class="fa-regular fa-chevron-right submenu-chevron" id="profile-chevron"
-                            aria-hidden="true"></i>
+                        <i class="submenu-chevron" id="profile-chevron"
+                            aria-hidden="true">{% include hugeicon.html name="arrow-right-01" %}</i>
                         <div class="dropdown-submenu" id="profile-submenu">
                             <div class="dropdown-item submenu-back-btn mobile-only">
-                                <i class="fa-regular fa-arrow-left" aria-hidden="true"></i>
+                                <i class="dropdown-icon" aria-hidden="true">{% include hugeicon.html name="arrow-left-01" %}</i>
                                 <span>Back</span>
                             </div>
                             <a href="/account/profile" class="dropdown-item">
-                                <i class="fa-regular fa-user-circle" aria-hidden="true"></i>
+                                <i class="dropdown-icon" aria-hidden="true">{% include hugeicon.html name="user-circle" %}</i>
                                 <span>Profile</span>
                             </a>
                             <a href="#" class="dropdown-item" id="logout-btn"
                                 onclick="if(window.handleLogout) { window.handleLogout(); } return false;">
-                                <i class="fa-regular fa-sign-out-alt" aria-hidden="true"></i>
+                                <i class="dropdown-icon" aria-hidden="true">{% include hugeicon.html name="logout" %}</i>
                                 <span>Log Out</span>
                             </a>
                         </div>
                     </div>
                     <div class="dropdown-item has-submenu" role="menuitem" tabindex="-1">
-                        <i class="fa-regular fa-book-bookmark" aria-hidden="true"></i>
+                        <i class="dropdown-icon" aria-hidden="true">{% include hugeicon.html name="bookmark-02" %}</i>
                         <span>Notebooks</span>
-                        <i class="fa-regular fa-chevron-right submenu-chevron" aria-hidden="true"></i>
+                        <i class="submenu-chevron" aria-hidden="true">{% include hugeicon.html name="arrow-right-01" %}</i>
                         <div class="dropdown-submenu" role="menu" aria-hidden="true">
                             <div class="dropdown-item submenu-back-btn mobile-only">
-                                <i class="fa-regular fa-arrow-left" aria-hidden="true"></i>
+                                <i class="dropdown-icon" aria-hidden="true">{% include hugeicon.html name="arrow-left-01" %}</i>
                                 <span>Back</span>
                             </div>
-                            <a href="#" class="dropdown-item" onclick="createNewNotebook(true); return false;"
-                                role="menuitem" tabindex="-1">
-                                <i class="fa-regular fa-plus" aria-hidden="true"></i>
+                            <div class="dropdown-item" onclick="createNewNotebook(true); return false;" role="menuitem" tabindex="-1">
+                                <i class="dropdown-icon" aria-hidden="true">{% include hugeicon.html name="plus-sign-circle" %}</i>
                                 <span>Create</span>
-                            </a>
-                            <a href="#notebooks" class="dropdown-item tab-link" data-tab="notebooks" role="menuitem"
-                                tabindex="-1">
-                                <i class="fa-regular fa-tasks" aria-hidden="true"></i>
+                            </div>
+                            <div class="dropdown-item tab-link" data-tab="notebooks" role="menuitem" tabindex="-1">
+                                <i class="dropdown-icon" aria-hidden="true">{% include hugeicon.html name="task-01" %}</i>
                                 <span>Manage</span>
-                            </a>
+                            </div>
                         </div>
                     </div>
-                    <a href="#5" class="dropdown-item" data-action="downloads" role="menuitem" tabindex="-1">
-                        <i class="fa-regular fa-folder-arrow-down" aria-hidden="true"></i>
+                    <div class="dropdown-item" data-action="downloads" role="menuitem" tabindex="-1">
+                        <i class="dropdown-icon" aria-hidden="true">{% include hugeicon.html name="folder-download" %}</i>
                         <span>Downloads</span>
-                    </a>
-                    <a href="#4" class="dropdown-item" data-action="settings" role="menuitem" tabindex="-1">
-                        <i class="fa-regular fa-cog" aria-hidden="true"></i>
+                    </div>
+                    <div class="dropdown-item" data-action="settings" role="menuitem" tabindex="-1">
+                        <i class="dropdown-icon" aria-hidden="true">{% include hugeicon.html name="settings-01" %}</i>
                         <span>Settings</span>
-                    </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -162,7 +160,7 @@
         <div class="keyboard-shortcuts-backdrop" id="keyboardShortcutsBackdrop"></div>
         <div class="keyboard-shortcuts-dialog">
             <button class="shortcuts-close-btn" id="shortcutsCloseBtn" aria-label="Close">
-                <i class="fas fa-times"></i>
+                <i class="fas fa-times" aria-hidden="true">{% include hugeicon.html name="cancel-01" %}</i>
             </button>
             {% include keyboard-shortcuts.html %}
         </div>
@@ -206,16 +204,22 @@
                         <div class="quick-search-wrapper">
                             <div class="quick-search-border-glow"></div>
                             <div class="pulse-wave"></div>
-                            <i class="far fa-search quick-search-icon-left"></i>
+                            <i class="far fa-search quick-search-icon-left" aria-hidden="true">{% include hugeicon.html name="search-01" %}</i>
                             <input type="text" id="quickSearchInput" placeholder="Finder" autocomplete="off"
                                 spellcheck="false" autocapitalize="off" />
                             <button id="clearSearchBtn" class="clear-search-btn" title="Clear Search"
                                 aria-label="Clear Search" style="display: none;">
-                                <i class="fa-solid fa-xmark"></i>
+                                <i class="fa-solid fa-xmark" aria-hidden="true">{% include hugeicon.html name="cancel-01" %}</i>
                             </button>
                             <button id="aiSearchToggle" class="ai-search-toggle" title="Toggle AI Search"
                                 aria-label="Toggle AI Mode">
-                                <i class="far fa-sparkles"></i> AI Mode
+                                <i class="far fa-sparkles" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1.15em" height="1.15em" color="currentColor" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" style="vertical-align: middle;">
+                                        <path d="M19 9.62069C19 12.1999 17.7302 14.1852 15.7983 15.4917C15.3483 15.796 15.1233 15.9482 15.0122 16.1212C14.9012 16.2942 14.8633 16.5214 14.7876 16.9757L14.7287 17.3288C14.5957 18.127 14.5292 18.526 14.2494 18.763C13.9697 19 13.5651 19 12.7559 19H10.1444C9.33528 19 8.93069 19 8.65095 18.763C8.3712 18.526 8.30469 18.127 8.17166 17.3288L8.11281 16.9757C8.03734 16.5229 7.99961 16.2965 7.88968 16.1243C7.77976 15.9521 7.55428 15.798 7.10332 15.4897C5.1919 14.1832 4 12.1986 4 9.62069C4 5.4119 7.35786 2 11.5 2C12.0137 2 12.5153 2.05248 13 2.15244" stroke-linecap="round"></path>
+                                        <path d="M16.5 2L16.7579 2.69703C17.0961 3.61102 17.2652 4.06802 17.5986 4.40139C17.932 4.73477 18.389 4.90387 19.303 5.24208L20 5.5L19.303 5.75792C18.389 6.09613 17.932 6.26524 17.5986 6.59861C17.2652 6.93198 17.0961 7.38898 16.7579 8.30297L16.5 9L16.2421 8.30297C15.9039 7.38898 15.7348 6.93198 15.4014 6.59861C15.068 6.26524 14.611 6.09613 13.697 5.75792L13 5.5L13.697 5.24208C14.611 4.90387 15.068 4.73477 15.4014 4.40139C15.7348 4.06802 15.9039 3.61102 16.2421 2.69703L16.5 2Z"></path>
+                                        <path d="M13.5 19V20C13.5 20.9428 13.5 21.4142 13.2071 21.7071C12.9142 22 12.4428 22 11.5 22C10.5572 22 10.0858 22 9.79289 21.7071C9.5 21.4142 9.5 20.9428 9.5 20V19"></path>
+                                    </svg>
+                                </i> AI Mode
                             </button>
                         </div>
                     </div>
@@ -226,7 +230,7 @@
                             style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 45px; height: 45px; min-width: 45px; background: var(--color-primary-light); border: 1px solid var(--color-primary-border); border-radius: 25px; color: var(--color-primary); cursor: var(--f-cursor-pointer); transition: all 0.3s ease; backdrop-filter: blur(4px);"
                             onmouseover="this.style.background='var(--color-primary-hover-light)'; this.style.transform='translateY(-2px)'"
                             onmouseout="this.style.background='var(--color-primary-light)'; this.style.transform='translateY(0)'">
-                            <i class="far fa-circle-plus" style="font-size: 18px;"></i>
+                            <i class="far fa-circle-plus" style="font-size: 18px;" aria-hidden="true">{% include hugeicon.html name="plus-sign-circle" %}</i>
                             <span class="tooltip-text"
                                 style="position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;">Contribute</span>
                         </button>
@@ -240,11 +244,19 @@
             <!-- AI Connectors Banner -->
             <div class="ai-connectors-banner" id="aiConnectorsBanner" style="display: none;" onclick="openMcpModal()">
                 <div class="ai-banner-content">
-                    <span class="ai-banner-text">
-                        <span class="desktop-only-text">Try Integrations with ChatGPT, Claude, Perplexity and
-                            Thinklet.</span>
-                        <span class="mobile-only">Try Thinklet</span>
-                    </span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink: 0;">
+                            <path d="M22 18C22 19.4001 22 20.1002 21.7275 20.635C21.4878 21.1054 21.1054 21.4878 20.635 21.7275C20.635 21.7275 20.635 21.7275 20.635 21.7275C20.1002 22 19.4001 22 18 22C16.5999 22 15.8998 22 15.365 21.7275C14.8946 21.4878 14.5122 21.1054 14.2725 20.635C14 20.1002 14 19.4001 14 18C14 16.5999 14 15.8998 14.2725 15.365C14.5122 14.8946 14.8946 14.5122 15.365 14.2725C15.8998 14 16.5999 14 18 14C19.4001 14 20.1002 14 20.635 14.2725C21.1054 14.5122 21.4878 14.8946 21.7275 15.365C22 15.8998 22 16.5999 22 18Z"></path>
+                            <path d="M22 10C22 11.4001 22 12.1002 21.7275 12.635C21.4878 13.1054 21.1054 13.4878 20.635 13.7275C20.1002 14 19.4001 14 18 14C16.5999 14 15.8998 14 15.365 13.7275C14.8946 13.4878 14.5122 13.1054 14.2725 12.635C14 12.1002 14 11.4001 14 10C14 8.59987 14 7.8998 14.2725 7.36502C14.5122 6.89462 14.8946 6.51217 15.365 6.27248C15.8998 6 16.5999 6 18 6C19.4001 6 20.1002 6 20.635 6.27248C21.1054 6.51217 21.4878 6.89462 21.7275 7.36502C22 7.8998 22 8.59987 22 10Z"></path>
+                            <path d="M14 18C14 19.4001 14 20.1002 13.7275 20.635C13.4878 21.1054 13.1054 21.4878 12.635 21.7275C12.1002 22 11.4001 22 10 22C8.59987 22 7.8998 22 7.36502 21.7275C6.89462 21.4878 6.51217 21.1054 6.27248 20.635C6 20.1002 6 19.4001 6 18C6 16.5999 6 15.8998 6.27248 15.365C6.51217 14.8946 6.89462 14.5122 7.36502 14.2725C7.8998 14 8.59987 14 10 14C11.4001 14 12.1002 14 12.635 14.2725C13.1054 14.5122 13.4878 14.8946 13.7275 15.365C14 15.8998 14 16.5999 14 18Z"></path>
+                            <path d="M10 6C10 7.40013 10 8.1002 9.72752 8.63497C9.48783 9.10538 9.10538 9.48783 8.63498 9.72752C8.1002 10 7.40013 10 6 10C4.59987 10 3.8998 10 3.36502 9.72751C2.89462 9.48783 2.51217 9.10538 2.27248 8.63497C2 8.10019 2 7.40013 2 6C2 4.59987 2 3.8998 2.27248 3.36502C2.51217 2.89462 2.89462 2.51217 3.36502 2.27248C3.8998 2 4.59987 2 6 2C7.40013 2 8.1002 2 8.63498 2.27248C9.10538 2.51217 9.48783 2.89462 9.72752 3.36502C10 3.8998 10 4.59987 10 6Z"></path>
+                        </svg>
+                        <span class="ai-banner-text">
+                            <span class="desktop-only-text">Try Integrations with ChatGPT, Claude, Perplexity and
+                                Thinklet.</span>
+                            <span class="mobile-only">Try Thinklet</span>
+                        </span>
+                    </div>
                     <div class="ai-banner-right">
                         <div class="ai-icons-group">
                             <img src="https://www.google.com/s2/favicons?sz=128&domain=perplexity.ai" alt="Perplexity"
@@ -256,7 +268,7 @@
                             <img src="https://chat.getmaterio.app/favicon.png" alt="Thinklet"
                                 class="ai-icon thinklet-icon">
                         </div>
-                        <i class="fas fa-chevron-right ai-banner-chevron"></i>
+                        <i class="fas fa-chevron-right ai-banner-chevron" aria-hidden="true">{% include hugeicon.html name="arrow-right-01" %}</i>
                     </div>
                 </div>
             </div>
@@ -266,15 +278,15 @@
                 <!-- Header row - always visible, clickable in folded mode -->
                 <div class="blog-header-container" id="blogHeaderContainer">
                     <h2 id="blogCardHeading" class="blog-header-title"><i class="fa-solid fa-lightbulb-on"
-                            style="color: var(--color-primary); margin-right: 8px;"></i>Latest from the Insightroom</h2>
+                            style="color: var(--color-primary); margin-right: 8px;" aria-hidden="true">{% include hugeicon.html name="book-open-02" %}</i>Latest from the Insightroom</h2>
                     <div class="blog-header-right">
                         <a href="https://insightroom.vercel.app" class="view-more-btn">
                             View More
-                            <i class="fas fa-arrow-up" style="transform: rotate(45deg); font-size: 12px;"></i>
+                            <i class="fas fa-arrow-up" style="transform: rotate(45deg); font-size: 12px;" aria-hidden="true">{% include hugeicon.html name="arrow-up-01" %}</i>
                         </a>
                         <!-- Chevron for folded mode (hidden by default) -->
                         <i class="fas fa-chevron-down blog-fold-chevron" id="blogFoldChevron"
-                            style="display: none; color: var(--color-primary); font-size: 14px; margin-left: 12px; cursor: var(--f-cursor-pointer); transition: transform 0.3s ease;"></i>
+                            style="display: none; color: var(--color-primary); font-size: 14px; margin-left: 12px; cursor: var(--f-cursor-pointer); transition: transform 0.3s ease;" aria-hidden="true">{% include hugeicon.html name="arrow-down-01" %}</i>
                     </div>
                 </div>
 
@@ -323,7 +335,7 @@
                             <!-- View 1: Pre-Exam (Before exams start) -->
                             <div class="exam-view exam-view-preexam" id="examViewPreexamDefault" style="display: none;">
                                 <div class="exam-card-header">
-                                    <i class="fa-solid fa-calendar-check"></i>
+                                    <i class="fa-solid fa-calendar-check" aria-hidden="true">{% include hugeicon.html name="calendar-check" %}</i>
                                     <span>Exams are in the way!</span>
                                 </div>
                                 <p class="exam-subtitle">Your <span id="examPeriodNameDefault">Mid Semester</span> exams
@@ -343,7 +355,7 @@
                             <!-- View 2: Ongoing - Today/Tomorrow focus -->
                             <div class="exam-view exam-view-ongoing" id="examViewOngoingDefault" style="display: none;">
                                 <div class="exam-card-header">
-                                    <i class="fa-solid fa-fire"></i>
+                                    <i class="fa-solid fa-fire" aria-hidden="true">{% include hugeicon.html name="fire" %}</i>
                                     <span>Exams are on going!</span>
                                 </div>
                                 <p class="exam-subtitle">Your <span id="examPeriodNameOngoingDefault">Mid
@@ -367,7 +379,7 @@
                             <div class="exam-view exam-view-timeline" id="examViewTimelineDefault"
                                 style="display: none;">
                                 <div class="exam-card-header">
-                                    <i class="fa-solid fa-fire"></i>
+                                    <i class="fa-solid fa-fire" aria-hidden="true">{% include hugeicon.html name="fire" %}</i>
                                     <span>Exams are on going!</span>
                                 </div>
                                 <p class="exam-subtitle">Your <span id="examPeriodNameTimelineDefault">Mid
@@ -382,7 +394,7 @@
                         <!-- Loading state -->
                         <div id="postsLoading" class="posts-loading">
                             <i class="fa-regular fa-loader fa-spin"
-                                style="font-size: 24px; color: var(--color-primary);"></i>
+                                style="font-size: 24px; color: var(--color-primary);" aria-hidden="true">{% include hugeicon.html name="loader" %}</i>
                             <p style="margin-top: 12px; color: #666;">Just a sec...</p>
                         </div>
                         <!-- Posts will be populated by JavaScript as post cards -->
@@ -395,7 +407,7 @@
                             <!-- View 1: Pre-Exam (Before exams start) -->
                             <div class="exam-view exam-view-preexam" id="examViewPreexam" style="display: none;">
                                 <div class="exam-card-header">
-                                    <i class="fa-solid fa-calendar-check"></i>
+                                    <i class="fa-solid fa-calendar-check" aria-hidden="true">{% include hugeicon.html name="calendar-check" %}</i>
                                     <span>Exams are on the way!</span>
                                 </div>
                                 <p class="exam-subtitle">Your <span id="examPeriodName">Mid Semester</span> exams are
@@ -415,7 +427,7 @@
                             <!-- View 2: Ongoing - Today/Tomorrow focus -->
                             <div class="exam-view exam-view-ongoing" id="examViewOngoing" style="display: none;">
                                 <div class="exam-card-header">
-                                    <i class="fa-solid fa-fire"></i>
+                                    <i class="fa-solid fa-fire" aria-hidden="true">{% include hugeicon.html name="fire" %}</i>
                                     <span>Exams are on going!</span>
                                 </div>
                                 <p class="exam-subtitle">Your <span id="examPeriodNameOngoing">Mid Semester</span> exams
@@ -437,7 +449,7 @@
                             <!-- View 3: Timeline view -->
                             <div class="exam-view exam-view-timeline" id="examViewTimeline" style="display: none;">
                                 <div class="exam-card-header">
-                                    <i class="fa-solid fa-fire"></i>
+                                    <i class="fa-solid fa-fire" aria-hidden="true">{% include hugeicon.html name="fire" %}</i>
                                     <span>Exams are on going!</span>
                                 </div>
                                 <p class="exam-subtitle">Your <span id="examPeriodNameTimeline">Mid Semester</span>
@@ -452,14 +464,14 @@
                         <!-- Attachments Card - shown first in smart recommendations -->
                         <div id="attachmentsCard" class="attachments-card" style="display: none;">
                             <div class="attachments-card-header">
-                                <i class="fa-solid fa-paperclip"></i>
+                                <i class="fa-solid fa-paperclip" aria-hidden="true">{% include hugeicon.html name="attachment-01" %}</i>
                                 <span>Attachments</span>
                             </div>
                             <div id="attachmentsPillsContainer" class="attachments-pills-container">
                                 <!-- Attachment pills will be populated by JavaScript -->
                             </div>
                             <div id="attachmentsEmpty" class="attachments-empty" style="display: none;">
-                                <i class="fas fa-folder-open"></i>
+                                <i class="fas fa-folder-open" aria-hidden="true">{% include hugeicon.html name="folder-open" %}</i>
                                 <span>No attachments found</span>
                             </div>
                         </div>
@@ -476,7 +488,7 @@
 
                     <!-- Error message -->
                     <div id="postsError" style="display: none; text-align: center; padding: 20px; color: #dc3545;">
-                        <i class="fas fa-exclamation-circle" style="font-size: 24px; margin-bottom: 10px;"></i>
+                        <i class="fas fa-exclamation-circle" style="font-size: 24px; margin-bottom: 10px;" aria-hidden="true">{% include hugeicon.html name="alert-circle" %}</i>
                         <p>Failed to load posts. Please try again later.</p>
                     </div>
                 </div>
@@ -489,22 +501,22 @@
                 <div class="popup-controls">
                     <button id="createNoteButton" title="Create Note" aria-label="Create Note"
                         onclick="createNewNotebook()">
-                        <i class="far fa-edit"></i>
+                        <i class="far fa-edit" aria-hidden="true">{% include hugeicon.html name="edit-02" %}</i>
                     </button>
                     <div class="popup-share-tooltip-anchor">
                         <button id="sharePdfButton" title="Share PDF" aria-label="Share PDF">
-                            <i class="far fa-share-nodes"></i>
+                            <i class="far fa-share-nodes" aria-hidden="true">{% include hugeicon.html name="share-01" %}</i>
                         </button>
                     </div>
                     <button id="downloadButton" title="Download for offline reading"
                         aria-label="Download for offline reading">
-                        <i class="far fa-bookmark"></i>
+                        <i class="far fa-bookmark" aria-hidden="true">{% include hugeicon.html name="bookmark-02" %}</i>
                     </button>
                     <button id="fullscreenButton" aria-label="Enter fullscreen">
-                        <i class="far fa-expand"></i>
+                        <i class="far fa-expand" aria-hidden="true">{% include hugeicon.html name="square-arrow-diagonal-01" %}</i>
                     </button>
                     <button id="closePopup" aria-label="Close PDF viewer">
-                        <i class="far fa-times"></i>
+                        <i class="far fa-times" aria-hidden="true">{% include hugeicon.html name="cancel-01" %}</i>
                     </button>
                 </div>
                 <div id="popupContent">
@@ -515,7 +527,7 @@
         <div class="promo-modal-overlay" id="promoModal" style="display: none;">
             <div class="promo-modal">
                 <!-- Close Button -->
-                <i class="fas fa-times promo-close-btn" onclick="closePromoModal()"></i>
+                <i class="fas fa-times promo-close-btn" onclick="closePromoModal()" aria-hidden="true">{% include hugeicon.html name="cancel-01" %}</i>
 
                 <!-- Left Section: Media Panel -->
                 <div class="promo-image">
@@ -527,10 +539,10 @@
                     </video>
                     <div class="video-controls" style="display: none;">
                         <button class="video-control-btn play-pause-btn" title="Play/Pause">
-                            <i class="fa-solid fa-pause"></i>
+                            <i class="fa-solid fa-pause" aria-hidden="true">{% include hugeicon.html name="pause" %}</i>
                         </button>
                         <button class="video-control-btn mute-unmute-btn" title="Mute/Unmute">
-                            <i class="fa-solid fa-volume-high"></i>
+                            <i class="fa-solid fa-volume-high" aria-hidden="true">{% include hugeicon.html name="volume-high" %}</i>
                         </button>
                     </div>
                 </div>
@@ -545,13 +557,13 @@
                         <a href="#" target="_blank" class="promo-link" style="display: none;">
                             <button id="offerButton" class="site-button promo-primary-btn">
                                 <i class="promo-primary-icon fa-solid fa-tag"
-                                    style="margin-left: 5px; margin-right: 10px;"></i>
+                                    style="margin-left: 5px; margin-right: 10px;" aria-hidden="true">{% include hugeicon.html name="tag" %}</i>
                                 <span class="promo-button-text">View Offer</span>
                             </button>
                         </a>
                         <button id="remindLaterBtn" class="site-button promo-secondary-btn" onclick="remindMeLater()"
                             style="display: none;">
-                            <i class="promo-secondary-icon fa-solid fa-clock" style="margin-right: 8px;"></i>
+                            <i class="promo-secondary-icon fa-solid fa-clock" style="margin-right: 8px;" aria-hidden="true">{% include hugeicon.html name="clock" %}</i>
                             <span class="promo-secondary-text">Remind me later</span>
                         </button>
                     </div>
@@ -577,7 +589,7 @@
         <div class="promo-modal-overlay search-results-overlay" id="searchResultsModal" style="display: none;">
             <div class="promo-modal no-image search-results-modal">
                 <!-- Close Button -->
-                <i class="fas fa-times promo-close-btn" onclick="closeSearchResultsModal()"></i>
+                <i class="fas fa-times promo-close-btn" onclick="closeSearchResultsModal()" aria-hidden="true">{% include hugeicon.html name="cancel-01" %}</i>
 
                 <div class="promo-content">
                     <!-- Slot: quickSearchContainer will be moved here when modal opens -->
@@ -596,7 +608,7 @@
         <div class="promo-modal-overlay exam-modal-overlay" id="examModal" style="display: none;">
             <div class="promo-modal exam-modal">
                 <!-- Close Button -->
-                <i class="fas fa-times promo-close-btn" onclick="closeExamModal()"></i>
+                <i class="fas fa-times promo-close-btn" onclick="closeExamModal()" aria-hidden="true">{% include hugeicon.html name="cancel-01" %}</i>
 
                 <!-- Pages Slider Container -->
                 <div class="exam-modal-slider" id="examModalSlider">
@@ -614,7 +626,7 @@
                                             type="text" autocomplete="off" placeholder="Search division (e.g. 6A1)" />
                                         <button id="clearDivisionBtn" class="clear-division-btn" type="button"
                                             aria-label="Clear division" title="Clear division" style="display: none;">
-                                            <i class="fas fa-times"></i>
+                                            <i class="fas fa-times" aria-hidden="true">{% include hugeicon.html name="cancel-01" %}</i>
                                         </button>
                                         <datalist id="classroomOptions"></datalist>
                                     </div>
@@ -632,7 +644,7 @@
                             <!-- Banner Section -->
                             <div class="syllabus-banner" id="syllabusBanner">
                                 <button class="syllabus-back-btn" onclick="showExamTimeline()">
-                                    <i class="fas fa-chevron-left"></i>
+                                    <i class="fas fa-chevron-left" aria-hidden="true">{% include hugeicon.html name="arrow-left-01" %}</i>
                                 </button>
                                 <img src="" alt="" id="syllabusBannerImg" class="syllabus-banner-img">
                                 <div class="syllabus-banner-overlay">
@@ -654,7 +666,7 @@
         <div class="promo-modal-overlay" id="mcpConnectorsModal" role="dialog" aria-hidden="true"
             style="display: none;">
             <div class="promo-modal dynamic-form-modal">
-                <i class="fas fa-times promo-close-btn" onclick="closeMcpModal()"></i>
+                <i class="fas fa-times promo-close-btn" onclick="closeMcpModal()" aria-hidden="true">{% include hugeicon.html name="cancel-01" %}</i>
 
                 <div class="promo-content dynamic-form-content-wrapper">
                     <div class="dynamic-form-header" style="margin-bottom: 20px;">
@@ -673,7 +685,7 @@
                                         style="font-size: 11px; font-weight: 600; background-color: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 5px;">New</span>
                                 </div>
                             </div>
-                            <i class="fas fa-chevron-right" style="color: #888; font-size: 14px;"></i>
+                            <i class="fas fa-chevron-right" style="color: #888; font-size: 14px;" aria-hidden="true">{% include hugeicon.html name="arrow-right-01" %}</i>
                         </a>
 
                         <!-- ChatGPT -->
@@ -684,7 +696,7 @@
                                     style="width: 36px; height: 36px; border-radius: 8px;">
                                 <span style="font-weight: 600; font-size: 16px;">ChatGPT</span>
                             </div>
-                            <i class="fas fa-chevron-right" style="color: #888; font-size: 14px;"></i>
+                            <i class="fas fa-chevron-right" style="color: #888; font-size: 14px;" aria-hidden="true">{% include hugeicon.html name="arrow-right-01" %}</i>
                         </a>
 
                         <!-- Claude Container -->
@@ -702,12 +714,12 @@
                                 <a href="https://claude.ai/customize/connectors?modal=add-custom-connector"
                                     target="_blank" class="mcp-sublink">
                                     <span>Connect</span>
-                                    <i class="fas fa-chevron-right"></i>
+                                    <i class="fas fa-chevron-right" aria-hidden="true">{% include hugeicon.html name="arrow-right-01" %}</i>
                                 </a>
                                 <a href="https://getmaterio.app/docs/mcp#connecting-claude" target="_blank"
                                     class="mcp-sublink">
                                     <span>Guide</span>
-                                    <i class="fas fa-chevron-right"></i>
+                                    <i class="fas fa-chevron-right" aria-hidden="true">{% include hugeicon.html name="arrow-right-01" %}</i>
                                 </a>
                             </div>
                         </div>
@@ -726,12 +738,12 @@
                                 <a href="https://www.perplexity.ai/computer/connectors" target="_blank"
                                     class="mcp-sublink">
                                     <span>Connect</span>
-                                    <i class="fas fa-chevron-right"></i>
+                                    <i class="fas fa-chevron-right" aria-hidden="true">{% include hugeicon.html name="arrow-right-01" %}</i>
                                 </a>
                                 <a href="https://getmaterio.app/docs/mcp#connecting-perplexity" target="_blank"
                                     class="mcp-sublink">
                                     <span>Guide</span>
-                                    <i class="fas fa-chevron-right"></i>
+                                    <i class="fas fa-chevron-right" aria-hidden="true">{% include hugeicon.html name="arrow-right-01" %}</i>
                                 </a>
                             </div>
                         </div>
@@ -744,7 +756,7 @@
         <div class="promo-modal-overlay" id="customWallpaperStoreModal" role="dialog" aria-hidden="true"
             style="display: none;">
             <div class="promo-modal dynamic-form-modal wallpaper-store-modal">
-                <i class="fas fa-times promo-close-btn" onclick="closeCustomWallpaperStoreModal()"></i>
+                <i class="fas fa-times promo-close-btn" onclick="closeCustomWallpaperStoreModal()" aria-hidden="true">{% include hugeicon.html name="cancel-01" %}</i>
 
                 <div class="promo-content dynamic-form-content-wrapper">
                     <div class="paper-mode-info" style="margin-bottom: 14px;">
@@ -816,11 +828,11 @@
                         <option value="linked">Linked to PDFs</option>
                     </select>
                     <button class="site-button" onclick="createNewNotebook(true)">
-                        <i class="fas fa-plus"></i> New Note
+                        <i class="fas fa-plus" aria-hidden="true">{% include hugeicon.html name="plus" %}</i> New Note
                     </button>
                     <button class="site-button secondary" onclick="syncNotebooks()" id="syncBtnInTab"
                         style="display: none;">
-                        <i class="fas fa-sync"></i> Sync
+                        <i class="fas fa-sync" aria-hidden="true">{% include hugeicon.html name="refresh" %}</i> Sync
                     </button>
                 </div>
             </div>
@@ -829,14 +841,14 @@
             <div id="notebooksGridInTab" class="notebooks-grid">
                 <!-- Notebook cards will be populated here -->
                 <div class="notebook-loading">
-                    <i class="fa-regular fa-loader fa-spin"></i> Loading notebooks...
+                    <i class="fa-regular fa-loader fa-spin" aria-hidden="true">{% include hugeicon.html name="loader" %}</i> Loading notebooks...
                 </div>
             </div>
 
             <!-- Empty State -->
             <div id="emptyStateInTab" class="notebooks-empty" style="display: none;">
                 <div class="empty-icon">
-                    <i class="far fa-notebook"></i>
+                    <i class="far fa-notebook" aria-hidden="true">{% include hugeicon.html name="book-open-02" %}</i>
                 </div>
                 <h3>No notebooks yet</h3>
                 <p>Create your first note to get started.</p>
@@ -863,7 +875,7 @@
                     </div>
                     <button id="clearAllDownloadsBtn" class="btn"
                         style="background: #dc3545; color: white; padding: 8px 16px; border-radius: 25px; border: none; cursor: var(--f-cursor-pointer); font-size: 14px;">
-                        <i class="fas fa-trash"></i> Clear All
+                        <i class="fas fa-trash" aria-hidden="true">{% include hugeicon.html name="delete-02" %}</i> Clear All
                     </button>
                 </div>
                 <div style="background: #f0f0f0; border-radius: 8px; height: 8px; overflow: hidden;">
@@ -875,11 +887,11 @@
 
             <div id="downloadsBoard">
                 <div id="downloadsLoading" class="loading-state">
-                    <i class="fa-regular fa-loader fa-spin"></i> Loading downloads...
+                    <i class="fa-regular fa-loader fa-spin" aria-hidden="true">{% include hugeicon.html name="loader" %}</i> Loading downloads...
                 </div>
                 <div id="downloadsEmpty" class="empty-state"
                     style="display: none; text-align: center; padding: 60px 20px;">
-                    <i class="fas fa-download" style="font-size: 48px; color: #ccc; margin-bottom: 16px;"></i>
+                    <i class="fas fa-download" style="font-size: 48px; color: #ccc; margin-bottom: 16px;" aria-hidden="true">{% include hugeicon.html name="download-01" %}</i>
                     <p style="font-size: 18px; font-weight: 600; margin: 10px 0;">No downloads yet</p>
                     <p style="color: #666; font-size: 14px;">Downloaded PDFs will appear here for offline access</p>
                 </div>
@@ -916,7 +928,7 @@
                         </div>
                     </div>
                     <a href="/account?callback=../" class="account-link" aria-label="Manage Account">
-                        <i class="fas fa-chevron-right" style="text-decoration: none;"></i>
+                        <i class="fas fa-chevron-right" style="text-decoration: none;" aria-hidden="true">{% include hugeicon.html name="arrow-right-01" %}</i>
                     </a>
                 </div>
             </div>
@@ -965,7 +977,7 @@
                             <span id="currentThemeText"
                                 style="font-size: 13px; font-weight: 500; margin-left: 4px;">System</span>
                             <i class="fa-solid fa-chevron-down"
-                                style="font-size: 11px; margin-left: 4px; color: #666;"></i>
+                                style="font-size: 11px; margin-left: 4px; color: #666;" aria-hidden="true">{% include hugeicon.html name="arrow-down-01" %}</i>
                         </div>
 
                         <!-- Theme Dropdown Menu -->
@@ -985,7 +997,7 @@
                                     </svg>
                                     <span>System</span>
                                 </div>
-                                <i class="fa-regular fa-check accent-check"></i>
+                                <i class="fa-regular fa-check accent-check" aria-hidden="true">{% include hugeicon.html name="tick-01" %}</i>
                             </div>
                             <div class="theme-dropdown-item" data-theme="light">
                                 <div class="theme-dropdown-item-left">
@@ -1002,7 +1014,7 @@
                                     </svg>
                                     <span>Light</span>
                                 </div>
-                                <i class="fa-regular fa-check accent-check"></i>
+                                <i class="fa-regular fa-check accent-check" aria-hidden="true">{% include hugeicon.html name="tick-01" %}</i>
                             </div>
                             <div class="theme-dropdown-item" data-theme="dark">
                                 <div class="theme-dropdown-item-left">
@@ -1016,7 +1028,7 @@
                                     </svg>
                                     <span>Dark</span>
                                 </div>
-                                <i class="fa-regular fa-check accent-check"></i>
+                                <i class="fa-regular fa-check accent-check" aria-hidden="true">{% include hugeicon.html name="tick-01" %}</i>
                             </div>
                             <div class="theme-dropdown-item" data-theme="coffee">
                                 <div class="theme-dropdown-item-left">
@@ -1045,7 +1057,7 @@
                                         <span class="coffee-toggle-slider"
                                             style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--color-border-medium); transition: .2s; border-radius: 16px;"></span>
                                     </label>
-                                    <i class="fa-regular fa-check accent-check" style="margin-left: 0;"></i>
+                                    <i class="fa-regular fa-check accent-check" style="margin-left: 0;" aria-hidden="true">{% include hugeicon.html name="tick-01" %}</i>
                                 </div>
                             </div>
                         </div>
@@ -1077,7 +1089,7 @@
                             <span id="currentAccentText"
                                 style="font-size: 13px; font-weight: 500; margin-left: 4px;">Default</span>
                             <i class="fa-solid fa-chevron-down"
-                                style="font-size: 11px; margin-left: 4px; color: #666;"></i>
+                                style="font-size: 11px; margin-left: 4px; color: #666;" aria-hidden="true">{% include hugeicon.html name="arrow-down-01" %}</i>
                         </div>
 
                         <!-- Accent Dropdown Menu -->
@@ -1086,70 +1098,70 @@
                                 <div class="accent-dropdown-item-left">
                                     <span style="margin-left: 28px;">Default</span>
                                 </div>
-                                <i class="fa-regular fa-check accent-check"></i>
+                                <i class="fa-regular fa-check accent-check" aria-hidden="true">{% include hugeicon.html name="tick-01" %}</i>
                             </div>
                             <div class="accent-dropdown-item" data-color="lilac">
                                 <div class="accent-dropdown-item-left">
                                     <span class="accent-dot" style="background-color: #c8a2c8;"></span>
                                     <span>Lilac</span>
                                 </div>
-                                <i class="fa-regular fa-check accent-check"></i>
+                                <i class="fa-regular fa-check accent-check" aria-hidden="true">{% include hugeicon.html name="tick-01" %}</i>
                             </div>
                             <div class="accent-dropdown-item" data-color="purple">
                                 <div class="accent-dropdown-item-left">
                                     <span class="accent-dot" style="background-color: #967bb6;"></span>
                                     <span>Purple</span>
                                 </div>
-                                <i class="fa-regular fa-check accent-check"></i>
+                                <i class="fa-regular fa-check accent-check" aria-hidden="true">{% include hugeicon.html name="tick-01" %}</i>
                             </div>
                             <div class="accent-dropdown-item" data-color="blue">
                                 <div class="accent-dropdown-item-left">
                                     <span class="accent-dot" style="background-color: #3f6bbd;"></span>
                                     <span>Blue</span>
                                 </div>
-                                <i class="fa-regular fa-check accent-check"></i>
+                                <i class="fa-regular fa-check accent-check" aria-hidden="true">{% include hugeicon.html name="tick-01" %}</i>
                             </div>
                             <div class="accent-dropdown-item" data-color="teal">
                                 <div class="accent-dropdown-item-left">
                                     <span class="accent-dot" style="background-color: #3ab49b;"></span>
                                     <span>Teal</span>
                                 </div>
-                                <i class="fa-regular fa-check accent-check"></i>
+                                <i class="fa-regular fa-check accent-check" aria-hidden="true">{% include hugeicon.html name="tick-01" %}</i>
                             </div>
                             <div class="accent-dropdown-item" data-color="green">
                                 <div class="accent-dropdown-item-left">
                                     <span class="accent-dot" style="background-color: #257d2d;"></span>
                                     <span>Green</span>
                                 </div>
-                                <i class="fa-regular fa-check accent-check"></i>
+                                <i class="fa-regular fa-check accent-check" aria-hidden="true">{% include hugeicon.html name="tick-01" %}</i>
                             </div>
                             <div class="accent-dropdown-item" data-color="yellow">
                                 <div class="accent-dropdown-item-left">
                                     <span class="accent-dot" style="background-color: #f1b539;"></span>
                                     <span>Yellow</span>
                                 </div>
-                                <i class="fa-regular fa-check accent-check"></i>
+                                <i class="fa-regular fa-check accent-check" aria-hidden="true">{% include hugeicon.html name="tick-01" %}</i>
                             </div>
                             <div class="accent-dropdown-item" data-color="orange">
                                 <div class="accent-dropdown-item-left">
                                     <span class="accent-dot" style="background-color: #ff6138;"></span>
                                     <span>Orange</span>
                                 </div>
-                                <i class="fa-regular fa-check accent-check"></i>
+                                <i class="fa-regular fa-check accent-check" aria-hidden="true">{% include hugeicon.html name="tick-01" %}</i>
                             </div>
                             <div class="accent-dropdown-item" data-color="pink">
                                 <div class="accent-dropdown-item-left">
                                     <span class="accent-dot" style="background-color: #f47272;"></span>
                                     <span>Pink</span>
                                 </div>
-                                <i class="fa-regular fa-check accent-check"></i>
+                                <i class="fa-regular fa-check accent-check" aria-hidden="true">{% include hugeicon.html name="tick-01" %}</i>
                             </div>
                             <div class="accent-dropdown-item" data-color="grey">
                                 <div class="accent-dropdown-item-left">
                                     <span class="accent-dot" style="background-color: #8a8d91;"></span>
                                     <span>Grey</span>
                                 </div>
-                                <i class="fa-regular fa-check accent-check"></i>
+                                <i class="fa-regular fa-check accent-check" aria-hidden="true">{% include hugeicon.html name="tick-01" %}</i>
                             </div>
                         </div>
                     </div>
@@ -1221,7 +1233,7 @@
                             <div class="paper-texture-dropdown-wrapper" id="paperTextureDropdownWrapper">
                                 <button class="paper-texture-trigger" id="paperTextureDropdownTrigger">
                                     <span id="paperTextureSelectedText">Black Paper</span>
-                                    <i class="fas fa-chevron-down"></i>
+                                    <i class="fas fa-chevron-down" aria-hidden="true">{% include hugeicon.html name="arrow-down-01" %}</i>
                                 </button>
                                 <div class="profile-dropdown paper-texture-dropdown" id="paperTextureDropdown">
                                     <a href="#" class="dropdown-item paper-texture-item selected"
@@ -1426,7 +1438,7 @@
                                                 id="sereineSettingsDropdownWrapper">
                                                 <button class="sereine-settings-btn" id="sereineSettingsTrigger"
                                                     title="Carousel Settings">
-                                                    <i class="fa-solid fa-gear"></i>
+                                                    <i class="fa-solid fa-gear" aria-hidden="true">{% include hugeicon.html name="settings-01" %}</i>
                                                 </button>
                                                 <div class="sereine-settings-dropdown" id="sereineSettingsDropdown">
                                                     <div class="sereine-setting-item" data-value="everytime">Everytime
@@ -1448,14 +1460,14 @@
                                 id="customWallpaperCard">
                                 <div class="wallpaper-preview custom-preview" id="customPreview">
                                     <div class="wallpaper-upload-content">
-                                        <i class="fa-solid fa-store"></i>
+                                        <i class="fa-solid fa-store" aria-hidden="true">{% include hugeicon.html name="shopping-bag-01" %}</i>
                                         <span class="wallpaper-upload-text">Store</span>
                                     </div>
                                     <div class="wallpaper-overlay custom-wallpaper-overlay" style="display: none;">
                                         <span class="wallpaper-name">Custom</span>
                                         <button class="custom-wallpaper-remove" id="removeCustomWallpaper"
                                             title="Remove custom wallpaper">
-                                            <i class="fa-solid fa-xmark"></i>
+                                            <i class="fa-solid fa-xmark" aria-hidden="true">{% include hugeicon.html name="cancel-01" %}</i>
                                         </button>
                                     </div>
                                 </div>
@@ -1490,15 +1502,15 @@
                             <div class="view-style-dropdown-wrapper" id="viewStyleDropdownWrapper">
                                 <button class="view-style-trigger" id="viewStyleDropdownTrigger">
                                     <span id="viewStyleSelectedText">Normal</span>
-                                    <i class="fas fa-chevron-down"></i>
+                                    <i class="fas fa-chevron-down" aria-hidden="true">{% include hugeicon.html name="arrow-down-01" %}</i>
                                 </button>
                                 <div class="profile-dropdown view-style-dropdown" id="viewStyleDropdown">
                                     <a href="#" class="dropdown-item view-style-item" data-value="normal">
-                                        <i class="far fa-rectangle-wide"></i>
+                                        <i class="far fa-rectangle-wide" aria-hidden="true">{% include hugeicon.html name="square-arrow-diagonal-01" %}</i>
                                         <span>Normal</span>
                                     </a>
                                     <a href="#" class="dropdown-item view-style-item" data-value="folded">
-                                        <i class="far fa-rectangle-list"></i>
+                                        <i class="far fa-rectangle-list" aria-hidden="true">{% include hugeicon.html name="list-view" %}</i>
                                         <span>Folded</span>
                                     </a>
                                 </div>
@@ -1542,7 +1554,7 @@
                             <div class="paper-mode-title">Clear Data</div>
                             <div class="paper-mode-description">Clear all data from storage</div>
                         </div>
-                        <i class="fa-regular fa-trash" style="color: #DC3545; font-size: 18px;"></i>
+                        <i class="fa-regular fa-trash" style="color: #DC3545; font-size: 18px;" aria-hidden="true">{% include hugeicon.html name="delete-02" %}</i>
                     </div>
                 </div>
             </div>
@@ -1554,7 +1566,7 @@
                     <p id="versionInfoText">Version: </p>
                     <p id="buildInfoText">Build: </p>
                     <details id="changeLogDetails">
-                        <summary><i class="fa-regular fa-telescope" style="margin-right: 10px;"></i>What's New ?
+                        <summary><i class="fa-regular fa-telescope" style="margin-right: 10px;" aria-hidden="true">{% include hugeicon.html name="telescope-02" %}</i>What's New ?
                         </summary>
                         <div id="changeLogContent">
                             <!-- log will appear here -->
@@ -1568,41 +1580,41 @@
                 <p style="margin-left: 5px;"><b>Legal</b></p>
                 <div class="card-layout" id="notices">
                     <p>
-                        <i class="fas fa-circle-info"></i>
+                        <i class="fas fa-circle-info" aria-hidden="true">{% include hugeicon.html name="information-circle" %}</i>
                         <span><a href="/whatisthis"
                                 style="font-family:'Manrope', sans-serif; font-weight: 600; color: #333; text-decoration: none;">About</a></span>
-                        <i class="fas fa-chevron-right"></i>
+                        <i class="fas fa-chevron-right" aria-hidden="true">{% include hugeicon.html name="arrow-right-01" %}</i>
                     </p>
                     <hr>
                     <p>
-                        <i class="fas fa-scroll"></i>
+                        <i class="fas fa-scroll" aria-hidden="true">{% include hugeicon.html name="scroll" %}</i>
                         <span><a href="/license"
                                 style="font-family:'Manrope', sans-serif; font-weight: 600; color: #333;text-decoration: none;">License</a></span>
-                        <i class="fas fa-chevron-right"></i>
+                        <i class="fas fa-chevron-right" aria-hidden="true">{% include hugeicon.html name="arrow-right-01" %}</i>
                     </p>
                     <hr>
                     <p>
-                        <i class="fas fa-file-contract"></i>
+                        <i class="fas fa-file-contract" aria-hidden="true">{% include hugeicon.html name="file-02" %}</i>
                         <span><a href="/privacy"
                                 style="font-family:'Manrope', sans-serif; font-weight:600; color: #333;text-decoration: none;">Privacy
                                 Policy</a></span>
-                        <i class="fas fa-chevron-right"></i>
+                        <i class="fas fa-chevron-right" aria-hidden="true">{% include hugeicon.html name="arrow-right-01" %}</i>
                     </p>
                     <hr>
                     <p>
-                        <i class="fas fa-cookie"></i>
+                        <i class="fas fa-cookie" aria-hidden="true">{% include hugeicon.html name="cookie" %}</i>
                         <span><a href="/cookies"
                                 style="font-family:'Manrope', sans-serif; font-weight: 600; color: #333;text-decoration: none;">Cookie
                                 Policy</a></span>
-                        <i class="fas fa-chevron-right"></i>
+                        <i class="fas fa-chevron-right" aria-hidden="true">{% include hugeicon.html name="arrow-right-01" %}</i>
                     </p>
                     <hr>
                     <p>
-                        <i class="fab fa-github"></i>
+                        <i class="fab fa-github" aria-hidden="true">{% include hugeicon.html name="github" %}</i>
                         <span><a href="https://github.com/Jinansh230705"
                                 style="font-family:'Manrope', sans-serif; font-weight: 600; color: #333;text-decoration: none;">Developer's
                                 Github</a></span>
-                        <i class="fas fa-chevron-right"></i>
+                        <i class="fas fa-chevron-right" aria-hidden="true">{% include hugeicon.html name="arrow-right-01" %}</i>
                     </p>
                 </div>
             </div>
@@ -1619,7 +1631,7 @@
                     <summary
                         style="list-style: none; cursor: var(--f-cursor-pointer); display: inline-block; background: none; border: none; font-size: 14px; color: #666; padding: 8px 0; transition: color 0.3s ease;">
                         <i class="fas fa-chevron-down"
-                            style="margin-left: 8px; transition: transform 0.3s ease; font-size: 12px;"></i>
+                            style="margin-left: 8px; transition: transform 0.3s ease; font-size: 12px;" aria-hidden="true">{% include hugeicon.html name="arrow-down-01" %}</i>
                         Opensource Licenses
                     </summary>
                     <div id="licensesContent"
@@ -1633,7 +1645,7 @@
                 <summary
                     style="list-style: none; cursor: var(--f-cursor-pointer); display: inline-block; background: none; border: none; font-size: 14px; color: #666; padding: 8px 0; transition: color 0.3s ease;">
                     <i class="fas fa-chevron-down"
-                        style="margin-left: 8px; transition: transform 0.3s ease; font-size: 12px;"></i>
+                        style="margin-left: 8px; transition: transform 0.3s ease; font-size: 12px;" aria-hidden="true">{% include hugeicon.html name="arrow-down-01" %}</i>
                     Misc
                 </summary>
                 <span style="font-family: 'Consolas', 'Monaco', 'Courier New', monospace;">Materio ID: <span
@@ -1653,10 +1665,10 @@
         <span id="sereineArtistText">Image by<br><strong id="sereineArtistName"></strong></span>
         <div class="sereine-actions">
             <button id="sereineShuffleBtn" title="Shuffle Wallpaper">
-                <i class="fa-solid fa-shuffle"></i>
+                <i class="fa-solid fa-shuffle" aria-hidden="true">{% include hugeicon.html name="shuffle" %}</i>
             </button>
             <button id="sereineSaveBtn" title="Save to Store">
-                <i class="fa-regular fa-heart"></i>
+                <i class="fa-regular fa-heart" aria-hidden="true">{% include hugeicon.html name="favourite" %}</i>
             </button>
         </div>
     </div>

@@ -5,20 +5,20 @@
     <div class="notebook-dialog">
         <!-- Close Button -->
         <button class="notebook-close-btn" id="notebookCloseBtn" aria-label="Close Notebook">
-            <i class="fas fa-times"></i>
+            <i class="fas fa-times" aria-hidden="true">{% include hugeicon.html name="cancel-01" %}</i>
         </button>
 
         <!-- Notebook Header -->
         <div class="notebook-header">
             <div class="notebook-title-section">
-                <i class="far fa-book-open notebook-icon"></i>
+                <i class="far fa-book-open notebook-icon" aria-hidden="true">{% include hugeicon.html name="book-open-02" %}</i>
                 <input type="text" id="notebookTitleInput" class="notebook-title-input" placeholder="Untitled Note"
                     maxlength="100" autocomplete="off">
             </div>
             <div class="notebook-meta">
                 <span class="notebook-date" id="notebookDate"></span>
                 <span class="notebook-link" id="notebookLinkBadge" style="display: none;">
-                    <i class="fas fa-link"></i>
+                    <i class="fas fa-link" aria-hidden="true">{% include hugeicon.html name="link-01" %}</i>
                     <span id="notebookLinkText"></span>
                 </span>
             </div>
@@ -28,16 +28,16 @@
         <div class="notebook-toolbar" id="notebookToolbar">
             <div class="toolbar-group toolbar-formatting">
                 <button type="button" class="toolbar-btn" data-action="bold" title="Bold (Ctrl+B)">
-                    <i class="fas fa-bold"></i>
+                    <i class="fas fa-bold" aria-hidden="true">{% include hugeicon.html name="text-bold" %}</i>
                 </button>
                 <button type="button" class="toolbar-btn" data-action="italic" title="Italic (Ctrl+I)">
-                    <i class="fas fa-italic"></i>
+                    <i class="fas fa-italic" aria-hidden="true">{% include hugeicon.html name="text-italic" %}</i>
                 </button>
                 <button type="button" class="toolbar-btn" data-action="underline" title="Underline (Ctrl+U)">
-                    <i class="fas fa-underline"></i>
+                    <i class="fas fa-underline" aria-hidden="true">{% include hugeicon.html name="text-underline" %}</i>
                 </button>
                 <button type="button" class="toolbar-btn" data-action="strikethrough" title="Strikethrough">
-                    <i class="fas fa-strikethrough"></i>
+                    <i class="fas fa-strikethrough" aria-hidden="true">{% include hugeicon.html name="text-strikethrough" %}</i>
                 </button>
             </div>
 
@@ -59,13 +59,13 @@
 
             <div class="toolbar-group toolbar-lists">
                 <button type="button" class="toolbar-btn" data-action="bulletList" title="Bullet List">
-                    <i class="fas fa-list-ul"></i>
+                    <i class="fas fa-list-ul" aria-hidden="true">{% include hugeicon.html name="list-bullet" %}</i>
                 </button>
                 <button type="button" class="toolbar-btn" data-action="numberedList" title="Numbered List">
-                    <i class="fas fa-list-ol"></i>
+                    <i class="fas fa-list-ol" aria-hidden="true">{% include hugeicon.html name="list-number" %}</i>
                 </button>
                 <button type="button" class="toolbar-btn" data-action="checkbox" title="Checkbox">
-                    <i class="fas fa-square-check"></i>
+                    <i class="fas fa-square-check" aria-hidden="true">{% include hugeicon.html name="checkmark-square-01" %}</i>
                 </button>
             </div>
 
@@ -73,22 +73,22 @@
 
             <div class="toolbar-group toolbar-insert">
                 <button type="button" class="toolbar-btn" data-action="link" title="Insert Link (Ctrl+K)">
-                    <i class="fas fa-link"></i>
+                    <i class="fas fa-link" aria-hidden="true">{% include hugeicon.html name="link-01" %}</i>
                 </button>
                 <button type="button" class="toolbar-btn" data-action="image" title="Insert Image">
-                    <i class="fas fa-image"></i>
+                    <i class="fas fa-image" aria-hidden="true">{% include hugeicon.html name="image-01" %}</i>
                 </button>
                 <button type="button" class="toolbar-btn" data-action="code" title="Code Block">
-                    <i class="fas fa-code"></i>
+                    <i class="fas fa-code" aria-hidden="true">{% include hugeicon.html name="code-01" %}</i>
                 </button>
                 <button type="button" class="toolbar-btn" data-action="math" title="Math/LaTeX">
-                    <i class="fas fa-square-root-variable"></i>
+                    <i class="fas fa-square-root-variable" aria-hidden="true">{% include hugeicon.html name="math" %}</i>
                 </button>
                 <button type="button" class="toolbar-btn" data-action="quote" title="Blockquote">
-                    <i class="fas fa-quote-left"></i>
+                    <i class="fas fa-quote-left" aria-hidden="true">{% include hugeicon.html name="quote-up" %}</i>
                 </button>
                 <button type="button" class="toolbar-btn" data-action="divider" title="Horizontal Divider">
-                    <i class="fas fa-minus"></i>
+                    <i class="fas fa-minus" aria-hidden="true">{% include hugeicon.html name="minus-sign" %}</i>
                 </button>
             </div>
 
@@ -97,10 +97,10 @@
             <div class="toolbar-group toolbar-actions">
                 <button type="button" class="toolbar-btn" data-action="linkPdf" title="Link to PDF"
                     id="notebookLinkPdfBtn">
-                    <i class="fas fa-file-pdf"></i>
+                    <i class="fas fa-file-pdf" aria-hidden="true">{% include hugeicon.html name="pdf-01" %}</i>
                 </button>
                 <button type="button" class="toolbar-btn" data-action="attachment" title="Add Attachment">
-                    <i class="fas fa-paperclip"></i>
+                    <i class="fas fa-paperclip" aria-hidden="true">{% include hugeicon.html name="attachment-01" %}</i>
                 </button>
             </div>
 
@@ -108,7 +108,7 @@
             <div class="toolbar-group toolbar-ai" id="notebookAiToolbar" style="display: none;">
                 <div class="toolbar-divider"></div>
                 <button type="button" class="toolbar-btn toolbar-btn-ai" data-action="aiWrite" title="Write with AI">
-                    <i class="fas fa-wand-magic-sparkles"></i>
+                    <i class="fas fa-wand-magic-sparkles" aria-hidden="true">{% include hugeicon.html name="magic-wand-01" %}</i>
                     <span>AI</span>
                 </button>
             </div>
@@ -123,15 +123,15 @@
             <div class="ai-input-overlay" id="aiInputOverlay" style="display: none;">
                 <div class="ai-input-container">
                     <div class="ai-sparkle-indicator">
-                        <i class="fas fa-sparkles"></i>
+                        <i class="fas fa-sparkles" aria-hidden="true">{% include hugeicon.html name="magic-wand-01" %}</i>
                     </div>
                     <input type="text" id="aiPromptInput" class="ai-prompt-input"
                         placeholder="Describe what you want AI to write...">
                     <button type="button" class="ai-submit-btn" id="aiSubmitBtn">
-                        <i class="fas fa-arrow-right"></i>
+                        <i class="fas fa-arrow-right" aria-hidden="true">{% include hugeicon.html name="arrow-right-01" %}</i>
                     </button>
                     <button type="button" class="ai-cancel-btn" id="aiCancelBtn">
-                        <i class="fas fa-times"></i>
+                        <i class="fas fa-times" aria-hidden="true">{% include hugeicon.html name="cancel-01" %}</i>
                     </button>
                 </div>
                 <div class="ai-suggestions">
@@ -143,7 +143,7 @@
 
             <!-- AI Writing Indicator -->
             <div class="ai-writing-indicator" id="aiWritingIndicator" style="display: none;">
-                <i class="fa-regular fa-loader fa-spin"></i>
+                <i class="fa-regular fa-loader fa-spin" aria-hidden="true">{% include hugeicon.html name="loader" %}</i>
                 <span>AI is writing...</span>
                 <button type="button" class="ai-stop-btn" id="aiStopBtn">Stop</button>
             </div>
@@ -153,11 +153,11 @@
         <div class="notebook-footer">
             <div class="notebook-status">
                 <a href="#notebooks" class="notebook-manage-link" id="notebookManageBtn" title="Manage all notebooks">
-                    <i class="fas fa-folder-open"></i>
+                    <i class="fas fa-folder-open" aria-hidden="true">{% include hugeicon.html name="folder-open" %}</i>
                     <span>Manage Notebooks</span>
                 </a>
                 <span class="save-status" id="notebookSaveStatus">
-                    <i class="fas fa-cloud-check"></i>
+                    <i class="fas fa-cloud-check" aria-hidden="true">{% include hugeicon.html name="cloud-check" %}</i>
                     <span>Saved locally</span>
                 </span>
                 <span class="word-count" id="notebookWordCount">0 words</span>
@@ -165,19 +165,19 @@
             <div class="notebook-footer-actions">
                 <button type="button" class="notebook-btn notebook-btn-secondary" id="notebookDeleteBtn"
                     style="display: none; color: var(--notebook-error);">
-                    <i class="fas fa-trash"></i>
+                    <i class="fas fa-trash" aria-hidden="true">{% include hugeicon.html name="delete-02" %}</i>
                     <span>Delete</span>
                 </button>
                 <button type="button" class="notebook-btn notebook-btn-secondary" id="notebookPreviewBtn">
-                    <i class="fas fa-eye"></i>
+                    <i class="fas fa-eye" aria-hidden="true">{% include hugeicon.html name="eye" %}</i>
                     <span>Preview</span>
                 </button>
                 <button type="button" class="notebook-btn notebook-btn-secondary" id="notebookExportBtn">
-                    <i class="fas fa-download"></i>
+                    <i class="fas fa-download" aria-hidden="true">{% include hugeicon.html name="download-01" %}</i>
                     <span>Export</span>
                 </button>
                 <button type="button" class="notebook-btn notebook-btn-primary" id="notebookSaveBtn">
-                    <i class="fas fa-floppy-disk"></i>
+                    <i class="fas fa-floppy-disk" aria-hidden="true">{% include hugeicon.html name="disk" %}</i>
                     <span>Save</span>
                 </button>
             </div>
@@ -189,13 +189,13 @@
 <div class="notebook-link-pdf-modal" id="linkPdfModal" style="display: none;">
     <div class="link-pdf-dialog">
         <div class="link-pdf-header">
-            <h3><i class="fas fa-link"></i> Link to PDF</h3>
+            <h3><i class="fas fa-link" aria-hidden="true">{% include hugeicon.html name="link-01" %}</i> Link to PDF</h3>
             <div class="link-pdf-actions">
                 <button class="link-new-note-btn" id="linkNewNoteBtn" title="Create a new note for a PDF">
-                    <i class="fas fa-plus-circle"></i> New Note
+                    <i class="fas fa-plus-circle" aria-hidden="true">{% include hugeicon.html name="plus-sign-circle" %}</i> New Note
                 </button>
                 <button class="link-pdf-close" id="linkPdfCloseBtn">
-                    <i class="fas fa-times"></i>
+                    <i class="fas fa-times" aria-hidden="true">{% include hugeicon.html name="cancel-01" %}</i>
                 </button>
             </div>
         </div>
@@ -204,7 +204,7 @@
             <div class="link-pdf-options" id="linkPdfOptions">
                 <!-- Current PDF option (if popup is open) -->
                 <div class="link-pdf-option link-pdf-current" id="linkPdfCurrentOption" style="display: none;">
-                    <i class="fas fa-file-pdf"></i>
+                    <i class="fas fa-file-pdf" aria-hidden="true">{% include hugeicon.html name="pdf-01" %}</i>
                     <div class="link-pdf-info">
                         <span class="link-pdf-name" id="linkPdfCurrentName"></span>
                         <span class="link-pdf-path" id="linkPdfCurrentPath"></span>
@@ -229,9 +229,9 @@
 <div class="notebook-preview-modal" id="notebookPreviewModal" style="display: none;">
     <div class="notebook-preview-dialog">
         <div class="notebook-preview-header">
-            <h3><i class="fas fa-eye"></i> Preview</h3>
+            <h3><i class="fas fa-eye" aria-hidden="true">{% include hugeicon.html name="eye" %}</i> Preview</h3>
             <button class="notebook-preview-close" id="notebookPreviewCloseBtn">
-                <i class="fas fa-times"></i>
+                <i class="fas fa-times" aria-hidden="true">{% include hugeicon.html name="cancel-01" %}</i>
             </button>
         </div>
         <div class="notebook-preview-content" id="notebookPreviewContent">
@@ -244,26 +244,26 @@
 <div class="notebook-export-modal" id="notebookExportModal" style="display: none;">
     <div class="notebook-export-dialog">
         <div class="notebook-export-header">
-            <h3><i class="fas fa-download"></i> Export Note</h3>
+            <h3><i class="fas fa-download" aria-hidden="true">{% include hugeicon.html name="download-01" %}</i> Export Note</h3>
             <button class="notebook-export-close" id="notebookExportCloseBtn">
-                <i class="fas fa-times"></i>
+                <i class="fas fa-times" aria-hidden="true">{% include hugeicon.html name="cancel-01" %}</i>
             </button>
         </div>
         <div class="notebook-export-content">
             <div class="export-option" data-format="markdown">
-                <i class="fab fa-markdown"></i>
+                <i class="fab fa-markdown" aria-hidden="true">{% include hugeicon.html name="file-02" %}</i>
                 <span>Markdown (.md)</span>
             </div>
             <div class="export-option" data-format="html">
-                <i class="fas fa-code"></i>
+                <i class="fas fa-code" aria-hidden="true">{% include hugeicon.html name="code-01" %}</i>
                 <span>HTML (.html)</span>
             </div>
             <div class="export-option" data-format="txt">
-                <i class="fas fa-file-lines"></i>
+                <i class="fas fa-file-lines" aria-hidden="true">{% include hugeicon.html name="file-02" %}</i>
                 <span>Plain Text (.txt)</span>
             </div>
             <div class="export-option" data-format="pdf">
-                <i class="fas fa-file-pdf"></i>
+                <i class="fas fa-file-pdf" aria-hidden="true">{% include hugeicon.html name="pdf-01" %}</i>
                 <span>PDF (.pdf)</span>
             </div>
         </div>

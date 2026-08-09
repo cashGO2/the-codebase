@@ -910,6 +910,24 @@ body.dark-mode .bug-report-btn:hover {
     color: #ff6b6b;
 }
 
+/* Perfect centering for bug and contribution button SVGs */
+.bug-report-btn i,
+.icon-button i {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.bug-report-btn i svg,
+.icon-button i svg {
+    display: block !important;
+    margin: auto !important;
+}
+
 /* Bug Report Tooltip */
 .bug-report-tooltip {
     position: absolute;
@@ -2408,6 +2426,11 @@ body.dark-mode .tooltip-text {
     }
 }
 
+.fa-spin, .hgi-spin {
+    animation: spin 1.5s linear infinite;
+    display: inline-block;
+}
+
 .notification {
     background: #ffffff;
     border-radius: 8px;
@@ -3678,22 +3701,57 @@ body.dark-mode #notices a {
 }
 
 /* Mobile Version - Bottom Sheet (400px and below only) */
+/* Mobile Version - Bottom Sheet & Modals (max-width: 768px) */
+@media (max-width: 768px) {
+    .promo-modal-overlay,
+    .dynamic-form-overlay,
+    .search-results-overlay,
+    .exam-modal-overlay,
+    .modal-overlay,
+    .keyboard-shortcuts-modal {
+        padding: 5px !important;
+        box-sizing: border-box !important;
+    }
+
+    .promo-modal,
+    .dynamic-form-modal,
+    .search-results-modal,
+    .exam-modal,
+    .keyboard-shortcuts-dialog,
+    .notebook-modal,
+    .wallpaper-store-modal {
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .promo-content,
+    .dynamic-form-content-wrapper,
+    .keyboard-shortcuts-content,
+    .notebook-modal-content {
+        padding: 5px !important;
+        box-sizing: border-box !important;
+    }
+}
+
 @media (max-width: 500px) {
     .promo-modal-overlay {
         align-items: flex-end;
-        padding: 0 0 5px 0;
+        padding: 5px !important;
     }
 
     .promo-modal {
         flex-direction: column;
-        width: 100%;
-        max-width: 100%;
-        margin: 0;
-        border-radius: 40px;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto;
+        border-radius: 28px;
         corner-shape: squircle;
         max-height: 85vh;
         overflow-y: auto;
         position: relative;
+        padding: 0 !important;
         animation: modalSlideUp 0.4s cubic-bezier(0.32, 0.72, 0, 1);
         /* Hide scrollbar on mobile */
         scrollbar-width: none;
@@ -3740,10 +3798,8 @@ body.dark-mode #notices a {
     }
 
     .promo-content {
-        padding: 20px;
+        padding: 5px !important;
         order: 2;
-        padding-top: 40px;
-        /* Space for handle bar */
     }
 
     /* Show and style close button on mobile */
@@ -3850,9 +3906,10 @@ body.dark-mode #notices a {
 
 /* Tablet and small desktop (401px to 768px) - use desktop layout */
 @media (min-width: 401px) and (max-width: 768px) {
-    .promo-modal {
-        max-width: 90%;
-        width: 90%;
+    .promo-modal,
+    .dynamic-form-modal {
+        max-width: 100%;
+        width: 100%;
     }
 }
 
@@ -4287,7 +4344,6 @@ body.modal-open {
 @media (max-height: 600px) {
     .promo-modal-overlay {
         align-items: flex-start;
-        padding-top: 20px;
     }
 }
 
@@ -4446,39 +4502,69 @@ body.dark-mode .shimmer-button {
     /* Rounded corners for card effect */
 }
 
+/* Reset anchor-specific browser defaults */
+a.dropdown-item,
+a.dropdown-item:visited,
+a.dropdown-item:link {
+    text-decoration: none;
+    color: #333;
+    -webkit-tap-highlight-color: transparent;
+    display: flex !important;
+}
+
 .dropdown-item:hover {
     background: var(--color-primary-light);
     color: var(--color-primary-alt);
     text-decoration: none;
 }
 
-.dropdown-item i {
-    font-size: 15px !important;
-    width: 20px;
-    text-align: center;
-    transition: color 0.15s ease;
-    flex-shrink: 0;
-    line-height: 1;
+.dropdown-item:hover .dropdown-icon,
+.dropdown-item:hover .submenu-chevron {
+    color: var(--color-primary-alt);
 }
 
-/* Responsive icon sizing for mobile */
-@media (max-width: 768px) {
-    .dropdown-item i {
-        font-size: 14px !important;
-        width: 16px;
-    }
+/* Main icon in each dropdown item */
+.dropdown-icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 18px !important;
+    min-width: 18px !important;
+    max-width: 18px !important;
+    height: 18px !important;
+    flex-shrink: 0 !important;
+    font-style: normal !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transition: color 0.15s ease;
+}
+
+.dropdown-icon svg {
+    width: 18px !important;
+    height: 18px !important;
+    display: block !important;
+    flex-shrink: 0 !important;
 }
 
 .dropdown-item span {
     text-align: left;
     flex: 1;
     font-size: 14px !important;
+    line-height: 1.3;
+}
+
+/* Submenu items match parent alignment */
+.dropdown-submenu .dropdown-item {
+    padding: 10px 14px;
+    gap: 12px;
 }
 
 /* Submenu / Nested Dropdown Styles */
 .dropdown-item.has-submenu {
     position: relative;
-    padding-right: 12px;
+    padding-right: 14px;
 }
 
 /* Hide chevron and submenu when parent is not a submenu trigger (CSS-driven, no JS dependency) */
@@ -4491,10 +4577,29 @@ body.dark-mode .shimmer-button {
 }
 
 .submenu-chevron {
-    font-size: 10px !important;
-    opacity: 0.5;
-    margin-left: 8px;
+    font-size: 12px !important;
+    width: 14px !important;
+    min-width: 14px !important;
+    height: 14px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    opacity: 0.6;
+    margin-left: 4px;
+    flex-shrink: 0 !important;
     transition: transform 0.25s ease;
+}
+
+.submenu-chevron::before,
+.submenu-chevron::after {
+    display: none !important;
+    content: none !important;
+}
+
+.submenu-chevron svg {
+    width: 14px !important;
+    height: 14px !important;
+    display: block !important;
 }
 
 .dropdown-item.has-submenu:hover .submenu-chevron {
@@ -4620,8 +4725,14 @@ body.dark-mode .dropdown-item {
     color: #e0e0e0;
 }
 
+body.dark-mode a.dropdown-item,
+body.dark-mode a.dropdown-item:visited,
+body.dark-mode a.dropdown-item:link {
+    color: #e0e0e0;
+}
+
 body.dark-mode .dropdown-item:hover {
-    background: rgba(255, 130, 0, 0.18);
+    background: var(--color-primary-light);
     color: var(--color-primary-alt);
 }
 
@@ -5726,6 +5837,13 @@ body.dark-mode .quick-search-wrapper.ai-mode::after {
 } */
 
 /* AI Search Toggle Button - Redesigned to Squircle, orange tint when off, neutral with inset glow when on */
+.ai-search-toggle i {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
 .ai-search-toggle {
     position: absolute;
     right: 8px; /* Shifted right for concentric layout: uniform 7px vertical / 8px horizontal padding */
@@ -6673,8 +6791,8 @@ body.dark-mode .ai-mcp-hint a:hover {
     }
 
     .materio-modal {
-        width: calc(100% - 10px);
-        max-width: calc(100% - 10px);
+        width: 100%;
+        max-width: 100%;
         margin: 0 auto 5px;
         border-radius: 40px;
         corner-shape: squircle;
@@ -8359,12 +8477,12 @@ body.dark-mode .syllabus-show-link {
     width: 100%;
     height: 100%;
     position: relative;
-    background: #fff;
+    background: var(--color-bg-card, #fff);
     overflow: hidden;
 }
 
 body.dark-mode .exam-syllabus-view {
-    background: #1e1e1e;
+    background: var(--color-dark-bg-card, #1e1e1e);
 }
 
 .syllabus-banner {
@@ -8443,7 +8561,7 @@ body.dark-mode .exam-syllabus-view {
     overflow-y: auto;
     font-size: 15px;
     line-height: 1.7;
-    color: #444;
+    color: var(--color-text-secondary, #444);
     padding: 32px 32px 60px;
     /* Added proper padding around content */
     scrollbar-width: none;
@@ -8457,7 +8575,7 @@ body.dark-mode .exam-syllabus-view {
 
 .syllabus-full-content strong {
     font-weight: 700;
-    color: #222;
+    color: var(--color-text-primary, #222);
 }
 
 /* Markdown rendering styles for syllabus */
@@ -8492,11 +8610,82 @@ body.dark-mode #syllabusSubjectTitle {
 }
 
 body.dark-mode .syllabus-full-content {
-    color: #d0d0d0;
+    color: var(--color-dark-text-secondary, #d0d0d0);
 }
 
 body.dark-mode .syllabus-full-content strong {
-    color: #ffffff;
+    color: var(--color-dark-text-primary, #ffffff);
+}
+
+/* Coffee Mode Syllabus View Overrides */
+body.coffee-mode .exam-syllabus-view {
+    background: var(--color-bg-card, #eee8d5);
+}
+
+body.coffee-mode .syllabus-full-content {
+    color: var(--color-text-secondary, #655348);
+}
+
+body.coffee-mode .syllabus-full-content strong {
+    color: var(--color-text-primary, #4a3b32);
+}
+
+/* Coffee Dark Mode Syllabus View Overrides */
+body.coffee-dark-mode .exam-syllabus-view {
+    background: var(--color-bg-card, #251c19);
+}
+
+body.coffee-dark-mode .syllabus-full-content {
+    color: var(--color-text-secondary, #cbb8ac);
+}
+
+body.coffee-dark-mode .syllabus-full-content strong {
+    color: var(--color-text-primary, #ebdcd0);
+}
+
+/* Coffee Mode Exam Card Overrides */
+body.coffee-mode .exam-card {
+    background: var(--color-bg-overlay, rgba(238, 232, 213, 0.7));
+    border-color: var(--color-border-light, #dcd3b6);
+}
+
+body.coffee-mode .exam-subtitle,
+body.coffee-mode .exam-date,
+body.coffee-mode .exam-item-date,
+body.coffee-mode .exam-label,
+body.coffee-mode .exam-item-label {
+    color: var(--color-text-tertiary, #8a7b72);
+}
+
+body.coffee-mode .exam-syllabus-preview {
+    background: var(--color-primary-lighter, rgba(138, 108, 82, 0.08));
+    color: var(--color-text-secondary, #655348);
+}
+
+body.coffee-mode .exam-divider {
+    background: var(--color-border-light, #dcd3b6);
+}
+
+body.coffee-dark-mode .exam-card {
+    background: rgba(37, 28, 25, 0.7);
+    border-color: var(--color-border-light, #362924);
+}
+
+body.coffee-dark-mode .exam-subtitle,
+body.coffee-dark-mode .exam-date,
+body.coffee-dark-mode .exam-item-date,
+body.coffee-dark-mode .exam-label,
+body.coffee-dark-mode .exam-item-label {
+    color: var(--color-text-tertiary, #a59185);
+}
+
+body.coffee-dark-mode .exam-syllabus-preview {
+    background: rgba(207, 157, 117, 0.08);
+    color: var(--color-text-secondary, #cbb8ac);
+}
+
+body.coffee-dark-mode .exam-divider {
+    background: var(--color-border-light, #362924);
 }
 
 @media (max-width: 500px) {
@@ -10306,8 +10495,12 @@ body.dark-mode .custom-select-close-icon:hover {
         max-height: 75vh !important;
     }
     
+    .custom-select-promo .promo-content {
+        padding: 5px !important;
+    }
+    
     .custom-select-wizard-view {
-        padding: 12px !important;
+        padding: 5px !important;
         padding-top: 25px !important;
     }
 }
@@ -10610,5 +10803,55 @@ body.dark-mode .accent-dropdown-item:hover, body.dark-mode .theme-dropdown-item:
 
 .coffee-toggle-switch input:checked + .coffee-toggle-slider:before {
     transform: translateX(12px);
+}
+
+/* Coffee Mode Profile Dropdown & Submenu Overrides */
+body.coffee-mode .profile-dropdown,
+body.coffee-mode .dropdown-submenu {
+    background: var(--color-bg-card, #eee8d5) !important;
+    border-color: var(--color-border-medium, #c7bc99) !important;
+}
+
+body.coffee-mode .profile-dropdown::after {
+    border-top-color: var(--color-bg-card, #eee8d5) !important;
+}
+
+body.coffee-mode .dropdown-submenu::after {
+    border-right-color: var(--color-bg-card, #eee8d5) !important;
+}
+
+@media (max-width: 768px) {
+    body.coffee-mode .dropdown-submenu::after {
+        border-left-color: var(--color-bg-card, #eee8d5) !important;
+    }
+}
+
+body.coffee-mode .profile-dropdown .dropdown-item {
+    color: var(--color-text-primary, #4a3b32) !important;
+}
+
+/* Coffee Dark Mode Profile Dropdown & Submenu Overrides */
+body.coffee-dark-mode .profile-dropdown,
+body.coffee-dark-mode .dropdown-submenu {
+    background: var(--color-bg-card, #251c19) !important;
+    border-color: var(--color-border-medium, #4a3832) !important;
+}
+
+body.coffee-dark-mode .profile-dropdown::after {
+    border-top-color: var(--color-bg-card, #251c19) !important;
+}
+
+body.coffee-dark-mode .dropdown-submenu::after {
+    border-right-color: var(--color-bg-card, #251c19) !important;
+}
+
+@media (max-width: 768px) {
+    body.coffee-dark-mode .dropdown-submenu::after {
+        border-left-color: var(--color-bg-card, #251c19) !important;
+    }
+}
+
+body.coffee-dark-mode .profile-dropdown .dropdown-item {
+    color: var(--color-text-primary, #ebdcd0) !important;
 }
 
