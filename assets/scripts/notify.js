@@ -500,7 +500,10 @@ async function fetchInsightRoomPosts() {
  */
 async function fetchReleases() {
   try {
-    const response = await fetch('/assets/data/releases.json?t=' + Date.now());
+    let response = await fetch('/api/v2/releases?t=' + Date.now());
+    if (!response.ok) {
+      response = await fetch('/assets/data/releases.json?t=' + Date.now());
+    }
     if (!response.ok) return [];
     return await response.json();
   } catch (error) {

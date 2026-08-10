@@ -332,10 +332,10 @@ async function loadAndDisplayExamCard() {
         }
 
         const candidateRequests = [
-            { url: '/assets/data/examdata.json', options: { cache: 'force-cache' } },
-            { url: 'https://cdn.getmaterio.app/databases/beta/examdata.json', options: { cache: 'no-store' } }
+            { url: '/api/v2/examdata', options: { cache: 'no-store' } },
+            { url: '/assets/data/examdata.json', options: { cache: 'force-cache' } }
         ];
-
+ 
         let loaded = false;
         for (const request of candidateRequests) {
             try {
@@ -1763,7 +1763,8 @@ const SEATING_LS_KEY = 'usr_enr';
 async function fetchSeatingData() {
     if (seatingData) return seatingData;
     try {
-        const response = await fetch('/assets/data/seating_data.csv');
+        const url = (examData && examData.seatingDataUrl) ? examData.seatingDataUrl : '/assets/data/seating_data.csv';
+        const response = await fetch(url);
         if (!response.ok) throw new Error('CSV not found');
         const text = await response.text();
         const lines = text.trim().split(/\r?\n/);

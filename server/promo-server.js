@@ -70,6 +70,43 @@ app.all('/api/v2/features', async (req, res) => {
   }
 });
 
+// Promotions, Releases, and Examdata delegated Express routes
+app.all('/api/v2/promotions', async (req, res) => {
+  try {
+    req.query = req.query || {};
+    req.query.action = 'promotions';
+    await featuresHandler(req, res);
+  } catch (error) {
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  }
+});
+
+app.all('/api/v2/releases', async (req, res) => {
+  try {
+    req.query = req.query || {};
+    req.query.action = 'releases';
+    await featuresHandler(req, res);
+  } catch (error) {
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  }
+});
+
+app.all('/api/v2/examdata', async (req, res) => {
+  try {
+    req.query = req.query || {};
+    req.query.action = 'examdata';
+    await featuresHandler(req, res);
+  } catch (error) {
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  }
+});
+
 // LLM Share URL rewrite (mirrors vercel.json rewrite)
 app.get('/share/llm/:id', async (req, res) => {
   try {

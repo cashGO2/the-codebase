@@ -2996,295 +2996,219 @@ async function deleteInvite(inviteId) {
 // PROMOTION MANAGEMENT FUNCTIONALITY
 // ==============================================
 
-// Promotion management variables
-let currentPromoData = {
-  enabled: false,
-  title: "",
-  description: "",
-  link: "",
-  media: [],
-  mediaFit: "contain",
-  imageRotationInterval: 5000,
-  isLimitedOffer: false,
-  startDate: "",
-  endDate: "",
-  lastUpdated: ""
-};
+// Promotions, Releases, and Exams & Seating variables
+let currentPromoData = { media: [] };
+let promoMediaUrls = [];
+let activePromoId = null;
+let currentExamSemesters = [];
+let activeSeatingUrl = "";
 
-let promotionManagementInitialized = false;
+// Promotions nested tabs switching
+function switchPromoInnerTab(tabId) {
+  document.querySelectorAll('.promo-inner-pane').forEach(pane => pane.style.display = 'none');
+  const targetPane = document.getElementById(tabId);
+  if (targetPane) targetPane.style.display = 'block';
+
+  const editorBtn = document.getElementById('promoTabEditorBtn');
+  const historyBtn = document.getElementById('promoTabHistoryBtn');
+  if (editorBtn) editorBtn.classList.remove('active');
+  if (historyBtn) historyBtn.classList.remove('active');
+
+  if (tabId === 'promo-editor') {
+    if (editorBtn) editorBtn.classList.add('active');
+  } else {
+    if (historyBtn) historyBtn.classList.add('active');
+    loadPromoHistoryCms();
+  }
+}
+window.switchPromoInnerTab = switchPromoInnerTab;
 
 function initializePromotionManagement() {
-  if (promotionManagementInitialized) return;
-  promotionManagementInitialized = true;
-  const promoElements = {
-    enabledCheckbox: document.getElementById('promoEnabled'),
-    titleInput: document.getElementById('promoTitle'),
-    descriptionInput: document.getElementById('promoDescription'),
-    linkInput: document.getElementById('promoLink'),
-    imageInput: document.getElementById('promoImageInput'),
-    imageUrlInput: document.getElementById('promoImageUrl'),
-    addImageUrlBtn: document.getElementById('addImageUrl'),
-    imageUploadArea: document.getElementById('imageUploadArea'),
-    uploadPlaceholder: document.getElementById('uploadPlaceholder'),
-    imagePreviewContainer: document.getElementById('imagePreviewContainer'),
-    imagePreviewGrid: document.getElementById('imagePreviewGrid'),
-    addMoreImagesBtn: document.getElementById('addMoreImages'),
-    limitedOfferCheckbox: document.getElementById('isLimitedOffer'),
-    dateRangeSection: document.getElementById('dateRangeSection'),
-    startDateInput: document.getElementById('promoStartDate'),
-    endDateInput: document.getElementById('promoEndDate'),
-    form: document.getElementById('promotionForm'),
-    previewBtn: document.getElementById('previewPromotion'),
-    clearBtn: document.getElementById('clearPromotion'),
-    saveBtn: document.getElementById('savePromotion'),
-    statusInfo: document.getElementById('promoStatusInfo'),
-    currentStatus: document.getElementById('currentPromoStatus'),
-    currentTitle: document.getElementById('currentPromoTitle'),
-    currentDateRange: document.getElementById('currentPromoDateRange')
-  };
-
-  // Load existing promotion data
+  // Setup forms listener
+  const form = document.getElementById('promotionForm');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      savePromoForm();
+    });
+  }
   loadPromotionData();
-
-  // Event listeners
-  if (promoElements.enabledCheckbox) {
-    promoElements.enabledCheckbox.addEventListener('change', function () {
-      updatePromotionStatus();
-    });
-  }
-
-  if (promoElements.limitedOfferCheckbox) {
-    promoElements.limitedOfferCheckbox.addEventListener('change', function () {
-      toggleDateRangeSection();
-    });
-  }
-
-  if (promoElements.imageInput) {
-    promoElements.imageInput.addEventListener('change', handleImageUpload);
-  }
-
-  if (promoElements.imageUploadArea) {
-    promoElements.imageUploadArea.addEventListener('click', function () {
-      promoElements.imageInput.click();
-    });
-
-    // Drag and drop functionality
-    promoElements.imageUploadArea.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      promoElements.imageUploadArea.classList.add('dragover');
-    });
-
-    promoElements.imageUploadArea.addEventListener('dragleave', (e) => {
-      e.preventDefault();
-      promoElements.imageUploadArea.classList.remove('dragover');
-    });
-
-    promoElements.imageUploadArea.addEventListener('drop', (e) => {
-      e.preventDefault();
-      promoElements.imageUploadArea.classList.remove('dragover');
-      const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
-      if (files.length > 0) {
-        handleImageUploadFiles(files);
-      }
-    });
-  }
-
-  if (promoElements.addImageUrlBtn) {
-    promoElements.addImageUrlBtn.addEventListener('click', async () => {
-      try {
-        const imageUrl = promoElements.imageUrlInput.value.trim();
-
-        if (!imageUrl) {
-          showNotification('Please enter a valid image URL', 'error');
-          return;
-        }
-
-        // Validate URL format
-        try {
-          new URL(imageUrl);
-        } catch (e) {
-          showNotification('Please enter a valid URL', 'error');
-          return;
-        }
-
-        // Add the URL to media array
-        currentPromoData.media.push(imageUrl);
-
-        // Update UI
-        displayExistingImages();
-
-        // Clear input
-        promoElements.imageUrlInput.value = '';
-
-        showNotification('Image URL added successfully', 'success');
-      } catch (error) {
-        console.error('Error adding image URL:', error);
-        showNotification('Failed to add image URL', 'error');
-      }
-    });
-  }
-
-  if (promoElements.addMoreImagesBtn) {
-    promoElements.addMoreImagesBtn.addEventListener('click', function () {
-      promoElements.imageInput.click();
-    });
-  }
-
-  if (promoElements.form) {
-    promoElements.form.addEventListener('submit', savePromotion);
-  }
-
-  if (promoElements.previewBtn) {
-    promoElements.previewBtn.addEventListener('click', previewPromotion);
-  }
-  if (promoElements.clearBtn) {
-    promoElements.clearBtn.addEventListener('click', clearPromotion);
-  }
 }
 
 async function loadPromotionData() {
   try {
-    const response = await fetch('/assets/data/promo.json');
-    if (response.ok) {
-      const loadedData = await response.json();
-      // Support both 'media' (new) and 'images' (legacy) properties
-      currentPromoData = {
-        ...loadedData,
-        media: loadedData.media || loadedData.images || [],
-        mediaFit: loadedData.mediaFit || 'cover'
-      };
-      // Remove legacy 'images' key if media exists
-      delete currentPromoData.images;
-      populatePromotionForm();
-      updateStatusDisplay();
-    } else {
-      console.log('No existing promotion data found');
-    }
-  } catch (error) {
-    console.error('Error loading promotion data:', error);
-  }
-}
-
-function populatePromotionForm() {
-  const elements = {
-    enabled: document.getElementById('promoEnabled'),
-    title: document.getElementById('promoTitle'),
-    description: document.getElementById('promoDescription'),
-    link: document.getElementById('promoLink'),
-    limitedOffer: document.getElementById('isLimitedOffer'),
-    startDate: document.getElementById('promoStartDate'),
-    endDate: document.getElementById('promoEndDate')
-  };
-
-  if (elements.enabled) elements.enabled.checked = currentPromoData.enabled;
-  if (elements.title) elements.title.value = currentPromoData.title || '';
-  if (elements.description) elements.description.value = currentPromoData.description || '';
-  if (elements.link) elements.link.value = currentPromoData.link || '';
-  if (elements.limitedOffer) elements.limitedOffer.checked = currentPromoData.isLimitedOffer;
-  if (elements.startDate) elements.startDate.value = currentPromoData.startDate || '';
-  if (elements.endDate) elements.endDate.value = currentPromoData.endDate || '';
-
-  // Handle media display (support both 'media' and legacy 'images')
-  const mediaItems = currentPromoData.media || currentPromoData.images || [];
-  if (mediaItems.length > 0) {
-    displayExistingImages();
-  }
-
-  toggleDateRangeSection();
-}
-
-function displayExistingImages() {
-  const uploadPlaceholder = document.getElementById('uploadPlaceholder');
-  const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-  const imagePreviewGrid = document.getElementById('imagePreviewGrid');
-
-  if (uploadPlaceholder) uploadPlaceholder.style.display = 'none';
-  if (imagePreviewContainer) imagePreviewContainer.style.display = 'block';
-
-  if (imagePreviewGrid) {
-    imagePreviewGrid.innerHTML = '';
-    const mediaItems = currentPromoData.media || [];
-    mediaItems.forEach((mediaPath, index) => {
-      const imageItem = createImagePreviewItem(mediaPath, index);
-      imagePreviewGrid.appendChild(imageItem);
+    const response = await fetch('/api/v2/promotions?all=true', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
+      }
     });
-  }
-}
-
-function createImagePreviewItem(imagePath, index) {
-  const item = document.createElement('div');
-  item.className = 'image-preview-item';
-  item.innerHTML = `
-    <img src="${imagePath}" alt="Promotion Image" />
-    <button type="button" class="remove-image" onclick="removePromoImage(${index})">
-      <i class="fas fa-times"></i>
-    </button>
-  `;
-  return item;
-}
-
-function toggleDateRangeSection() {
-  const checkbox = document.getElementById('isLimitedOffer');
-  const section = document.getElementById('dateRangeSection');
-
-  if (checkbox && section) {
-    section.style.display = checkbox.checked ? 'block' : 'none';
-  }
-}
-
-async function handleImageUpload(event) {
-  const files = Array.from(event.target.files);
-  await handleImageUploadFiles(files);
-  event.target.value = ''; // Reset input
-}
-
-async function handleImageUploadFiles(files) {
-  if (!files || files.length === 0) return;
-
-  try {
-    for (const file of files) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        showNotification(`${file.name} is not an image file`, 'error');
-        continue;
-      }
-
-      // Validate file size (5MB max)
-      if (file.size > 5 * 1024 * 1024) {
-        showNotification(`${file.name} is too large (max 5MB)`, 'error');
-        continue;
-      }
-
-      // Upload to assets/media folder
-      const uploadedMediaPath = await uploadPromoImage(file);
-      if (uploadedMediaPath) {
-        currentPromoData.media.push(uploadedMediaPath);
+    if (response.ok) {
+      const promos = await response.json();
+      if (promos && promos.length > 0) {
+        currentPromoData = promos[0];
+        populatePromoEditor(promos[0]);
       }
     }
-
-    // Update UI
-    displayExistingImages();
-    showNotification('Images uploaded successfully', 'success');
-
   } catch (error) {
-    console.error('Error uploading images:', error);
-    showNotification('Failed to upload images', 'error');
+    console.error('Error loading active promotion:', error);
   }
 }
 
-async function uploadPromoImage(file) {
+async function loadPromoHistoryCms() {
   try {
-    // Keep original filename instead of generating a new one
-    const fileName = file.name;
+    const response = await fetch('/api/v2/promotions?all=true', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
+      }
+    });
 
-    // Create FormData for upload
+    if (!response.ok) throw new Error('Failed to load promotions history');
+    const promos = await response.json();
+    const tbody = document.getElementById('promoHistoryTableBody');
+    if (!tbody) return;
 
-    const formData = new FormData();
-    formData.append('file', file, fileName);
-    formData.append('path', 'assets/img');
+    if (promos.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No promotions in history.</td></tr>';
+      return;
+    }
 
-    // Upload via CDN API
-    const response = await fetch('/api/v2/cdn', {
+    tbody.innerHTML = '';
+    promos.forEach(promo => {
+      const tr = document.createElement('tr');
+      const isCurrentlyActive = promo.enabled;
+      const statusBadge = isCurrentlyActive 
+        ? '<span class="status-badge active">Active</span>' 
+        : '<span class="status-badge inactive">Inactive</span>';
+
+      let dateInfo = 'Always';
+      if (promo.isLimitedOffer && promo.startDate && promo.endDate) {
+        dateInfo = `${new Date(promo.startDate).toLocaleDateString()} - ${new Date(promo.endDate).toLocaleDateString()}`;
+      }
+
+      const lastUpdatedFormatted = promo.lastUpdated ? new Date(promo.lastUpdated).toLocaleString() : 'N/A';
+
+      tr.innerHTML = `
+        <td><strong>${promo.title}</strong></td>
+        <td><code>${promo.category || 'whats-new'}</code></td>
+        <td>${statusBadge}</td>
+        <td><small>${dateInfo}</small></td>
+        <td><small>${lastUpdatedFormatted}</small></td>
+        <td>
+          <div class="exam-actions-btn">
+            <button class="btn btn-outline btn-sm" onclick="editPromoCms('${promo._id}')"><i class="fas fa-edit"></i> Edit</button>
+            ${!isCurrentlyActive ? `<button class="btn btn-outline btn-sm" onclick="activatePromoCms('${promo._id}')"><i class="fas fa-check"></i> Activate</button>` : ''}
+            <button class="btn btn-outline btn-sm btn-danger" onclick="deletePromoCms('${promo._id}')"><i class="fas fa-trash"></i> Delete</button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    console.error(err);
+    showNotification('Failed to load promo history', 'error');
+  }
+}
+window.loadPromoHistoryCms = loadPromoHistoryCms;
+
+function populatePromoEditor(promo) {
+  activePromoId = promo._id;
+  document.getElementById('promoId').value = promo._id || '';
+  document.getElementById('promoEnabled').checked = !!promo.enabled;
+  document.getElementById('promoTitle').value = promo.title || '';
+  document.getElementById('promoCategory').value = promo.category || 'whats-new';
+  document.getElementById('promoDescription').value = promo.description || '';
+  document.getElementById('promoLink').value = promo.link || '';
+  document.getElementById('promoOrientation').value = promo.orientation || 'horizontal';
+  document.getElementById('promoMediaFit').value = promo.mediaFit || 'cover';
+  document.getElementById('promoRotationInterval').value = promo.imageRotationInterval || 2500;
+  
+  // Frequency
+  document.getElementById('promoFrequency').value = promo.frequency || 'once';
+  document.getElementById('promoCustomFreqHours').value = promo.customFrequencyHours || '0';
+  togglePromoCustomFrequency();
+
+  // Limited offer / Dates
+  const isLimited = !!promo.isLimitedOffer;
+  document.getElementById('promoIsLimitedOffer').checked = isLimited;
+  if (promo.startDate) {
+    document.getElementById('promoStartDate').value = promo.startDate.substring(0, 16);
+  } else {
+    document.getElementById('promoStartDate').value = '';
+  }
+  if (promo.endDate) {
+    document.getElementById('promoEndDate').value = promo.endDate.substring(0, 16);
+  } else {
+    document.getElementById('promoEndDate').value = '';
+  }
+  togglePromoDateRange();
+
+  // Buttons
+  const buttons = promo.buttons || {};
+  document.getElementById('promoBtnPrimaryShow').checked = buttons.primary?.show !== false;
+  document.getElementById('promoBtnPrimaryText').value = buttons.primary?.text || 'Read Release Notes';
+  document.getElementById('promoBtnSecondaryShow').checked = buttons.secondary?.show !== false;
+  document.getElementById('promoBtnSecondaryText').value = buttons.secondary?.text || 'Got it';
+
+  // Media
+  promoMediaUrls = promo.media || [];
+  renderPromoMediaList();
+}
+
+function renderPromoMediaList() {
+  const container = document.getElementById('promoMediaList');
+  if (!container) return;
+
+  if (promoMediaUrls.length === 0) {
+    container.innerHTML = '<span style="color: var(--text-secondary); font-size: 0.9rem; margin: auto;">No media added yet</span>';
+    return;
+  }
+
+  container.innerHTML = '';
+  promoMediaUrls.forEach((url, idx) => {
+    const badge = document.createElement('div');
+    badge.className = 'media-badge';
+    badge.title = 'Click to remove';
+    badge.onclick = () => removePromoMediaUrl(idx);
+    badge.innerHTML = `
+      <i class="fas fa-image"></i>
+      <span style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${url.split('/').pop()}</span>
+      <i class="fas fa-times" style="font-size: 0.8rem; margin-left: 5px; color: var(--text-secondary);"></i>
+    `;
+    container.appendChild(badge);
+  });
+}
+
+function addPromoMediaUrl(url = '') {
+  const input = document.getElementById('promoMediaUrl');
+  const value = url || (input ? input.value.trim() : '');
+  
+  if (!value) return;
+  try { new URL(value); } catch(e) { 
+    showNotification('Please enter a valid URL', 'error');
+    return;
+  }
+
+  promoMediaUrls.push(value);
+  renderPromoMediaList();
+  if (input && !url) input.value = '';
+}
+window.addPromoMediaUrl = addPromoMediaUrl;
+
+function removePromoMediaUrl(index) {
+  promoMediaUrls.splice(index, 1);
+  renderPromoMediaList();
+}
+
+async function uploadPromoImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    showNotification('Uploading image to Supabase...', 'info');
+    const response = await fetch('/api/v2/examdata', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
@@ -3292,688 +3216,856 @@ async function uploadPromoImage(file) {
       body: formData
     });
 
-    const result = await response.json();
-    if (result.error) {
-      throw new Error(result.error);
-    }
-
-    // Return the path for the uploaded image
-    return `/assets/img/${fileName}`;
-
-  } catch (error) {
-    console.error('Upload error:', error);
-    throw error;
-  }
-}
-
-function removePromoImage(index) {
-  const mediaItems = currentPromoData.media || [];
-  if (index >= 0 && index < mediaItems.length) {
-    currentPromoData.media.splice(index, 1);
-
-    if (currentPromoData.media.length === 0) {
-      // Show upload placeholder again
-      const uploadPlaceholder = document.getElementById('uploadPlaceholder');
-      const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-
-      if (uploadPlaceholder) uploadPlaceholder.style.display = 'flex';
-      if (imagePreviewContainer) imagePreviewContainer.style.display = 'none';
+    const data = await response.json();
+    if (response.ok && data.url) {
+      addPromoMediaUrl(data.url);
+      showNotification('Image uploaded successfully!', 'success');
     } else {
-      displayExistingImages();
+      showNotification(data.error || 'Upload failed', 'error');
     }
+  } catch (err) {
+    console.error(err);
+    showNotification('Upload failed', 'error');
+  }
+  input.value = '';
+}
+window.uploadPromoImage = uploadPromoImage;
 
-    showNotification('Media removed', 'info');
+function togglePromoCustomFrequency() {
+  const freq = document.getElementById('promoFrequency').value;
+  const container = document.getElementById('promoCustomFreqContainer');
+  if (container) {
+    container.style.display = freq === 'custom' ? 'block' : 'none';
   }
 }
+window.togglePromoCustomFrequency = togglePromoCustomFrequency;
 
-async function savePromotion(event) {
-  event.preventDefault();
+function togglePromoDateRange() {
+  const isLimited = document.getElementById('promoIsLimitedOffer').checked;
+  const container = document.getElementById('promoDateRangeContainer');
+  if (container) {
+    container.style.display = isLimited ? 'flex' : 'none';
+  }
+}
+window.togglePromoDateRange = togglePromoDateRange;
 
+function clearPromoForm() {
+  activePromoId = null;
+  document.getElementById('promoId').value = '';
+  document.getElementById('promotionForm').reset();
+  promoMediaUrls = [];
+  renderPromoMediaList();
+  togglePromoCustomFrequency();
+  togglePromoDateRange();
+}
+window.clearPromoForm = clearPromoForm;
+
+async function savePromoForm() {
   try {
-    // Collect form data
-    const formData = {
-      enabled: document.getElementById('promoEnabled')?.checked || false,
-      title: document.getElementById('promoTitle')?.value || '',
-      description: document.getElementById('promoDescription')?.value || '',
-      link: document.getElementById('promoLink')?.value || '',
-      media: currentPromoData.media || [],
-      mediaFit: currentPromoData.mediaFit || 'contain',
-      imageRotationInterval: 5000, // 5 seconds default
-      isLimitedOffer: document.getElementById('isLimitedOffer')?.checked || false,
-      startDate: document.getElementById('promoStartDate')?.value || '',
-      endDate: document.getElementById('promoEndDate')?.value || '',
-      lastUpdated: new Date().toISOString()
+    const isEdit = !!activePromoId;
+    const method = isEdit ? 'PUT' : 'POST';
+
+    const buttons = {
+      primary: {
+        show: document.getElementById('promoBtnPrimaryShow').checked,
+        text: document.getElementById('promoBtnPrimaryText').value.trim() || 'Read Release Notes'
+      },
+      secondary: {
+        show: document.getElementById('promoBtnSecondaryShow').checked,
+        text: document.getElementById('promoBtnSecondaryText').value.trim() || 'Got it'
+      }
     };
 
-    // Validate required fields
-    if (formData.enabled && (!formData.title || !formData.description)) {
-      showNotification('Title and description are required when promotion is enabled', 'error');
-      return;
+    const promoPayload = {
+      enabled: document.getElementById('promoEnabled').checked,
+      title: document.getElementById('promoTitle').value.trim(),
+      category: document.getElementById('promoCategory').value.trim() || 'whats-new',
+      description: document.getElementById('promoDescription').value.trim(),
+      link: document.getElementById('promoLink').value.trim(),
+      orientation: document.getElementById('promoOrientation').value,
+      mediaFit: document.getElementById('promoMediaFit').value,
+      imageRotationInterval: parseInt(document.getElementById('promoRotationInterval').value) || 2500,
+      frequency: document.getElementById('promoFrequency').value,
+      customFrequencyHours: document.getElementById('promoCustomFreqHours').value,
+      isLimitedOffer: document.getElementById('promoIsLimitedOffer').checked,
+      startDate: document.getElementById('promoStartDate').value,
+      endDate: document.getElementById('promoEndDate').value,
+      buttons,
+      media: promoMediaUrls
+    };
+
+    if (isEdit) {
+      promoPayload._id = activePromoId;
     }
 
-    if (formData.isLimitedOffer && (!formData.startDate || !formData.endDate)) {
-      showNotification('Start and end dates are required for limited time offers', 'error');
-      return;
+    showNotification('Saving promotion data...', 'info');
+    const response = await fetch('/api/v2/promotions', {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
+      },
+      body: JSON.stringify(promoPayload)
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      showNotification('Promotion saved and deployed!', 'success');
+      clearPromoForm();
+      switchPromoInnerTab('promo-history');
+    } else {
+      showNotification(data.error || 'Failed to save promotion', 'error');
     }
-
-    // Validate date range
-    if (formData.isLimitedOffer && formData.startDate && formData.endDate) {
-      const startDate = new Date(formData.startDate);
-      const endDate = new Date(formData.endDate);
-      if (startDate >= endDate) {
-        showNotification('End date must be after start date', 'error');
-        return;
-      }
-    }
-
-    // Save to promo.json file
-    await savePromotionToFile(formData);
-
-    // Update current data
-    currentPromoData = formData;
-    updateStatusDisplay();
-
-    showNotification('Promotion saved successfully', 'success');
-  } catch (error) {
-    console.error('Error saving promotion:', error);
+  } catch (err) {
+    console.error(err);
     showNotification('Failed to save promotion', 'error');
   }
 }
 
-async function savePromotionToFile(data) {
+async function editPromoCms(id) {
   try {
-    console.log('🔄 Saving promotion data:', data);
-
-    // Update in-memory data first
-    currentPromoData = data;
-    localStorage.setItem('materio_promo_data', JSON.stringify(data, null, 2));
-    // Try to save via Netlify function
-    try {
-      const response = await fetch('/api/v2/features/save-promo', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log('✅ Successfully saved via Netlify function:', result);
-
-        showNotification('Promotion saved successfully!', 'success');
-
-        // Trigger promotion reload on main page
-        setTimeout(() => {
-          if (window.loadAndDisplayPromotion) {
-            window.loadAndDisplayPromotion();
-          }
-          // Try to reload main page promotion too
-          if (window.parent && window.parent.loadAndDisplayPromotion) {
-            window.parent.loadAndDisplayPromotion();
-          }
-        }, 500);
-
-        return { success: true };
-      } else {
-        const error = await response.json();
-        throw new Error(error.error || 'Netlify function save failed');
+    const response = await fetch('/api/v2/promotions?all=true', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
       }
-    } catch (netlifyError) {
-      console.log('⚠️ Netlify function save failed:', netlifyError.message);
+    });
+    if (response.ok) {
+      const list = await response.json();
+      const promo = list.find(p => p._id === id);
+      if (promo) {
+        populatePromoEditor(promo);
+        switchPromoInnerTab('promo-editor');
+      }
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+window.editPromoCms = editPromoCms;
 
-      // Fallback: Try the standalone server (if running)
-      try {
-        const response = await fetch('/api/v2/features/save-promo', {
-          method: 'POST',
+async function activatePromoCms(id) {
+  if (!confirm('Are you sure you want to activate this promotion? This will disable other active promotions.')) return;
+  try {
+    // Fetch all promos
+    const response = await fetch('/api/v2/promotions?all=true', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
+      }
+    });
+    if (!response.ok) throw new Error('Failed to fetch promos');
+    const list = await response.json();
+
+    showNotification('Activating promotion...', 'info');
+    // 1. Disable other promotions
+    for (const promo of list) {
+      if (promo._id !== id && promo.enabled) {
+        await fetch('/api/v2/promotions', {
+          method: 'PUT',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
           },
-          body: JSON.stringify(data)
+          body: JSON.stringify({ ...promo, enabled: false })
+        });
+      }
+    }
+
+    // 2. Enable target promotion
+    const target = list.find(p => p._id === id);
+    const updateRes = await fetch('/api/v2/promotions', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
+      },
+      body: JSON.stringify({ ...target, enabled: true })
+    });
+
+    if (updateRes.ok) {
+      showNotification('Promotion activated!', 'success');
+      loadPromoHistoryCms();
+    } else {
+      showNotification('Failed to activate promotion', 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    showNotification('Error activating promotion', 'error');
+  }
+}
+window.activatePromoCms = activatePromoCms;
+
+async function deletePromoCms(id) {
+  if (!confirm('Are you sure you want to delete this promotion? This cannot be undone.')) return;
+  try {
+    const response = await fetch(`/api/v2/promotions?id=${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
+      }
+    });
+    if (response.ok) {
+      showNotification('Promotion deleted successfully', 'success');
+      loadPromoHistoryCms();
+    } else {
+      const data = await response.json();
+      showNotification(data.error || 'Failed to delete promotion', 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    showNotification('Error deleting promotion', 'error');
+  }
+}
+window.deletePromoCms = deletePromoCms;
+
+// Live preview inside the page modal
+function previewPromoLive() {
+  const modal = document.getElementById('promoModal');
+  if (!modal) return;
+
+  const title = document.getElementById('promoTitle').value.trim() || 'Preview Title';
+  const desc = document.getElementById('promoDescription').value.trim() || 'Preview description content...';
+  const mediaFit = document.getElementById('promoMediaFit').value;
+  const orientation = document.getElementById('promoOrientation').value;
+
+  const titleEl = modal.querySelector('.promo-title');
+  const descEl = modal.querySelector('.promo-description');
+  if (titleEl) titleEl.textContent = title;
+  if (descEl) descEl.textContent = desc;
+
+  // Media
+  const imageEl = modal.querySelector('.promo-cover');
+  const videoEl = modal.querySelector('.promo-video');
+  
+  if (imageEl) imageEl.style.objectFit = mediaFit;
+  if (videoEl) videoEl.style.objectFit = mediaFit;
+
+  if (promoMediaUrls.length > 0) {
+    const firstMedia = promoMediaUrls[0];
+    const isVideo = firstMedia.endsWith('.mp4') || firstMedia.endsWith('.webm');
+
+    if (isVideo) {
+      if (videoEl) {
+        videoEl.src = firstMedia;
+        videoEl.style.display = 'block';
+      }
+      if (imageEl) imageEl.style.display = 'none';
+    } else {
+      if (imageEl) {
+        imageEl.src = firstMedia;
+        imageEl.style.display = 'block';
+      }
+      if (videoEl) videoEl.style.display = 'none';
+    }
+  } else {
+    if (imageEl) imageEl.style.display = 'none';
+    if (videoEl) videoEl.style.display = 'none';
+  }
+
+  // Buttons
+  const primaryShow = document.getElementById('promoBtnPrimaryShow').checked;
+  const primaryText = document.getElementById('promoBtnPrimaryText').value.trim() || 'View Offer';
+  const secondaryShow = document.getElementById('promoBtnSecondaryShow').checked;
+  const secondaryText = document.getElementById('promoBtnSecondaryText').value.trim() || 'Remind me later';
+
+  const primaryBtn = modal.querySelector('#offerButton');
+  const secondaryBtn = modal.querySelector('#remindLaterBtn');
+  const linkWrapper = modal.querySelector('.promo-link');
+
+  if (primaryBtn) {
+    primaryBtn.querySelector('.promo-button-text').textContent = primaryText;
+    if (linkWrapper) linkWrapper.style.display = primaryShow ? 'inline-block' : 'none';
+  }
+  if (secondaryBtn) {
+    secondaryBtn.querySelector('.promo-secondary-text').textContent = secondaryText;
+    secondaryBtn.style.display = secondaryShow ? 'inline-block' : 'none';
+  }
+
+  // Orientation
+  const modalContainer = modal.querySelector('.promo-modal');
+  if (modalContainer) {
+    modalContainer.classList.remove('promo-orientation-vertical');
+    modalContainer.style.flexDirection = '';
+    modalContainer.style.maxWidth = '';
+    
+    if (orientation === 'vertical') {
+      modalContainer.classList.add('promo-orientation-vertical');
+      modalContainer.style.flexDirection = 'column';
+      modalContainer.style.maxWidth = '460px';
+      
+      const imgContainer = modal.querySelector('.promo-image');
+      if (imgContainer) {
+        imgContainer.style.minWidth = '100%';
+        imgContainer.style.height = '200px';
+      }
+    } else {
+      const imgContainer = modal.querySelector('.promo-image');
+      if (imgContainer) {
+        imgContainer.style.minWidth = '';
+        imgContainer.style.height = '';
+      }
+    }
+  }
+
+  modal.style.display = 'flex';
+}
+window.previewPromoLive = previewPromoLive;
+
+function closePromoModalPreview() {
+  const modal = document.getElementById('promoModal');
+  if (modal) modal.style.display = 'none';
+}
+window.closePromoModalPreview = closePromoModalPreview;
+
+
+// ==========================================
+// RELEASES MANAGEMENT
+// ==========================================
+
+async function loadReleasesCms() {
+  try {
+    const response = await fetch('/api/v2/releases');
+    if (!response.ok) throw new Error('Failed to fetch releases');
+    releasesList = await response.json();
+
+    const tbody = document.getElementById('releasesTableBody');
+    if (!tbody) return;
+
+    if (releasesList.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No releases logged yet.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = '';
+    releasesList.forEach(rel => {
+      const tr = document.createElement('tr');
+      const logsSummary = rel.logs && rel.logs.length > 0 
+        ? `<ul style="margin: 0; padding-left: 15px;">${rel.logs.map(l => `<li>${l}</li>`).join('')}</ul>` 
+        : 'No logs';
+
+      tr.innerHTML = `
+        <td><strong>${rel.version}</strong></td>
+        <td><code>${rel.branch || 'stable'}</code></td>
+        <td>${rel.build}</td>
+        <td>${logsSummary}</td>
+        <td>
+          <div class="exam-actions-btn">
+            <button class="btn btn-outline btn-sm" onclick="openReleaseModalForm('${rel._id}')"><i class="fas fa-edit"></i> Edit</button>
+            <button class="btn btn-outline btn-sm btn-danger" onclick="deleteReleaseCms('${rel._id}')"><i class="fas fa-trash"></i> Delete</button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    console.error(err);
+    showNotification('Failed to load release logs', 'error');
+  }
+}
+window.loadReleasesCms = loadReleasesCms;
+
+function openReleaseModalForm(id = null) {
+  const modal = document.getElementById('releaseModal');
+  const title = document.getElementById('releaseModalTitle');
+  if (!modal || !title) return;
+
+  document.getElementById('releaseModalForm').reset();
+  document.getElementById('releaseId').value = id || '';
+
+  if (id) {
+    title.textContent = 'Edit Release';
+    const rel = releasesList.find(r => r._id === id);
+    if (rel) {
+      document.getElementById('releaseVersion').value = rel.version || '';
+      document.getElementById('releaseBuild').value = rel.build || '';
+      document.getElementById('releaseBranch').value = rel.branch || 'stable';
+      document.getElementById('releaseLogs').value = rel.logs ? rel.logs.join('\n') : '';
+    }
+  } else {
+    title.textContent = 'Add New Release';
+    document.getElementById('releaseBuild').value = new Date().toLocaleDateString('en-GB'); // DD/MM/YYYY
+  }
+
+  modal.style.display = 'flex';
+}
+window.openReleaseModalForm = openReleaseModalForm;
+
+function closeReleaseModal() {
+  const modal = document.getElementById('releaseModal');
+  if (modal) modal.style.display = 'none';
+}
+window.closeReleaseModal = closeReleaseModal;
+
+async function saveReleaseForm(event) {
+  event.preventDefault();
+  const id = document.getElementById('releaseId').value;
+  const version = document.getElementById('releaseVersion').value.trim();
+  const build = document.getElementById('releaseBuild').value.trim();
+  const branch = document.getElementById('releaseBranch').value;
+  const logsText = document.getElementById('releaseLogs').value;
+
+  const logs = logsText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+  if (!version || !build || logs.length === 0) {
+    showNotification('Version, build date, and logs are required', 'error');
+    return;
+  }
+
+  const payload = { version, build, branch, logs };
+  const method = id ? 'PUT' : 'POST';
+  if (id) payload._id = id;
+
+  try {
+    showNotification('Saving release notes...', 'info');
+    const response = await fetch('/api/v2/releases', {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      showNotification('Release saved successfully!', 'success');
+      closeReleaseModal();
+      loadReleasesCms();
+    } else {
+      showNotification(data.error || 'Failed to save release', 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    showNotification('Failed to save release', 'error');
+  }
+}
+window.saveReleaseForm = saveReleaseForm;
+
+async function deleteReleaseCms(id) {
+  if (!confirm('Are you sure you want to delete this release? This cannot be undone.')) return;
+  try {
+    const response = await fetch(`/api/v2/releases?id=${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
+      }
+    });
+
+    if (response.ok) {
+      showNotification('Release deleted successfully', 'success');
+      loadReleasesCms();
+    } else {
+      const data = await response.json();
+      showNotification(data.error || 'Failed to delete release', 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    showNotification('Error deleting release', 'error');
+  }
+}
+window.deleteReleaseCms = deleteReleaseCms;
+
+
+// ==========================================
+// EXAMS & SEATING MANAGEMENT
+// ==========================================
+
+async function loadExamDataCms() {
+  try {
+    const response = await fetch('/api/v2/examdata');
+    if (!response.ok) throw new Error('Failed to load exam data');
+    const config = await response.json();
+
+    document.getElementById('examEnabled').checked = !!config.enabled;
+    document.getElementById('examRotationInterval').value = config.viewRotationInterval || 15000;
+    document.getElementById('examShowBeforeDays').value = config.showBeforeDays || 9;
+    document.getElementById('examShowBeforeDaysViva').value = config.showBeforeDaysViva || 3;
+
+    activeSeatingUrl = config.seatingDataUrl || "";
+    currentExamSemesters = config.semesters || [];
+
+    // Seating Data URL
+    const activeInfo = document.getElementById('seatingActiveInfo');
+    const activeLink = document.getElementById('seatingActiveUrl');
+    const testArea = document.getElementById('seatingTestLookupArea');
+
+    if (activeSeatingUrl) {
+      if (activeLink) {
+        activeLink.href = activeSeatingUrl;
+        activeLink.textContent = activeSeatingUrl;
+      }
+      if (activeInfo) activeInfo.style.display = 'block';
+      if (testArea) testArea.style.display = 'block';
+    } else {
+      if (activeInfo) activeInfo.style.display = 'none';
+      if (testArea) testArea.style.display = 'none';
+    }
+
+    renderSemestersList();
+  } catch (err) {
+    console.error(err);
+    showNotification('Failed to load exam configurations', 'error');
+  }
+}
+window.loadExamDataCms = loadExamDataCms;
+
+// Save Exam Global Settings and Schedule
+async function saveExamConfig(event) {
+  if (event) event.preventDefault();
+
+  const payload = {
+    enabled: document.getElementById('examEnabled').checked,
+    viewRotationInterval: parseInt(document.getElementById('examRotationInterval').value) || 15000,
+    showBeforeDays: parseInt(document.getElementById('examShowBeforeDays').value) || 9,
+    showBeforeDaysViva: parseInt(document.getElementById('examShowBeforeDaysViva').value) || 3,
+    seatingDataUrl: activeSeatingUrl || null,
+    semesters: currentExamSemesters
+  };
+
+  try {
+    showNotification('Saving exam configurations...', 'info');
+    const response = await fetch('/api/v2/examdata', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      showNotification('Exam settings saved successfully!', 'success');
+      loadExamDataCms();
+    } else {
+      showNotification(data.error || 'Failed to save exam settings', 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    showNotification('Failed to save exam settings', 'error');
+  }
+}
+
+// Bind Submit
+const examConfigForm = document.getElementById('examConfigForm');
+if (examConfigForm) {
+  examConfigForm.addEventListener('submit', saveExamConfig);
+}
+
+async function uploadSeatingCsv(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    showNotification('Uploading seating CSV to Supabase...', 'info');
+    const response = await fetch('/api/v2/examdata', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
+      },
+      body: formData
+    });
+
+    const data = await response.json();
+    if (response.ok && data.url) {
+      activeSeatingUrl = data.url;
+      showNotification('Seating CSV uploaded successfully!', 'success');
+      
+      // Auto save after upload to attach it to active config
+      await saveExamConfig(null);
+    } else {
+      showNotification(data.error || 'Failed to upload CSV', 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    showNotification('CSV upload failed', 'error');
+  }
+  input.value = '';
+}
+window.uploadSeatingCsv = uploadSeatingCsv;
+
+async function testSeatingLookupInCms() {
+  const enrollment = document.getElementById('testEnrollmentNo').value.trim();
+  const resultDiv = document.getElementById('testSeatingResult');
+  if (!enrollment || !activeSeatingUrl) return;
+
+  resultDiv.style.display = 'block';
+  resultDiv.innerHTML = 'Searching CSV...';
+
+  try {
+    const response = await fetch(activeSeatingUrl);
+    const text = await response.text();
+    const lines = text.trim().split(/\r?\n/);
+    if (lines.length <= 1) {
+      resultDiv.innerHTML = '<span style="color: #dc3545;">CSV file is empty or malformed.</span>';
+      return;
+    }
+
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+    let match = null;
+
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(',');
+      if (values.length >= headers.length) {
+        const row = {};
+        headers.forEach((h, idx) => {
+          row[h] = (values[idx] || '').trim();
         });
 
-        if (response.ok) {
-          const result = await response.json();
-          console.log('✅ Successfully saved via standalone server:', result);
-
-          showNotification('Promotion saved successfully!', 'success');
-
-          // Trigger promotion reload
-          setTimeout(() => {
-            if (window.loadAndDisplayPromotion) {
-              window.loadAndDisplayPromotion();
-            }
-          }, 500);
-
-          return { success: true };
+        if (row.enrollment_no === enrollment) {
+          match = row;
+          break;
         }
-      } catch (serverError) {
-        console.log('⚠️ Standalone server also failed:', serverError.message);
       }
-
-      // If all automatic methods fail, show error
-      showNotification('❌ Auto-save failed. Please check console for details.', 'error');
-      console.error('Full error details:', netlifyError);
-      return { success: false };
     }
-  } catch (error) {
-    console.error('❌ Save error:', error);
-    showNotification(`Failed to save: ${error.message}`, 'error');
-    throw error;
-  }
-}
 
-// Function to manually copy the current promotion data
-function copyPromotionJson() {
-  try {
-    const jsonData = localStorage.getItem('materio_promo_data') || JSON.stringify(currentPromoData, null, 2);
-
-    navigator.clipboard.writeText(jsonData).then(() => {
-      showNotification('Promotion JSON copied to clipboard! You can paste this into assets/data/promo.json', 'success');
-    }).catch(err => {
-      // Fallback: create a temporary textarea
-      const textarea = document.createElement('textarea');
-      textarea.value = jsonData;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-
-      showNotification('Promotion JSON copied to clipboard!', 'success');
-    });
-
-    console.log('JSON data copied:', jsonData);
-  } catch (error) {
-    console.error('Error copying JSON:', error);
-    showNotification('Failed to copy JSON data', 'error');
-  }
-}
-
-function updateStatusDisplay() {
-  const elements = {
-    status: document.getElementById('currentPromoStatus'),
-    title: document.getElementById('currentPromoTitle'),
-    dateRange: document.getElementById('currentPromoDateRange')
-  };
-
-  if (elements.status) {
-    elements.status.textContent = currentPromoData.enabled ? 'Active' : 'Disabled';
-    elements.status.className = `status-value ${currentPromoData.enabled ? 'active' : 'inactive'}`;
-  }
-
-  if (elements.title) {
-    elements.title.textContent = currentPromoData.title || 'None';
-  }
-
-  if (elements.dateRange) {
-    if (currentPromoData.isLimitedOffer && currentPromoData.startDate && currentPromoData.endDate) {
-      const start = new Date(currentPromoData.startDate).toLocaleDateString();
-      const end = new Date(currentPromoData.endDate).toLocaleDateString();
-      elements.dateRange.textContent = `${start} - ${end}`;
+    if (match) {
+      resultDiv.innerHTML = `<span style="color: #28a745; font-weight: 600;">Match Found:</span> Room <strong>${match.room_no || '—'}</strong> · Bench <strong>${match.bench_no || '—'}</strong>`;
     } else {
-      elements.dateRange.textContent = 'Not set';
+      resultDiv.innerHTML = `<span style="color: #dc3545;">Enrollment number <strong>${enrollment}</strong> not found in CSV.</span>`;
     }
+  } catch (e) {
+    console.error(e);
+    resultDiv.innerHTML = '<span style="color: #dc3545;">Failed to parse CSV. Check console.</span>';
   }
 }
+window.testSeatingLookupInCms = testSeatingLookupInCms;
 
-// Function to copy current promotion JSON to clipboard (for development)
-function copyPromotionJson() {
-  try {
-    const jsonData = localStorage.getItem('materio_promo_data') || JSON.stringify(currentPromoData, null, 2);
+function renderSemestersList() {
+  const container = document.getElementById('semesterListContainer');
+  if (!container) return;
 
-    navigator.clipboard.writeText(jsonData).then(() => {
-      showNotification('Promotion JSON copied to clipboard! You can paste this into assets/data/promo.json', 'success');
-    }).catch(err => {
-      // Fallback: create a temporary textarea
-      const textarea = document.createElement('textarea');
-      textarea.value = jsonData;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-
-      showNotification('Promotion JSON copied to clipboard!', 'success');
-    });
-
-    console.log('JSON data copied:', jsonData);
-  } catch (error) {
-    console.error('Error copying JSON:', error);
-    showNotification('Failed to copy JSON data', 'error');
-  }
-}
-
-// Improved preview function with better modal integration
-function previewPromotion() {
-  // Get current form data
-  const formData = {
-    enabled: document.getElementById('promoEnabled')?.checked || false,
-    title: document.getElementById('promoTitle')?.value || '',
-    description: document.getElementById('promoDescription')?.value || '',
-    link: document.getElementById('promoLink')?.value || '',
-    media: currentPromoData.media || [],
-    mediaFit: currentPromoData.mediaFit || 'contain',
-    isLimitedOffer: document.getElementById('isLimitedOffer')?.checked || false,
-    startDate: document.getElementById('promoStartDate')?.value || '',
-    endDate: document.getElementById('promoEndDate')?.value || '',
-    imageRotationInterval: 5000,
-    lastUpdated: new Date().toISOString()
-  };
-
-  // Validate required fields for preview
-  if (!formData.title || !formData.description) {
-    showNotification('Title and description are required for preview', 'error');
+  if (currentExamSemesters.length === 0) {
+    container.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 20px;">No semesters added yet. Click "Add Semester Schedule" to begin.</div>';
     return;
   }
 
-  // Update the existing promo modal in the page
-  updateExistingPromoModal(formData);
+  // Sort semesters by number ascending
+  currentExamSemesters.sort((a, b) => a.semester - b.semester);
 
-  // Also update the promotions script data for consistency
-  if (window.promoData) {
-    window.promoData = formData;
-  }
+  container.innerHTML = '';
+  currentExamSemesters.forEach((sem, semIdx) => {
+    const card = document.createElement('div');
+    card.className = 'semester-card';
 
-  // Show the modal
-  const modal = document.getElementById('promoModal');
-  if (modal) {
-    modal.style.display = 'block';
-    showNotification('Live preview displayed in promotion modal', 'success');
-  } else {
-    // Fallback to new window if modal not found
-    openPreviewWindow(formData);
-    showNotification('Preview opened in new window', 'info');
-  }
-}
+    const examsList = sem.exams && sem.exams.length > 0
+      ? sem.exams.map((exam, examIdx) => `
+          <div class="exam-grid-item">
+            <div>
+              <strong>${exam.subject}</strong> <small>(${exam.code || 'No code'})</small> · 
+              <span>${exam.date} @ ${exam.time}</span> · 
+              <small>${exam.duration || '—'}</small>
+              ${exam.global ? '<span class="status-badge active" style="margin-left: 5px; font-size: 0.75rem;">Global</span>' : ''}
+            </div>
+            <div class="exam-actions-btn">
+              <button type="button" class="btn btn-outline btn-sm" onclick="openExamEntryModalForm(${semIdx}, ${examIdx})"><i class="fas fa-edit"></i> Edit</button>
+              <button type="button" class="btn btn-outline btn-sm btn-danger" onclick="deleteExamEntry(${semIdx}, ${examIdx})"><i class="fas fa-trash"></i> Remove</button>
+            </div>
+          </div>
+        `).join('')
+      : '<div style="color: var(--text-secondary); font-size: 0.85rem; padding: 5px;">No exams added.</div>';
 
-function updateExistingPromoModal(data) {
-  const modal = document.getElementById('promoModal');
-  if (!modal) {
-    console.log('Promo modal not found for update');
-    return;
-  }
-
-  console.log('Updating promo modal with data:', data);
-
-  // Update title (find the span with class promo-title, or update h2 directly)
-  const titleSpan = modal.querySelector('.promo-title');
-  const titleEl = modal.querySelector('h2');
-  if (titleSpan) {
-    titleSpan.textContent = data.title;
-  } else if (titleEl) {
-    titleEl.innerHTML = `<i class="fa-solid fa-bullhorn" style="margin-right: 10px;"></i>${data.title}`;
-  }
-
-  // Update description
-  const descriptionEl = modal.querySelector('.promo-description');
-  if (descriptionEl) {
-    descriptionEl.textContent = data.description;
-  } else {
-    // Fallback: Remove any existing date info paragraphs first
-    const descriptionEls = modal.querySelectorAll('p');
-    descriptionEls.forEach(p => {
-      if (p.classList.contains('promo-date-info')) {
-        p.remove();
-      }
-    });
-
-    // Update the first remaining paragraph with the description
-    const mainDesc = modal.querySelector('p:not(.promo-date-info)');
-    if (mainDesc) {
-      mainDesc.textContent = data.description;
-    }
-  }
-
-  // Update and show media if available (support both 'media' and legacy 'images')
-  const imageEl = modal.querySelector('.promo-cover');
-  const mediaItems = data.media || data.images || [];
-
-  if (imageEl && mediaItems.length > 0) {
-    imageEl.src = mediaItems[0];
-    imageEl.alt = data.title;
-    imageEl.style.display = 'block';
-
-    // Apply media fit style
-    if (data.mediaFit) {
-      imageEl.style.objectFit = data.mediaFit;
-    }
-
-    // Setup image rotation if multiple media items
-    if (mediaItems.length > 1) {
-      setupImageRotationForPreview(mediaItems);
-    }
-  } else if (imageEl) {
-    imageEl.style.display = 'none';
-  }
-
-  // Update link and show/hide
-  const linkEl = modal.querySelector('.promo-link, a[href]');
-  const buttonTextEl = modal.querySelector('.promo-button-text');
-  const buttonEl = modal.querySelector('#offerButton');
-
-  if (linkEl && data.link) {
-    linkEl.href = data.link;
-    linkEl.style.display = 'inline-block';
-
-    if (buttonTextEl) {
-      buttonTextEl.textContent = 'View Offer!';
-    } else if (buttonEl) {
-      buttonEl.innerHTML = '<i class="fa-solid fa-tag" style="margin-left: 5px; margin-right: 10px;"></i>View Offer!';
-    }
-  } else if (linkEl) {
-    linkEl.style.display = 'none';
-  }
-  // Add limited time offer info if applicable
-  if (data.isLimitedOffer && data.startDate && data.endDate) {
-    const endDate = new Date(data.endDate);
-    const dateText = `Offer valid till ${endDate.toLocaleDateString()}`;
-
-    // Create date info paragraph
-    const dateInfo = document.createElement('p');
-    dateInfo.className = 'promo-date-info';
-    dateInfo.style.fontStyle = 'italic';
-    dateInfo.style.color = '#666';
-    dateInfo.style.fontSize = '0.9em';
-    dateInfo.style.marginTop = '10px';
-    dateInfo.textContent = dateText;
-
-    // Insert before the button
-    const buttonContainer = modal.querySelector('.promo-link, a[href]');
-    if (buttonContainer && buttonContainer.parentNode) {
-      buttonContainer.parentNode.insertBefore(dateInfo, buttonContainer);
-    } else {
-      modal.querySelector('.promo-modal').appendChild(dateInfo);
-    }
-  }
-}
-
-let previewImageRotationTimer = null;
-
-function setupImageRotationForPreview(images) {
-  if (!images || images.length <= 1) return;
-
-  let currentIndex = 0;
-
-  // Clear any existing timer
-  if (previewImageRotationTimer) {
-    clearInterval(previewImageRotationTimer);
-  }
-
-  // Setup rotation timer
-  previewImageRotationTimer = setInterval(() => {
-    currentIndex = (currentIndex + 1) % images.length;
-
-    const imageEl = document.querySelector('#promoModal .promo-cover');
-    if (imageEl) {
-      // Add fade effect
-      imageEl.style.opacity = '0.5';
-
-      setTimeout(() => {
-        imageEl.src = images[currentIndex];
-        imageEl.style.opacity = '1';
-      }, 200);
-    }
-  }, 3000); // 3 seconds for preview
-}
-
-function openPreviewWindow(data) {
-  const mediaItems = data.media || data.images || [];
-  const imageSlider = mediaItems.length > 1 ?
-    generateImageSliderHTML(mediaItems) :
-    (mediaItems.length === 1 ? `<img src="${mediaItems[0]}" alt="Promotion" class="preview-image" style="object-fit: ${data.mediaFit || 'cover'};">` : '');
-
-  const previewHtml = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Promotion Preview</title>
-      <style>
-        body { 
-          font-family: Arial, sans-serif; 
-          margin: 20px; 
-          background: #f5f5f5; 
-        }
-        .preview-container { 
-          max-width: 500px; 
-          margin: 0 auto; 
-          background: white; 
-          padding: 20px; 
-          border-radius: 10px; 
-          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-          text-align: center;
-        }
-        .preview-title { 
-          color: #333; 
-          margin-bottom: 15px; 
-        }
-        .preview-image { 
-          max-width: 100%; 
-          height: auto; 
-          border-radius: 8px; 
-          margin-bottom: 15px; 
-        }
-        .image-slider {
-          position: relative;
-          margin-bottom: 15px;
-        }
-        .slider-image {
-          max-width: 100%;
-          height: auto;
-          border-radius: 8px;
-          display: none;
-        }
-        .slider-image.active {
-          display: block;
-        }
-        .slider-dots {
-          text-align: center;
-          margin-top: 10px;
-        }
-        .dot {
-          height: 10px;
-          width: 10px;
-          margin: 0 3px;
-          background-color: #bbb;
-          border-radius: 50%;
-          display: inline-block;
-          cursor: pointer;
-        }
-        .dot.active {
-          background-color: #007bff;
-        }
-        .preview-description { 
-          color: #666; 
-          line-height: 1.6; 
-          margin-bottom: 20px; 
-        }
-        .preview-link { 
-          display: inline-block; 
-          background: #007bff; 
-          color: white; 
-          padding: 10px 20px; 
-          text-decoration: none; 
-          border-radius: 5px; 
-        }
-        .preview-dates { 
-          background: #f8f9fa; 
-          padding: 10px; 
-          border-radius: 5px; 
-          margin-top: 15px; 
-          font-size: 0.9em; 
-          color: #666; 
-        }
-      </style>
-    </head>
-    <body>
-      <div class="preview-container">
-        <h2 class="preview-title">${data.title}</h2>
-        ${imageSlider}
-        <p class="preview-description">${data.description}</p>
-        ${data.link ? `<a href="${data.link}" class="preview-link" target="_blank">View Offer</a>` : ''}
-        ${data.isLimitedOffer && data.startDate && data.endDate ?
-      `<div class="preview-dates">Limited Time: ${new Date(data.startDate).toLocaleDateString()} - ${new Date(data.endDate).toLocaleDateString()}</div>` : ''}
+    card.innerHTML = `
+      <div class="semester-card-header">
+        <span>Semester ${sem.semester} - <span style="font-weight: 500; font-size: 0.95rem; opacity: 0.85;">${sem.examPeriod?.name || 'Semester Exams'}</span></span>
+        <div class="exam-actions-btn">
+          <button type="button" class="btn btn-outline btn-sm" onclick="openExamEntryModalForm(${semIdx}, -1)"><i class="fas fa-plus"></i> Add Exam</button>
+          <button type="button" class="btn btn-outline btn-sm btn-danger" onclick="deleteSemesterSchedule(${semIdx})"><i class="fas fa-trash"></i> Delete Semester</button>
+        </div>
       </div>
-
-      <script>
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slider-image');
-        const dots = document.querySelectorAll('.dot');
-
-        function showSlide(n) {
-          slides.forEach(slide => slide.classList.remove('active'));
-          dots.forEach(dot => dot.classList.remove('active'));
-          
-          if (slides[n]) {
-            slides[n].classList.add('active');
-            dots[n].classList.add('active');
-          }
-        }
-
-        function nextSlide() {
-          currentSlide = (currentSlide + 1) % slides.length;
-          showSlide(currentSlide);
-        }
-
-        // Auto-rotate images every 5 seconds
-        if (slides.length > 1) {
-          showSlide(0);
-          setInterval(nextSlide, 5000);
-          
-          // Add click handlers for dots
-          dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => {
-              currentSlide = index;
-              showSlide(currentSlide);
-            });
-          });
-        } else if (slides.length === 1) {
-          showSlide(0);
-        }
-      </script>
-    </body>
-    </html>
-  `;
-
-  const previewWindow = window.open('', '_blank', 'width=600,height=700,scrollbars=yes');
-  previewWindow.document.write(previewHtml);
-  previewWindow.document.close();
-}
-
-function generateImageSliderHTML(images) {
-  if (!images || images.length === 0) return '';
-
-  if (images.length === 1) {
-    return `<img src="${images[0]}" alt="Promotion" class="preview-image">`;
-  }
-
-  const slidesHTML = images.map((image, index) =>
-    `<img src="${image}" alt="Promotion ${index + 1}" class="slider-image ${index === 0 ? 'active' : ''}">`
-  ).join('');
-
-  const dotsHTML = images.map((_, index) =>
-    `<span class="dot ${index === 0 ? 'active' : ''}" data-slide="${index}"></span>`
-  ).join('');
-
-  return `
-    <div class="image-slider">
-      ${slidesHTML}
-      <div class="slider-dots">
-        ${dotsHTML}
+      <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+        <div style="flex: 1;">
+          <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-align: left;">Exam Period Name</label>
+          <input type="text" class="semester-period-name" value="${sem.examPeriod?.name || 'Semester Exams'}" onchange="updateSemesterPeriodName(${semIdx}, this.value)" placeholder="e.g. Mid Semester">
+        </div>
+        <div style="flex: 1;">
+          <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-align: left;">Short Name</label>
+          <input type="text" class="semester-period-short" value="${sem.examPeriod?.shortName || 'Exams'}" onchange="updateSemesterPeriodShortName(${semIdx}, this.value)" placeholder="e.g. Mid Sem">
+        </div>
       </div>
-    </div>
-  `;
-}
-
-function clearPromotion() {
-  if (confirm('Are you sure you want to clear all promotion data? This action cannot be undone.')) {
-    // Reset form
-    document.getElementById('promoEnabled').checked = false;
-    document.getElementById('promoTitle').value = '';
-    document.getElementById('promoDescription').value = '';
-    document.getElementById('promoLink').value = '';
-    document.getElementById('isLimitedOffer').checked = false;
-    document.getElementById('promoStartDate').value = '';
-    document.getElementById('promoEndDate').value = '';
-
-    // Clear media
-    currentPromoData.media = [];
-    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
-    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-
-    if (uploadPlaceholder) uploadPlaceholder.style.display = 'flex';
-    if (imagePreviewContainer) imagePreviewContainer.style.display = 'none';
-
-    // Reset current data
-    currentPromoData = {
-      enabled: false,
-      title: "",
-      description: "",
-      link: "",
-      media: [],
-      mediaFit: "contain",
-      imageRotationInterval: 5000,
-      isLimitedOffer: false,
-      startDate: "",
-      endDate: "",
-      lastUpdated: ""
-    };
-
-    // Update displays
-    updateStatusDisplay();
-    toggleDateRangeSection();
-
-    showNotification('Promotion data cleared', 'info');
-  }
-}
-
-// Function to handle promotion status updates
-function updatePromotionStatus() {
-  const enabled = document.getElementById('promoEnabled')?.checked || false;
-  currentPromoData.enabled = enabled;
-  updateStatusDisplay();
-}
-
-// Image URL functionality
-const addImageUrlBtn = document.getElementById('addImageUrl');
-const promoImageUrl = document.getElementById('promoImageUrl');
-
-if (addImageUrlBtn && promoImageUrl) {
-  addImageUrlBtn.addEventListener('click', async () => {
-    try {
-      const imageUrl = promoImageUrl.value.trim();
-
-      if (!imageUrl) {
-        showNotification('Please enter a valid image URL', 'error');
-        return;
-      }
-
-      // Validate URL format
-      try {
-        new URL(imageUrl);
-      } catch (e) {
-        showNotification('Please enter a valid URL', 'error');
-        return;
-      }
-
-      // Add the URL to media array
-      currentPromoData.media.push(imageUrl);
-
-      // Update UI
-      displayExistingImages();
-
-      // Clear input
-      promoImageUrl.value = '';
-
-      showNotification('Image URL added successfully', 'success');
-    } catch (error) {
-      console.error('Error adding image URL:', error);
-      showNotification('Failed to add image URL', 'error');
-    }
+      <div style="margin-top: 10px;">
+        ${examsList}
+      </div>
+    `;
+    container.appendChild(card);
   });
 }
 
-// Setup other event listeners
+function updateSemesterPeriodName(semIdx, val) {
+  if (currentExamSemesters[semIdx]) {
+    currentExamSemesters[semIdx].examPeriod = currentExamSemesters[semIdx].examPeriod || {};
+    currentExamSemesters[semIdx].examPeriod.name = val;
+    // Auto-calculate shortName if empty
+    if (!currentExamSemesters[semIdx].examPeriod.shortName) {
+      currentExamSemesters[semIdx].examPeriod.shortName = val.substring(0, 10);
+    }
+    renderSemestersList();
+    saveExamConfig(null);
+  }
+}
+window.updateSemesterPeriodName = updateSemesterPeriodName;
 
-// Function to check if we're in local development mode
+function updateSemesterPeriodShortName(semIdx, val) {
+  if (currentExamSemesters[semIdx]) {
+    currentExamSemesters[semIdx].examPeriod = currentExamSemesters[semIdx].examPeriod || {};
+    currentExamSemesters[semIdx].examPeriod.shortName = val;
+    renderSemestersList();
+    saveExamConfig(null);
+  }
+}
+window.updateSemesterPeriodShortName = updateSemesterPeriodShortName;
+
+function addNewSemesterSchedule() {
+  const semNumStr = prompt('Enter semester number (1-8 or 9 for Miscellaneous):');
+  if (!semNumStr) return;
+  const semNum = parseInt(semNumStr);
+  if (isNaN(semNum) || semNum < 1 || semNum > 9) {
+    showNotification('Please enter a valid semester number (1-9)', 'error');
+    return;
+  }
+
+  // Check if semester already exists
+  const exists = currentExamSemesters.some(s => s.semester === semNum);
+  if (exists) {
+    showNotification(`Semester ${semNum} schedule already exists`, 'error');
+    return;
+  }
+
+  currentExamSemesters.push({
+    semester: semNum,
+    examPeriod: {
+      name: "Semester Exams",
+      shortName: "Exams",
+      startDate: new Date().toISOString(),
+      endDate: new Date().toISOString()
+    },
+    exams: []
+  });
+
+  renderSemestersList();
+  saveExamConfig(null);
+}
+window.addNewSemesterSchedule = addNewSemesterSchedule;
+
+function deleteSemesterSchedule(semIndex) {
+  if (!confirm('Are you sure you want to delete this entire semester schedule?')) return;
+  currentExamSemesters.splice(semIndex, 1);
+  renderSemestersList();
+  saveExamConfig(null);
+}
+window.deleteSemesterSchedule = deleteSemesterSchedule;
+
+function openExamEntryModalForm(semIndex, examIndex) {
+  const modal = document.getElementById('editExamModal');
+  const title = document.getElementById('examEntryModalTitle');
+  if (!modal || !title) return;
+
+  document.getElementById('examEntryModalForm').reset();
+  document.getElementById('examSemesterVal').value = semIndex;
+  document.getElementById('examEntryIndex').value = examIndex;
+
+  if (examIndex >= 0) {
+    title.textContent = 'Edit Exam Entry';
+    const exam = currentExamSemesters[semIndex].exams[examIndex];
+    if (exam) {
+      document.getElementById('examSubject').value = exam.subject || '';
+      document.getElementById('examCode').value = exam.code || '';
+      document.getElementById('examDuration').value = exam.duration || '';
+      document.getElementById('examDate').value = exam.date || '';
+      document.getElementById('examTime').value = exam.time || '';
+      document.getElementById('examGlobal').checked = !!exam.global;
+      document.getElementById('examAliases').value = exam.aliases ? exam.aliases.join(', ') : '';
+      document.getElementById('examSyllabus').value = exam.syllabus ? exam.syllabus.join('\n') : '';
+    }
+  } else {
+    title.textContent = 'Add Exam Schedule';
+  }
+
+  modal.style.display = 'flex';
+}
+window.openExamEntryModalForm = openExamEntryModalForm;
+
+function closeExamEntryModal() {
+  const modal = document.getElementById('editExamModal');
+  if (modal) modal.style.display = 'none';
+}
+window.closeExamEntryModal = closeExamEntryModal;
+
+function saveExamEntryForm(event) {
+  event.preventDefault();
+  const semIndex = parseInt(document.getElementById('examSemesterVal').value);
+  const examIndex = parseInt(document.getElementById('examEntryIndex').value);
+
+  const subject = document.getElementById('examSubject').value.trim();
+  const code = document.getElementById('examCode').value.trim();
+  const duration = document.getElementById('examDuration').value.trim() || '1.5 hours';
+  const date = document.getElementById('examDate').value;
+  const time = document.getElementById('examTime').value;
+  const global = document.getElementById('examGlobal').checked;
+  const aliasesText = document.getElementById('examAliases').value;
+  const syllabusText = document.getElementById('examSyllabus').value;
+
+  const aliases = aliasesText.split(',').map(a => a.trim()).filter(a => a.length > 0);
+  const syllabus = syllabusText.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+
+  const payload = {
+    id: examIndex >= 0 ? currentExamSemesters[semIndex].exams[examIndex].id : Date.now(),
+    subject,
+    code,
+    duration,
+    date,
+    time,
+    global,
+    aliases,
+    syllabus
+  };
+
+  if (examIndex >= 0) {
+    currentExamSemesters[semIndex].exams[examIndex] = payload;
+  } else {
+    currentExamSemesters[semIndex].exams.push(payload);
+  }
+
+  // Update exam dates range based on actual exams
+  const exams = currentExamSemesters[semIndex].exams;
+  if (exams.length > 0) {
+    const dates = exams.map(e => new Date(e.date + 'T' + e.time));
+    const minDate = new Date(Math.min(...dates));
+    const maxDate = new Date(Math.max(...dates));
+    currentExamSemesters[semIndex].examPeriod.startDate = minDate.toISOString();
+    currentExamSemesters[semIndex].examPeriod.endDate = maxDate.toISOString();
+  }
+
+  closeExamEntryModal();
+  renderSemestersList();
+  saveExamConfig(null);
+}
+window.saveExamEntryForm = saveExamEntryForm;
+
+function deleteExamEntry(semIndex, examIndex) {
+  if (!confirm('Are you sure you want to remove this exam entry?')) return;
+  currentExamSemesters[semIndex].exams.splice(examIndex, 1);
+  renderSemestersList();
+  saveExamConfig(null);
+}
+window.deleteExamEntry = deleteExamEntry;
+
+// Handle Files sub-tab navigation
+document.querySelectorAll('.files-sub-tabs .sub-tab-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const subtab = this.getAttribute('data-subtab');
+    if (subtab === 'releases') {
+      loadReleasesCms();
+    } else if (subtab === 'examdata') {
+      loadExamDataCms();
+    } else if (subtab === 'promotions') {
+      loadPromotionData();
+    }
+  });
+});
+
 function isLocalDevelopment() {
   return window.location.hostname === 'localhost' ||
     window.location.hostname === '127.0.0.1';

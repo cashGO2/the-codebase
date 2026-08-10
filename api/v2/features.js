@@ -105,6 +105,9 @@ module.exports = async (req, res) => {
     const isSubscription = url.pathname.includes("/subscription");
     const isWebPush = url.pathname.includes("/web-push");
     const isPosts = url.pathname.includes("/posts");
+    const isPromotions = url.pathname.includes("/promotions");
+    const isReleases = url.pathname.includes("/releases");
+    const isExamdata = url.pathname.includes("/examdata");
 
     // Check query param action
     const action = queryParams.action || req.query?.action;
@@ -209,6 +212,30 @@ module.exports = async (req, res) => {
       pathParam.includes("posts")
     ) {
       return await handlePosts(req, res, url);
+    }
+
+    if (
+      isPromotions ||
+      action === "promotions" ||
+      pathParam.includes("promotions")
+    ) {
+      return await handlePromotionsFeature(req, res);
+    }
+
+    if (
+      isReleases ||
+      action === "releases" ||
+      pathParam.includes("releases")
+    ) {
+      return await handleReleasesFeature(req, res);
+    }
+
+    if (
+      isExamdata ||
+      action === "examdata" ||
+      pathParam.includes("examdata")
+    ) {
+      return await handleExamdataFeature(req, res);
     }
 
     return res.status(404).json({
@@ -2908,5 +2935,383 @@ async function handlePosts(req, res, url) {
   } catch (error) {
     console.error("Error in handlePosts:", error);
     return res.status(500).json({ error: "Failed to load posts", details: error.message });
+  }
+}
+
+// ==========================================
+// PROMOTIONS, RELEASES, AND EXAM DATA FEATURES
+// ==========================================
+
+const checkAdminUser = async (req) => {
+  const token = getTokenFromHeaders(req.headers);
+  if (!token) return false;
+  const decoded = verifyToken(token);
+  if (!decoded) return false;
+
+  const { data: user, error: userError } = await supabase
+    .from('users')
+    .select('id, has_admin_privileges')
+    .eq('id', decoded.id)
+    .single();
+
+  return !userError && user && user.has_admin_privileges;
+};
+
+async function handlePromotionsFeature(req, res) {
+  try {
+    const db = await getMongoDb();
+    const promotionsCollection = db.collection('promotions');
+    const method = req.method;
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const getAll = url.searchParams.get('all') === 'true';
+
+    switch (method) {
+      case 'GET':
+        if (getAll) {
+          const isAdminUser = await checkAdminUser(req);
+          if (!isAdminUser) {
+            return res.status(403).json({ error: 'Admin privileges required' });
+          }
+
+          const promos = await promotionsCollection
+            .find({})
+            .sort({ lastUpdated: -1, _id: -1 })
+            .toArray();
+
+          return res.status(200).json(promos);
+        } else {
+          const now = new Date();
+          const promos = await promotionsCollection
+            .find({ enabled: true })
+            .sort({ lastUpdated: -1, _id: -1 })
+            .toArray();
+
+          const activePromo = promos.find(promo => {
+            if (!promo.isLimitedOffer) return true;
+            if (!promo.startDate || !promo.endDate) return true;
+            
+            const start = new Date(promo.startDate);
+            const end = new Date(promo.endDate);
+            return now >= start && now <= end;
+          });
+
+          if (activePromo) {
+            return res.status(200).json(activePromo);
+          } else {
+            return res.status(200).json({ enabled: false });
+          }
+        }
+
+      case 'POST': {
+        const isAdminUser = await checkAdminUser(req);
+        if (!isAdminUser) {
+          return res.status(403).json({ error: 'Admin privileges required' });
+        }
+
+        const promoData = req.body && typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
+        if (!promoData || !promoData.title || !promoData.description) {
+          return res.status(400).json({ error: 'Title and description are required' });
+        }
+
+        const newPromo = {
+          ...promoData,
+          lastUpdated: new Date().toISOString()
+        };
+        delete newPromo._id;
+
+        const result = await promotionsCollection.insertOne(newPromo);
+        return res.status(201).json({ 
+          message: 'Promotion created successfully', 
+          id: result.insertedId,
+          promo: { _id: result.insertedId, ...newPromo }
+        });
+      }
+
+      case 'PUT': {
+        const isAdminUser = await checkAdminUser(req);
+        if (!isAdminUser) {
+          return res.status(403).json({ error: 'Admin privileges required' });
+        }
+
+        const promoData = req.body && typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
+        if (!promoData || !promoData._id) {
+          return res.status(400).json({ error: 'Promotion data with _id is required' });
+        }
+
+        const id = promoData._id;
+        const updateData = { ...promoData };
+        delete updateData._id;
+
+        updateData.lastUpdated = new Date().toISOString();
+
+        const result = await promotionsCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: updateData }
+        );
+
+        if (result.matchedCount === 0) {
+          return res.status(404).json({ error: 'Promotion not found' });
+        }
+
+        return res.status(200).json({ 
+          message: 'Promotion updated successfully',
+          promo: { _id: id, ...updateData }
+        });
+      }
+
+      case 'DELETE': {
+        const isAdminUser = await checkAdminUser(req);
+        if (!isAdminUser) {
+          return res.status(403).json({ error: 'Admin privileges required' });
+        }
+
+        const id = url.searchParams.get('id');
+        if (!id) {
+          return res.status(400).json({ error: 'Promotion id parameter is required' });
+        }
+
+        const result = await promotionsCollection.deleteOne({ _id: new ObjectId(id) });
+        if (result.deletedCount === 0) {
+          return res.status(404).json({ error: 'Promotion not found' });
+        }
+
+        return res.status(200).json({ message: 'Promotion deleted successfully' });
+      }
+
+      default:
+        return res.status(405).json({ error: 'Method not allowed' });
+    }
+  } catch (error) {
+    console.error('Promotions Feature Error:', error);
+    return res.status(500).json({ error: 'Internal server error', details: error.message });
+  }
+}
+
+const parseBuildDate = (dateStr) => {
+  if (!dateStr) return new Date(0);
+  const parts = dateStr.split('/');
+  if (parts.length === 3) {
+    const [day, month, year] = parts.map(Number);
+    return new Date(year, month - 1, day);
+  }
+  return new Date(dateStr);
+};
+
+async function handleReleasesFeature(req, res) {
+  try {
+    const db = await getMongoDb();
+    const releasesCollection = db.collection('releases');
+    const method = req.method;
+    const url = new URL(req.url, `http://${req.headers.host}`);
+
+    switch (method) {
+      case 'GET': {
+        const releases = await releasesCollection.find({}).toArray();
+        
+        releases.sort((a, b) => {
+          const dateB = parseBuildDate(b.build);
+          const dateA = parseBuildDate(a.build);
+          if (dateB.getTime() !== dateA.getTime()) {
+            return dateB - dateA;
+          }
+          return b.version.localeCompare(a.version, undefined, { numeric: true, sensitivity: 'base' });
+        });
+
+        return res.status(200).json(releases);
+      }
+
+      case 'POST': {
+        const isAdminUser = await checkAdminUser(req);
+        if (!isAdminUser) {
+          return res.status(403).json({ error: 'Admin privileges required' });
+        }
+
+        const releaseData = req.body && typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
+        if (!releaseData || !releaseData.version || !releaseData.build || !Array.isArray(releaseData.logs)) {
+          return res.status(400).json({ error: 'Version, build date, and logs array are required' });
+        }
+
+        const newRelease = {
+          branch: releaseData.branch || 'stable',
+          version: releaseData.version,
+          build: releaseData.build,
+          logs: releaseData.logs
+        };
+
+        const result = await releasesCollection.insertOne(newRelease);
+        return res.status(201).json({ 
+          message: 'Release created successfully', 
+          id: result.insertedId,
+          release: { _id: result.insertedId, ...newRelease }
+        });
+      }
+
+      case 'PUT': {
+        const isAdminUser = await checkAdminUser(req);
+        if (!isAdminUser) {
+          return res.status(403).json({ error: 'Admin privileges required' });
+        }
+
+        const releaseData = req.body && typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
+        if (!releaseData || !releaseData._id) {
+          return res.status(400).json({ error: 'Release data with _id is required' });
+        }
+
+        const id = releaseData._id;
+        const updateData = { ...releaseData };
+        delete updateData._id;
+
+        const result = await releasesCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: updateData }
+        );
+
+        if (result.matchedCount === 0) {
+          return res.status(404).json({ error: 'Release not found' });
+        }
+
+        return res.status(200).json({ 
+          message: 'Release updated successfully',
+          release: { _id: id, ...updateData }
+        });
+      }
+
+      case 'DELETE': {
+        const isAdminUser = await checkAdminUser(req);
+        if (!isAdminUser) {
+          return res.status(403).json({ error: 'Admin privileges required' });
+        }
+
+        const id = url.searchParams.get('id');
+        if (!id) {
+          return res.status(400).json({ error: 'Release id parameter is required' });
+        }
+
+        const result = await releasesCollection.deleteOne({ _id: new ObjectId(id) });
+        if (result.deletedCount === 0) {
+          return res.status(404).json({ error: 'Release not found' });
+        }
+
+        return res.status(200).json({ message: 'Release deleted successfully' });
+      }
+
+      default:
+        return res.status(405).json({ error: 'Method not allowed' });
+    }
+  } catch (error) {
+    console.error('Releases Feature Error:', error);
+    return res.status(500).json({ error: 'Internal server error', details: error.message });
+  }
+}
+
+async function handleExamdataFeature(req, res) {
+  try {
+    const db = await getMongoDb();
+    const examdataCollection = db.collection('examdata');
+    const method = req.method;
+
+    switch (method) {
+      case 'GET': {
+        const data = await examdataCollection.findOne({ type: 'config' });
+        if (data) {
+          return res.status(200).json(data);
+        } else {
+          const anyData = await examdataCollection.findOne({});
+          if (anyData) {
+            return res.status(200).json(anyData);
+          }
+          return res.status(200).json({ enabled: false, semesters: [] });
+        }
+      }
+
+      case 'POST': {
+        const isAdminUser = await checkAdminUser(req);
+        if (!isAdminUser) {
+          return res.status(403).json({ error: 'Admin privileges required' });
+        }
+
+        const contentType = req.headers['content-type'] || '';
+        if (contentType.includes('multipart/form-data')) {
+          const form = new formidable.IncomingForm({
+            multiples: false,
+            keepExtensions: true,
+          });
+
+          const [fields, files] = await new Promise((resolve, reject) => {
+            form.parse(req, (err, fields, files) => {
+              if (err) reject(err);
+              else resolve([fields, files]);
+            });
+          });
+
+          const uploadedFile = files.file;
+          if (!uploadedFile) {
+            return res.status(400).json({ error: 'No file provided' });
+          }
+
+          const file = Array.isArray(uploadedFile) ? uploadedFile[0] : uploadedFile;
+          const fileContent = fs.readFileSync(file.filepath);
+          
+          // Determine if it's an image or CSV
+          const isCsv = file.originalFilename.toLowerCase().endsWith('.csv');
+          const prefix = isCsv ? 'seating' : 'promotions';
+          const fileExtension = isCsv ? 'csv' : file.originalFilename.split('.').pop() || 'png';
+          const contentTypeHeader = isCsv ? 'text/csv' : (file.mimetype || 'image/png');
+          
+          const fileName = `${prefix}/${prefix}_data_${Date.now()}.${fileExtension}`;
+
+          const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+            .from('profile-pictures')
+            .upload(fileName, fileContent, {
+              contentType: contentTypeHeader,
+              upsert: true
+            });
+
+          if (uploadError) {
+            console.error('Supabase Storage Upload Error:', uploadError);
+            return res.status(500).json({ error: 'Failed to upload to storage', details: uploadError.message });
+          }
+
+          const { data: { publicUrl } } = supabaseAdmin.storage
+            .from('profile-pictures')
+            .getPublicUrl(fileName);
+
+          return res.status(200).json({
+            message: 'File uploaded successfully',
+            url: publicUrl,
+            fileName: file.originalFilename
+          });
+        }
+
+        const examData = req.body && typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
+        if (!examData || Object.keys(examData).length === 0) {
+          return res.status(400).json({ error: 'Exam configuration data is required' });
+        }
+
+        const cleanData = {
+          ...examData,
+          type: 'config',
+          lastUpdated: new Date().toISOString()
+        };
+        delete cleanData._id;
+
+        const result = await examdataCollection.replaceOne(
+          { type: 'config' },
+          cleanData,
+          { upsert: true }
+        );
+
+        return res.status(200).json({
+          message: 'Exam configuration saved successfully',
+          examdata: cleanData
+        });
+      }
+
+      default:
+        return res.status(405).json({ error: 'Method not allowed' });
+    }
+  } catch (error) {
+    console.error('ExamData Feature Error:', error);
+    return res.status(500).json({ error: 'Internal server error', details: error.message });
   }
 }

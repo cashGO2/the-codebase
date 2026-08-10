@@ -17,27 +17,26 @@ if (document.readyState === 'loading') {
 
 async function loadAndDisplayPromotion() {
   try {
-
-
-    // Add cache busting to ensure we get the latest data
     const timestamp = new Date().getTime();
-    const response = await fetch(`/assets/data/promo.json?t=${timestamp}`);
-
-
+    let response = await fetch(`/api/v2/promotions?t=${timestamp}`);
+    
+    if (!response.ok) {
+      // Fallback
+      response = await fetch(`/assets/data/promo.json?t=${timestamp}`);
+    }
 
     if (!response.ok) {
-
       return;
     }
 
     promoData = await response.json();
-
 
     // Check if promotion should be displayed
     if (shouldDisplayPromotion(promoData)) {
       displayPromotionModal(promoData);
     }
   } catch (error) {
+    console.error('Error loading promotion:', error);
   }
 }
 

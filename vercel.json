@@ -114,6 +114,18 @@
       "destination": "/api/v2/search"
     },
     {
+      "source": "/api/v2/promotions",
+      "destination": "/api/v2/features?action=promotions"
+    },
+    {
+      "source": "/api/v2/releases",
+      "destination": "/api/v2/features?action=releases"
+    },
+    {
+      "source": "/api/v2/examdata",
+      "destination": "/api/v2/features?action=examdata"
+    },
+    {
       "source": "/api/v2/features/(.*)",
       "destination": "/api/v2/features?path=$1"
     },

@@ -894,9 +894,35 @@ module.exports = async (req, res) => {
       checkIncidentIO(),
     ]);
 
+    // Query MongoDB for the latest version if available
+    let version = VERSION;
+    try {
+      const db = await getMongoDb();
+      const releasesCollection = db.collection('releases');
+      const latestRelease = await releasesCollection.find({}).toArray();
+      if (latestRelease && latestRelease.length > 0) {
+        // Sort by build date descending to get the latest
+        const parseBuildDate = (dateStr) => {
+          if (!dateStr) return new Date(0);
+          const parts = dateStr.split('/');
+          if (parts.length === 3) {
+            const [day, month, year] = parts.map(Number);
+            return new Date(year, month - 1, day);
+          }
+          return new Date(dateStr);
+        };
+        latestRelease.sort((a, b) => parseBuildDate(b.build) - parseBuildDate(a.build));
+        if (latestRelease[0].version) {
+          version = latestRelease[0].version;
+        }
+      }
+    } catch (dbErr) {
+      // ignore, fall back to global VERSION
+    }
+
     // --- Build info ---
     const build = {
-      version: VERSION,
+      version: version,
       enviroment: BUILD_COMMIT,
       builtAt: BUILD_TIME,
       buildId: BUILD_ID,

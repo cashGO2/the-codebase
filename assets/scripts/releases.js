@@ -27,7 +27,10 @@ async function loadReleases() {
     const branch = getCurrentBranch();
 
     try {
-        const response = await fetch('/assets/data/releases.json');
+        let response = await fetch('/api/v2/releases');
+        if (!response.ok) {
+            response = await fetch('/assets/data/releases.json');
+        }
         const releases = await response.json();
 
         // Find release for current branch

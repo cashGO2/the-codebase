@@ -577,6 +577,12 @@
               <button class="sub-tab-btn" data-subtab="promotions">
                 <i class="fas fa-bullhorn"></i> Promotions
               </button>
+              <button class="sub-tab-btn" data-subtab="releases">
+                <i class="fas fa-code-branch"></i> Releases
+              </button>
+              <button class="sub-tab-btn" data-subtab="examdata">
+                <i class="fas fa-file-signature"></i> Exams & Seating
+              </button>
             </div>
 
             <!-- Uploads Sub-tab -->
@@ -766,133 +772,324 @@
 
             <!-- Promotions Sub-tab -->
             <div id="promotions" class="sub-tab-pane">
-              <div class="promotions-header">
+              <div class="promotions-header" style="margin-bottom: 20px;">
                 <h4><i class="fas fa-bullhorn"></i> Promotion Management</h4>
-                <p>Create and manage promotional modal popups for the main site.</p>
+                <p>Manage promotional modal popups for the main site.</p>
               </div>
 
-              <form id="promotionForm" class="promotion-form">
-                <!-- Enable/Disable Toggle -->
-                <div class="form-group">
-                  <label class="checkbox-label">
-                    <input type="checkbox" id="promoEnabled">
-                    <span class="checkmark"></span>
-                    Enable Promotional Modal
-                  </label>
-                  <small>When enabled, the promotional modal will appear on the main site</small>
-                </div>
+              <!-- Inner Tabs for Promotions -->
+              <div class="inner-tab-nav" style="margin-bottom: 20px; display: flex; gap: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                <button type="button" class="sub-tab-btn active" id="promoTabEditorBtn" onclick="switchPromoInnerTab('promo-editor')">
+                  <i class="fas fa-edit"></i> Editor
+                </button>
+                <button type="button" class="sub-tab-btn" id="promoTabHistoryBtn" onclick="switchPromoInnerTab('promo-history')">
+                  <i class="fas fa-history"></i> History
+                </button>
+              </div>
 
-                <!-- Promotion Content -->
-                <div class="promotion-content-section">
-                  <h5>Promotion Content</h5>
-
-                  <div class="form-group">
-                    <label for="promoTitle">Title *</label>
-                    <input type="text" id="promoTitle" placeholder="Enter promotion title" maxlength="100">
-                  </div>
-                  <div class="form-group">
-                    <label for="promoDescription">Description *</label>
-                    <textarea id="promoDescription" placeholder="Enter promotion description" rows="4"
-                      maxlength="500"></textarea>
-                    <small>A clear, concise description of the promotion (500 chars max)</small>
-                  </div>
-                  <div class="form-group">
-                    <label for="promoLink">Offer Link (optional)</label>
-                    <div class="url-input-group">
-                      <input type="url" id="promoLink" placeholder="https://example.com/offer">
-                    </div>
-                    <small>Link to the page where users can learn more or take action</small>
-                  </div>
-                </div>
-
-                <!-- Image Upload Section -->
-                <div class="promotion-images-section">
-                  <h5>Promotion Images</h5>
-
-                  <div class="form-group">
-                    <label for="promoImageUrl">Image URL (optional)</label>
-                    <div class="url-input-group">
-                      <input type="url" id="promoImageUrl" placeholder="https://example.com/image.jpg">
-                      <button type="button" class="btn btn-sm btn-outline" id="addImageUrl">
-                        <i class="fas fa-plus"></i> Add Image
-                      </button>
-                    </div>
-                    <small>Add an image from a public URL</small>
-                  </div>
-
-                  <div class="image-upload-area" id="imageUploadArea">
-                    <div class="upload-placeholder" id="uploadPlaceholder">
-                      <i class="fas fa-image"></i>
-                      <p>Click to upload images or drag & drop</p>
-                      <small>JPG, PNG, GIF up to 5MB each</small>
-                    </div>
-
-                    <div class="image-preview-container" id="imagePreviewContainer" style="display: none;">
-                      <div class="image-preview-grid" id="imagePreviewGrid">
-                        <!-- Preview images will be added here -->
-                      </div>
-                      <button type="button" class="btn btn-outline btn-sm" id="addMoreImages">
-                        <i class="fas fa-plus"></i> Add More Images
-                      </button>
-                    </div>
-                  </div>
-
-                  <input type="file" id="promoImageInput" multiple accept="image/*" style="display: none;">
-                </div>
-
-                <!-- Limited Time Offer Section -->
-                <div class="limited-offer-section">
+              <!-- Promo Editor Pane -->
+              <div id="promo-editor" class="promo-inner-pane">
+                <form id="promotionForm" class="promotion-form">
+                  <input type="hidden" id="promoId">
+                  
                   <div class="form-group">
                     <label class="checkbox-label">
-                      <input type="checkbox" id="isLimitedOffer">
+                      <input type="checkbox" id="promoEnabled">
                       <span class="checkmark"></span>
-                      Limited Time Offer
+                      Enable Promotional Modal
                     </label>
                   </div>
 
-                  <div class="date-range-section" id="dateRangeSection" style="display: none;">
+                  <div class="promotion-content-section" style="margin-top: 15px;">
+                    <h5>Promotion Content</h5>
                     <div class="form-row">
-                      <div class="form-group">
+                      <div class="form-group" style="flex: 1;">
+                        <label for="promoTitle">Title *</label>
+                        <input type="text" id="promoTitle" placeholder="Enter promotion title" required maxlength="100">
+                      </div>
+                      <div class="form-group" style="width: 180px;">
+                        <label for="promoCategory">Category</label>
+                        <input type="text" id="promoCategory" placeholder="e.g. whats-new" value="whats-new">
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="promoDescription">Description *</label>
+                      <textarea id="promoDescription" placeholder="Enter promotion description (markdown supported)" rows="4" required maxlength="500"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group" style="flex: 1;">
+                        <label for="promoLink">Offer Link (optional)</label>
+                        <input type="url" id="promoLink" placeholder="https://example.com/offer">
+                      </div>
+                      <div class="form-group" style="width: 200px;">
+                        <label for="promoOrientation">Orientation</label>
+                        <select id="promoOrientation">
+                          <option value="horizontal">Horizontal</option>
+                          <option value="vertical">Vertical</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Media List -->
+                  <div class="promotion-media-section" style="margin-top: 15px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; background: rgba(0,0,0,0.02);">
+                    <h5>Promotion Media</h5>
+                    <div class="form-row">
+                      <div class="form-group" style="flex: 1;">
+                        <label for="promoMediaUrl">Media URL</label>
+                        <div class="url-input-group" style="display: flex; gap: 8px;">
+                          <input type="url" id="promoMediaUrl" placeholder="https://example.com/image.jpg" style="flex: 1;">
+                          <button type="button" class="btn btn-outline btn-sm" id="addMediaUrlBtn" onclick="addPromoMediaUrl()">
+                            <i class="fas fa-plus"></i> Add
+                          </button>
+                        </div>
+                      </div>
+                      <div class="form-group" style="width: 180px;">
+                        <label for="promoMediaFit">Media Fit</label>
+                        <select id="promoMediaFit">
+                          <option value="cover">Cover (Fill & Crop)</option>
+                          <option value="contain">Contain (Fit)</option>
+                          <option value="scale-down">Scale Down</option>
+                          <option value="fill">Fill (Stretch)</option>
+                          <option value="none">None</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="form-row" style="margin-top: 10px;">
+                      <div class="form-group" style="flex: 1;">
+                        <label>Or Upload Image to Supabase</label>
+                        <input type="file" id="promoImageUpload" accept="image/*" onchange="uploadPromoImage(this)" style="display: block; margin-top: 5px;">
+                      </div>
+                      <div class="form-group" style="width: 180px;">
+                        <label for="promoRotationInterval">Rotation Interval (ms)</label>
+                        <input type="number" id="promoRotationInterval" value="2500" min="500">
+                      </div>
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                      <label>Active Media Items (Drag to reorder or click to remove):</label>
+                      <div id="promoMediaList" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 5px; min-height: 40px; padding: 10px; border: 1px dashed var(--border-color); border-radius: 6px; background: var(--card-color);">
+                        <span style="color: var(--text-secondary); font-size: 0.9rem; margin: auto;">No media added yet</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Display Rules & Triggers -->
+                  <div class="promotion-rules-section" style="margin-top: 15px;">
+                    <h5>Display Rules & Triggers</h5>
+                    <div class="form-row">
+                      <div class="form-group" style="flex: 1;">
+                        <label for="promoFrequency">Show Frequency</label>
+                        <select id="promoFrequency" onchange="togglePromoCustomFrequency()">
+                          <option value="once">Once</option>
+                          <option value="daily">Daily (Once per day)</option>
+                          <option value="everytime">Everytime</option>
+                          <option value="every-3hr">Every 3 Hours</option>
+                          <option value="every-6hr">Every 6 Hours</option>
+                          <option value="every-12hr">Every 12 Hours</option>
+                          <option value="every-3days">Every 3 Days</option>
+                          <option value="random">Random Aggressive</option>
+                          <option value="custom">Custom Hours</option>
+                        </select>
+                      </div>
+                      <div class="form-group" id="promoCustomFreqContainer" style="width: 180px; display: none;">
+                        <label for="promoCustomFreqHours">Frequency Hours</label>
+                        <input type="number" id="promoCustomFreqHours" value="0" min="1">
+                      </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 10px;">
+                      <label class="checkbox-label">
+                        <input type="checkbox" id="promoIsLimitedOffer" onchange="togglePromoDateRange()">
+                        <span class="checkmark"></span>
+                        Limited Time Offer (Schedule Date Range)
+                      </label>
+                    </div>
+
+                    <div id="promoDateRangeContainer" class="form-row" style="display: none; margin-top: 10px;">
+                      <div class="form-group" style="flex: 1;">
                         <label for="promoStartDate">Start Date</label>
                         <input type="datetime-local" id="promoStartDate">
                       </div>
-                      <div class="form-group">
+                      <div class="form-group" style="flex: 1;">
                         <label for="promoEndDate">End Date</label>
                         <input type="datetime-local" id="promoEndDate">
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <!-- Action Buttons -->
-                <div class="promotion-actions">
-                  <button type="button" class="btn btn-outline" id="previewPromotion">
-                    <i class="fas fa-eye"></i> Preview
-                  </button> <button type="button" class="btn btn-outline" id="clearPromotion">
-                    <i class="fas fa-trash"></i> Clear
-                  </button>
-                  <button type="submit" class="btn btn-primary" id="savePromotion">
-                    <i class="fas fa-save"></i> Save Promotion
-                  </button>
+                  <!-- Buttons & Disclaimers -->
+                  <div class="promotion-buttons-section" style="margin-top: 15px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; background: rgba(0,0,0,0.02);">
+                    <h5>Action Buttons</h5>
+                    <div class="form-row">
+                      <div class="form-group" style="flex: 1;">
+                        <label class="checkbox-label">
+                          <input type="checkbox" id="promoBtnPrimaryShow" checked>
+                          <span class="checkmark"></span>
+                          Show Primary Button
+                        </label>
+                        <input type="text" id="promoBtnPrimaryText" placeholder="Primary button text" value="Read Release Notes" style="margin-top: 5px;">
+                      </div>
+                      <div class="form-group" style="flex: 1;">
+                        <label class="checkbox-label">
+                          <input type="checkbox" id="promoBtnSecondaryShow" checked>
+                          <span class="checkmark"></span>
+                          Show Secondary Button
+                        </label>
+                        <input type="text" id="promoBtnSecondaryText" placeholder="Secondary button text" value="Got it" style="margin-top: 5px;">
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Action Buttons -->
+                  <div class="promotion-actions" style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button type="button" class="btn btn-outline" onclick="previewPromoLive()">
+                      <i class="fas fa-eye"></i> Preview
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="clearPromoForm()">
+                      <i class="fas fa-trash"></i> Reset Form
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="savePromoBtn" style="margin-left: auto;">
+                      <i class="fas fa-save"></i> Save & Deploy Promo
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Promo History Pane -->
+              <div id="promo-history" class="promo-inner-pane" style="display: none;">
+                <div class="table-responsive">
+                  <table class="invite-table">
+                    <thead>
+                      <tr>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Dates</th>
+                        <th>Last Updated</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="promoHistoryTableBody">
+                      <tr><td colspan="6" style="text-align: center;">Loading promotions history...</td></tr>
+                    </tbody>
+                  </table>
                 </div>
+              </div>
+            </div>
+
+            <!-- Releases Sub-tab -->
+            <div id="releases" class="sub-tab-pane">
+              <div class="releases-header" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <h4><i class="fas fa-code-branch"></i> Releases Log Management</h4>
+                  <p>Manage the release logs and update notifications displayed on the main site.</p>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" onclick="openReleaseModalForm()">
+                  <i class="fas fa-plus"></i> Add New Release
+                </button>
+              </div>
+
+              <div class="table-responsive">
+                <table class="invite-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 150px;">Version</th>
+                      <th style="width: 120px;">Branch</th>
+                      <th style="width: 120px;">Build Date</th>
+                      <th>Changes / Logs Summary</th>
+                      <th style="width: 150px;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="releasesTableBody">
+                    <tr><td colspan="5" style="text-align: center;">Loading release logs...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Exams & Seating Sub-tab -->
+            <div id="examdata" class="sub-tab-pane">
+              <div class="exam-header" style="margin-bottom: 20px;">
+                <h4><i class="fas fa-file-signature"></i> Exams & Seating Management</h4>
+                <p>Configure schedules for exams and upload seating arrangements.</p>
+              </div>
+
+              <!-- Exam Global Config Form -->
+              <form id="examConfigForm" style="margin-bottom: 30px; background: var(--card-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 20px;">
+                <div class="form-group">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="examEnabled">
+                    <span class="checkmark"></span>
+                    Enable Exam Timeline & Cards
+                  </label>
+                </div>
+                
+                <div class="form-row" style="margin-top: 15px;">
+                  <div class="form-group" style="flex: 1;">
+                    <label for="examRotationInterval">Rotation Interval (ms)</label>
+                    <input type="number" id="examRotationInterval" value="15000" min="1000">
+                  </div>
+                  <div class="form-group" style="flex: 1;">
+                    <label for="examShowBeforeDays">Show Card Before (Days)</label>
+                    <input type="number" id="examShowBeforeDays" value="9" min="1">
+                  </div>
+                  <div class="form-group" style="flex: 1;">
+                    <label for="examShowBeforeDaysViva">Show Viva Before (Days)</label>
+                    <input type="number" id="examShowBeforeDaysViva" value="3" min="1">
+                  </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
+                  <i class="fas fa-save"></i> Save Exam Config
+                </button>
               </form>
 
-              <!-- Current Promotion Status -->
-              <div class="promotion-status" id="promotionStatus">
-                <h5>Current Status</h5>
-                <div class="status-info" id="promoStatusInfo">
-                  <div class="status-item">
-                    <label>Status:</label>
-                    <span id="currentPromoStatus" class="status-value">Disabled</span>
+              <!-- Seating arrangements upload section -->
+              <div class="seating-upload-section" style="margin-bottom: 30px; background: var(--card-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 20px;">
+                <h5><i class="fas fa-location-dot"></i> Seating Arrangement CSV</h5>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 15px;">Upload a seating arrangement CSV. Column headers must include <code>enrollment_no</code>, <code>room_no</code>, and <code>bench_no</code>.</p>
+                
+                <div id="seatingActiveInfo" style="margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.03); border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.9rem; display: none;">
+                  <strong>Active Seating File URL:</strong> <a href="#" id="seatingActiveUrl" target="_blank" style="color: var(--primary-color); word-break: break-all;">None</a>
+                </div>
+
+                <div class="form-group">
+                  <div class="upload-area" id="seatingUploadArea" onclick="document.getElementById('seatingFileInput').click()" style="border: 2px dashed var(--border-color); border-radius: 12px; padding: 30px; text-align: center; cursor: pointer; transition: border-color 0.2s;">
+                    <div class="upload-icon"><i class="fas fa-file-csv" style="font-size: 3rem; color: var(--text-secondary);"></i></div>
+                    <div class="upload-text">
+                      <h4>Click to upload Seating CSV</h4>
+                      <p>Supports only CSV format files</p>
+                    </div>
+                    <input type="file" id="seatingFileInput" accept=".csv" style="display: none;" onchange="uploadSeatingCsv(this)">
                   </div>
-                  <div class="status-item">
-                    <label>Title:</label>
-                    <span id="currentPromoTitle" class="status-value">None</span>
+                </div>
+
+                <!-- Test seating lookup inside CMS -->
+                <div class="seating-test-lookup" style="margin-top: 20px; display: none;" id="seatingTestLookupArea">
+                  <h6><i class="fas fa-search"></i> Test Seating Lookup</h6>
+                  <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <input type="text" id="testEnrollmentNo" placeholder="Enter Enrollment No (e.g. 21012011001)" style="flex: 1; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-color); color: var(--text-color);">
+                    <button type="button" class="btn btn-outline" onclick="testSeatingLookupInCms()">Search</button>
                   </div>
-                  <div class="status-item">
-                    <label>Duration:</label>
-                    <span id="currentPromoDateRange" class="status-value">Not set</span>
-                  </div>
+                  <div id="testSeatingResult" style="margin-top: 10px; padding: 12px; border-radius: 6px; font-size: 0.9rem; display: none; background: rgba(0,0,0,0.02); border: 1px solid var(--border-color);"></div>
+                </div>
+              </div>
+
+              <!-- Semester Schedules Section -->
+              <div class="semester-exams-section" style="background: var(--card-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                  <h5><i class="fas fa-calendar-alt"></i> Semester Exam Schedules</h5>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="addNewSemesterSchedule()">
+                    <i class="fas fa-plus"></i> Add Semester Schedule
+                  </button>
+                </div>
+                
+                <div class="semester-list" id="semesterListContainer">
+                  <!-- Semester schedules will be populated here -->
                 </div>
               </div>
             </div>
@@ -1593,6 +1790,490 @@
       <span id="jsonEditorLineInfo"></span>
     </div>
   </div>
+
+  <!-- Release Modal -->
+  <div id="releaseModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 id="releaseModalTitle">Add New Release</h3>
+        <button class="close" onclick="closeReleaseModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="releaseModalForm" onsubmit="saveReleaseForm(event)">
+          <input type="hidden" id="releaseId">
+          <div class="form-row">
+            <div class="form-group" style="flex: 1;">
+              <label for="releaseVersion">Version *</label>
+              <input type="text" id="releaseVersion" required placeholder="e.g. 5.1">
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label for="releaseBuild">Build Date *</label>
+              <input type="text" id="releaseBuild" required placeholder="DD/MM/YYYY">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="releaseBranch">Branch</label>
+            <select id="releaseBranch">
+              <option value="stable">Stable</option>
+              <option value="beta">Beta</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Logs / Changes (one per line) *</label>
+            <textarea id="releaseLogs" rows="6" required placeholder="Added Perplexity integration&#10;Fixed upload bugs"></textarea>
+          </div>
+          <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+            <button type="button" class="btn btn-outline" onclick="closeReleaseModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Release</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exam Entry Modal -->
+  <div id="editExamModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 id="examEntryModalTitle">Add Exam Schedule</h3>
+        <button class="close" onclick="closeExamEntryModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="examEntryModalForm" onsubmit="saveExamEntryForm(event)">
+          <input type="hidden" id="examSemesterVal">
+          <input type="hidden" id="examEntryIndex">
+          <div class="form-group">
+            <label for="examSubject">Subject *</label>
+            <input type="text" id="examSubject" required placeholder="e.g. Machine Learning">
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="flex: 1;">
+              <label for="examCode">Course Code</label>
+              <input type="text" id="examCode" placeholder="e.g. 303105375">
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label for="examDuration">Duration</label>
+              <input type="text" id="examDuration" placeholder="e.g. 1.5 hours">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="flex: 1;">
+              <label for="examDate">Exam Date *</label>
+              <input type="date" id="examDate" required>
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label for="examTime">Time *</label>
+              <input type="time" id="examTime" required>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 10px;">
+            <label class="checkbox-label">
+              <input type="checkbox" id="examGlobal">
+              <span class="checkmark"></span>
+              Global Exam (Visible to all students)
+            </label>
+          </div>
+          <div class="form-group">
+            <label for="examAliases">Aliases (Comma separated, optional)</label>
+            <input type="text" id="examAliases" placeholder="e.g. ML, Machine Learning">
+          </div>
+          <div class="form-group">
+            <label for="examSyllabus">Syllabus Units (One per line)</label>
+            <textarea id="examSyllabus" rows="4" placeholder="Unit 1: Basics of ML&#10;Unit 2: Supervised Learning"></textarea>
+          </div>
+          <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+            <button type="button" class="btn btn-outline" onclick="closeExamEntryModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Exam</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Promotional Modal Preview Overlay (Matches main site structure) -->
+  <div class="promo-modal-overlay" id="promoModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center;">
+    <div class="promo-modal" style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 28px; width: 90%; max-width: 800px; display: flex; overflow: hidden; position: relative; max-height: 85vh; color: var(--text-color);">
+      <!-- Close Button -->
+      <i class="fas fa-times promo-close-btn" onclick="closePromoModalPreview()" style="position: absolute; top: 20px; right: 20px; font-size: 1.5rem; cursor: pointer; z-index: 10;" aria-hidden="true"></i>
+      
+      <!-- Left Section: Media Panel -->
+      <div class="promo-image" style="flex: 1; min-height: 250px; background: rgba(0,0,0,0.05); display: flex; justify-content: center; align-items: center; border-right: 1px solid var(--border-color); position: relative;">
+        <img src="" class="promo-cover" alt="Promotion Image" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+        <video class="promo-video" muted autoplay loop playsinline style="width: 100%; height: 100%; object-fit: cover; display: none;">
+          <source src="" type="video/mp4">
+        </video>
+      </div>
+
+      <!-- Right Section: Content Panel -->
+      <div class="promo-content" style="flex: 1; padding: 30px; display: flex; flex-direction: column; justify-content: center; gap: 15px; box-sizing: border-box;">
+        <h2 style="margin: 0; font-size: 1.8rem;"><span class="promo-title">Title</span></h2>
+        <p class="promo-description" style="margin: 0; font-size: 1rem; line-height: 1.6; color: var(--text-secondary);">Description</p>
+        
+        <!-- Action Buttons -->
+        <div class="promo-actions" style="display: flex; gap: 10px; margin-top: 10px;">
+          <a href="#" target="_blank" class="promo-link" style="display: none; text-decoration: none;">
+            <button id="offerButton" class="btn btn-primary promo-primary-btn" style="padding: 10px 20px; border-radius: 12px;">
+              <span class="promo-button-text">View Offer</span>
+            </button>
+          </a>
+          <button id="remindLaterBtn" class="btn btn-outline promo-secondary-btn" onclick="closePromoModalPreview()" style="display: none; padding: 10px 20px; border-radius: 12px;">
+            <span class="promo-secondary-text">Remind me later</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* Styling for nested promo inner panes & layout improvements */
+    .promo-inner-pane {
+      background: var(--card-color);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      margin-top: 10px;
+    }
+    .media-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(0,0,0,0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .media-badge:hover {
+      background: rgba(220, 53, 69, 0.1);
+      border-color: #dc3545;
+      color: #dc3545;
+    }
+    .semester-card {
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      background: var(--card-color);
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+    .semester-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      margin-bottom: 16px;
+      border-bottom: 1px dashed var(--border-color);
+      padding-bottom: 12px;
+    }
+    .exam-grid-item {
+      padding: 12px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+    .exam-grid-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .exam-actions-btn {
+      display: flex;
+      gap: 8px;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .status-badge.active {
+      background: rgba(40, 167, 69, 0.15);
+      color: #28a745;
+    }
+    .status-badge.inactive {
+      background: rgba(108, 117, 125, 0.15);
+      color: #6c757d;
+    }
+
+    /* Premium inputs and fields styling inside CMS tabs & modals */
+    #promotions input[type="text"], #promotions input[type="number"], #promotions input[type="datetime-local"], #promotions textarea, #promotions select,
+    #releases input[type="text"], #releases textarea, #releases select,
+    #examdata input[type="text"], #examdata input[type="number"], #examdata input[type="date"], #examdata input[type="time"], #examdata textarea, #examdata select,
+    .modal-content input[type="text"], .modal-content input[type="number"], .modal-content input[type="date"], .modal-content input[type="time"], .modal-content input[type="datetime-local"], .modal-content textarea, .modal-content select {
+      background: rgba(255, 255, 255, 0.04) !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      border-radius: 12px !important;
+      color: var(--text-color) !important;
+      padding: 12px 16px !important;
+      font-size: 0.95rem !important;
+      font-family: inherit !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      color-scheme: dark; /* Dark mode popups for date/time select */
+    }
+
+    #promotions input:focus, #promotions textarea:focus, #promotions select:focus,
+    #releases input:focus, #releases textarea:focus, #releases select:focus,
+    #examdata input:focus, #examdata textarea:focus, #examdata select:focus,
+    .modal-content input:focus, .modal-content textarea:focus, .modal-content select:focus {
+      outline: none !important;
+      border-color: var(--primary-color) !important;
+      box-shadow: 0 0 0 3px rgba(255, 84, 0, 0.18) !important;
+      background: rgba(255, 255, 255, 0.06) !important;
+    }
+
+    /* Style date & time indicators */
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="time"]::-webkit-calendar-picker-indicator,
+    input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+      filter: invert(33%) sepia(90%) saturate(2331%) hue-rotate(5deg) brightness(98%) contrast(101%);
+      cursor: pointer;
+      opacity: 0.8;
+      transition: opacity 0.2s ease;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator:hover,
+    input[type="time"]::-webkit-calendar-picker-indicator:hover,
+    input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+      opacity: 1;
+    }
+
+    /* Premium Checkbox Styling via .checkmark overlay */
+    #promotions .checkbox-label input[type="checkbox"],
+    #releases .checkbox-label input[type="checkbox"],
+    #examdata .checkbox-label input[type="checkbox"],
+    .modal-content .checkbox-label input[type="checkbox"] {
+      display: none !important; /* Hide raw input to avoid duplicate checkboxes */
+    }
+
+    #promotions .checkmark,
+    #releases .checkmark,
+    #examdata .checkmark,
+    .modal-content .checkmark {
+      width: 18px !important;
+      height: 18px !important;
+      border: 2px solid rgba(255, 255, 255, 0.25) !important;
+      border-radius: 5px !important;
+      background: rgba(255, 255, 255, 0.04) !important;
+      display: inline-block !important;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      vertical-align: middle;
+      margin-right: 10px !important;
+    }
+
+    #promotions .checkbox-label:hover .checkmark,
+    #releases .checkbox-label:hover .checkmark,
+    #examdata .checkbox-label:hover .checkmark,
+    .modal-content .checkbox-label:hover .checkmark {
+      border-color: var(--primary-color) !important;
+      background: rgba(255, 84, 0, 0.05) !important;
+    }
+
+    #promotions .checkbox-label input[type="checkbox"]:checked + .checkmark,
+    #releases .checkbox-label input[type="checkbox"]:checked + .checkmark,
+    #examdata .checkbox-label input[type="checkbox"]:checked + .checkmark,
+    .modal-content .checkbox-label input[type="checkbox"]:checked + .checkmark {
+      background-color: var(--primary-color) !important;
+      border-color: var(--primary-color) !important;
+      box-shadow: 0 0 10px rgba(255, 84, 0, 0.35) !important;
+    }
+
+    #promotions .checkbox-label input[type="checkbox"]:checked + .checkmark::after,
+    #releases .checkbox-label input[type="checkbox"]:checked + .checkmark::after,
+    #examdata .checkbox-label input[type="checkbox"]:checked + .checkmark::after,
+    .modal-content .checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+      content: '' !important;
+      position: absolute !important;
+      left: 5px !important;
+      top: 1px !important;
+      width: 4px !important;
+      height: 8px !important;
+      border: solid white !important;
+      border-width: 0 2px 2px 0 !important;
+      transform: rotate(45deg) !important;
+      display: block !important;
+    }
+
+    /* Premium File Pickers Styling */
+    #promotions input[type="file"],
+    #releases input[type="file"],
+    #examdata input[type="file"],
+    .modal-content input[type="file"] {
+      background: rgba(255, 255, 255, 0.03) !important;
+      border: 1px dashed rgba(255, 255, 255, 0.15) !important;
+      border-radius: 12px !important;
+      color: var(--text-secondary) !important;
+      padding: 10px 14px !important;
+      font-size: 0.9rem !important;
+      font-family: inherit !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+      cursor: pointer;
+      display: block;
+      transition: all 0.2s ease;
+    }
+
+    #promotions input[type="file"]::file-selector-button,
+    #releases input[type="file"]::file-selector-button,
+    #examdata input[type="file"]::file-selector-button,
+    .modal-content input[type="file"]::file-selector-button {
+      background: var(--primary-color) !important;
+      color: #fff !important;
+      border: none !important;
+      border-radius: 8px !important;
+      padding: 6px 14px !important;
+      font-size: 0.85rem !important;
+      font-weight: 600 !important;
+      cursor: pointer;
+      margin-right: 12px !important;
+      transition: all 0.2s ease;
+    }
+
+    #promotions input[type="file"]::file-selector-button:hover,
+    #releases input[type="file"]::file-selector-button:hover,
+    #examdata input[type="file"]::file-selector-button:hover,
+    .modal-content input[type="file"]::file-selector-button:hover {
+      background: #e04a00 !important;
+      box-shadow: 0 2px 8px rgba(255, 84, 0, 0.25);
+    }
+
+    /* Danger / Destructive action buttons styling */
+    .btn-danger {
+      background: rgba(255, 77, 77, 0.1) !important;
+      color: #ff4d4d !important;
+      border: 1px solid rgba(255, 77, 77, 0.25) !important;
+      border-radius: 12px !important;
+      padding: 8px 18px !important;
+      font-size: 0.9rem !important;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-weight: 500;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .btn-danger:hover {
+      background: #ff4d4d !important;
+      color: #fff !important;
+      border-color: #ff4d4d !important;
+      box-shadow: 0 4px 14px rgba(255, 77, 77, 0.3) !important;
+    }
+
+    /* General Form elements styling */
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+      color: var(--text-secondary);
+      text-align: left;
+    }
+
+    /* Custom scrollbars for textareas */
+    textarea::-webkit-scrollbar {
+      width: 6px;
+    }
+    textarea::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    textarea::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    textarea::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-color);
+    }
+
+    /* Modal layout & positioning */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7) !important;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(8px) !important;
+    }
+
+    .modal-content {
+      background: var(--card-color) !important;
+      border: 1px solid var(--border-color) !important;
+      border-radius: 20px !important;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4) !important;
+      padding: 28px !important;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color) !important;
+      padding-bottom: 16px !important;
+      margin-bottom: 20px !important;
+    }
+
+    .modal-header h3 {
+      margin: 0 !important;
+      font-size: 1.35rem !important;
+      font-weight: 700 !important;
+      color: var(--text-color) !important;
+    }
+
+    .modal-header .close {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.25rem;
+      cursor: pointer;
+      padding: 4px;
+      transition: color 0.2s ease;
+    }
+
+    .modal-header .close:hover {
+      color: var(--primary-color);
+    }
+
+    .modal-body {
+      max-height: 65vh;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+
+    /* Custom scrollbars for modal body */
+    .modal-body::-webkit-scrollbar {
+      width: 6px;
+    }
+    .modal-body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .modal-body::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    .modal-body::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-color);
+    }
+  </style>
 
 </body>
 
