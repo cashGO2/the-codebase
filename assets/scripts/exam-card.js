@@ -1613,8 +1613,9 @@ function showExamSyllabus(examId) {
 
     // Set banner image
     if (bannerImg) {
-        if (exam.image) {
-            bannerImg.src = exam.image;
+        const coverImgUrl = exam.image || (examData && examData.defaultCoverImage);
+        if (coverImgUrl) {
+            bannerImg.src = coverImgUrl;
             bannerImg.style.display = 'block';
         } else {
             // Placeholder: Use a solid dark color or a generic pattern

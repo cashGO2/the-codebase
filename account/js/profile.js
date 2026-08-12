@@ -3679,6 +3679,7 @@ async function loadExamDataCms() {
     document.getElementById('examRotationInterval').value = config.viewRotationInterval || 15000;
     document.getElementById('examShowBeforeDays').value = config.showBeforeDays || 9;
     document.getElementById('examShowBeforeDaysViva').value = config.showBeforeDaysViva || 3;
+    document.getElementById('examDefaultCoverImage').value = config.defaultCoverImage || "";
 
     activeSeatingUrl = config.seatingDataUrl || "";
     currentExamSemesters = config.semesters || [];
@@ -3717,6 +3718,7 @@ async function saveExamConfig(event) {
     viewRotationInterval: parseInt(document.getElementById('examRotationInterval').value) || 15000,
     showBeforeDays: parseInt(document.getElementById('examShowBeforeDays').value) || 9,
     showBeforeDaysViva: parseInt(document.getElementById('examShowBeforeDaysViva').value) || 3,
+    defaultCoverImage: document.getElementById('examDefaultCoverImage').value.trim() || null,
     seatingDataUrl: activeSeatingUrl || null,
     semesters: currentExamSemesters
   };
@@ -3977,6 +3979,7 @@ function openExamEntryModalForm(semIndex, examIndex) {
       document.getElementById('examTime').value = exam.time || '';
       document.getElementById('examGlobal').checked = !!exam.global;
       document.getElementById('examAliases').value = exam.aliases ? exam.aliases.join(', ') : '';
+      document.getElementById('examImage').value = exam.image || '';
       document.getElementById('examSyllabus').value = exam.syllabus ? exam.syllabus.join('\n') : '';
     }
   } else {
@@ -4005,6 +4008,7 @@ function saveExamEntryForm(event) {
   const time = document.getElementById('examTime').value;
   const global = document.getElementById('examGlobal').checked;
   const aliasesText = document.getElementById('examAliases').value;
+  const image = document.getElementById('examImage').value.trim() || null;
   const syllabusText = document.getElementById('examSyllabus').value;
 
   const aliases = aliasesText.split(',').map(a => a.trim()).filter(a => a.length > 0);
@@ -4019,6 +4023,7 @@ function saveExamEntryForm(event) {
     time,
     global,
     aliases,
+    image,
     syllabus
   };
 

@@ -1042,6 +1042,11 @@
                     <input type="number" id="examShowBeforeDaysViva" value="3" min="1">
                   </div>
                 </div>
+
+                <div class="form-group" style="margin-top: 15px;">
+                  <label for="examDefaultCoverImage">Default Cover Image URL</label>
+                  <input type="text" id="examDefaultCoverImage" placeholder="e.g. https://example.com/default-cover.jpg">
+                </div>
                 
                 <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
                   <i class="fas fa-save"></i> Save Exam Config
@@ -1880,6 +1885,10 @@
           <div class="form-group">
             <label for="examAliases">Aliases (Comma separated, optional)</label>
             <input type="text" id="examAliases" placeholder="e.g. ML, Machine Learning">
+          </div>
+          <div class="form-group">
+            <label for="examImage">Image URL (Optional override)</label>
+            <input type="text" id="examImage" placeholder="e.g. https://example.com/subject-cover.jpg">
           </div>
           <div class="form-group">
             <label for="examSyllabus">Syllabus Units (One per line)</label>
