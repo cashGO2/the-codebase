@@ -3383,8 +3383,8 @@ body.dark-mode #notices a {
 
 .promo-modal {
     display: flex;
-    background: #f7f7f7;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: var(--color-bg-card, #f7f7f7);
+    border: 1px solid var(--color-border-light, rgba(0, 0, 0, 0.08));
     border-radius: 40px;
     corner-shape: squircle;
     overflow: hidden;
@@ -3945,9 +3945,9 @@ body.dark-mode #notices a {
     right: 32px;
     font-size: 18px;
     cursor: var(--f-cursor-pointer);
-    color: #999;
+    color: var(--color-text-secondary, #999);
     z-index: 10;
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--color-bg-card, rgba(255, 255, 255, 0.9));
     border-radius: 50%;
     width: 32px;
     height: 32px;
@@ -3955,12 +3955,12 @@ body.dark-mode #notices a {
     align-items: center;
     justify-content: center;
     transition: all 0.25s cubic-bezier(0.32, 0.72, 0, 1);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--color-border-light, rgba(0, 0, 0, 0.1));
 }
 
 .promo-close-btn:hover {
-    color: #ff4444;
-    background: rgba(255, 255, 255, 1);
+    color: var(--color-danger, #ff4444);
+    background: var(--color-bg-white, rgba(255, 255, 255, 1));
     transform: scale(1.1);
 }
 
@@ -4170,6 +4170,29 @@ body.coffee-dark-mode .quick-search-item:hover,
 body.coffee-dark-mode select option:checked {
     background-color: var(--color-primary-light, rgba(207, 157, 117, 0.15)) !important;
     color: var(--color-primary, #cf9d75) !important;
+}
+
+/* Coffee theme overrides for close buttons */
+body.coffee-mode .promo-close-btn {
+    background-color: var(--color-bg-body, #fdf6e3) !important;
+    color: var(--color-text-secondary, #655348) !important;
+    border-color: var(--color-border-light, #dcd3b6) !important;
+}
+
+body.coffee-mode .promo-close-btn:hover {
+    background-color: var(--color-bg-card, #eee8d5) !important;
+    color: var(--color-text-primary, #4a3b32) !important;
+}
+
+body.coffee-dark-mode .promo-close-btn {
+    background-color: var(--color-bg-body, #1b1513) !important;
+    color: var(--color-text-secondary, #cbb8ac) !important;
+    border-color: var(--color-border-light, #362924) !important;
+}
+
+body.coffee-dark-mode .promo-close-btn:hover {
+    background-color: var(--color-bg-card, #251c19) !important;
+    color: var(--color-text-primary, #ebdcd0) !important;
 }
 
 /* Search Results Modal - quickSearchContainer inside modal */
@@ -8117,12 +8140,12 @@ body.dark-mode .attachments-empty {
 .classroom-select {
     width: 100%;
     padding: 6px 34px 6px 12px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--color-border-light, rgba(0, 0, 0, 0.1));
     border-radius: 20px;
     font-size: 12px;
     font-family: inherit;
-    background: rgba(0, 0, 0, 0.05);
-    color: #333;
+    background: var(--color-bg-body, rgba(0, 0, 0, 0.05));
+    color: var(--color-text-primary, #333);
     outline: none;
     cursor: text;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -8130,12 +8153,12 @@ body.dark-mode .attachments-empty {
 }
 
 .classroom-select:focus {
-    border-color: rgba(255, 130, 0, 0.3);
-    box-shadow: 0 0 0 2px rgba(255, 130, 0, 0.08);
+    border-color: var(--color-primary-border, rgba(255, 130, 0, 0.3));
+    box-shadow: 0 0 0 2px var(--color-primary-lighter, rgba(255, 130, 0, 0.08));
 }
 
 .classroom-select::placeholder {
-    color: #8d8d8d;
+    color: var(--color-text-muted, #8d8d8d);
 }
 
 .clear-division-btn {
@@ -8150,8 +8173,8 @@ body.dark-mode .attachments-empty {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.14);
-    color: #555;
+    background: var(--color-border-medium, rgba(0, 0, 0, 0.14));
+    color: var(--color-text-secondary, #555);
     cursor: var(--f-cursor-pointer);
     padding: 0;
 }
@@ -8162,7 +8185,7 @@ body.dark-mode .attachments-empty {
 }
 
 .clear-division-btn:hover {
-    background: rgba(0, 0, 0, 0.22);
+    background: var(--color-border-dark, rgba(0, 0, 0, 0.22));
 }
 
 .seating-lookup {
@@ -8450,7 +8473,7 @@ body.dark-mode .seating-clear-btn {
 .exam-timeline-subject {
     font-size: 15px;
     font-weight: 700;
-    color: #333;
+    color: var(--color-text-primary, #333);
     margin-bottom: 4px;
     display: flex;
     align-items: center;
@@ -8458,28 +8481,28 @@ body.dark-mode .seating-clear-btn {
 
 .exam-timeline-date {
     font-size: 13px;
-    color: #666;
+    color: var(--color-text-secondary, #666);
     margin-bottom: 6px;
 }
 
 .exam-timeline-empty {
     text-align: center;
     padding: 30px 20px;
-    color: #888;
+    color: var(--color-text-muted, #888);
     font-size: 14px;
 }
 
 .exam-timeline-syllabus {
     margin-top: 8px;
     padding: 10px 12px;
-    background: rgba(0, 0, 0, 0.03);
+    background: var(--color-primary-lighter, rgba(224, 114, 0, 0.05));
     border-radius: 10px;
 }
 
 .exam-timeline-syllabus-label {
     font-size: 11px;
     font-weight: 600;
-    color: #888;
+    color: var(--color-text-tertiary, #888);
     margin-bottom: 6px;
 }
 
@@ -8491,7 +8514,7 @@ body.dark-mode .seating-clear-btn {
 
 .exam-timeline-syllabus-item {
     font-size: 12px;
-    color: #555;
+    color: var(--color-text-secondary, #555);
     padding-left: 12px;
     position: relative;
     /* Truncate long syllabus text in timeline */
