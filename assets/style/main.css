@@ -8432,10 +8432,10 @@ body.dark-mode .seating-clear-btn {
     animation: examDotBlink 2.5s ease-in-out infinite;
 }
 
-/* Today and active exams show the accent progress line */
+/* Active/today exam lines connect to future exams, so they stay grey */
 .exam-timeline-item.today .exam-timeline-dot::after,
 .exam-timeline-item.active .exam-timeline-dot::after {
-    background: var(--color-primary, #ff6b35) !important;
+    background: var(--color-border-light, #e0e0e0) !important;
 }
 
 .exam-timeline-item.upcoming:not(.active) .exam-timeline-dot::before {
@@ -8989,11 +8989,11 @@ body.dark-mode .exam-timeline-item.active .exam-timeline-dot::before {
 
 body.dark-mode .exam-timeline-item.today .exam-timeline-dot::after,
 body.dark-mode .exam-timeline-item.active .exam-timeline-dot::after {
-    background: var(--color-primary, #ff6b35);
+    background: #555;
 }
 
 body.dark-mode .exam-timeline-item.upcoming.active .exam-timeline-dot::after {
-    background: var(--color-primary, #ff6b35);
+    background: #555;
 }
 
 /* Responsive styles */
