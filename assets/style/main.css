@@ -4357,9 +4357,21 @@ body.coffee-dark-mode select option:checked {
     display: flex !important;
 }
 
-/* Prevent body scroll when modal is open */
+/* Prevent body scroll and background text selection when modal is open */
 body.modal-open {
-    overflow: hidden;
+    overflow: hidden !important;
+}
+
+body.modal-open .container > *:not(.promo-modal-overlay) {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    pointer-events: none !important;
+}
+
+body.modal-open .promo-modal-overlay {
+    user-select: auto !important;
+    -webkit-user-select: auto !important;
+    pointer-events: auto !important;
 }
 
 /* Enhanced centering for very small screens */
@@ -7035,6 +7047,58 @@ body.dark-mode .insight-card-date {
     color: #888;
 }
 
+/* Coffee Mode Blog Card Overrides */
+body.coffee-mode .insight-card {
+    background: var(--color-bg-card, #eee8d5);
+    border-color: var(--color-border-light, #dcd3b6);
+}
+
+body.coffee-mode .insight-card-gradient {
+    background: linear-gradient(to bottom,
+            rgba(238, 232, 213, 0) 0%,
+            rgba(238, 232, 213, 0.6) 50%,
+            rgba(238, 232, 213, 1) 75%,
+            rgba(238, 232, 213, 1) 100%);
+}
+
+body.coffee-mode .insight-card-title {
+    color: #4a3b32;
+}
+
+body.coffee-mode .insight-card-excerpt {
+    color: #655348;
+}
+
+body.coffee-mode .insight-card-date {
+    color: #8a7b72;
+}
+
+/* Coffee Dark Mode Blog Card Overrides */
+body.coffee-dark-mode .insight-card {
+    background: var(--color-bg-card, #251c19);
+    border-color: var(--color-border-light, #362924);
+}
+
+body.coffee-dark-mode .insight-card-gradient {
+    background: linear-gradient(to bottom,
+            rgba(37, 28, 25, 0) 0%,
+            rgba(37, 28, 25, 0.6) 50%,
+            rgba(37, 28, 25, 1) 75%,
+            rgba(37, 28, 25, 1) 100%);
+}
+
+body.coffee-dark-mode .insight-card-title {
+    color: #ebdcd0;
+}
+
+body.coffee-dark-mode .insight-card-excerpt {
+    color: #cbb8ac;
+}
+
+body.coffee-dark-mode .insight-card-date {
+    color: #a59185;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .insight-cards-scroll {
@@ -8368,14 +8432,10 @@ body.dark-mode .seating-clear-btn {
     animation: examDotBlink 2.5s ease-in-out infinite;
 }
 
-/* Only today's exam shows the progress line (half primary/half gray) */
-.exam-timeline-item.today .exam-timeline-dot::after {
-    background: linear-gradient(to bottom, var(--color-primary, #ff6b35) 50%, var(--color-border-light, #e0e0e0) 50%) !important;
-}
-
-/* Upcoming active exam keeps gray line (no progress) - only dot blinks */
-.exam-timeline-item.upcoming.active .exam-timeline-dot::after {
-    background: var(--color-border-light, #e0e0e0) !important;
+/* Today and active exams show the accent progress line */
+.exam-timeline-item.today .exam-timeline-dot::after,
+.exam-timeline-item.active .exam-timeline-dot::after {
+    background: var(--color-primary, #ff6b35) !important;
 }
 
 .exam-timeline-item.upcoming:not(.active) .exam-timeline-dot::before {
@@ -8927,12 +8987,13 @@ body.dark-mode .exam-timeline-item.active .exam-timeline-dot::before {
     background: var(--color-primary, #ff6b35);
 }
 
-body.dark-mode .exam-timeline-item.today .exam-timeline-dot::after {
-    background: linear-gradient(to bottom, var(--color-primary, #ff6b35) 50%, #555 50%);
+body.dark-mode .exam-timeline-item.today .exam-timeline-dot::after,
+body.dark-mode .exam-timeline-item.active .exam-timeline-dot::after {
+    background: var(--color-primary, #ff6b35);
 }
 
 body.dark-mode .exam-timeline-item.upcoming.active .exam-timeline-dot::after {
-    background: #555;
+    background: var(--color-primary, #ff6b35);
 }
 
 /* Responsive styles */
