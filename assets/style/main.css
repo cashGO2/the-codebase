@@ -8630,9 +8630,22 @@ body.dark-mode .exam-syllabus-view {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 18px 0;
+    padding: 18px 12px;
+    margin: 0 -12px;
     border-bottom: 1px solid var(--color-border-light, #dcd3b6);
     gap: 16px;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.syllabus-unit-row:hover {
+    background-color: var(--color-bg-hover, rgba(0, 0, 0, 0.02));
+}
+
+body.dark-mode .syllabus-unit-row:hover {
+    background-color: rgba(255, 255, 255, 0.02);
 }
 
 .syllabus-unit-row:last-child {
@@ -8644,6 +8657,15 @@ body.dark-mode .exam-syllabus-view {
     font-size: 15px;
     line-height: 1.6;
     color: var(--color-text-secondary, #655348);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+}
+
+.syllabus-unit-row.expanded .syllabus-unit-content {
+    display: block;
+    -webkit-line-clamp: none;
 }
 
 .syllabus-unit-num {
@@ -8663,6 +8685,11 @@ body.dark-mode .exam-syllabus-view {
     justify-content: center;
     color: var(--color-text-tertiary, #8a7b72);
     flex-shrink: 0;
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.syllabus-unit-row.expanded .syllabus-unit-chevron {
+    transform: rotate(180deg);
 }
 
 /* Coffee dark mode styles for syllabus rows */

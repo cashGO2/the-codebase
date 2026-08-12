@@ -1753,11 +1753,20 @@ function parseSyllabusMarkdown(text) {
     return result;
 }
 
-// Close modal when clicking outside
+// Close modal when clicking outside or toggle syllabus accordion rows
 document.addEventListener('click', function (e) {
     const modal = document.getElementById('examModal');
     if (modal && e.target === modal) {
         closeExamModal();
+        return;
+    }
+
+    const row = e.target.closest('.syllabus-unit-row');
+    if (row) {
+        row.classList.toggle('expanded');
+        if (window.MaterioHaptics) {
+            window.MaterioHaptics.vibrate('light');
+        }
     }
 });
 
