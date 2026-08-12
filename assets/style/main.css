@@ -8362,22 +8362,22 @@ body.dark-mode .seating-clear-btn {
 
 .exam-timeline-item.today .exam-timeline-dot::before,
 .exam-timeline-item.active .exam-timeline-dot::before {
-    background: var(--color-primary, #ff6b35);
+    background: var(--color-primary, #ff6b35) !important;
     animation: examDotBlink 2.5s ease-in-out infinite;
 }
 
 /* Only today's exam shows the progress line (half primary/half gray) */
 .exam-timeline-item.today .exam-timeline-dot::after {
-    background: linear-gradient(to bottom, var(--color-primary, #ff6b35) 50%, #e0e0e0 50%);
+    background: linear-gradient(to bottom, var(--color-primary, #ff6b35) 50%, var(--color-border-light, #e0e0e0) 50%) !important;
 }
 
 /* Upcoming active exam keeps gray line (no progress) - only dot blinks */
 .exam-timeline-item.upcoming.active .exam-timeline-dot::after {
-    background: #e0e0e0;
+    background: var(--color-border-light, #e0e0e0) !important;
 }
 
-.exam-timeline-item.upcoming .exam-timeline-dot::before {
-    background: #e0e0e0;
+.exam-timeline-item.upcoming:not(.active) .exam-timeline-dot::before {
+    background: var(--color-border-light, #e0e0e0);
 }
 
 .exam-timeline-content {
@@ -8574,6 +8574,15 @@ body.dark-mode .exam-syllabus-view {
 
 .syllabus-back-btn i {
     font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.syllabus-back-btn i svg {
+    display: block;
+    width: 16px;
+    height: 16px;
 }
 
 .syllabus-full-content {
@@ -8883,14 +8892,14 @@ body.dark-mode .exam-timeline-item.completed .exam-timeline-dot::after {
     background: var(--color-primary-alt);
 }
 
-/* Dark mode: Active/Today exam dots should be solid orange */
+/* Dark mode: Active/Today exam dots should adapt to primary accent color */
 body.dark-mode .exam-timeline-item.today .exam-timeline-dot::before,
 body.dark-mode .exam-timeline-item.active .exam-timeline-dot::before {
-    background: #ff6b35;
+    background: var(--color-primary, #ff6b35);
 }
 
 body.dark-mode .exam-timeline-item.today .exam-timeline-dot::after {
-    background: linear-gradient(to bottom, #ff6b35 50%, #555 50%);
+    background: linear-gradient(to bottom, var(--color-primary, #ff6b35) 50%, #555 50%);
 }
 
 body.dark-mode .exam-timeline-item.upcoming.active .exam-timeline-dot::after {
