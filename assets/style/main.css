@@ -8532,7 +8532,7 @@ body.dark-mode .exam-syllabus-view {
 #syllabusSubjectTitle {
     font-size: 1.5rem;
     font-weight: 800;
-    color: #ffffff;
+    color: #ffffff !important;
     margin: 0;
     line-height: 1.2;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
