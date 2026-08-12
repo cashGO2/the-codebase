@@ -3368,9 +3368,9 @@ body.dark-mode #notices a {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3970,7 +3970,7 @@ body.dark-mode #notices a {
 
 /* Dark Mode Styles for Promotional Modal */
 body.dark-mode .promo-modal-overlay {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.8);
 }
 
 body.dark-mode .promo-modal {
@@ -4057,13 +4057,19 @@ body.dark-mode .promo-checkbox-label {
    Coffee Mode & Coffee Dark Mode Comprehensive Modal & Dropdown Overrides
    ================================================ */
 body.coffee-mode .promo-modal-overlay,
-body.coffee-dark-mode .promo-modal-overlay,
 body.coffee-mode .custom-select-backdrop,
+body.coffee-mode .dynamic-form-overlay {
+    background-color: rgba(27, 21, 18, 0.65) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+}
+
+body.coffee-dark-mode .promo-modal-overlay,
 body.coffee-dark-mode .custom-select-backdrop,
-body.coffee-mode .dynamic-form-overlay,
 body.coffee-dark-mode .dynamic-form-overlay {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background-color: rgba(15, 11, 9, 0.82) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
 }
 
 /* Light Coffee Mode Surfaces for All Modals & Sheets */
@@ -8606,6 +8612,80 @@ body.dark-mode .exam-syllabus-view {
 .syllabus-full-content li {
     margin-bottom: 10px;
     list-style: disc;
+}
+
+/* Syllabus Unit Accordion Row Styling */
+.syllabus-unit-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--color-border-light, #dcd3b6);
+    gap: 16px;
+}
+
+.syllabus-unit-row:last-child {
+    border-bottom: none;
+}
+
+.syllabus-unit-content {
+    flex: 1;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--color-text-secondary, #655348);
+}
+
+.syllabus-unit-num {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--color-text-primary, #4a3b32);
+    margin-right: 8px;
+}
+
+.syllabus-unit-text {
+    color: var(--color-text-secondary, #655348);
+}
+
+.syllabus-unit-chevron {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-tertiary, #8a7b72);
+    flex-shrink: 0;
+}
+
+/* Coffee dark mode styles for syllabus rows */
+body.coffee-dark-mode .syllabus-unit-row {
+    border-bottom-color: var(--color-border-light, #362924);
+}
+
+body.coffee-dark-mode .syllabus-unit-num {
+    color: var(--color-text-primary, #ebdcd0);
+}
+
+body.coffee-dark-mode .syllabus-unit-text {
+    color: var(--color-text-secondary, #cbb8ac);
+}
+
+body.coffee-dark-mode .syllabus-unit-chevron {
+    color: var(--color-text-tertiary, #a59185);
+}
+
+/* Dark mode styles for syllabus rows */
+body.dark-mode .syllabus-unit-row {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .syllabus-unit-num {
+    color: var(--color-dark-text-primary, #ffffff);
+}
+
+body.dark-mode .syllabus-unit-text {
+    color: var(--color-dark-text-secondary, #cccccc);
+}
+
+body.dark-mode .syllabus-unit-chevron {
+    color: #888;
 }
 
 /* Dark mode for syllabus view */

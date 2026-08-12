@@ -1699,6 +1699,12 @@ function parseSyllabusMarkdown(text) {
     let inList = false;
     let result = '';
 
+    const chevronSvg = `
+<svg class="hgi hgi-arrow-down-01" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="currentColor" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.75;">
+  <path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`;
+
     lines.forEach(line => {
         const trimmed = line.trim();
         if (!trimmed) {
@@ -1720,8 +1726,25 @@ function parseSyllabusMarkdown(text) {
                 result += '</ul>';
                 inList = false;
             }
-            // If it's a normal line, wrap in a div or p if it's meant to be a block
-            result += `<p>${trimmed}</p>`;
+
+            // Check if this line starts with "Unit X:" (case-insensitive)
+            const unitMatch = trimmed.match(/^(Unit\s+\w+:)(.*)$/i);
+            if (unitMatch) {
+                const label = unitMatch[1];
+                const content = unitMatch[2];
+                result += `
+<div class="syllabus-unit-row">
+    <div class="syllabus-unit-content">
+        <span class="syllabus-unit-num">${label}</span>
+        <span class="syllabus-unit-text">${content}</span>
+    </div>
+    <div class="syllabus-unit-chevron">
+        ${chevronSvg}
+    </div>
+</div>`;
+            } else {
+                result += `<p>${trimmed}</p>`;
+            }
         }
     });
 
