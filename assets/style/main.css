@@ -3384,6 +3384,7 @@ body.dark-mode #notices a {
 .promo-modal {
     display: flex;
     background: #f7f7f7;
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 40px;
     corner-shape: squircle;
     overflow: hidden;
@@ -3975,6 +3976,7 @@ body.dark-mode .promo-modal-overlay {
 
 body.dark-mode .promo-modal {
     background: #1e1e1e;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     corner-shape: squircle;
 }
@@ -4085,7 +4087,7 @@ body.coffee-mode .dropdown-menu,
 body.coffee-mode select {
     background-color: var(--color-bg-card, #eee8d5) !important;
     color: var(--color-text-primary, #4a3b32) !important;
-    border-color: var(--color-border-light, #dcd3b6) !important;
+    border: 1px solid var(--color-border-light, #dcd3b6) !important;
     border-radius: 40px !important;
     corner-shape: squircle !important;
 }
@@ -4134,7 +4136,7 @@ body.coffee-dark-mode .dropdown-menu,
 body.coffee-dark-mode select {
     background-color: var(--color-bg-card, #251c19) !important;
     color: var(--color-text-primary, #ebdcd0) !important;
-    border-color: var(--color-border-light, #362924) !important;
+    border: 1px solid var(--color-border-light, #362924) !important;
     border-radius: 40px !important;
     corner-shape: squircle !important;
 }
