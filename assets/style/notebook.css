@@ -36,6 +36,34 @@ body.dark-mode {
     --notebook-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
 }
 
+body.coffee-mode {
+    --notebook-bg: var(--color-bg-card, #eee8d5);
+    --notebook-border: var(--color-border-light, #dcd3b6);
+    --notebook-toolbar-bg: var(--color-bg-body, #fdf6e3);
+    --notebook-editor-bg: var(--color-bg-body, #fdf6e3);
+    --notebook-text: var(--color-text-primary, #4a3b32);
+    --notebook-text-secondary: var(--color-text-secondary, #655348);
+    --notebook-text-muted: var(--color-text-tertiary, #8a7b72);
+    --notebook-accent: var(--color-primary, #8a6c52);
+    --notebook-accent-hover: var(--color-primary-hover, #735942);
+    --notebook-accent-light: var(--color-primary-light, rgba(138, 108, 82, 0.15));
+    --notebook-shadow: 0 20px 60px rgba(74, 59, 50, 0.15);
+}
+
+body.coffee-dark-mode {
+    --notebook-bg: var(--color-bg-card, #251c19);
+    --notebook-border: var(--color-border-light, #362924);
+    --notebook-toolbar-bg: var(--color-bg-body, #1a1412);
+    --notebook-editor-bg: var(--color-bg-body, #1a1412);
+    --notebook-text: var(--color-text-primary, #ebdcd0);
+    --notebook-text-secondary: var(--color-text-secondary, #cbb8ac);
+    --notebook-text-muted: var(--color-text-muted, #826f63);
+    --notebook-accent: var(--color-primary, #cf9d75);
+    --notebook-accent-hover: var(--color-primary-hover, #e6b88a);
+    --notebook-accent-light: var(--color-primary-light, rgba(207, 157, 117, 0.15));
+    --notebook-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
 /* ================================================
    MODAL OVERLAY
    ================================================ */
@@ -243,15 +271,16 @@ body.dark-mode .toolbar-btn:hover {
 /* AI Button - Special Styling */
 .toolbar-btn-ai {
     width: auto;
-    padding: 0 12px;
+    padding: 0 12.5px;
     gap: 6px;
-    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    background: var(--notebook-accent);
     color: white !important;
-    border-radius: 20px;
+    border-radius: 24px;
+    corner-shape: squircle;
 }
 
 .toolbar-btn-ai:hover {
-    background: linear-gradient(135deg, #6d28d9, #9333ea);
+    background: var(--notebook-accent-hover);
     color: white !important;
 }
 
@@ -434,13 +463,35 @@ body.dark-mode .notebook-editor code {
    ================================================ */
 .ai-input-overlay {
     position: absolute;
-    background: var(--notebook-bg);
-    border: 2px solid var(--notebook-accent);
-    border-radius: 16px;
-    padding: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 130, 0, 0.25);
+    border-radius: 20px;
+    padding: 14px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
     z-index: 100;
-    animation: aiOverlayIn 0.2s ease;
+    animation: aiOverlayIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    max-width: calc(100% - 32px);
+    width: 420px;
+}
+
+body.dark-mode .ai-input-overlay {
+    background: rgba(30, 30, 30, 0.85);
+    border-color: rgba(255, 130, 0, 0.3);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+body.coffee-mode .ai-input-overlay {
+    background: rgba(238, 232, 213, 0.85);
+    border-color: rgba(138, 108, 82, 0.3);
+    box-shadow: 0 12px 40px rgba(74, 59, 50, 0.2);
+}
+
+body.coffee-dark-mode .ai-input-overlay {
+    background: rgba(37, 28, 25, 0.85);
+    border-color: rgba(207, 157, 117, 0.3);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
 }
 
 @keyframes aiOverlayIn {
@@ -448,7 +499,6 @@ body.dark-mode .notebook-editor code {
         opacity: 0;
         transform: translateY(-8px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -462,46 +512,46 @@ body.dark-mode .notebook-editor code {
 }
 
 .ai-sparkle-indicator {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    background: linear-gradient(135deg, var(--notebook-accent), var(--notebook-accent-hover));
     border-radius: 50%;
     color: white;
-    font-size: 14px;
-    animation: sparkle 1.5s ease-in-out infinite;
+    font-size: 15px;
+    box-shadow: 0 0 12px rgba(255, 130, 0, 0.3);
 }
 
-@keyframes sparkle {
-
-    0%,
-    100% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.1);
-    }
+body.coffee-mode .ai-sparkle-indicator,
+body.coffee-dark-mode .ai-sparkle-indicator {
+    box-shadow: 0 0 12px rgba(207, 157, 117, 0.3);
 }
 
 .ai-prompt-input {
     flex: 1;
-    min-width: 250px;
-    padding: 10px 14px;
+    padding: 10px 16px;
     border: 1px solid var(--notebook-border);
-    border-radius: 25px;
-    font-family: 'Manrope', sans-serif;
-    font-size: 14px;
+    border-radius: 20px;
+    corner-shape: squircle;
+    font-family: inherit;
+    font-size: 13.5px;
     color: var(--notebook-text);
-    background: var(--notebook-editor-bg);
+    background: rgba(0, 0, 0, 0.03);
     outline: none;
-    transition: border-color var(--notebook-transition);
+    transition: all var(--notebook-transition);
+}
+
+body.dark-mode .ai-prompt-input,
+body.coffee-dark-mode .ai-prompt-input {
+    background: rgba(255, 255, 255, 0.03);
 }
 
 .ai-prompt-input:focus {
     border-color: var(--notebook-accent);
+    background: var(--notebook-editor-bg);
+    box-shadow: 0 0 0 3px var(--notebook-accent-light);
 }
 
 .ai-submit-btn,
@@ -521,45 +571,62 @@ body.dark-mode .notebook-editor code {
 .ai-submit-btn {
     background: var(--notebook-accent);
     color: white;
+    box-shadow: 0 2px 8px var(--notebook-accent-light);
 }
 
 .ai-submit-btn:hover {
     background: var(--notebook-accent-hover);
+    transform: scale(1.05);
 }
 
 .ai-cancel-btn {
-    background: rgba(0, 0, 0, 0.08);
+    background: rgba(0, 0, 0, 0.04);
     color: var(--notebook-text-secondary);
 }
 
-.ai-cancel-btn:hover {
-    background: rgba(234, 84, 85, 0.15);
-    color: var(--notebook-error);
+body.dark-mode .ai-cancel-btn,
+body.coffee-dark-mode .ai-cancel-btn {
+    background: rgba(255, 255, 255, 0.06);
 }
 
-body.dark-mode .ai-cancel-btn {
-    background: rgba(255, 255, 255, 0.1);
+.ai-cancel-btn:hover {
+    background: rgba(234, 84, 85, 0.1);
+    color: var(--notebook-error);
+    transform: scale(1.05);
 }
 
 .ai-suggestions {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 10px;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--notebook-border);
 }
 
 .ai-suggestion {
-    padding: 6px 12px;
-    background: rgba(124, 58, 237, 0.1);
+    padding: 6px 14px;
+    background: var(--notebook-accent-light);
+    border: 1px solid rgba(255, 130, 0, 0.05);
     border-radius: 20px;
+    corner-shape: squircle;
     font-size: 12px;
-    color: #7c3aed;
+    font-weight: 500;
+    color: var(--notebook-accent);
     cursor: var(--f-cursor-pointer);
     transition: all var(--notebook-transition);
 }
 
+body.coffee-mode .ai-suggestion,
+body.coffee-dark-mode .ai-suggestion {
+    border-color: rgba(138, 108, 82, 0.08);
+}
+
 .ai-suggestion:hover {
-    background: rgba(124, 58, 237, 0.2);
+    background: var(--notebook-accent);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--notebook-accent-light);
 }
 
 /* AI Writing Indicator */
@@ -572,12 +639,13 @@ body.dark-mode .ai-cancel-btn {
     align-items: center;
     gap: 10px;
     padding: 10px 20px;
-    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    background: linear-gradient(135deg, var(--notebook-accent), var(--notebook-accent-hover));
     color: white;
-    border-radius: 25px;
+    border-radius: 24px;
+    corner-shape: squircle;
     font-size: 13px;
     font-weight: 500;
-    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3);
+    box-shadow: 0 4px 16px var(--notebook-accent-light);
     animation: pulseIndicator 2s ease-in-out infinite;
 }
 
@@ -656,6 +724,7 @@ body.dark-mode .ai-cancel-btn {
     padding: 6px 12px;
     background: rgba(255, 130, 0, 0.1);
     border-radius: 20px;
+    corner-shape: squircle;
     font-size: 12px;
     font-weight: 600;
     color: var(--notebook-accent);
@@ -688,7 +757,8 @@ body.dark-mode .notebook-manage-link {
     gap: 6px;
     padding: 10px 16px;
     border: none;
-    border-radius: 25px;
+    border-radius: 24px;
+    corner-shape: squircle;
     font-family: 'Manrope', sans-serif;
     font-size: 13px;
     font-weight: 600;
@@ -782,7 +852,8 @@ body.dark-mode .notebook-btn-secondary:hover {
     padding: 6px 14px;
     background: var(--notebook-accent-light);
     border: 1px solid var(--notebook-accent);
-    border-radius: 20px;
+    border-radius: 24px;
+    corner-shape: squircle;
     font-family: inherit;
     font-size: 12px;
     font-weight: 700;
@@ -1341,8 +1412,79 @@ body.dark-mode .notebook-filter-select {
     gap: 12px;
 }
 
+.notebooks-actions .site-button,
 .notebooks-tab-actions .site-button {
     margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 24px;
+    corner-shape: squircle;
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: var(--f-cursor-pointer);
+    transition: all var(--notebook-transition);
+    background: var(--notebook-accent);
+    color: white;
+}
+
+.notebooks-actions .site-button:hover,
+.notebooks-tab-actions .site-button:hover {
+    background: var(--notebook-accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--notebook-accent-light);
+}
+
+.notebooks-actions .site-button.secondary,
+.notebooks-tab-actions .site-button.secondary {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--notebook-text-secondary);
+}
+
+.notebooks-actions .site-button.secondary:hover,
+.notebooks-tab-actions .site-button.secondary:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: var(--notebook-text);
+}
+
+body.dark-mode .notebooks-actions .site-button.secondary,
+body.dark-mode .notebooks-tab-actions .site-button.secondary,
+body.coffee-dark-mode .notebooks-actions .site-button.secondary,
+body.coffee-dark-mode .notebooks-tab-actions .site-button.secondary {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .notebooks-actions .site-button.secondary:hover,
+body.dark-mode .notebooks-tab-actions .site-button.secondary:hover,
+body.coffee-dark-mode .notebooks-actions .site-button.secondary:hover,
+body.coffee-dark-mode .notebooks-tab-actions .site-button.secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+/* Custom Dropdown Styling in notebooks page */
+.notebooks-tab-actions #notebookFilterSelector {
+    background: var(--color-bg-card);
+    border: 1px solid var(--notebook-border);
+    border-radius: 24px;
+    corner-shape: squircle;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--notebook-text);
+    cursor: var(--f-cursor-pointer);
+    transition: all var(--notebook-transition);
+}
+
+.notebooks-tab-actions #notebookFilterSelector:hover {
+    border-color: var(--notebook-accent);
+}
+
+.notebooks-tab-actions #notebookFilterDropdown {
+    min-width: 180px;
 }
 
 .notebook-card {
@@ -1667,5 +1809,78 @@ body.dark-mode .notebook-editor blockquote {
 }
 
 body.dark-mode .notebook-editor hr {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ================================================
+   COFFEE DARK MODE OVERRIDES
+   ================================================ */
+body.coffee-dark-mode .notebook-close-btn {
+    background: rgba(255, 255, 255, 0.1);
+}
+body.coffee-dark-mode .toolbar-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+body.coffee-dark-mode .notebook-editor::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+}
+body.coffee-dark-mode .notebook-editor code {
+    background: rgba(255, 255, 255, 0.1);
+}
+body.coffee-dark-mode .notebook-manage-link {
+    background: var(--notebook-accent-light);
+}
+body.coffee-dark-mode .notebook-btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+}
+body.coffee-dark-mode .notebook-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+body.coffee-dark-mode .link-pdf-option {
+    background: rgba(255, 255, 255, 0.05);
+}
+body.coffee-dark-mode .link-pdf-option:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+body.coffee-dark-mode .export-option:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+body.coffee-dark-mode .notebook-nav-btn i {
+    color: #888;
+}
+body.coffee-dark-mode .notebook-nav-btn:hover i {
+    color: var(--notebook-accent);
+}
+body.coffee-dark-mode .notebook-filter-select {
+    background-color: rgba(30, 30, 30, 0.6);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23aaa' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+}
+body.coffee-dark-mode .notebook-card {
+    background: var(--notebook-bg);
+}
+body.coffee-dark-mode .notebook-card-actions-quick {
+    border-top-color: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.01);
+}
+body.coffee-dark-mode .card-action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+body.coffee-dark-mode .notebook-card-action:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+body.coffee-dark-mode .notebook-editor pre {
+    background: #0d1117;
+}
+body.coffee-dark-mode .notebook-editor .katex-display {
+    background: rgba(255, 255, 255, 0.03);
+}
+body.coffee-dark-mode .notebook-editor .file-attachment {
+    background: rgba(255, 255, 255, 0.08);
+}
+body.coffee-dark-mode .notebook-editor blockquote {
+    background: var(--notebook-accent-light);
+}
+body.coffee-dark-mode .notebook-editor hr {
     border-top-color: rgba(255, 255, 255, 0.1);
 }

@@ -165,9 +165,9 @@ function markdownToHtml(md) {
     html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
 
     // Headers
-    html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-    html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-    html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+    html = html.replace(/^###\s*(.+)$/gm, '<h3>$1</h3>');
+    html = html.replace(/^##\s*(.+)$/gm, '<h2>$1</h2>');
+    html = html.replace(/^#\s*(.+)$/gm, '<h1>$1</h1>');
 
     // Bold, Italic, Strikethrough
     html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
@@ -378,7 +378,12 @@ class NotebookManager {
         const deleteBtn = document.getElementById('notebookDeleteBtn');
 
         if (saveBtn) saveBtn.addEventListener('click', () => this.save());
-        if (previewBtn) previewBtn.addEventListener('click', () => this.showPreview());
+        if (previewBtn) {
+            previewBtn.addEventListener('click', () => {
+                this.save();
+                this.setViewMode(true);
+            });
+        }
         if (exportBtn) exportBtn.addEventListener('click', () => this.showExportOptions());
         if (deleteBtn) deleteBtn.addEventListener('click', () => this.deleteCurrent());
 
@@ -694,6 +699,7 @@ class NotebookManager {
         const titleInput = document.getElementById('notebookTitleInput');
         const saveBtn = document.getElementById('notebookSaveBtn');
         const editBtn = document.getElementById('notebookEditBtn');
+        const previewBtn = document.getElementById('notebookPreviewBtn');
 
         if (isView) {
             // View mode: disable editing, render content
@@ -733,6 +739,7 @@ class NotebookManager {
             if (toolbar) toolbar.style.display = 'none';
             if (titleInput) titleInput.readOnly = true;
             if (saveBtn) saveBtn.style.display = 'none';
+            if (previewBtn) previewBtn.style.display = 'none';
 
             // Show edit button
             if (editBtn) {
@@ -754,6 +761,7 @@ class NotebookManager {
             if (toolbar) toolbar.style.display = 'flex';
             if (titleInput) titleInput.readOnly = false;
             if (saveBtn) saveBtn.style.display = 'inline-flex';
+            if (previewBtn) previewBtn.style.display = 'inline-flex';
             if (editBtn) editBtn.style.display = 'none';
         }
     }
@@ -769,7 +777,15 @@ class NotebookManager {
         editBtn.type = 'button';
         editBtn.className = 'notebook-btn notebook-btn-primary';
         editBtn.id = 'notebookEditBtn';
-        editBtn.innerHTML = '<i class="fas fa-edit"></i><span>Edit</span>';
+        editBtn.style.borderRadius = '24px';
+        editBtn.style.cornerShape = 'squircle';
+        
+        const pencilSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" color="currentColor" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+            <path d="M16.4249 4.60509L17.4149 3.6151C18.2351 2.79497 19.5648 2.79497 20.3849 3.6151C21.205 4.43524 21.205 5.76493 20.3849 6.58507L19.3949 7.57506M16.4249 4.60509L9.76558 11.2644C9.25807 11.772 8.89804 12.4078 8.72397 13.1041L8 16L10.8959 15.276C11.5922 15.102 12.228 14.7419 12.7356 14.2344L19.3949 7.57506M16.4249 4.60509L19.3949 7.57506"></path>
+            <path d="M18.9999 13.5C18.9999 16.7875 18.9999 18.4312 18.092 19.5376C17.9258 19.7401 17.7401 19.9258 17.5375 20.092C16.4312 21 14.7874 21 11.4999 21H11C7.22876 21 5.34316 21 4.17159 19.8284C3.00003 18.6569 3 16.7712 3 13V12.5C3 9.21252 3 7.56879 3.90794 6.46244C4.07417 6.2599 4.2599 6.07417 4.46244 5.90794C5.56879 5 7.21252 5 10.5 5"></path>
+        </svg>`;
+
+        editBtn.innerHTML = `<i class="fas fa-edit" aria-hidden="true">${pencilSvg}</i><span>Edit</span>`;
         editBtn.addEventListener('click', () => this.setViewMode(false));
 
         // Insert at the beginning
@@ -816,7 +832,9 @@ class NotebookManager {
         const titleInput = document.getElementById('notebookTitleInput');
 
         if (editor) {
-            this.currentNotebook.content = editor.innerHTML;
+            this.currentNotebook.content = (this.isViewMode && this._originalEditorContent !== undefined)
+                ? this._originalEditorContent
+                : editor.innerHTML;
         }
 
         if (titleInput) {
@@ -976,19 +994,26 @@ class NotebookManager {
         const statusEl = document.getElementById('notebookSaveStatus');
         if (!statusEl) return;
 
-        const icon = statusEl.querySelector('i');
-        const text = statusEl.querySelector('span');
+        const cloudIcon = statusEl.querySelector('.status-icon-cloud');
+        const spinnerIcon = statusEl.querySelector('.status-icon-spinner');
+        const errorIcon = statusEl.querySelector('.status-icon-error');
+        const text = statusEl.querySelector('.save-status-text');
 
         statusEl.className = 'save-status';
+
+        // Hide all icons first
+        if (cloudIcon) cloudIcon.style.display = 'none';
+        if (spinnerIcon) spinnerIcon.style.display = 'none';
+        if (errorIcon) errorIcon.style.display = 'none';
 
         switch (status) {
             case 'saving':
                 statusEl.classList.add('saving');
-                if (icon) icon.className = 'fas fa-spinner fa-spin';
+                if (spinnerIcon) spinnerIcon.style.display = 'inline-flex';
                 if (text) text.textContent = 'Saving...';
                 break;
             case 'saved':
-                if (icon) icon.className = 'fas fa-cloud-check';
+                if (cloudIcon) cloudIcon.style.display = 'inline-flex';
                 if (text) {
                     text.textContent = (this.isPlusUser || this.hasAdminPrivileges)
                         ? 'Synced to cloud'
@@ -997,7 +1022,7 @@ class NotebookManager {
                 break;
             case 'error':
                 statusEl.classList.add('error');
-                if (icon) icon.className = 'fas fa-exclamation-circle';
+                if (errorIcon) errorIcon.style.display = 'inline-flex';
                 if (text) text.textContent = 'Save failed';
                 break;
         }

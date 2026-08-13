@@ -33,6 +33,7 @@
         nav_settings: { keys: { alt: true, key: 's' }, display: 'Alt+S', action: 'openSettings', params: null },
         nav_profile: { keys: { alt: true, key: 'p' }, display: 'Alt+P', action: 'navigateToProfile', params: null },
         nav_downloads: { keys: { alt: true, key: 'd' }, display: 'Alt+D', action: 'navigateToDownloads', params: null },
+        toggle_notebook: { keys: { alt: true, key: 'o' }, display: 'Alt+O', action: 'toggleNotebook', params: null },
 
         // Reading
         reading_start: { keys: { shift: true, key: 'Enter' }, display: 'Shift+Enter', action: 'startReading', params: null },
@@ -374,6 +375,21 @@
                     const downloadsLink = document.querySelector('[data-action="downloads"]');
                     if (downloadsLink) downloadsLink.click();
                 }, 100);
+            },
+
+            toggleNotebook: () => {
+                if (window.MaterioNotebook && window.MaterioNotebook.isOpen) {
+                    window.MaterioNotebook.close();
+                    return;
+                }
+                const popup = document.getElementById('popup');
+                const isPopupVisible = popup && popup.style.display !== 'none' && !popup.classList.contains('closing');
+                if (isPopupVisible && window.MaterioNotebook) {
+                    window.MaterioNotebook.open();
+                    return;
+                }
+                const tabLink = document.querySelector('.tab-link[data-tab="notebooks"]');
+                if (tabLink) tabLink.click();
             },
 
             openSettings: () => {

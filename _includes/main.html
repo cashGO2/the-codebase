@@ -858,10 +858,30 @@
             <div class="notebooks-tab-header">
                 <h1>My Notebooks</h1>
                 <div class="notebooks-tab-actions">
-                    <select id="notebookFilter" class="notebook-filter-select" aria-label="Filter Notebooks">
+                    <select id="notebookFilter" class="notebook-filter-select" aria-label="Filter Notebooks" style="display: none;">
                         <option value="all">All Notes</option>
                         <option value="linked">Linked to PDFs</option>
                     </select>
+                    <div style="position: relative; display: inline-block;">
+                        <div class="accent-color-selector" id="notebookFilterSelector">
+                            <span id="currentNotebookFilterText">All Notes</span>
+                            <i class="fa-solid fa-chevron-down" style="font-size: 11px; margin-left: 4px; color: #666;" aria-hidden="true">{% include hugeicon.html name="arrow-down-01" %}</i>
+                        </div>
+                        <div id="notebookFilterDropdown" class="accent-dropdown" style="left: 0; right: auto; top: calc(100% + 5px);">
+                            <div class="theme-dropdown-item active" data-filter="all">
+                                <div class="theme-dropdown-item-left">
+                                    <span>All Notes</span>
+                                </div>
+                                <i class="fa-regular fa-check accent-check" aria-hidden="true">{% include hugeicon.html name="tick-01" %}</i>
+                            </div>
+                            <div class="theme-dropdown-item" data-filter="linked">
+                                <div class="theme-dropdown-item-left">
+                                    <span>Linked to PDFs</span>
+                                </div>
+                                <i class="fa-regular fa-check accent-check" aria-hidden="true">{% include hugeicon.html name="tick-01" %}</i>
+                            </div>
+                        </div>
+                    </div>
                     <button class="site-button" onclick="createNewNotebook(true)">
                         <i class="fas fa-plus" aria-hidden="true">{% include hugeicon.html name="plus" %}</i> New Note
                     </button>

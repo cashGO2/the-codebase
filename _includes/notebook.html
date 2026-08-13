@@ -157,8 +157,12 @@
                     <span>Manage Notebooks</span>
                 </a>
                 <span class="save-status" id="notebookSaveStatus">
-                    <i class="fas fa-cloud-check" aria-hidden="true">{% include hugeicon.html name="cloud-check" %}</i>
-                    <span>Saved locally</span>
+                    <span class="status-icon-container" style="display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; position: relative; margin-right: 4px;">
+                        <i class="status-icon-cloud" aria-hidden="true" style="display: inline-flex;">{% include hugeicon.html name="cloud-check" %}</i>
+                        <i class="status-icon-spinner fa-spin" aria-hidden="true" style="display: none;">{% include hugeicon.html name="loader" %}</i>
+                        <i class="status-icon-error" aria-hidden="true" style="display: none;">{% include hugeicon.html name="alert-circle" %}</i>
+                    </span>
+                    <span class="save-status-text">Saved locally</span>
                 </span>
                 <span class="word-count" id="notebookWordCount">0 words</span>
             </div>

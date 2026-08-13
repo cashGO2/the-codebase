@@ -939,6 +939,38 @@ function materioShareModal(actualUrl) {
       ? "Linux not supported"
       : "";
 
+  const SPINNER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="hgi-spin">
+    <path d="M11.9961 3V6"></path>
+    <path d="M11.9961 18V21"></path>
+    <path d="M20.9961 12H17.9961"></path>
+    <path d="M5.99609 12H2.99609"></path>
+    <path d="M18.3596 5.63672L16.2383 7.75804"></path>
+    <path d="M7.75413 16.2422L5.63281 18.3635"></path>
+    <path d="M18.3596 18.3635L16.2383 16.2422"></path>
+    <path d="M7.75413 7.75804L5.63281 5.63672"></path>
+  </svg>`;
+
+  const COPY_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M7 11V9C7 5.70017 7 4.05025 8.02513 3.02513C9.05025 2 10.7002 2 14 2C17.2998 2 18.9497 2 19.9749 3.02513C21 4.05025 21 5.70017 21 9V11C21 14.2998 21 15.9497 19.9749 16.9749C18.9497 18 17.2998 18 14 18C10.7002 18 9.05025 18 8.02513 16.9749C7 15.9497 7 14.2998 7 11Z"></path>
+    <path d="M3 6V15C3 18.2998 3 19.9497 4.02513 20.9749C5.05025 22 6.70017 22 10 22H17"></path>
+  </svg>`;
+
+  const COPY_CHECKED_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M11 10.6667C11 10.6667 11.75 10.6667 12.5 12C12.5 12 14.8824 8.66667 17 8"></path>
+    <path d="M7 11V9C7 5.70017 7 4.05025 8.02513 3.02513C9.05025 2 10.7002 2 14 2C17.2998 2 18.9497 2 19.9749 3.02513C21 4.05025 21 5.70017 21 9V11C21 14.2998 21 15.9497 19.9749 16.9749C18.9497 18 17.2998 18 14 18C10.7002 18 9.05025 18 8.02513 16.9749C7 15.9497 7 14.2998 7 11Z"></path>
+    <path d="M3 6V15C3 18.2998 3 19.9497 4.02513 20.9749C5.05025 22 6.70017 22 10 22H17"></path>
+  </svg>`;
+
+  const WARNING_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10" stroke="currentColor" />
+    <path d="M11.992 15H12.001" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M12 12L12 8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+  </svg>`;
+
+  const CHECKMARK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="currentColor" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+    <path d="M5 14.5C5 14.5 6.5 14.5 8.5 18C8.5 18 14.0588 8.83333 19 7"></path>
+  </svg>`;
+
   // Create overlay
   const overlay = document.createElement("div");
   overlay.className = "materio-modal-overlay";
@@ -949,7 +981,7 @@ function materioShareModal(actualUrl) {
             <div class="share-input-container" id="share-input-container">
                 <input type="text" class="share-url-input" id="share-url-input" readonly value="Crafting your secure link..." aria-label="Share URL">
                 <button class="share-copy-btn" id="share-copy-btn" disabled aria-label="Copy link">
-                    <i class="fa-regular fa-loader fa-spin"></i>
+                    ${SPINNER_SVG}
                 </button>
             </div>
 
@@ -1029,10 +1061,10 @@ function materioShareModal(actualUrl) {
     copyBtn.onclick = async () => {
       try {
         await navigator.clipboard.writeText(url);
-        copyBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+        copyBtn.innerHTML = COPY_CHECKED_SVG;
         copyBtn.classList.add("success");
         setTimeout(() => {
-          copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
+          copyBtn.innerHTML = COPY_SVG;
           copyBtn.classList.remove("success");
         }, 2000);
       } catch (err) {
@@ -1066,7 +1098,7 @@ function materioShareModal(actualUrl) {
 
       // 2. Show inline notice on the button
       const original = claudeBtn.innerHTML;
-      claudeBtn.innerHTML = `<i class="fa-solid fa-check"></i> <span>Paste in Claude App</span>`;
+      claudeBtn.innerHTML = `${CHECKMARK_SVG} <span>Paste in Claude App</span>`;
       claudeBtn.disabled = true;
 
       // 3. Open Claude Desktop (params ignored by the app, that's fine)
@@ -1104,7 +1136,7 @@ function materioShareModal(actualUrl) {
       if (data.maskId) {
         const shareUrl = `${window.location.origin}${window.location.pathname}?share=${data.maskId}`;
         input.value = shareUrl;
-        copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
+        copyBtn.innerHTML = COPY_SVG;
         copyBtn.disabled = false;
         setupCopyBtn(shareUrl);
       } else {
@@ -1113,7 +1145,7 @@ function materioShareModal(actualUrl) {
     } catch (e) {
       console.error("Share error:", e);
       input.value = "Failed to generate link";
-      copyBtn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+      copyBtn.innerHTML = WARNING_SVG;
       copyBtn.style.background = "#dc3545";
     }
   })();
