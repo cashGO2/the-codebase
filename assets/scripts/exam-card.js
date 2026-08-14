@@ -1796,6 +1796,7 @@ window.showExamTimeline = showExamTimeline;
 // ================================================
 let seatingData = null; // Cached CSV data
 const SEATING_LS_KEY = 'usr_enr';
+const SEATING_SEARCH_ICON = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18.5 12L4.99997 12"></path><path d="M13 18C13 18 19 13.5811 19 12C19 10.4188 13 6 13 6"></path></svg>';
 
 async function fetchSeatingData() {
     if (seatingData) return seatingData;
@@ -1839,12 +1840,19 @@ async function lookupSeating() {
 
     // Show loading state
     const searchBtn = document.getElementById('seatingSearchBtn');
-    if (searchBtn) searchBtn.innerHTML = '<i class="fa-regular fa-loader fa-spin"></i>';
+    if (searchBtn) {
+        searchBtn.disabled = true;
+        searchBtn.setAttribute('aria-busy', 'true');
+    }
 
     const data = await fetchSeatingData();
 
     // Restore button
-    if (searchBtn) searchBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
+    if (searchBtn) {
+        searchBtn.disabled = false;
+        searchBtn.removeAttribute('aria-busy');
+        searchBtn.innerHTML = SEATING_SEARCH_ICON;
+    }
 
     if (!data) {
         resultText.textContent = 'Could not load seating data';

@@ -629,13 +629,16 @@
                                         <div class="seating-input-row" id="seatingInputRow">
                                             <input type="text" id="enrollmentInput" class="enrollment-input" placeholder="Enter Enrollment No." autocomplete="off" />
                                             <button id="seatingSearchBtn" class="seating-search-btn" onclick="lookupSeating()" type="button" aria-label="Search Seating">
-                                                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                    <path d="M18.5 12L4.99997 12"></path>
+                                                    <path d="M13 18C13 18 19 13.5811 19 12C19 10.4188 13 6 13 6"></path>
+                                                </svg>
                                             </button>
                                         </div>
                                         <div class="seating-result" id="seatingResult" style="display: none;">
                                             <span class="seating-result-text" id="seatingResultText"></span>
                                             <button class="seating-clear-btn" onclick="clearSeatingLookup()" type="button" aria-label="Clear Search">
-                                                <i class="fas fa-times" aria-hidden="true"></i>
+                                                {% include hugeicon.html name="cancel-01" %}
                                             </button>
                                         </div>
                                     </div>
