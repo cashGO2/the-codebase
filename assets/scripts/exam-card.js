@@ -1887,6 +1887,15 @@ function clearSeatingLookup() {
 // Auto-load saved enrollment when modal opens
 function initSeatingLookup() {
     try {
+        const container = document.getElementById('seatingLookupContainer');
+        if (container) {
+            if (examData && examData.seatingDataUrl) {
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
+        }
+        
         const saved = localStorage.getItem(SEATING_LS_KEY);
         if (saved) {
             const input = document.getElementById('enrollmentInput');

@@ -624,6 +624,21 @@
                                         </button>
                                         <datalist id="classroomOptions"></datalist>
                                     </div>
+                                    <!-- Seating Lookup Bar -->
+                                    <div class="seating-lookup" id="seatingLookupContainer" style="display: none;">
+                                        <div class="seating-input-row" id="seatingInputRow">
+                                            <input type="text" id="enrollmentInput" class="enrollment-input" placeholder="Enter Enrollment No." autocomplete="off" />
+                                            <button id="seatingSearchBtn" class="seating-search-btn" onclick="lookupSeating()" type="button" aria-label="Search Seating">
+                                                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                        <div class="seating-result" id="seatingResult" style="display: none;">
+                                            <span class="seating-result-text" id="seatingResultText"></span>
+                                            <button class="seating-clear-btn" onclick="clearSeatingLookup()" type="button" aria-label="Clear Search">
+                                                <i class="fas fa-times" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="exam-timeline" id="examModalTimeline">
                                     <!-- Timeline items will be populated by JS -->
