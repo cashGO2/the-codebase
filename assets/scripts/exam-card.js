@@ -1884,12 +1884,38 @@ function clearSeatingLookup() {
     try { localStorage.removeItem(SEATING_LS_KEY); } catch (e) { }
 }
 
+// Resolve the active seating file from the live config. The initial exam-card
+// load can fall back to the bundled JSON while the API is temporarily
+// unavailable; that fallback intentionally has no CMS-managed seating URL.
+async function getActiveSeatingDataUrl() {
+    if (examData && examData.seatingDataUrl) return examData.seatingDataUrl;
+
+    try {
+        const response = await fetch('/api/v2/examdata', { cache: 'no-store' });
+        if (!response.ok) return '';
+
+        const liveConfig = await response.json();
+        if (!liveConfig || !liveConfig.seatingDataUrl) return '';
+
+        // Preserve the schedule currently shown in the modal while restoring
+        // the CMS-managed seating URL from the authoritative config.
+        examData = { ...(examData || {}), seatingDataUrl: liveConfig.seatingDataUrl };
+        cacheExamData(examData);
+        seatingData = null;
+        return examData.seatingDataUrl;
+    } catch (e) {
+        console.warn('[SeatingLookup] Could not refresh seating configuration:', e);
+        return '';
+    }
+}
+
 // Auto-load saved enrollment when modal opens
-function initSeatingLookup() {
+async function initSeatingLookup() {
     try {
         const container = document.getElementById('seatingLookupContainer');
         if (container) {
-            if (examData && examData.seatingDataUrl) {
+            const seatingDataUrl = await getActiveSeatingDataUrl();
+            if (seatingDataUrl) {
                 container.style.display = 'block';
             } else {
                 container.style.display = 'none';
