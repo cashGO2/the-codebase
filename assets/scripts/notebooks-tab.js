@@ -70,9 +70,18 @@ function initNotebooksTab() {
             const card = document.createElement('div');
             card.className = 'notebook-card';
 
-            // Strip HTML for preview
+            // Render markdown to HTML first, then strip HTML tags for clean text preview
+            let content = notebook.content || '';
+            if (window.MaterioNotebook && window.MaterioNotebook.markdownToHtml) {
+                content = window.MaterioNotebook.markdownToHtml(content);
+            }
+            // Replace line breaks and blocks with spaces to prevent words/URLs from running together
+            content = content.replace(/<br\s*\/?>/gi, ' ')
+                             .replace(/<\/p>/gi, ' ')
+                             .replace(/<\/div>/gi, ' ');
+
             const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = notebook.content || '';
+            tempDiv.innerHTML = content;
             const previewText = tempDiv.textContent || 'No content';
 
             const dateStr = new Date(notebook.updatedAt).toLocaleDateString(undefined, {

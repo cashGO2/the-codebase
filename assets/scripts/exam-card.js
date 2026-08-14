@@ -1763,6 +1763,10 @@ document.addEventListener('click', function (e) {
 
     const row = e.target.closest('.syllabus-unit-row');
     if (row) {
+        // Do not toggle if the user is highlighting/selecting text
+        if (window.getSelection && window.getSelection().toString() !== '') {
+            return;
+        }
         row.classList.toggle('expanded');
         if (window.MaterioHaptics) {
             window.MaterioHaptics.vibrate('light');

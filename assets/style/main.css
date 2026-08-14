@@ -3719,7 +3719,6 @@ body.dark-mode #notices a {
     .search-results-modal,
     .exam-modal,
     .keyboard-shortcuts-dialog,
-    .notebook-modal,
     .wallpaper-store-modal {
         padding: 0 !important;
         width: 100% !important;
@@ -3729,8 +3728,7 @@ body.dark-mode #notices a {
 
     .promo-content,
     .dynamic-form-content-wrapper,
-    .keyboard-shortcuts-content,
-    .notebook-modal-content {
+    .keyboard-shortcuts-content {
         padding: 54px 5px 15px 5px !important;
         box-sizing: border-box !important;
     }
@@ -3752,7 +3750,6 @@ body.dark-mode #notices a {
     .search-results-modal,
     .exam-modal,
     .keyboard-shortcuts-dialog,
-    .notebook-modal,
     .wallpaper-store-modal {
         flex-direction: column;
         width: 100% !important;
@@ -3811,8 +3808,7 @@ body.dark-mode #notices a {
 
     .promo-content,
     .dynamic-form-content-wrapper,
-    .keyboard-shortcuts-content,
-    .notebook-modal-content {
+    .keyboard-shortcuts-content {
         padding: 54px 5px 15px 5px !important;
         order: 2;
     }
@@ -8718,7 +8714,7 @@ body.dark-mode .exam-syllabus-view {
     border-bottom: 1px solid var(--color-border-light, #dcd3b6);
     gap: 16px;
     cursor: pointer;
-    user-select: none;
+    user-select: text;
     border-radius: 8px;
     transition: background-color 0.2s ease;
 }

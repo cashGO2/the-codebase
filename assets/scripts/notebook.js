@@ -180,6 +180,18 @@ function markdownToHtml(md) {
     // Images
     html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
 
+    // Autolink raw URLs (not inside an HTML tag attribute or link text)
+    html = html.replace(/(?<!["\(=])(https?:\/\/[^\s<]+)/g, (url) => {
+        let cleanUrl = url;
+        let trailing = '';
+        const match = url.match(/[.,;:!?]+$/);
+        if (match) {
+            cleanUrl = url.substring(0, url.length - match[0].length);
+            trailing = match[0];
+        }
+        return `<a href="${cleanUrl}" target="_blank">${cleanUrl}</a>${trailing}`;
+    });
+
     // Blockquote
     html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
 
@@ -527,7 +539,9 @@ class NotebookManager {
             delete: (id) => this.delete(id),
             deleteCurrent: () => this.deleteCurrent(),
             syncToCloud: () => this.syncToCloud(),
-            loadFromCloud: () => this.loadFromCloud()
+            loadFromCloud: () => this.loadFromCloud(),
+            markdownToHtml: markdownToHtml,
+            htmlToMarkdown: htmlToMarkdown
         };
 
         // Global function for opening notebook modal
