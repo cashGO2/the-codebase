@@ -1612,8 +1612,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Fullscreen management - prevent ESC from exiting, only Shift+F or button can toggle
 const fullscreenButton = document.getElementById("fullscreenButton");
-const pdfZoomOutButton = document.getElementById("pdfZoomOutButton");
-const pdfZoomInButton = document.getElementById("pdfZoomInButton");
 const pdfPresentationButton = document.getElementById("pdfPresentationButton");
 let intentionalFullscreenExit = false; // Flag to track if exit was triggered by user action (button/shortcut)
 
@@ -1629,8 +1627,6 @@ function clickPdfViewerControl(id) {
   return false;
 }
 
-pdfZoomOutButton?.addEventListener("click", () => clickPdfViewerControl("zoomOutButton"));
-pdfZoomInButton?.addEventListener("click", () => clickPdfViewerControl("zoomInButton"));
 pdfPresentationButton?.addEventListener("click", () => {
   if (clickPdfViewerControl("presentationMode")) {
     pdfPresentationButton.setAttribute("aria-label", "Exit presentation mode");

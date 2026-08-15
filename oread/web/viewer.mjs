@@ -16426,6 +16426,19 @@ function onKeyDown(evt) {
     pdfViewer
   } = this;
   const isViewerInPresentationMode = pdfViewer.isInPresentationMode;
+  // Browser fullscreen can otherwise consume the +/- key events before the
+  // normal PDF.js shortcut switch sees them. Keep presentation mode zoomable.
+  if (isViewerInPresentationMode && (evt.ctrlKey || evt.metaKey) && !evt.altKey &&
+      (evt.key === "+" || evt.key === "=" || evt.key === "-" || evt.key === "_")) {
+    evt.preventDefault();
+    evt.stopPropagation();
+    if (evt.key === "+" || evt.key === "=") {
+      this.zoomIn();
+    } else {
+      this.zoomOut();
+    }
+    return;
+  }
   let handled = false,
     ensureViewerFocused = false;
   const cmd = (evt.ctrlKey ? 1 : 0) | (evt.altKey ? 2 : 0) | (evt.shiftKey ? 4 : 0) | (evt.metaKey ? 8 : 0);
