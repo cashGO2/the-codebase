@@ -7179,6 +7179,20 @@ class PDFPresentationMode {
     if (!this.active) {
       return;
     }
+    // Ctrl/Cmd + wheel is zoom (including trackpad pinch), even in the
+    // fullscreen presentation view. Plain wheel remains page navigation.
+    if (evt.ctrlKey || evt.metaKey) {
+      evt.preventDefault();
+      const scaleFactor = Math.exp(-evt.deltaY / 100);
+      const delta = normalizeWheelEventDelta(evt);
+      const steps = delta > 0 ? -1 : 1;
+      if (Math.abs(scaleFactor - 1) < 0.05 && evt.deltaMode === WheelEvent.DOM_DELTA_PIXEL) {
+        this.pdfViewer.updateScale({ scaleFactor, origin: [evt.clientX, evt.clientY] });
+      } else {
+        this.pdfViewer.updateScale({ steps, origin: [evt.clientX, evt.clientY] });
+      }
+      return;
+    }
     evt.preventDefault();
     const delta = normalizeWheelEventDelta(evt);
     const currentTime = Date.now();

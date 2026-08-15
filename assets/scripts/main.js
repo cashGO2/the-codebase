@@ -1613,6 +1613,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // Fullscreen management - prevent ESC from exiting, only Shift+F or button can toggle
 const fullscreenButton = document.getElementById("fullscreenButton");
 const pdfPresentationButton = document.getElementById("pdfPresentationButton");
+const pdfInvertButton = document.getElementById("pdfInvertButton");
 let intentionalFullscreenExit = false; // Flag to track if exit was triggered by user action (button/shortcut)
 
 // The popup chrome is outside the PDF.js iframe. Forward these actions to the
@@ -1632,6 +1633,7 @@ pdfPresentationButton?.addEventListener("click", () => {
     pdfPresentationButton.setAttribute("aria-label", "Exit presentation mode");
   }
 });
+pdfInvertButton?.addEventListener("click", () => clickPdfViewerControl("toggleInvert"));
 
 // Intercept ESC key to prevent browser from exiting fullscreen
 // This listener must be added with capture:true to intercept before browser handles it
