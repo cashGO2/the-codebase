@@ -15161,9 +15161,6 @@ const PDFViewerApplication = {
     return this._initializedCapability.promise;
   },
   updateZoom(steps, scaleFactor, origin) {
-    if (this.pdfViewer.isInPresentationMode) {
-      return;
-    }
     this.pdfViewer.updateScale({
       drawingDelay: AppOptions.get("defaultZoomDelay"),
       steps,
