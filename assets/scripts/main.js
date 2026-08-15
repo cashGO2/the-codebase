@@ -1612,7 +1612,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Fullscreen management - prevent ESC from exiting, only Shift+F or button can toggle
 const fullscreenButton = document.getElementById("fullscreenButton");
+const pdfZoomOutButton = document.getElementById("pdfZoomOutButton");
+const pdfZoomInButton = document.getElementById("pdfZoomInButton");
+const pdfPresentationButton = document.getElementById("pdfPresentationButton");
 let intentionalFullscreenExit = false; // Flag to track if exit was triggered by user action (button/shortcut)
+
+// The popup chrome is outside the PDF.js iframe. Forward these actions to the
+// native PDF.js controls so preset and custom zoom values remain consistent.
+function clickPdfViewerControl(id) {
+  const iframe = document.getElementById("pdf-iframe");
+  const control = iframe?.contentDocument?.getElementById(id);
+  if (control && !control.disabled) {
+    control.click();
+    return true;
+  }
+  return false;
+}
+
+pdfZoomOutButton?.addEventListener("click", () => clickPdfViewerControl("zoomOutButton"));
+pdfZoomInButton?.addEventListener("click", () => clickPdfViewerControl("zoomInButton"));
+pdfPresentationButton?.addEventListener("click", () => {
+  if (clickPdfViewerControl("presentationMode")) {
+    pdfPresentationButton.setAttribute("aria-label", "Exit presentation mode");
+  }
+});
 
 // Intercept ESC key to prevent browser from exiting fullscreen
 // This listener must be added with capture:true to intercept before browser handles it
