@@ -7175,6 +7175,24 @@ class PDFPresentationMode {
   get active() {
     return this.#state === PresentationModeState.CHANGING || this.#state === PresentationModeState.FULLSCREEN;
   }
+  #keyDown(evt) {
+    if (!this.active || !(evt.ctrlKey || evt.metaKey) || evt.altKey) {
+      return;
+    }
+    const isZoomIn = evt.key === "+" || evt.key === "=" || evt.code === "NumpadAdd";
+    const isZoomOut = evt.key === "-" || evt.key === "_" || evt.code === "NumpadSubtract";
+    if (!isZoomIn && !isZoomOut) {
+      return;
+    }
+    // Capture this inside the fullscreen document before the browser zoom
+    // shortcut or the general viewer handler can consume it.
+    evt.preventDefault();
+    evt.stopImmediatePropagation();
+    this.pdfViewer.updateScale({
+      drawingDelay: AppOptions.get("defaultZoomDelay"),
+      steps: isZoomIn ? 1 : -1
+    });
+  }
   #mouseWheel(evt) {
     if (!this.active) {
       return;
@@ -7186,10 +7204,14 @@ class PDFPresentationMode {
       const scaleFactor = Math.exp(-evt.deltaY / 100);
       const delta = normalizeWheelEventDelta(evt);
       const steps = delta > 0 ? -1 : 1;
+      const options = {
+        drawingDelay: AppOptions.get("defaultZoomDelay"),
+        origin: [evt.clientX, evt.clientY]
+      };
       if (Math.abs(scaleFactor - 1) < 0.05 && evt.deltaMode === WheelEvent.DOM_DELTA_PIXEL) {
-        this.pdfViewer.updateScale({ scaleFactor, origin: [evt.clientX, evt.clientY] });
+        this.pdfViewer.updateScale({ ...options, scaleFactor });
       } else {
-        this.pdfViewer.updateScale({ steps, origin: [evt.clientX, evt.clientY] });
+        this.pdfViewer.updateScale({ ...options, steps });
       }
       return;
     }
@@ -7376,6 +7398,10 @@ class PDFPresentationMode {
       signal
     });
     window.addEventListener("keydown", this.#resetMouseScrollState.bind(this), {
+      signal
+    });
+    window.addEventListener("keydown", this.#keyDown.bind(this), {
+      capture: true,
       signal
     });
     window.addEventListener("contextmenu", this.#contextMenu.bind(this), {
