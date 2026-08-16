@@ -1683,12 +1683,13 @@ function initializeCourseUpload() {
   loadSemesterSubjectMappings();
 
   // Sub-tab switching
-  const subTabBtns = document.querySelectorAll('.sub-tab-btn');
-  const subTabPanes = document.querySelectorAll('.sub-tab-pane');
+  const subTabBtns = document.querySelectorAll('.files-sub-tabs > .sub-tab-nav > .sub-tab-btn');
+  const subTabPanes = document.querySelectorAll('.files-sub-tabs > .sub-tab-pane');
 
   subTabBtns.forEach(btn => {
     btn.addEventListener('click', function () {
       const targetTab = this.getAttribute('data-subtab');
+      if (!targetTab) return;
 
       // Update active state for buttons
       subTabBtns.forEach(b => b.classList.remove('active'));
@@ -3005,9 +3006,13 @@ let activeSeatingUrl = "";
 
 // Promotions nested tabs switching
 function switchPromoInnerTab(tabId) {
-  document.querySelectorAll('.promo-inner-pane').forEach(pane => pane.style.display = 'none');
+  document.querySelectorAll('.promo-inner-pane').forEach(pane => {
+    pane.style.display = 'none';
+  });
   const targetPane = document.getElementById(tabId);
-  if (targetPane) targetPane.style.display = 'block';
+  if (targetPane) {
+    targetPane.style.display = 'block';
+  }
 
   const editorBtn = document.getElementById('promoTabEditorBtn');
   const historyBtn = document.getElementById('promoTabHistoryBtn');
@@ -3016,7 +3021,10 @@ function switchPromoInnerTab(tabId) {
 
   if (tabId === 'promo-editor') {
     if (editorBtn) editorBtn.classList.add('active');
-  } else {
+    if (!activePromoId && currentPromoData && currentPromoData.title) {
+      populatePromoEditor(currentPromoData);
+    }
+  } else if (tabId === 'promo-history') {
     if (historyBtn) historyBtn.classList.add('active');
     loadPromoHistoryCms();
   }
@@ -3027,10 +3035,11 @@ function initializePromotionManagement() {
   // Setup forms listener
   const form = document.getElementById('promotionForm');
   if (form) {
-    form.addEventListener('submit', function(e) {
+    // Remove existing listener if any by cloning or setting onsubmit
+    form.onsubmit = function(e) {
       e.preventDefault();
       savePromoForm();
-    });
+    };
   }
   loadPromotionData();
 }
@@ -3044,9 +3053,10 @@ async function loadPromotionData() {
     });
     if (response.ok) {
       const promos = await response.json();
-      if (promos && promos.length > 0) {
-        currentPromoData = promos[0];
-        populatePromoEditor(promos[0]);
+      if (Array.isArray(promos) && promos.length > 0) {
+        const activePromo = promos.find(p => p.enabled) || promos[0];
+        currentPromoData = activePromo;
+        populatePromoEditor(activePromo);
       }
     }
   } catch (error) {
@@ -3055,6 +3065,10 @@ async function loadPromotionData() {
 }
 
 async function loadPromoHistoryCms() {
+  const tbody = document.getElementById('promoHistoryTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Loading promotions history...</td></tr>';
+
   try {
     const response = await fetch('/api/v2/promotions?all=true', {
       headers: {
@@ -3062,12 +3076,13 @@ async function loadPromoHistoryCms() {
       }
     });
 
-    if (!response.ok) throw new Error('Failed to load promotions history');
-    const promos = await response.json();
-    const tbody = document.getElementById('promoHistoryTableBody');
-    if (!tbody) return;
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || 'Failed to load promotions history');
+    }
 
-    if (promos.length === 0) {
+    const promos = await response.json();
+    if (!Array.isArray(promos) || promos.length === 0) {
       tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No promotions in history.</td></tr>';
       return;
     }
@@ -3075,7 +3090,7 @@ async function loadPromoHistoryCms() {
     tbody.innerHTML = '';
     promos.forEach(promo => {
       const tr = document.createElement('tr');
-      const isCurrentlyActive = promo.enabled;
+      const isCurrentlyActive = !!promo.enabled;
       const statusBadge = isCurrentlyActive 
         ? '<span class="status-badge active">Active</span>' 
         : '<span class="status-badge inactive">Inactive</span>';
@@ -3086,18 +3101,19 @@ async function loadPromoHistoryCms() {
       }
 
       const lastUpdatedFormatted = promo.lastUpdated ? new Date(promo.lastUpdated).toLocaleString() : 'N/A';
+      const promoId = promo._id ? String(promo._id) : '';
 
       tr.innerHTML = `
-        <td><strong>${promo.title}</strong></td>
-        <td><code>${promo.category || 'whats-new'}</code></td>
+        <td><strong>${escapeHtml(promo.title || 'Untitled')}</strong></td>
+        <td><code>${escapeHtml(promo.category || 'whats-new')}</code></td>
         <td>${statusBadge}</td>
-        <td><small>${dateInfo}</small></td>
-        <td><small>${lastUpdatedFormatted}</small></td>
+        <td><small>${escapeHtml(dateInfo)}</small></td>
+        <td><small>${escapeHtml(lastUpdatedFormatted)}</small></td>
         <td>
           <div class="exam-actions-btn">
-            <button class="btn btn-outline btn-sm" onclick="editPromoCms('${promo._id}')"><i class="fas fa-edit"></i> Edit</button>
-            ${!isCurrentlyActive ? `<button class="btn btn-outline btn-sm" onclick="activatePromoCms('${promo._id}')"><i class="fas fa-check"></i> Activate</button>` : ''}
-            <button class="btn btn-outline btn-sm btn-danger" onclick="deletePromoCms('${promo._id}')"><i class="fas fa-trash"></i> Delete</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="editPromoCms('${promoId}')"><i class="fas fa-edit"></i> Edit</button>
+            ${!isCurrentlyActive ? `<button type="button" class="btn btn-outline btn-sm" onclick="activatePromoCms('${promoId}')"><i class="fas fa-check"></i> Activate</button>` : ''}
+            <button type="button" class="btn btn-outline btn-sm btn-danger" onclick="deletePromoCms('${promoId}')"><i class="fas fa-trash"></i> Delete</button>
           </div>
         </td>
       `;
@@ -3105,52 +3121,84 @@ async function loadPromoHistoryCms() {
     });
   } catch (err) {
     console.error(err);
+    if (tbody) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--danger-color, #e53e3e);">Failed to load promo history: ${escapeHtml(err.message || 'Error')}</td></tr>`;
+    }
     showNotification('Failed to load promo history', 'error');
   }
 }
 window.loadPromoHistoryCms = loadPromoHistoryCms;
 
 function populatePromoEditor(promo) {
-  activePromoId = promo._id;
-  document.getElementById('promoId').value = promo._id || '';
-  document.getElementById('promoEnabled').checked = !!promo.enabled;
-  document.getElementById('promoTitle').value = promo.title || '';
-  document.getElementById('promoCategory').value = promo.category || 'whats-new';
-  document.getElementById('promoDescription').value = promo.description || '';
-  document.getElementById('promoLink').value = promo.link || '';
-  document.getElementById('promoOrientation').value = promo.orientation || 'horizontal';
-  document.getElementById('promoMediaFit').value = promo.mediaFit || 'cover';
-  document.getElementById('promoRotationInterval').value = promo.imageRotationInterval || 2500;
+  if (!promo) return;
+  activePromoId = promo._id ? String(promo._id) : null;
+  const promoIdEl = document.getElementById('promoId');
+  if (promoIdEl) promoIdEl.value = activePromoId || '';
+
+  const promoEnabledEl = document.getElementById('promoEnabled');
+  if (promoEnabledEl) promoEnabledEl.checked = !!promo.enabled;
+
+  const promoTitleEl = document.getElementById('promoTitle');
+  if (promoTitleEl) promoTitleEl.value = promo.title || '';
+
+  const promoCategoryEl = document.getElementById('promoCategory');
+  if (promoCategoryEl) promoCategoryEl.value = promo.category || 'whats-new';
+
+  const promoDescEl = document.getElementById('promoDescription');
+  if (promoDescEl) promoDescEl.value = promo.description || '';
+
+  const promoLinkEl = document.getElementById('promoLink');
+  if (promoLinkEl) promoLinkEl.value = promo.link || '';
+
+  const promoOrientEl = document.getElementById('promoOrientation');
+  if (promoOrientEl) promoOrientEl.value = promo.orientation || 'horizontal';
+
+  const promoMediaFitEl = document.getElementById('promoMediaFit');
+  if (promoMediaFitEl) promoMediaFitEl.value = promo.mediaFit || 'cover';
+
+  const promoRotationEl = document.getElementById('promoRotationInterval');
+  if (promoRotationEl) promoRotationEl.value = promo.imageRotationInterval || 2500;
   
   // Frequency
-  document.getElementById('promoFrequency').value = promo.frequency || 'once';
-  document.getElementById('promoCustomFreqHours').value = promo.customFrequencyHours || '0';
+  const promoFreqEl = document.getElementById('promoFrequency');
+  if (promoFreqEl) promoFreqEl.value = promo.frequency || 'once';
+
+  const promoCustomFreqEl = document.getElementById('promoCustomFreqHours');
+  if (promoCustomFreqEl) promoCustomFreqEl.value = promo.customFrequencyHours || '0';
   togglePromoCustomFrequency();
 
   // Limited offer / Dates
   const isLimited = !!promo.isLimitedOffer;
-  document.getElementById('promoIsLimitedOffer').checked = isLimited;
-  if (promo.startDate) {
-    document.getElementById('promoStartDate').value = promo.startDate.substring(0, 16);
-  } else {
-    document.getElementById('promoStartDate').value = '';
+  const promoLimitedEl = document.getElementById('promoIsLimitedOffer');
+  if (promoLimitedEl) promoLimitedEl.checked = isLimited;
+
+  const promoStartEl = document.getElementById('promoStartDate');
+  if (promoStartEl) {
+    promoStartEl.value = promo.startDate ? promo.startDate.substring(0, 16) : '';
   }
-  if (promo.endDate) {
-    document.getElementById('promoEndDate').value = promo.endDate.substring(0, 16);
-  } else {
-    document.getElementById('promoEndDate').value = '';
+
+  const promoEndEl = document.getElementById('promoEndDate');
+  if (promoEndEl) {
+    promoEndEl.value = promo.endDate ? promo.endDate.substring(0, 16) : '';
   }
   togglePromoDateRange();
 
   // Buttons
   const buttons = promo.buttons || {};
-  document.getElementById('promoBtnPrimaryShow').checked = buttons.primary?.show !== false;
-  document.getElementById('promoBtnPrimaryText').value = buttons.primary?.text || 'Read Release Notes';
-  document.getElementById('promoBtnSecondaryShow').checked = buttons.secondary?.show !== false;
-  document.getElementById('promoBtnSecondaryText').value = buttons.secondary?.text || 'Got it';
+  const btnPrimaryShowEl = document.getElementById('promoBtnPrimaryShow');
+  if (btnPrimaryShowEl) btnPrimaryShowEl.checked = buttons.primary?.show !== false;
+
+  const btnPrimaryTextEl = document.getElementById('promoBtnPrimaryText');
+  if (btnPrimaryTextEl) btnPrimaryTextEl.value = buttons.primary?.text || 'Read Release Notes';
+
+  const btnSecondaryShowEl = document.getElementById('promoBtnSecondaryShow');
+  if (btnSecondaryShowEl) btnSecondaryShowEl.checked = buttons.secondary?.show !== false;
+
+  const btnSecondaryTextEl = document.getElementById('promoBtnSecondaryText');
+  if (btnSecondaryTextEl) btnSecondaryTextEl.value = buttons.secondary?.text || 'Got it';
 
   // Media
-  promoMediaUrls = promo.media || [];
+  promoMediaUrls = Array.isArray(promo.media) ? [...promo.media] : [];
   renderPromoMediaList();
 }
 
@@ -3158,7 +3206,7 @@ function renderPromoMediaList() {
   const container = document.getElementById('promoMediaList');
   if (!container) return;
 
-  if (promoMediaUrls.length === 0) {
+  if (!promoMediaUrls || promoMediaUrls.length === 0) {
     container.innerHTML = '<span style="color: var(--text-secondary); font-size: 0.9rem; margin: auto;">No media added yet</span>';
     return;
   }
@@ -3171,7 +3219,7 @@ function renderPromoMediaList() {
     badge.onclick = () => removePromoMediaUrl(idx);
     badge.innerHTML = `
       <i class="fas fa-image"></i>
-      <span style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${url.split('/').pop()}</span>
+      <span style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(url.split('/').pop() || url)}</span>
       <i class="fas fa-times" style="font-size: 0.8rem; margin-left: 5px; color: var(--text-secondary);"></i>
     `;
     container.appendChild(badge);
@@ -3200,7 +3248,7 @@ function removePromoMediaUrl(index) {
 }
 
 async function uploadPromoImage(input) {
-  const file = input.files[0];
+  const file = input.files && input.files[0];
   if (!file) return;
 
   const formData = new FormData();
@@ -3232,7 +3280,8 @@ async function uploadPromoImage(input) {
 window.uploadPromoImage = uploadPromoImage;
 
 function togglePromoCustomFrequency() {
-  const freq = document.getElementById('promoFrequency').value;
+  const freqEl = document.getElementById('promoFrequency');
+  const freq = freqEl ? freqEl.value : 'once';
   const container = document.getElementById('promoCustomFreqContainer');
   if (container) {
     container.style.display = freq === 'custom' ? 'block' : 'none';
@@ -3241,7 +3290,8 @@ function togglePromoCustomFrequency() {
 window.togglePromoCustomFrequency = togglePromoCustomFrequency;
 
 function togglePromoDateRange() {
-  const isLimited = document.getElementById('promoIsLimitedOffer').checked;
+  const limitedEl = document.getElementById('promoIsLimitedOffer');
+  const isLimited = limitedEl ? limitedEl.checked : false;
   const container = document.getElementById('promoDateRangeContainer');
   if (container) {
     container.style.display = isLimited ? 'flex' : 'none';
@@ -3251,8 +3301,10 @@ window.togglePromoDateRange = togglePromoDateRange;
 
 function clearPromoForm() {
   activePromoId = null;
-  document.getElementById('promoId').value = '';
-  document.getElementById('promotionForm').reset();
+  const promoIdEl = document.getElementById('promoId');
+  if (promoIdEl) promoIdEl.value = '';
+  const form = document.getElementById('promotionForm');
+  if (form) form.reset();
   promoMediaUrls = [];
   renderPromoMediaList();
   togglePromoCustomFrequency();
@@ -3265,31 +3317,48 @@ async function savePromoForm() {
     const isEdit = !!activePromoId;
     const method = isEdit ? 'PUT' : 'POST';
 
+    const titleEl = document.getElementById('promoTitle');
+    const descEl = document.getElementById('promoDescription');
+    const titleVal = titleEl ? titleEl.value.trim() : '';
+    const descVal = descEl ? descEl.value.trim() : '';
+
+    if (!titleVal) {
+      showNotification('Please enter a promotion title', 'error');
+      if (titleEl) titleEl.focus();
+      return;
+    }
+
+    if (!descVal) {
+      showNotification('Please enter a promotion description', 'error');
+      if (descEl) descEl.focus();
+      return;
+    }
+
     const buttons = {
       primary: {
-        show: document.getElementById('promoBtnPrimaryShow').checked,
-        text: document.getElementById('promoBtnPrimaryText').value.trim() || 'Read Release Notes'
+        show: document.getElementById('promoBtnPrimaryShow') ? document.getElementById('promoBtnPrimaryShow').checked : true,
+        text: (document.getElementById('promoBtnPrimaryText') ? document.getElementById('promoBtnPrimaryText').value.trim() : '') || 'Read Release Notes'
       },
       secondary: {
-        show: document.getElementById('promoBtnSecondaryShow').checked,
-        text: document.getElementById('promoBtnSecondaryText').value.trim() || 'Got it'
+        show: document.getElementById('promoBtnSecondaryShow') ? document.getElementById('promoBtnSecondaryShow').checked : true,
+        text: (document.getElementById('promoBtnSecondaryText') ? document.getElementById('promoBtnSecondaryText').value.trim() : '') || 'Got it'
       }
     };
 
     const promoPayload = {
-      enabled: document.getElementById('promoEnabled').checked,
-      title: document.getElementById('promoTitle').value.trim(),
-      category: document.getElementById('promoCategory').value.trim() || 'whats-new',
-      description: document.getElementById('promoDescription').value.trim(),
-      link: document.getElementById('promoLink').value.trim(),
-      orientation: document.getElementById('promoOrientation').value,
-      mediaFit: document.getElementById('promoMediaFit').value,
-      imageRotationInterval: parseInt(document.getElementById('promoRotationInterval').value) || 2500,
-      frequency: document.getElementById('promoFrequency').value,
-      customFrequencyHours: document.getElementById('promoCustomFreqHours').value,
-      isLimitedOffer: document.getElementById('promoIsLimitedOffer').checked,
-      startDate: document.getElementById('promoStartDate').value,
-      endDate: document.getElementById('promoEndDate').value,
+      enabled: document.getElementById('promoEnabled') ? document.getElementById('promoEnabled').checked : false,
+      title: titleVal,
+      category: (document.getElementById('promoCategory') ? document.getElementById('promoCategory').value.trim() : '') || 'whats-new',
+      description: descVal,
+      link: document.getElementById('promoLink') ? document.getElementById('promoLink').value.trim() : '',
+      orientation: document.getElementById('promoOrientation') ? document.getElementById('promoOrientation').value : 'horizontal',
+      mediaFit: document.getElementById('promoMediaFit') ? document.getElementById('promoMediaFit').value : 'cover',
+      imageRotationInterval: parseInt(document.getElementById('promoRotationInterval') ? document.getElementById('promoRotationInterval').value : 2500) || 2500,
+      frequency: document.getElementById('promoFrequency') ? document.getElementById('promoFrequency').value : 'once',
+      customFrequencyHours: parseInt(document.getElementById('promoCustomFreqHours') ? document.getElementById('promoCustomFreqHours').value : 0) || 0,
+      isLimitedOffer: document.getElementById('promoIsLimitedOffer') ? document.getElementById('promoIsLimitedOffer').checked : false,
+      startDate: document.getElementById('promoStartDate') ? document.getElementById('promoStartDate').value : '',
+      endDate: document.getElementById('promoEndDate') ? document.getElementById('promoEndDate').value : '',
       buttons,
       media: promoMediaUrls
     };
@@ -3310,17 +3379,23 @@ async function savePromoForm() {
 
     const data = await response.json();
     if (response.ok) {
-      showNotification('Promotion saved and deployed!', 'success');
-      clearPromoForm();
+      showNotification('Promotion saved successfully!', 'success');
+      if (data.promo) {
+        currentPromoData = data.promo;
+        activePromoId = String(data.promo._id);
+      } else if (data.id) {
+        activePromoId = String(data.id);
+      }
       switchPromoInnerTab('promo-history');
     } else {
       showNotification(data.error || 'Failed to save promotion', 'error');
     }
   } catch (err) {
     console.error(err);
-    showNotification('Failed to save promotion', 'error');
+    showNotification('Failed to save promotion: ' + (err.message || 'Error'), 'error');
   }
 }
+window.savePromoForm = savePromoForm;
 
 async function editPromoCms(id) {
   try {
@@ -3331,14 +3406,19 @@ async function editPromoCms(id) {
     });
     if (response.ok) {
       const list = await response.json();
-      const promo = list.find(p => p._id === id);
+      const promo = list.find(p => String(p._id) === String(id));
       if (promo) {
         populatePromoEditor(promo);
         switchPromoInnerTab('promo-editor');
+      } else {
+        showNotification('Promotion not found', 'error');
       }
+    } else {
+      showNotification('Failed to load promotion details', 'error');
     }
   } catch (err) {
     console.error(err);
+    showNotification('Error loading promotion for editing', 'error');
   }
 }
 window.editPromoCms = editPromoCms;
@@ -3358,7 +3438,7 @@ async function activatePromoCms(id) {
     showNotification('Activating promotion...', 'info');
     // 1. Disable other promotions
     for (const promo of list) {
-      if (promo._id !== id && promo.enabled) {
+      if (String(promo._id) !== String(id) && promo.enabled) {
         await fetch('/api/v2/promotions', {
           method: 'PUT',
           headers: {
@@ -3371,7 +3451,9 @@ async function activatePromoCms(id) {
     }
 
     // 2. Enable target promotion
-    const target = list.find(p => p._id === id);
+    const target = list.find(p => String(p._id) === String(id));
+    if (!target) throw new Error('Target promotion not found');
+
     const updateRes = await fetch('/api/v2/promotions', {
       method: 'PUT',
       headers: {
@@ -3389,7 +3471,7 @@ async function activatePromoCms(id) {
     }
   } catch (err) {
     console.error(err);
-    showNotification('Error activating promotion', 'error');
+    showNotification('Error activating promotion: ' + (err.message || 'Error'), 'error');
   }
 }
 window.activatePromoCms = activatePromoCms;
@@ -3407,12 +3489,12 @@ async function deletePromoCms(id) {
       showNotification('Promotion deleted successfully', 'success');
       loadPromoHistoryCms();
     } else {
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
       showNotification(data.error || 'Failed to delete promotion', 'error');
     }
   } catch (err) {
     console.error(err);
-    showNotification('Error deleting promotion', 'error');
+    showNotification('Error deleting promotion: ' + (err.message || 'Error'), 'error');
   }
 }
 window.deletePromoCms = deletePromoCms;
@@ -4058,7 +4140,7 @@ function deleteExamEntry(semIndex, examIndex) {
 window.deleteExamEntry = deleteExamEntry;
 
 // Handle Files sub-tab navigation
-document.querySelectorAll('.files-sub-tabs .sub-tab-btn').forEach(btn => {
+document.querySelectorAll('.files-sub-tabs > .sub-tab-nav > .sub-tab-btn').forEach(btn => {
   btn.addEventListener('click', function() {
     const subtab = this.getAttribute('data-subtab');
     if (subtab === 'releases') {

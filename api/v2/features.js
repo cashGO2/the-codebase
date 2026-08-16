@@ -2943,18 +2943,22 @@ async function handlePosts(req, res, url) {
 // ==========================================
 
 const checkAdminUser = async (req) => {
-  const token = getTokenFromHeaders(req.headers);
+  const token = getTokenFromHeaders(req.headers) || req.query?.token;
   if (!token) return false;
   const decoded = verifyToken(token);
   if (!decoded) return false;
 
-  const { data: user, error: userError } = await supabase
+  const userId = decoded.id || decoded.sub;
+  if (!userId) return false;
+
+  const client = supabaseAdmin || supabase;
+  const { data: user, error: userError } = await client
     .from('users')
     .select('id, has_admin_privileges')
-    .eq('id', decoded.id)
+    .eq('id', userId)
     .single();
 
-  return !userError && user && user.has_admin_privileges;
+  return !userError && user && (user.has_admin_privileges === true || user.hasAdminPrivileges === true);
 };
 
 async function handlePromotionsFeature(req, res) {
@@ -2962,8 +2966,8 @@ async function handlePromotionsFeature(req, res) {
     const db = await getMongoDb();
     const promotionsCollection = db.collection('promotions');
     const method = req.method;
-    const url = new URL(req.url, `http://${req.headers.host}`);
-    const getAll = url.searchParams.get('all') === 'true';
+    const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+    const getAll = url.searchParams.get('all') === 'true' || req.query?.all === 'true' || req.query?.all === true;
 
     switch (method) {
       case 'GET':
@@ -2973,18 +2977,46 @@ async function handlePromotionsFeature(req, res) {
             return res.status(403).json({ error: 'Admin privileges required' });
           }
 
-          const promos = await promotionsCollection
+          let promos = await promotionsCollection
             .find({})
             .sort({ lastUpdated: -1, _id: -1 })
             .toArray();
 
+          if (promos.length === 0) {
+            try {
+              const promoFilePath = path.join(process.cwd(), 'assets', 'data', 'promo.json');
+              if (fs.existsSync(promoFilePath)) {
+                const defaultPromo = JSON.parse(fs.readFileSync(promoFilePath, 'utf8'));
+                const inserted = await promotionsCollection.insertOne({
+                  ...defaultPromo,
+                  lastUpdated: defaultPromo.lastUpdated || new Date().toISOString()
+                });
+                promos = [{ _id: inserted.insertedId, ...defaultPromo }];
+              }
+            } catch (e) {
+              console.warn('Could not seed promo from fallback file:', e.message);
+            }
+          }
+
           return res.status(200).json(promos);
         } else {
           const now = new Date();
-          const promos = await promotionsCollection
+          let promos = await promotionsCollection
             .find({ enabled: true })
             .sort({ lastUpdated: -1, _id: -1 })
             .toArray();
+
+          if (promos.length === 0) {
+            try {
+              const promoFilePath = path.join(process.cwd(), 'assets', 'data', 'promo.json');
+              if (fs.existsSync(promoFilePath)) {
+                const defaultPromo = JSON.parse(fs.readFileSync(promoFilePath, 'utf8'));
+                if (defaultPromo.enabled) {
+                  promos = [defaultPromo];
+                }
+              }
+            } catch (e) {}
+          }
 
           const activePromo = promos.find(promo => {
             if (!promo.isLimitedOffer) return true;
@@ -3019,7 +3051,23 @@ async function handlePromotionsFeature(req, res) {
         };
         delete newPromo._id;
 
+        if (newPromo.enabled) {
+          await promotionsCollection.updateMany(
+            {},
+            { $set: { enabled: false } }
+          );
+        }
+
         const result = await promotionsCollection.insertOne(newPromo);
+
+        // Best effort sync to local promo.json file if possible
+        try {
+          const sourceFile = path.join(process.cwd(), 'assets', 'data', 'promo.json');
+          if (fs.existsSync(path.dirname(sourceFile))) {
+            fs.writeFileSync(sourceFile, JSON.stringify(newPromo, null, 2));
+          }
+        } catch (e) {}
+
         return res.status(201).json({ 
           message: 'Promotion created successfully', 
           id: result.insertedId,
@@ -3038,11 +3086,22 @@ async function handlePromotionsFeature(req, res) {
           return res.status(400).json({ error: 'Promotion data with _id is required' });
         }
 
-        const id = promoData._id;
+        const id = String(promoData._id);
+        if (!ObjectId.isValid(id)) {
+          return res.status(400).json({ error: 'Invalid promotion ID' });
+        }
+
         const updateData = { ...promoData };
         delete updateData._id;
 
         updateData.lastUpdated = new Date().toISOString();
+
+        if (updateData.enabled) {
+          await promotionsCollection.updateMany(
+            { _id: { $ne: new ObjectId(id) } },
+            { $set: { enabled: false } }
+          );
+        }
 
         const result = await promotionsCollection.updateOne(
           { _id: new ObjectId(id) },
@@ -3052,6 +3111,14 @@ async function handlePromotionsFeature(req, res) {
         if (result.matchedCount === 0) {
           return res.status(404).json({ error: 'Promotion not found' });
         }
+
+        // Best effort sync to local promo.json file if possible
+        try {
+          const sourceFile = path.join(process.cwd(), 'assets', 'data', 'promo.json');
+          if (fs.existsSync(path.dirname(sourceFile))) {
+            fs.writeFileSync(sourceFile, JSON.stringify(updateData, null, 2));
+          }
+        } catch (e) {}
 
         return res.status(200).json({ 
           message: 'Promotion updated successfully',
@@ -3065,9 +3132,9 @@ async function handlePromotionsFeature(req, res) {
           return res.status(403).json({ error: 'Admin privileges required' });
         }
 
-        const id = url.searchParams.get('id');
-        if (!id) {
-          return res.status(400).json({ error: 'Promotion id parameter is required' });
+        const id = url.searchParams.get('id') || req.query?.id;
+        if (!id || !ObjectId.isValid(id)) {
+          return res.status(400).json({ error: 'Valid promotion id parameter is required' });
         }
 
         const result = await promotionsCollection.deleteOne({ _id: new ObjectId(id) });
