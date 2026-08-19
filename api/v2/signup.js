@@ -51,7 +51,7 @@ module.exports = async (req, res) => {
     const normalizedEmail = email.trim().toLowerCase();
 
     // University email validation during signup
-    if (!normalizedEmail.endsWith('@paruluniversity.ac.in')) {
+    if (!normalizedEmail.endsWith('@paruluniversity.ac.in') && !normalizedEmail.endsWith('@getmaterio.app')) {
       return res.status(400).json({ error: 'Only Parul University emails are allowed (@paruluniversity.ac.in)' });
     }
 

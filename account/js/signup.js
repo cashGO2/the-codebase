@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return false;
         }
 
-        if (!email.endsWith('@paruluniversity.ac.in')) {
+        if (!email.endsWith('@paruluniversity.ac.in') && !email.endsWith('@getmaterio.app')) {
             showFieldMsg('email', 'Use your university email address');
             return false;
         }

@@ -589,7 +589,7 @@ async function handleOTP(req, res) {
 
     // Signup restricted to university email
     if (type === 'signup') {
-      if (!normalizedEmail.endsWith('@paruluniversity.ac.in')) {
+      if (!normalizedEmail.endsWith('@paruluniversity.ac.in') && !normalizedEmail.endsWith('@getmaterio.app')) {
         return res.status(400).json({ 
           error: 'Restricted Signup', 
           message: 'Only students with @paruluniversity.ac.in emails are allowed to create an account.' 
