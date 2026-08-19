@@ -3003,6 +3003,7 @@ let promoMediaUrls = [];
 let activePromoId = null;
 let currentExamSemesters = [];
 let activeSeatingUrl = "";
+let activeSeatingUrls = [];
 
 // Promotions nested tabs switching
 function switchPromoInnerTab(tabId) {
@@ -3088,12 +3089,20 @@ async function loadPromoHistoryCms() {
     }
 
     tbody.innerHTML = '';
+    const now = new Date();
     promos.forEach(promo => {
       const tr = document.createElement('tr');
       const isCurrentlyActive = !!promo.enabled;
-      const statusBadge = isCurrentlyActive 
-        ? '<span class="status-badge active">Active</span>' 
-        : '<span class="status-badge inactive">Inactive</span>';
+      const isExpired = promo.isLimitedOffer && promo.endDate && new Date(promo.endDate) < now;
+
+      let statusBadge = '';
+      if (isExpired) {
+        statusBadge = '<span class="status-badge expired" style="background: rgba(229, 62, 62, 0.15); color: #e53e3e; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">Expired</span>';
+      } else if (isCurrentlyActive) {
+        statusBadge = '<span class="status-badge active">Active</span>';
+      } else {
+        statusBadge = '<span class="status-badge inactive">Inactive</span>';
+      }
 
       let dateInfo = 'Always';
       if (promo.isLimitedOffer && promo.startDate && promo.endDate) {
@@ -3112,7 +3121,7 @@ async function loadPromoHistoryCms() {
         <td>
           <div class="exam-actions-btn">
             <button type="button" class="btn btn-outline btn-sm" onclick="editPromoCms('${promoId}')"><i class="fas fa-edit"></i> Edit</button>
-            ${!isCurrentlyActive ? `<button type="button" class="btn btn-outline btn-sm" onclick="activatePromoCms('${promoId}')"><i class="fas fa-check"></i> Activate</button>` : ''}
+            ${(!isCurrentlyActive && !isExpired) ? `<button type="button" class="btn btn-outline btn-sm" onclick="activatePromoCms('${promoId}')"><i class="fas fa-check"></i> Activate</button>` : ''}
             <button type="button" class="btn btn-outline btn-sm btn-danger" onclick="deletePromoCms('${promoId}')"><i class="fas fa-trash"></i> Delete</button>
           </div>
         </td>
@@ -3379,6 +3388,15 @@ async function savePromoForm() {
 
     const data = await response.json();
     if (response.ok) {
+      try {
+        await fetch('/api/v2/save-promo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(promoPayload)
+        });
+      } catch (e) {
+        console.warn('Sync save-promo failed:', e);
+      }
       showNotification('Promotion saved successfully!', 'success');
       if (data.promo) {
         currentPromoData = data.promo;
@@ -3751,6 +3769,49 @@ window.deleteReleaseCms = deleteReleaseCms;
 // EXAMS & SEATING MANAGEMENT
 // ==========================================
 
+function renderSeatingFilesList() {
+  const container = document.getElementById('seatingFilesListContainer');
+  const testArea = document.getElementById('seatingTestLookupArea');
+  if (!container) return;
+
+  if (!activeSeatingUrls || activeSeatingUrls.length === 0) {
+    container.innerHTML = '<span style="color: var(--text-secondary); font-size: 0.85rem;">No seating CSV files uploaded yet.</span>';
+    if (testArea) testArea.style.display = 'none';
+    return;
+  }
+
+  if (testArea) testArea.style.display = 'block';
+
+  container.innerHTML = '';
+  activeSeatingUrls.forEach((url, idx) => {
+    const item = document.createElement('div');
+    item.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: rgba(0,0,0,0.03); border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.88rem;';
+    const fileName = url.split('/').pop() || url;
+    item.innerHTML = `
+      <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 10px;">
+        <i class="fas fa-file-csv" style="margin-right: 6px; color: var(--primary-color);"></i>
+        <a href="${escapeHtml(url)}" target="_blank" style="color: var(--text-color); font-weight: 500;">${escapeHtml(fileName)}</a>
+      </div>
+      <button type="button" class="btn btn-outline btn-sm btn-danger" style="padding: 2px 8px; font-size: 0.75rem;" onclick="deleteSeatingCsv(${idx})">
+        <i class="fas fa-trash"></i> Delete
+      </button>
+    `;
+    container.appendChild(item);
+  });
+}
+window.renderSeatingFilesList = renderSeatingFilesList;
+
+async function deleteSeatingCsv(index) {
+  if (confirm('Are you sure you want to remove this seating CSV file?')) {
+    activeSeatingUrls.splice(index, 1);
+    activeSeatingUrl = activeSeatingUrls[0] || '';
+    renderSeatingFilesList();
+    await saveExamConfig(null);
+    showNotification('Seating CSV file removed', 'info');
+  }
+}
+window.deleteSeatingCsv = deleteSeatingCsv;
+
 async function loadExamDataCms() {
   try {
     const response = await fetch('/api/v2/examdata');
@@ -3764,25 +3825,16 @@ async function loadExamDataCms() {
     document.getElementById('examDefaultCoverImage').value = config.defaultCoverImage || "";
 
     activeSeatingUrl = config.seatingDataUrl || "";
+    if (Array.isArray(config.seatingDataUrls) && config.seatingDataUrls.length > 0) {
+      activeSeatingUrls = config.seatingDataUrls;
+    } else if (activeSeatingUrl) {
+      activeSeatingUrls = [activeSeatingUrl];
+    } else {
+      activeSeatingUrls = [];
+    }
     currentExamSemesters = config.semesters || [];
 
-    // Seating Data URL
-    const activeInfo = document.getElementById('seatingActiveInfo');
-    const activeLink = document.getElementById('seatingActiveUrl');
-    const testArea = document.getElementById('seatingTestLookupArea');
-
-    if (activeSeatingUrl) {
-      if (activeLink) {
-        activeLink.href = activeSeatingUrl;
-        activeLink.textContent = activeSeatingUrl;
-      }
-      if (activeInfo) activeInfo.style.display = 'block';
-      if (testArea) testArea.style.display = 'block';
-    } else {
-      if (activeInfo) activeInfo.style.display = 'none';
-      if (testArea) testArea.style.display = 'none';
-    }
-
+    renderSeatingFilesList();
     renderSemestersList();
   } catch (err) {
     console.error(err);
@@ -3801,7 +3853,8 @@ async function saveExamConfig(event) {
     showBeforeDays: parseInt(document.getElementById('examShowBeforeDays').value) || 9,
     showBeforeDaysViva: parseInt(document.getElementById('examShowBeforeDaysViva').value) || 3,
     defaultCoverImage: document.getElementById('examDefaultCoverImage').value.trim() || null,
-    seatingDataUrl: activeSeatingUrl || null,
+    seatingDataUrl: activeSeatingUrls[0] || null,
+    seatingDataUrls: activeSeatingUrls,
     semesters: currentExamSemesters
   };
 
@@ -3836,32 +3889,34 @@ if (examConfigForm) {
 }
 
 async function uploadSeatingCsv(input) {
-  const file = input.files[0];
-  if (!file) return;
-
-  const formData = new FormData();
-  formData.append('file', file);
+  if (!input.files || input.files.length === 0) return;
 
   try {
-    showNotification('Uploading seating CSV to Supabase...', 'info');
-    const response = await fetch('/api/v2/examdata', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
-      },
-      body: formData
-    });
+    showNotification('Uploading seating CSV(s)...', 'info');
+    for (let i = 0; i < input.files.length; i++) {
+      const file = input.files[i];
+      const formData = new FormData();
+      formData.append('file', file);
 
-    const data = await response.json();
-    if (response.ok && data.url) {
-      activeSeatingUrl = data.url;
-      showNotification('Seating CSV uploaded successfully!', 'success');
-      
-      // Auto save after upload to attach it to active config
-      await saveExamConfig(null);
-    } else {
-      showNotification(data.error || 'Failed to upload CSV', 'error');
+      const response = await fetch('/api/v2/examdata', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+      if (response.ok && data.url) {
+        if (!activeSeatingUrls.includes(data.url)) {
+          activeSeatingUrls.push(data.url);
+        }
+      }
     }
+    activeSeatingUrl = activeSeatingUrls[0] || '';
+    renderSeatingFilesList();
+    showNotification('Seating CSV file(s) uploaded successfully!', 'success');
+    await saveExamConfig(null);
   } catch (err) {
     console.error(err);
     showNotification('CSV upload failed', 'error');
@@ -3873,43 +3928,49 @@ window.uploadSeatingCsv = uploadSeatingCsv;
 async function testSeatingLookupInCms() {
   const enrollment = document.getElementById('testEnrollmentNo').value.trim();
   const resultDiv = document.getElementById('testSeatingResult');
-  if (!enrollment || !activeSeatingUrl) return;
+  if (!enrollment || activeSeatingUrls.length === 0) return;
 
   resultDiv.style.display = 'block';
-  resultDiv.innerHTML = 'Searching CSV...';
+  resultDiv.innerHTML = 'Searching CSV files...';
 
   try {
-    const response = await fetch(activeSeatingUrl);
-    const text = await response.text();
-    const lines = text.trim().split(/\r?\n/);
-    if (lines.length <= 1) {
-      resultDiv.innerHTML = '<span style="color: #dc3545;">CSV file is empty or malformed.</span>';
-      return;
-    }
-
-    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
     let match = null;
+    for (const url of activeSeatingUrls) {
+      const response = await fetch(url);
+      const text = await response.text();
+      const lines = text.trim().split(/\r?\n/);
+      if (lines.length <= 1) continue;
 
-    for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(',');
-      if (values.length >= headers.length) {
-        const row = {};
-        headers.forEach((h, idx) => {
-          row[h] = (values[idx] || '').trim();
-        });
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
 
-        if (row.enrollment_no === enrollment) {
-          match = row;
-          break;
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',');
+        if (values.length >= headers.length) {
+          const row = {};
+          headers.forEach((h, idx) => {
+            row[h] = (values[idx] || '').trim();
+          });
+
+          if (row.enrollment_no === enrollment) {
+            match = row;
+            break;
+          }
         }
       }
+      if (match) break;
     }
 
     if (match) {
       resultDiv.innerHTML = `<span style="color: #28a745; font-weight: 600;">Match Found:</span> Room <strong>${match.room_no || '—'}</strong> · Bench <strong>${match.bench_no || '—'}</strong>`;
     } else {
-      resultDiv.innerHTML = `<span style="color: #dc3545;">Enrollment number <strong>${enrollment}</strong> not found in CSV.</span>`;
+      resultDiv.innerHTML = `<span style="color: #dc3545;">Enrollment number <strong>${enrollment}</strong> not found in seating CSV files.</span>`;
     }
+  } catch (e) {
+    console.error(e);
+    resultDiv.innerHTML = '<span style="color: #dc3545;">Failed to parse CSV. Check console.</span>';
+  }
+}
+window.testSeatingLookupInCms = testSeatingLookupInCms;
   } catch (e) {
     console.error(e);
     resultDiv.innerHTML = '<span style="color: #dc3545;">Failed to parse CSV. Check console.</span>';
@@ -4149,6 +4210,8 @@ document.querySelectorAll('.files-sub-tabs > .sub-tab-nav > .sub-tab-btn').forEa
       loadExamDataCms();
     } else if (subtab === 'promotions') {
       loadPromotionData();
+    } else if (subtab === 'notifications-mgr') {
+      loadNotificationsCms();
     }
   });
 });
@@ -4872,3 +4935,173 @@ window.copyOAuthField = copyOAuthField;
 window.toggleOAuthSecret = toggleOAuthSecret;
 window.copyOAuthSecret = copyOAuthSecret;
 window.deleteOAuthApp = deleteOAuthApp;
+
+// NOTIFICATION MANAGEMENT FUNCTIONALITY
+// ==============================================
+let notificationsListCms = [];
+
+async function loadNotificationsCms() {
+  const tbody = document.getElementById('notificationsTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 15px;">Loading notifications...</td></tr>';
+
+  try {
+    const response = await fetch('/api/v2/notifications', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
+      }
+    });
+
+    if (!response.ok) throw new Error('Failed to fetch notifications');
+    notificationsListCms = await response.json();
+
+    if (!Array.isArray(notificationsListCms) || notificationsListCms.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 15px; color: var(--text-secondary);">No notifications found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = '';
+    notificationsListCms.forEach(item => {
+      const tr = document.createElement('tr');
+      tr.style.cssText = 'border-bottom: 1px solid var(--border-color); font-size: 0.88rem;';
+      const notifId = item._id ? String(item._id) : (item.id || '');
+      const dateStr = item.date || (item.timestamp ? new Date(item.timestamp).toLocaleDateString() : 'N/A');
+
+      tr.innerHTML = `
+        <td style="padding: 10px;"><strong>${escapeHtml(item.title || 'Untitled')}</strong></td>
+        <td style="padding: 10px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(item.message || '')}</td>
+        <td style="padding: 10px;"><span class="status-badge" style="background: rgba(0,0,0,0.06); color: var(--text-color); font-size: 0.75rem;">${escapeHtml(item.category || 'General')}</span></td>
+        <td style="padding: 10px;"><small>${escapeHtml(dateStr)}</small></td>
+        <td style="padding: 10px; text-align: right;">
+          <div class="exam-actions-btn" style="justify-content: flex-end;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="editNotificationCms('${notifId}')"><i class="fas fa-edit"></i> Edit</button>
+            <button type="button" class="btn btn-outline btn-sm btn-danger" onclick="deleteNotificationCms('${notifId}')"><i class="fas fa-trash"></i> Delete</button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    console.error(err);
+    if (tbody) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--danger-color, #e53e3e); padding: 15px;">Failed to load notifications: ${escapeHtml(err.message || 'Error')}</td></tr>`;
+    }
+  }
+}
+window.loadNotificationsCms = loadNotificationsCms;
+
+function clearNotifForm() {
+  const idEl = document.getElementById('notifId');
+  if (idEl) idEl.value = '';
+  const titleInput = document.getElementById('notifTitle');
+  if (titleInput) titleInput.value = '';
+  const catInput = document.getElementById('notifCategory');
+  if (catInput) catInput.value = '';
+  const msgInput = document.getElementById('notifMessage');
+  if (msgInput) msgInput.value = '';
+  const linkInput = document.getElementById('notifLink');
+  if (linkInput) linkInput.value = '';
+
+  const titleEl = document.getElementById('notifFormTitle');
+  if (titleEl) titleEl.innerHTML = '<i class="fas fa-plus-circle"></i> Add New Notification';
+}
+window.clearNotifForm = clearNotifForm;
+
+function editNotificationCms(id) {
+  const item = notificationsListCms.find(n => String(n._id || n.id) === String(id));
+  if (!item) return;
+
+  const idEl = document.getElementById('notifId');
+  if (idEl) idEl.value = String(item._id || item.id);
+  const titleInput = document.getElementById('notifTitle');
+  if (titleInput) titleInput.value = item.title || '';
+  const catInput = document.getElementById('notifCategory');
+  if (catInput) catInput.value = item.category || '';
+  const msgInput = document.getElementById('notifMessage');
+  if (msgInput) msgInput.value = item.message || '';
+  const linkInput = document.getElementById('notifLink');
+  if (linkInput) linkInput.value = item.link || '';
+
+  const titleEl = document.getElementById('notifFormTitle');
+  if (titleEl) titleEl.innerHTML = '<i class="fas fa-edit"></i> Edit Notification';
+
+  if (titleInput) titleInput.focus();
+}
+window.editNotificationCms = editNotificationCms;
+
+async function saveNotificationCms(event) {
+  if (event) event.preventDefault();
+
+  const idEl = document.getElementById('notifId');
+  const titleInput = document.getElementById('notifTitle');
+  const catInput = document.getElementById('notifCategory');
+  const msgInput = document.getElementById('notifMessage');
+  const linkInput = document.getElementById('notifLink');
+
+  const id = idEl ? idEl.value.trim() : '';
+  const title = titleInput ? titleInput.value.trim() : '';
+  const category = catInput ? catInput.value.trim() : '';
+  const message = msgInput ? msgInput.value.trim() : '';
+  const link = linkInput ? linkInput.value.trim() : '';
+
+  if (!title || !message) {
+    showNotification('Please enter both title and message', 'error');
+    return;
+  }
+
+  const payload = { title, category, message, link };
+  if (id) payload._id = id;
+
+  const method = id ? 'PUT' : 'POST';
+
+  try {
+    showNotification('Saving notification...', 'info');
+    const response = await fetch('/api/v2/notifications', {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      showNotification(id ? 'Notification updated!' : 'Notification created!', 'success');
+      clearNotifForm();
+      loadNotificationsCms();
+    } else {
+      showNotification(data.error || 'Failed to save notification', 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    showNotification('Failed to save notification', 'error');
+  }
+}
+window.saveNotificationCms = saveNotificationCms;
+
+async function deleteNotificationCms(id) {
+  if (!confirm('Are you sure you want to delete this notification?')) return;
+
+  try {
+    showNotification('Deleting notification...', 'info');
+    const response = await fetch(`/api/v2/notifications?id=${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('materio_auth_token')}`
+      }
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      showNotification('Notification deleted!', 'success');
+      loadNotificationsCms();
+    } else {
+      showNotification(data.error || 'Failed to delete notification', 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    showNotification('Failed to delete notification', 'error');
+  }
+}
+window.deleteNotificationCms = deleteNotificationCms;

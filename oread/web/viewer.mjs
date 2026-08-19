@@ -7201,18 +7201,13 @@ class PDFPresentationMode {
     // fullscreen presentation view. Plain wheel remains page navigation.
     if (evt.ctrlKey || evt.metaKey) {
       evt.preventDefault();
-      const scaleFactor = Math.exp(-evt.deltaY / 100);
-      const delta = normalizeWheelEventDelta(evt);
-      const steps = delta > 0 ? -1 : 1;
-      const options = {
+      let scaleFactor = Math.exp(-evt.deltaY / 100);
+      scaleFactor = Math.max(0.8, Math.min(1.25, scaleFactor));
+      this.pdfViewer.updateScale({
         drawingDelay: AppOptions.get("defaultZoomDelay"),
-        origin: [evt.clientX, evt.clientY]
-      };
-      if (Math.abs(scaleFactor - 1) < 0.05 && evt.deltaMode === WheelEvent.DOM_DELTA_PIXEL) {
-        this.pdfViewer.updateScale({ ...options, scaleFactor });
-      } else {
-        this.pdfViewer.updateScale({ ...options, steps });
-      }
+        origin: [evt.clientX, evt.clientY],
+        scaleFactor
+      });
       return;
     }
     evt.preventDefault();
@@ -7331,12 +7326,38 @@ class PDFPresentationMode {
   #resetMouseScrollState() {
     this.mouseScrollTimeStamp = 0;
     this.mouseScrollDelta = 0;
+    this.touchPinchState = null;
   }
   #touchSwipe(evt) {
     if (!this.active) {
       return;
     }
-    if (evt.touches.length > 1) {
+    if (evt.touches && evt.touches.length === 2) {
+      this.touchSwipeState = null;
+      const t1 = evt.touches[0];
+      const t2 = evt.touches[1];
+      const dist = Math.hypot(t2.pageX - t1.pageX, t2.pageY - t1.pageY);
+      const centerX = (t1.clientX + t2.clientX) / 2;
+      const centerY = (t1.clientY + t2.clientY) / 2;
+
+      if (evt.type === "touchstart") {
+        this.touchPinchState = { lastDistance: dist };
+      } else if (evt.type === "touchmove" && this.touchPinchState && this.touchPinchState.lastDistance > 0) {
+        evt.preventDefault();
+        const factor = dist / this.touchPinchState.lastDistance;
+        const clampedFactor = Math.max(0.85, Math.min(1.2, factor));
+        this.pdfViewer.updateScale({
+          drawingDelay: AppOptions.get("defaultZoomDelay"),
+          origin: [centerX, centerY],
+          scaleFactor: clampedFactor
+        });
+        this.touchPinchState.lastDistance = dist;
+      }
+      return;
+    } else {
+      this.touchPinchState = null;
+    }
+    if (evt.touches && evt.touches.length > 1) {
       this.touchSwipeState = null;
       return;
     }

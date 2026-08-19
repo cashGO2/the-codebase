@@ -8185,114 +8185,102 @@ body.dark-mode .attachments-empty {
 }
 
 .seating-lookup {
-    flex: 1;
-    min-width: 0;
-}
-
-.seating-input-row {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 50px;
-    padding: 2px 2px 2px 12px;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    transition: border-color 0.2s ease;
+    gap: 8px;
 }
 
-.seating-input-row:focus-within {
-    border-color: rgba(255, 130, 0, 0.3);
+.seating-input-row,
+.seating-result {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.seating-venue-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-color, inherit);
+    opacity: 0.9;
 }
 
 .enrollment-input {
-    flex: 1;
-    padding: 2px 0;
     border: none;
-    font-size: 11px;
-    font-family: inherit;
+    border-bottom: 1px dashed var(--border-color, rgba(150, 150, 150, 0.4));
     background: transparent;
-    color: #333;
+    color: var(--text-color, inherit);
+    font-size: 12px;
+    padding: 2px 4px;
     outline: none;
-    min-width: 0;
+    min-width: 170px;
+    transition: border-color 0.2s ease;
+}
+
+.enrollment-input:focus {
+    border-bottom-color: var(--color-primary, #ff6b35);
+    border-bottom-style: solid;
 }
 
 .enrollment-input::placeholder {
-    color: #aaa;
-    font-size: 10px;
+    color: var(--text-secondary, #999);
+    font-size: 11px;
 }
 
 .seating-search-btn {
-    width: 24px;
-    height: 24px;
-    min-width: 24px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 50px;
-    background: rgba(255, 255, 255, 0.8);
-    color: #555;
+    background: none;
+    border: none;
+    color: var(--color-primary, #ff6b35);
     cursor: var(--f-cursor-pointer);
-    display: flex;
+    padding: 2px 4px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
-    transition: all 0.2s ease;
-    margin-left: 6px;
+    font-size: 13px;
+    opacity: 0.85;
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .seating-search-btn:hover {
-    background: rgba(255, 255, 255, 1);
-    border-color: rgba(0, 0, 0, 0.15);
-}
-
-.seating-result {
-    display: flex;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 50px;
-    padding: 2px 2px 2px 12px;
-    border: 1px solid rgba(0, 0, 0, 0.06);
+    opacity: 1;
+    transform: translateX(2px);
 }
 
 .seating-result-text {
-    flex: 1;
-    font-size: 11px;
-    color: #444;
+    font-size: 12px;
+    color: var(--text-color, inherit);
     font-weight: 500;
-    padding: 2px 0;
 }
 
 .seating-result-text i {
-    color: #ff8200;
+    color: var(--color-primary, #ff6b35);
     margin-right: 5px;
     font-size: 12px;
 }
 
-.seating-result.not-found {
-    border-color: rgba(220, 53, 69, 0.15);
-}
-
 .seating-result.not-found .seating-result-text {
-    color: #888;
+    color: #e53e3e;
 }
 
 .seating-clear-btn {
-    width: 24px;
-    height: 24px;
-    min-width: 24px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 50px;
-    background: rgba(255, 255, 255, 0.8);
-    color: #888;
+    background: none;
+    border: none;
+    color: var(--text-secondary, #888);
     cursor: var(--f-cursor-pointer);
-    display: flex;
+    padding: 2px 4px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
-    transition: all 0.2s ease;
-    margin-left: 6px;
+    font-size: 12px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
 }
 
 .seating-clear-btn:hover {
-    background: rgba(255, 255, 255, 1);
-    color: #555;
+    opacity: 1;
+}
 }
 
 /* Dark mode */
@@ -8418,7 +8406,7 @@ body.dark-mode .seating-clear-btn {
     transform: translateX(-50%);
     width: 2px;
     height: calc(100% + 32px);
-    background: #e0e0e0;
+    background: var(--color-border, rgba(150, 150, 150, 0.3));
 }
 
 .exam-timeline-item:last-child .exam-timeline-dot::after {
@@ -8426,11 +8414,11 @@ body.dark-mode .seating-clear-btn {
 }
 
 .exam-timeline-item.completed .exam-timeline-dot::before {
-    background: var(--color-primary-alt);
+    background: var(--color-primary-alt, var(--color-primary));
 }
 
 .exam-timeline-item.completed .exam-timeline-dot::after {
-    background: var(--color-primary-alt);
+    background: var(--color-primary-alt, var(--color-primary));
 }
 
 /* Blinking dot animation for active/today items - subtle glow pulse */
@@ -8451,14 +8439,13 @@ body.dark-mode .seating-clear-btn {
     animation: examDotBlink 2.5s ease-in-out infinite;
 }
 
-/* Active/today exam lines connect to future exams, so they stay grey */
 .exam-timeline-item.today .exam-timeline-dot::after,
 .exam-timeline-item.active .exam-timeline-dot::after {
-    background: var(--color-border-light, #e0e0e0) !important;
+    background: var(--color-border, rgba(150, 150, 150, 0.3)) !important;
 }
 
 .exam-timeline-item.upcoming:not(.active) .exam-timeline-dot::before {
-    background: var(--color-border-light, #e0e0e0);
+    background: var(--color-border, rgba(150, 150, 150, 0.3));
 }
 
 .exam-timeline-content {
@@ -8990,14 +8977,14 @@ body.dark-mode .exam-mini-item::before,
 body.dark-mode .exam-mini-item::after,
 body.dark-mode .exam-timeline-dot::before,
 body.dark-mode .exam-timeline-dot::after {
-    background: #555;
+    background: var(--color-border, rgba(255, 255, 255, 0.15));
 }
 
 body.dark-mode .exam-mini-item.completed::before,
 body.dark-mode .exam-mini-item.completed::after,
 body.dark-mode .exam-timeline-item.completed .exam-timeline-dot::before,
 body.dark-mode .exam-timeline-item.completed .exam-timeline-dot::after {
-    background: var(--color-primary-alt);
+    background: var(--color-primary-alt, var(--color-primary));
 }
 
 /* Dark mode: Active/Today exam dots should adapt to primary accent color */
@@ -9008,11 +8995,11 @@ body.dark-mode .exam-timeline-item.active .exam-timeline-dot::before {
 
 body.dark-mode .exam-timeline-item.today .exam-timeline-dot::after,
 body.dark-mode .exam-timeline-item.active .exam-timeline-dot::after {
-    background: #555;
+    background: var(--color-border, rgba(255, 255, 255, 0.15));
 }
 
 body.dark-mode .exam-timeline-item.upcoming.active .exam-timeline-dot::after {
-    background: #555;
+    background: var(--color-border, rgba(255, 255, 255, 0.15));
 }
 
 /* Responsive styles */

@@ -104,10 +104,10 @@ module.exports = async (req, res) => {
     const isNotebooks = url.pathname.includes("/notebooks");
     const isSubscription = url.pathname.includes("/subscription");
     const isWebPush = url.pathname.includes("/web-push");
-    const isPosts = url.pathname.includes("/posts");
     const isPromotions = url.pathname.includes("/promotions");
     const isReleases = url.pathname.includes("/releases");
     const isExamdata = url.pathname.includes("/examdata");
+    const isNotifications = url.pathname.includes("/notifications");
 
     // Check query param action
     const action = queryParams.action || req.query?.action;
@@ -236,6 +236,14 @@ module.exports = async (req, res) => {
       pathParam.includes("examdata")
     ) {
       return await handleExamdataFeature(req, res);
+    }
+
+    if (
+      isNotifications ||
+      action === "notifications" ||
+      pathParam.includes("notifications")
+    ) {
+      return await handleNotificationsFeature(req, res);
     }
 
     return res.status(404).json({
@@ -3379,6 +3387,133 @@ async function handleExamdataFeature(req, res) {
     }
   } catch (error) {
     console.error('ExamData Feature Error:', error);
+    return res.status(500).json({ error: 'Internal server error', details: error.message });
+  }
+}
+
+async function handleNotificationsFeature(req, res) {
+  try {
+    const db = await getMongoDb();
+    const notificationsCollection = db.collection('notifications');
+    const method = req.method;
+    const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+
+    switch (method) {
+      case 'GET': {
+        let items = await notificationsCollection
+          .find({})
+          .sort({ timestamp: -1, date: -1, _id: -1 })
+          .toArray();
+
+        if (items.length === 0) {
+          try {
+            const notifFilePath = path.join(process.cwd(), 'notifications.json');
+            if (fs.existsSync(notifFilePath)) {
+              const fileData = JSON.parse(fs.readFileSync(notifFilePath, 'utf8'));
+              items = Array.isArray(fileData) ? fileData : (fileData.notifications || []);
+            }
+          } catch (e) {}
+        }
+        return res.status(200).json(items);
+      }
+
+      case 'POST': {
+        const isAdminUser = await checkAdminUser(req);
+        if (!isAdminUser) {
+          return res.status(403).json({ error: 'Admin privileges required' });
+        }
+
+        const data = req.body && typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
+        if (!data || !data.title || !data.message) {
+          return res.status(400).json({ error: 'Title and message are required' });
+        }
+
+        const newNotif = {
+          title: data.title.trim(),
+          message: data.message.trim(),
+          category: data.category ? data.category.trim() : 'General',
+          link: data.link ? data.link.trim() : '',
+          timestamp: new Date().toISOString(),
+          date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          created_at: new Date().toISOString()
+        };
+
+        const result = await notificationsCollection.insertOne(newNotif);
+        newNotif._id = result.insertedId;
+
+        // Try syncing to local notifications.json file if possible
+        try {
+          const notifFilePath = path.join(process.cwd(), 'notifications.json');
+          let existing = [];
+          if (fs.existsSync(notifFilePath)) {
+            const content = fs.readFileSync(notifFilePath, 'utf8');
+            existing = JSON.parse(content);
+            if (!Array.isArray(existing)) existing = [];
+          }
+          existing.unshift(newNotif);
+          fs.writeFileSync(notifFilePath, JSON.stringify(existing.slice(0, 100), null, 2));
+        } catch (e) {}
+
+        return res.status(201).json({ message: 'Notification created', notification: newNotif });
+      }
+
+      case 'PUT': {
+        const isAdminUser = await checkAdminUser(req);
+        if (!isAdminUser) {
+          return res.status(403).json({ error: 'Admin privileges required' });
+        }
+
+        const data = req.body && typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
+        if (!data || (!data._id && !data.id)) {
+          return res.status(400).json({ error: 'Notification ID is required' });
+        }
+
+        const id = String(data._id || data.id);
+        const updateData = { ...data };
+        delete updateData._id;
+        delete updateData.id;
+        updateData.updated_at = new Date().toISOString();
+
+        if (ObjectId.isValid(id)) {
+          await notificationsCollection.updateOne(
+            { _id: new ObjectId(id) },
+            { $set: updateData }
+          );
+        } else {
+          await notificationsCollection.updateOne(
+            { id: id },
+            { $set: updateData }
+          );
+        }
+
+        return res.status(200).json({ message: 'Notification updated', notification: { _id: id, ...updateData } });
+      }
+
+      case 'DELETE': {
+        const isAdminUser = await checkAdminUser(req);
+        if (!isAdminUser) {
+          return res.status(403).json({ error: 'Admin privileges required' });
+        }
+
+        const id = url.searchParams.get('id') || req.query?.id;
+        if (!id) {
+          return res.status(400).json({ error: 'Notification id parameter is required' });
+        }
+
+        if (ObjectId.isValid(id)) {
+          await notificationsCollection.deleteOne({ _id: new ObjectId(id) });
+        } else {
+          await notificationsCollection.deleteOne({ id: id });
+        }
+
+        return res.status(200).json({ message: 'Notification deleted' });
+      }
+
+      default:
+        return res.status(405).json({ error: 'Method not allowed' });
+    }
+  } catch (error) {
+    console.error('Notifications Feature Error:', error);
     return res.status(500).json({ error: 'Internal server error', details: error.message });
   }
 }

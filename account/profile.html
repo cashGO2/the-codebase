@@ -583,6 +583,9 @@
               <button class="sub-tab-btn" data-subtab="examdata">
                 <i class="fas fa-file-signature"></i> Exams & Seating
               </button>
+              <button class="sub-tab-btn" data-subtab="notifications-mgr">
+                <i class="fas fa-bell"></i> Notifications
+              </button>
             </div>
 
             <!-- Uploads Sub-tab -->
@@ -1055,21 +1058,19 @@
 
               <!-- Seating arrangements upload section -->
               <div class="seating-upload-section" style="margin-bottom: 30px; background: var(--card-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 20px;">
-                <h5><i class="fas fa-location-dot"></i> Seating Arrangement CSV</h5>
-                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 15px;">Upload a seating arrangement CSV. Column headers must include <code>enrollment_no</code>, <code>room_no</code>, and <code>bench_no</code>.</p>
+                <h5><i class="fas fa-location-dot"></i> Seating Arrangement CSVs</h5>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 15px;">Upload seating arrangement CSV files. Column headers must include <code>enrollment_no</code>, <code>room_no</code>, and <code>bench_no</code>.</p>
                 
-                <div id="seatingActiveInfo" style="margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.03); border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.9rem; display: none;">
-                  <strong>Active Seating File URL:</strong> <a href="#" id="seatingActiveUrl" target="_blank" style="color: var(--primary-color); word-break: break-all;">None</a>
-                </div>
+                <div id="seatingFilesListContainer" style="margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;"></div>
 
                 <div class="form-group">
-                  <div class="upload-area" id="seatingUploadArea" onclick="document.getElementById('seatingFileInput').click()" style="border: 2px dashed var(--border-color); border-radius: 12px; padding: 30px; text-align: center; cursor: pointer; transition: border-color 0.2s;">
-                    <div class="upload-icon"><i class="fas fa-file-csv" style="font-size: 3rem; color: var(--text-secondary);"></i></div>
+                  <div class="upload-area" id="seatingUploadArea" onclick="document.getElementById('seatingFileInput').click()" style="border: 2px dashed var(--border-color); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: border-color 0.2s;">
+                    <div class="upload-icon"><i class="fas fa-file-csv" style="font-size: 2.5rem; color: var(--text-secondary);"></i></div>
                     <div class="upload-text">
-                      <h4>Click to upload Seating CSV</h4>
-                      <p>Supports only CSV format files</p>
+                      <h4>Click to upload Seating CSV(s)</h4>
+                      <p>Upload one or multiple CSV format files</p>
                     </div>
-                    <input type="file" id="seatingFileInput" accept=".csv" style="display: none;" onchange="uploadSeatingCsv(this)">
+                    <input type="file" id="seatingFileInput" accept=".csv" multiple style="display: none;" onchange="uploadSeatingCsv(this)">
                   </div>
                 </div>
 
@@ -1098,6 +1099,69 @@
                 </div>
               </div>
             </div>
+
+            <!-- Notifications Management Sub-tab -->
+            <div id="notifications-mgr" class="sub-tab-pane">
+              <div class="notifications-header" style="margin-bottom: 20px;">
+                <h4><i class="fas fa-bell"></i> Notification Management</h4>
+                <p>Create independent push & feed notifications, edit existing ones, or remove outdated notices.</p>
+              </div>
+
+              <!-- Create / Edit Form -->
+              <div class="notification-form-section" style="margin-bottom: 30px; background: var(--card-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 20px;">
+                <h5 id="notifFormTitle"><i class="fas fa-plus-circle"></i> Add New Notification</h5>
+                <form id="notificationManageForm" onsubmit="saveNotificationCms(event)">
+                  <input type="hidden" id="notifId" value="">
+                  <div class="form-row" style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <div class="form-group" style="flex: 2; min-width: 240px;">
+                      <label style="font-weight: 500; font-size: 0.9rem; margin-bottom: 5px; display: block;">Notification Title *</label>
+                      <input type="text" id="notifTitle" required placeholder="e.g. Mid Semester Timetable Released" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-color); color: var(--text-color);">
+                    </div>
+                    <div class="form-group" style="flex: 1; min-width: 160px;">
+                      <label style="font-weight: 500; font-size: 0.9rem; margin-bottom: 5px; display: block;">Category / Tag</label>
+                      <input type="text" id="notifCategory" placeholder="e.g. Announcement, Update, Alert" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-color); color: var(--text-color);">
+                    </div>
+                  </div>
+                  <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="font-weight: 500; font-size: 0.9rem; margin-bottom: 5px; display: block;">Message Content *</label>
+                    <textarea id="notifMessage" required rows="3" placeholder="Enter detailed notification message text..." style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-color); color: var(--text-color); resize: vertical;"></textarea>
+                  </div>
+                  <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="font-weight: 500; font-size: 0.9rem; margin-bottom: 5px; display: block;">Target Link (Optional)</label>
+                    <input type="text" id="notifLink" placeholder="https://..." style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-color); color: var(--text-color);">
+                  </div>
+                  <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Save Notification</button>
+                    <button type="button" class="btn btn-outline" onclick="clearNotifForm()">Clear</button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Notifications List Table -->
+              <div class="notifications-list-section" style="background: var(--card-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                  <h5><i class="fas fa-list"></i> Active Notifications</h5>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="loadNotificationsCms()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+                <div class="table-responsive" style="overflow-x: auto;">
+                  <table class="table" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                      <tr style="border-bottom: 1px solid var(--border-color); text-align: left; font-size: 0.85rem; color: var(--text-secondary);">
+                        <th style="padding: 10px;">Title</th>
+                        <th style="padding: 10px;">Message</th>
+                        <th style="padding: 10px;">Category</th>
+                        <th style="padding: 10px;">Date</th>
+                        <th style="padding: 10px; text-align: right;">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="notificationsTableBody">
+                      <tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--text-secondary);">Loading notifications...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
           </div>
         </div>
       </div>      <!-- OAuth Apps Tab -->

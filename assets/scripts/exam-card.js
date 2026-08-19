@@ -1265,30 +1265,85 @@ function getDaysUntil(dateStr) {
     return diffDays;
 }
 
-// Helper to check if an exam has finished based on its start time and duration
+function parseTimeString(str, baseDate) {
+    if (!str) return null;
+    const s = str.trim().toUpperCase();
+    const isPM = s.includes('PM');
+    const isAM = s.includes('AM');
+    const cleanStr = s.replace(/AM|PM/g, '').trim();
+
+    const parts = cleanStr.split(/[:.]/);
+    if (parts.length < 1) return null;
+
+    let hours = parseInt(parts[0], 10);
+    let minutes = parts.length > 1 ? parseInt(parts[1], 10) : 0;
+    if (isNaN(hours)) return null;
+    if (isNaN(minutes)) minutes = 0;
+
+    if (isPM && hours < 12) hours += 12;
+    if (isAM && hours === 12) hours = 0;
+
+    // If no explicit AM/PM and hours between 1 and 7, assume PM (e.g. 2 PM, 12.30 to 2 PM)
+    if (!isPM && !isAM && hours >= 1 && hours <= 7) {
+        hours += 12;
+    }
+
+    const result = new Date(baseDate);
+    result.setHours(hours, minutes, 0, 0);
+    return result;
+}
+
+// Helper to check if an exam has finished based on its start time, end time range, or duration
 function isExamFinished(exam, now) {
-    if (!exam || !exam.time) return false;
+    if (!exam || !exam.date) return false;
 
     try {
-        // Parse exam start time
-        const [hours, minutes] = exam.time.split(':').map(Number);
-        const examStartDate = new Date(exam.date);
-        examStartDate.setHours(hours, minutes, 0, 0);
+        const examDate = new Date(exam.date);
+        if (isNaN(examDate.getTime())) return false;
 
-        // Parse duration (e.g., "1.5 hours", "60 mins")
-        let durationMinutes = 90; // Default 1.5 hours
-        if (exam.duration) {
-            const durationStr = String(exam.duration).toLowerCase();
-            if (durationStr.includes('hour')) {
-                const hoursMatch = durationStr.match(/(\d+\.?\d*)\s*hour/);
-                if (hoursMatch) durationMinutes = parseFloat(hoursMatch[1]) * 60;
-            } else if (durationStr.includes('min')) {
-                const minsMatch = durationStr.match(/(\d+)\s*min/);
-                if (minsMatch) durationMinutes = parseInt(minsMatch[1]);
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const examDay = new Date(examDate.getFullYear(), examDate.getMonth(), examDate.getDate());
+
+        // Past date -> finished
+        if (examDay < today) return true;
+        // Future date -> not finished
+        if (examDay > today) return false;
+
+        // Same day (today)
+        if (!exam.time) return false;
+
+        const timeStr = String(exam.time).trim();
+        // Check for time range (e.g. "12:30 to 2 PM", "12:30 - 2:00 PM", "12.30 to 2")
+        const rangeParts = timeStr.split(/to|-|\u2013|\u2014/i);
+        let examEndDate = null;
+
+        if (rangeParts.length === 2) {
+            const endStr = rangeParts[1].trim();
+            const endParsed = parseTimeString(endStr, examDate);
+            if (endParsed) {
+                examEndDate = endParsed;
             }
         }
 
-        const examEndDate = new Date(examStartDate.getTime() + durationMinutes * 60000);
+        if (!examEndDate) {
+            const startStr = rangeParts[0].trim();
+            const startParsed = parseTimeString(startStr, examDate);
+            if (!startParsed) return false;
+
+            let durationMinutes = 90; // Default 1.5 hours
+            if (exam.duration) {
+                const durationStr = String(exam.duration).toLowerCase();
+                if (durationStr.includes('hour')) {
+                    const hoursMatch = durationStr.match(/(\d+\.?\d*)\s*hour/);
+                    if (hoursMatch) durationMinutes = parseFloat(hoursMatch[1]) * 60;
+                } else if (durationStr.includes('min')) {
+                    const minsMatch = durationStr.match(/(\d+)\s*min/);
+                    if (minsMatch) durationMinutes = parseInt(minsMatch[1]);
+                }
+            }
+            examEndDate = new Date(startParsed.getTime() + durationMinutes * 60000);
+        }
+
         return now > examEndDate;
     } catch (e) {
         console.error('[ExamCard] Error calculating if exam is finished:', e);
@@ -1792,6 +1847,201 @@ window.showExamSyllabus = showExamSyllabus;
 window.showExamTimeline = showExamTimeline;
 
 // ================================================
+        currentSemesterData.exams[parseInt(examId)];
+
+    if (!exam) return;
+
+    const slider = document.getElementById('examModalSlider');
+    const titleEl = document.getElementById('syllabusSubjectTitle');
+    const contentEl = document.getElementById('syllabusFullContent');
+    const bannerImg = document.getElementById('syllabusBannerImg');
+
+    if (!slider || !titleEl || !contentEl) return;
+
+    // Update syllabus view content
+    titleEl.textContent = `${exam.subject} Syllabus`;
+
+    // Set banner image
+    if (bannerImg) {
+        const coverImgUrl = exam.image || (examData && examData.defaultCoverImage);
+        if (coverImgUrl) {
+            bannerImg.src = coverImgUrl;
+            bannerImg.style.display = 'block';
+        } else {
+            // Placeholder: Use a solid dark color or a generic pattern
+            bannerImg.src = '';
+            bannerImg.style.display = 'none'; // Will show the .syllabus-banner-img background
+        }
+    }
+
+    // Joint syllabus array into a single string for markdown parsing
+    const syllabusText = Array.isArray(exam.syllabus) ? exam.syllabus.join('\n\n') : (exam.syllabus || '');
+    contentEl.innerHTML = parseSyllabusMarkdown(syllabusText);
+
+    // Slide to syllabus page
+    slider.classList.add('show-syllabus');
+    setSyllabusPageAccessibility(true);
+
+    // Reset scroll
+    contentEl.scrollTop = 0;
+
+    // Haptic feedback
+    if (window.MaterioHaptics) {
+        window.MaterioHaptics.vibrate('light');
+    }
+}
+
+function showExamTimeline() {
+    const slider = document.getElementById('examModalSlider');
+    if (!slider) return;
+
+    // Slide back to timeline
+    slider.classList.remove('show-syllabus');
+    setSyllabusPageAccessibility(false);
+
+    // Haptic feedback
+    if (window.MaterioHaptics) {
+        window.MaterioHaptics.vibrate('light');
+    }
+}
+
+function setSyllabusPageAccessibility(isVisible) {
+    const syllabusPage = document.getElementById('examModalSyllabusPage');
+    if (!syllabusPage) return;
+
+    const backBtn = syllabusPage.querySelector('.syllabus-back-btn');
+
+    if (isVisible) {
+        syllabusPage.removeAttribute('aria-hidden');
+        if ('inert' in syllabusPage) {
+            syllabusPage.inert = false;
+        }
+        if (backBtn) {
+            backBtn.tabIndex = 0;
+        }
+        return;
+    }
+
+    syllabusPage.setAttribute('aria-hidden', 'true');
+    if ('inert' in syllabusPage) {
+        syllabusPage.inert = true;
+    }
+    if (backBtn) {
+        backBtn.tabIndex = -1;
+    }
+}
+
+
+
+function parseSyllabusMarkdown(text) {
+    if (!text) return '';
+
+    // Handle literal '\n' strings converted from JSON if any
+    let formattedText = text.replace(/\\n/g, '\n');
+
+    // Basic markdown parsing
+    let html = formattedText
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold **text**
+        .replace(/__(.*?)__/g, '<strong>$1</strong>');     // Bold __text__
+
+    // Split into lines to handle lists and paragraphs properly
+    const lines = html.split('\n');
+    let inList = false;
+    let result = '';
+
+    const chevronSvg = `
+<svg class="hgi hgi-arrow-down-01" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="currentColor" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.75;">
+  <path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`;
+
+    lines.forEach(line => {
+        const trimmed = line.trim();
+        if (!trimmed) {
+            if (inList) {
+                result += '</ul>';
+                inList = false;
+            }
+            return;
+        }
+
+        if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+            if (!inList) {
+                result += '<ul>';
+                inList = true;
+            }
+            result += `<li>${trimmed.substring(2)}</li>`;
+        } else {
+            if (inList) {
+                result += '</ul>';
+                inList = false;
+            }
+
+            // Check if this line starts with "Unit X:" (case-insensitive)
+            const unitMatch = trimmed.match(/^(Unit\s+\w+:)(.*)$/i);
+            if (unitMatch) {
+                const label = unitMatch[1];
+                const content = unitMatch[2];
+                result += `
+<div class="syllabus-unit-row">
+    <div class="syllabus-unit-content">
+        <span class="syllabus-unit-num">${label}</span>
+        <span class="syllabus-unit-text">${content}</span>
+    </div>
+    <div class="syllabus-unit-chevron">
+        ${chevronSvg}
+    </div>
+</div>`;
+            } else {
+                result += `<p>${trimmed}</p>`;
+            }
+        }
+    });
+
+    if (inList) result += '</ul>';
+
+    return result;
+}
+
+// Close modal when clicking outside or toggle syllabus accordion rows
+document.addEventListener('click', function (e) {
+    const modal = document.getElementById('examModal');
+    if (modal && e.target === modal) {
+        closeExamModal();
+        return;
+    }
+
+    const row = e.target.closest('.syllabus-unit-row');
+    if (row) {
+        // Do not toggle if the user is highlighting/selecting text
+        if (window.getSelection && window.getSelection().toString() !== '') {
+            return;
+        }
+        row.classList.toggle('expanded');
+        if (window.MaterioHaptics) {
+            window.MaterioHaptics.vibrate('light');
+        }
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+        closeExamModal();
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    setSyllabusPageAccessibility(false);
+});
+
+// Expose functions globally
+window.openExamModal = openExamModal;
+window.closeExamModal = closeExamModal;
+window.showExamSyllabus = showExamSyllabus;
+window.showExamTimeline = showExamTimeline;
+
+// ================================================
 // SEATING LOOKUP
 // ================================================
 let seatingData = null; // Cached CSV data
@@ -1801,26 +2051,41 @@ const SEATING_SEARCH_ICON = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 
 async function fetchSeatingData() {
     if (seatingData) return seatingData;
     try {
-        const url = (examData && examData.seatingDataUrl) ? examData.seatingDataUrl : '/assets/data/seating_data.csv';
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('CSV not found');
-        const text = await response.text();
-        const lines = text.trim().split(/\r?\n/);
-        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+        let urls = [];
+        if (examData && Array.isArray(examData.seatingDataUrls) && examData.seatingDataUrls.length > 0) {
+            urls = examData.seatingDataUrls;
+        } else if (examData && examData.seatingDataUrl) {
+            urls = [examData.seatingDataUrl];
+        } else {
+            urls = ['/assets/data/seating_data.csv'];
+        }
+
         seatingData = [];
-        for (let i = 1; i < lines.length; i++) {
-            const values = lines[i].split(',');
-            if (values.length >= headers.length) {
-                const row = {};
-                headers.forEach((h, idx) => {
-                    row[h] = (values[idx] || '').trim();
-                });
-                seatingData.push(row);
+        for (const url of urls) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) continue;
+                const text = await response.text();
+                const lines = text.trim().split(/\r?\n/);
+                if (lines.length <= 1) continue;
+                const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+                for (let i = 1; i < lines.length; i++) {
+                    const values = lines[i].split(',');
+                    if (values.length >= headers.length) {
+                        const row = {};
+                        headers.forEach((h, idx) => {
+                            row[h] = (values[idx] || '').trim();
+                        });
+                        seatingData.push(row);
+                    }
+                }
+            } catch (err) {
+                console.warn('[SeatingLookup] Error fetching single CSV:', url, err);
             }
         }
-        return seatingData;
+        return seatingData.length > 0 ? seatingData : null;
     } catch (e) {
-        console.error('[SeatingLookup] Error fetching CSV:', e);
+        console.error('[SeatingLookup] Error fetching CSVs:', e);
         return null;
     }
 }
@@ -1892,25 +2157,27 @@ function clearSeatingLookup() {
     try { localStorage.removeItem(SEATING_LS_KEY); } catch (e) { }
 }
 
-// Resolve the active seating file from the live config. The initial exam-card
-// load can fall back to the bundled JSON while the API is temporarily
-// unavailable; that fallback intentionally has no CMS-managed seating URL.
+// Resolve the active seating file from the live config.
 async function getActiveSeatingDataUrl() {
-    if (examData && examData.seatingDataUrl) return examData.seatingDataUrl;
+    if (examData && (examData.seatingDataUrl || (Array.isArray(examData.seatingDataUrls) && examData.seatingDataUrls.length > 0))) {
+        return examData.seatingDataUrl || examData.seatingDataUrls[0];
+    }
 
     try {
         const response = await fetch('/api/v2/examdata', { cache: 'no-store' });
         if (!response.ok) return '';
 
         const liveConfig = await response.json();
-        if (!liveConfig || !liveConfig.seatingDataUrl) return '';
+        if (!liveConfig || (!liveConfig.seatingDataUrl && (!Array.isArray(liveConfig.seatingDataUrls) || liveConfig.seatingDataUrls.length === 0))) return '';
 
-        // Preserve the schedule currently shown in the modal while restoring
-        // the CMS-managed seating URL from the authoritative config.
-        examData = { ...(examData || {}), seatingDataUrl: liveConfig.seatingDataUrl };
+        examData = { 
+            ...(examData || {}), 
+            seatingDataUrl: liveConfig.seatingDataUrl,
+            seatingDataUrls: liveConfig.seatingDataUrls
+        };
         cacheExamData(examData);
         seatingData = null;
-        return examData.seatingDataUrl;
+        return examData.seatingDataUrl || (examData.seatingDataUrls && examData.seatingDataUrls[0]) || '';
     } catch (e) {
         console.warn('[SeatingLookup] Could not refresh seating configuration:', e);
         return '';
