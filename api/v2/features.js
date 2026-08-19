@@ -3288,12 +3288,22 @@ async function handleExamdataFeature(req, res) {
     switch (method) {
       case 'GET': {
         const data = await examdataCollection.findOne({ type: 'config' });
-        if (data) {
+        if (data && data.enabled !== false && Array.isArray(data.semesters) && data.semesters.length > 0) {
           return res.status(200).json(data);
         } else {
           const anyData = await examdataCollection.findOne({});
-          if (anyData) {
+          if (anyData && anyData.enabled !== false && Array.isArray(anyData.semesters) && anyData.semesters.length > 0) {
             return res.status(200).json(anyData);
+          }
+          // Fallback to static assets/data/examdata.json
+          try {
+            const fallbackPath = path.join(process.cwd(), 'assets', 'data', 'examdata.json');
+            if (fs.existsSync(fallbackPath)) {
+              const fileContent = fs.readFileSync(fallbackPath, 'utf8');
+              return res.status(200).json(JSON.parse(fileContent));
+            }
+          } catch (e) {
+            console.error('Failed to load static examdata fallback:', e);
           }
           return res.status(200).json({ enabled: false, semesters: [] });
         }

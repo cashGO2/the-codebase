@@ -327,7 +327,7 @@ async function loadAndDisplayExamCard() {
 
         // Use session cache first for near-instant UI, then refresh from network.
         const cachedData = getCachedExamData();
-        if (cachedData && !examData) {
+        if (cachedData && cachedData.enabled !== false && Array.isArray(cachedData.semesters) && cachedData.semesters.length > 0 && !examData) {
             examData = cachedData;
         }
 
@@ -342,7 +342,7 @@ async function loadAndDisplayExamCard() {
                 const response = await fetch(request.url, request.options);
                 if (!response.ok) continue;
                 const freshData = await response.json();
-                if (freshData) {
+                if (freshData && freshData.enabled !== false && Array.isArray(freshData.semesters) && freshData.semesters.length > 0) {
                     examData = freshData;
                     cacheExamData(freshData);
                     loaded = true;
@@ -1841,12 +1841,12 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // Expose functions globally
-window.openExamModal = openExamModal;
-window.closeExamModal = closeExamModal;
-window.showExamSyllabus = showExamSyllabus;
-window.showExamTimeline = showExamTimeline;
+// Syllabus View Functions
+function showExamSyllabus(examId) {
+    if (!currentSemesterData || !currentSemesterData.exams) return;
 
-// ================================================
+    // Find the exam by ID or index
+    const exam = currentSemesterData.exams.find(e => (e.id || '').toString() === examId.toString()) ||
         currentSemesterData.exams[parseInt(examId)];
 
     if (!exam) return;
