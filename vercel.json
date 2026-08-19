@@ -118,6 +118,10 @@
       "destination": "/api/v2/features?action=promotions"
     },
     {
+      "source": "/api/v2/notifications",
+      "destination": "/api/v2/features?action=notifications"
+    },
+    {
       "source": "/api/v2/releases",
       "destination": "/api/v2/features?action=releases"
     },

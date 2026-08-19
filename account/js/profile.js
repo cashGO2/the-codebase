@@ -3295,6 +3295,10 @@ function togglePromoCustomFrequency() {
   if (container) {
     container.style.display = freq === 'custom' ? 'block' : 'none';
   }
+  const inputEl = document.getElementById('promoCustomFreqHours');
+  if (inputEl) {
+    inputEl.disabled = freq !== 'custom';
+  }
 }
 window.togglePromoCustomFrequency = togglePromoCustomFrequency;
 

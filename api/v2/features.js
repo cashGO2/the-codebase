@@ -104,6 +104,7 @@ module.exports = async (req, res) => {
     const isNotebooks = url.pathname.includes("/notebooks");
     const isSubscription = url.pathname.includes("/subscription");
     const isWebPush = url.pathname.includes("/web-push");
+    const isPosts = url.pathname.includes("/posts");
     const isPromotions = url.pathname.includes("/promotions");
     const isReleases = url.pathname.includes("/releases");
     const isExamdata = url.pathname.includes("/examdata");
