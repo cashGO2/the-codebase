@@ -1,5 +1,5 @@
 const {
-  supabase,
+  supabaseAdmin,
   comparePassword,
   generateToken,
   generateHandoffCode,
@@ -58,7 +58,7 @@ module.exports = async (req, res) => {
       }
 
       // Fetch user data to return with the token
-      const { data: user, error: userError } = await supabase
+      const { data: user, error: userError } = await supabaseAdmin
         .from('users')
         .select('id, username, display_name, email, has_admin_privileges, is_plus_user, profile_picture')
         .eq('id', result.userId)
@@ -142,7 +142,7 @@ module.exports = async (req, res) => {
     const field = isEmail ? 'email' : 'username';
 
     // Find user by username or email
-    const { data: user, error } = await supabase
+    const { data: user, error } = await supabaseAdmin
       .from('users')
       .select('*')
       .ilike(field, normalizedUsername)
@@ -154,7 +154,7 @@ module.exports = async (req, res) => {
 
     // VERIFY METHOD
     if (method === 'otp') {
-      const { data: otpRecord, error: otpError } = await supabase
+      const { data: otpRecord, error: otpError } = await supabaseAdmin
         .from('otps')
         .select('*')
         .eq('email', user.email)
@@ -168,7 +168,7 @@ module.exports = async (req, res) => {
       }
 
       // Cleanup
-      await supabase.from('otps').delete().eq('id', otpRecord.id);
+      await supabaseAdmin.from('otps').delete().eq('id', otpRecord.id);
     } else {
       // Traditional Password Login
       const isPasswordValid = await comparePassword(password, user.password);

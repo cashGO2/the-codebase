@@ -1,5 +1,5 @@
 const {
-  supabase,
+  supabaseAdmin,
   hashPassword,
   comparePassword,
   verifyToken,
@@ -32,7 +32,7 @@ async function cleanupExpiredProfilePictures(userId, activeProfilePictureUrl) {
       ? activePath.slice(`${userId}/`.length)
       : null;
 
-    const { data: files, error: listError } = await supabase
+    const { data: files, error: listError } = await supabaseAdmin
       .storage
       .from('profile-pictures')
       .list(userId);
@@ -53,7 +53,7 @@ async function cleanupExpiredProfilePictures(userId, activeProfilePictureUrl) {
 
     if (removableFiles.length === 0) return;
 
-    const { error: removeError } = await supabase
+    const { error: removeError } = await supabaseAdmin
       .storage
       .from('profile-pictures')
       .remove(removableFiles);
@@ -108,7 +108,7 @@ async function handleGetProfile(req, res) {
     // Get user data from database
     // Note: is_plus_user = Pro tier (₹299 lifetime) - old Plus rebranded
     //       is_lite_user = Plus tier (₹59/3mo subscription) - new tier
-    const { data: user, error } = await supabase
+    const { data: user, error } = await supabaseAdmin
       .from('users')
       .select('id, username, display_name, email, profile_picture, created_at, updated_at, recovery_key, has_admin_privileges, is_plus_user, is_lite_user, lite_expiry')
       .eq('id', userId)
@@ -175,7 +175,7 @@ async function handleUpdateProfile(req, res) {
     const isProfilePictureUpdateRequest = typeof profilePicture === 'string' && profilePicture.length > 0;
 
     // Get current user data for validation
-    const { data: user, error: userError } = await supabase
+    const { data: user, error: userError } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('id', decoded.id)
@@ -192,7 +192,7 @@ async function handleUpdateProfile(req, res) {
     // Update username if provided
     if (username && username !== user.username) {
       // Check if username already exists
-      const { data: existingUser } = await supabase
+      const { data: existingUser } = await supabaseAdmin
         .from('users')
         .select('id')
         .eq('username', username)
@@ -265,7 +265,7 @@ async function handleUpdateProfile(req, res) {
         const fileName = `profile-${Date.now()}.${extension}`;
 
         // Upload to storage bucket
-        const { data: upload, error: uploadError } = await supabase
+        const { data: upload, error: uploadError } = await supabaseAdmin
           .storage
           .from('profile-pictures')
           .upload(`${decoded.id}/${fileName}`, buffer, {
@@ -278,7 +278,7 @@ async function handleUpdateProfile(req, res) {
           return res.status(500).json({ error: 'Failed to upload profile picture', details: uploadError.message || uploadError });
         } else {
           // Get public URL for the uploaded file
-          const { data: { publicUrl } } = supabase
+          const { data: { publicUrl } } = supabaseAdmin
             .storage
             .from('profile-pictures')
             .getPublicUrl(`${decoded.id}/${fileName}`);
@@ -300,7 +300,7 @@ async function handleUpdateProfile(req, res) {
       // Add updated_at timestamp
       updateData.updated_at = new Date().toISOString();
 
-      const { error: updateError } = await supabase
+      const { error: updateError } = await supabaseAdmin
         .from('users')
         .update(updateData)
         .eq('id', decoded.id);
@@ -309,7 +309,7 @@ async function handleUpdateProfile(req, res) {
         return res.status(500).json({ error: 'Failed to update profile', details: updateError });
       }
     }    // Return updated profile data
-    const { data: updatedUser, error: fetchError } = await supabase
+    const { data: updatedUser, error: fetchError } = await supabaseAdmin
       .from('users')
       .select('id, username, display_name, email, profile_picture, created_at, updated_at, recovery_key, has_admin_privileges, is_plus_user, is_lite_user, lite_expiry')
       .eq('id', decoded.id)
@@ -380,7 +380,7 @@ async function handleDeleteAccount(req, res) {
     }
 
     // Get current user data
-    const { data: user, error: userError } = await supabase
+    const { data: user, error: userError } = await supabaseAdmin
       .from('users')
       .select('password')
       .eq('id', decoded.id)
@@ -403,14 +403,14 @@ async function handleDeleteAccount(req, res) {
 
     // Delete user profile picture from storage
     try {
-      const { data: files } = await supabase
+      const { data: files } = await supabaseAdmin
         .storage
         .from('profile-pictures')
         .list(decoded.id);
 
       if (files && files.length > 0) {
         console.log(`Account deletion: Found ${files.length} profile picture files to delete`);
-        const { error: storageError } = await supabase
+        const { error: storageError } = await supabaseAdmin
           .storage
           .from('profile-pictures')
           .remove(files.map(file => `${decoded.id}/${file.name}`));
@@ -426,7 +426,7 @@ async function handleDeleteAccount(req, res) {
 
     // Delete user from database
     console.log("Account deletion: Deleting user from database");
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await supabaseAdmin
       .from('users')
       .delete()
       .eq('id', decoded.id);
