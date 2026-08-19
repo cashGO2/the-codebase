@@ -3971,12 +3971,6 @@ async function testSeatingLookupInCms() {
   }
 }
 window.testSeatingLookupInCms = testSeatingLookupInCms;
-  } catch (e) {
-    console.error(e);
-    resultDiv.innerHTML = '<span style="color: #dc3545;">Failed to parse CSV. Check console.</span>';
-  }
-}
-window.testSeatingLookupInCms = testSeatingLookupInCms;
 
 function renderSemestersList() {
   const container = document.getElementById('semesterListContainer');
