@@ -175,15 +175,14 @@ async function sendOTPEmail({ to, otp, type, html }) {
     : `Your Account Recovery Code: ${otp}`;
 
   const stickerPath = path.join(process.cwd(), 'assets', 'img', 'sticker.png');
-  const attachments = [];
-
-  if (fs.existsSync(stickerPath)) {
-    attachments.push({
+  const stickerSource = fs.existsSync(stickerPath) ? stickerPath : 'https://materioa.vercel.app/assets/img/sticker.png';
+  const attachments = [
+    {
       filename: 'sticker.png',
-      path: stickerPath,
+      path: stickerSource,
       cid: 'sticker'
-    });
-  }
+    }
+  ];
 
   try {
     const info = await transporter.sendMail({

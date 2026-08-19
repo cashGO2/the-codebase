@@ -23,7 +23,7 @@ function getOTPTemplate(otp, type, email) {
   <div style="max-width:500px;margin:24px auto;">
     <!-- Logo/Sticker -->
     <div style="margin-bottom:24px; text-align: center;">
-      <img src="https://materioa.vercel.app/assets/img/sticker.png" alt="materio." width="140" style="display:block; margin: 0 auto;" />
+      <img src="cid:sticker" alt="materio." width="140" style="display:block; margin: 0 auto;" />
     </div>
     
     <!-- Outer card container -->
