@@ -597,6 +597,13 @@ async function handleOTP(req, res) {
       }
     }
 
+    // Clean up previous OTPs for this email and type
+    await supabaseAdmin
+      .from('otps')
+      .delete()
+      .eq('email', normalizedEmail)
+      .eq('type', type);
+
     // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // 10 minutes
@@ -633,7 +640,12 @@ async function handleOTP(req, res) {
     });
 
     if (!emailResult.success) {
-      return res.status(500).json({ error: 'Failed to send verification email', details: emailResult.error });
+      console.error('OTP Email Delivery Error:', emailResult.error);
+      return res.status(500).json({ 
+        error: 'Failed to send verification email',
+        message: `Email delivery failed: ${emailResult.error || 'SMTP configuration error'}. Please verify email address or try again later.`,
+        details: emailResult.error 
+      });
     }
 
     return res.status(200).json({ 

@@ -13,8 +13,8 @@ const fs = require('fs');
 const path = require('path');
 
 // --- Config ---
-const SMTP_EMAIL = process.env.SMTP_EMAIL || process.env.SENDER_EMAIL || '';
-const SMTP_PASSWORD = process.env.SMTP_PASSWORD || process.env.SENDER_PASSWORD || '';
+const SMTP_EMAIL = process.env.SMTP_EMAIL || process.env.SENDER_EMAIL || process.env.SMTP_USER || process.env.EMAIL_USER || process.env.GMAIL_USER || '';
+const SMTP_PASSWORD = process.env.SMTP_PASSWORD || process.env.SENDER_PASSWORD || process.env.SMTP_PASS || process.env.EMAIL_PASS || process.env.GMAIL_PASS || '';
 const ALERT_EMAIL = process.env.ALERT_EMAIL || SMTP_EMAIL;
 
 const SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com';
