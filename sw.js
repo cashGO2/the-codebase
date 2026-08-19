@@ -448,10 +448,10 @@ self.addEventListener('fetch', (event) => {
                 if (url.origin === self.location.origin) {
                     return caches.match(event.request).then(cached => {
                         if (cached) return cleanRedirectedResponse(cached);
-                        throw err;
+                        return new Response('', { status: 504, statusText: 'Gateway Timeout' });
                     });
                 }
-                throw err;
+                return new Response('', { status: 504, statusText: 'Network Error' });
             })
     );
 });

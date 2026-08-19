@@ -45,7 +45,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function getApiBase() {
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    return isLocal ? 'http://localhost:3000' : 'https://materiosync.vercel.app';
+    if (isLocal && window.location.port === '3000') {
+        return 'http://localhost:3000';
+    }
+    return 'https://materiosync.vercel.app';
 }
 
 function decodeUserIdFromToken() {
