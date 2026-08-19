@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (nextToOtpBtn) {
         nextToOtpBtn.addEventListener('click', async function () {
             if (validatePhase1()) {
-                const emailValue = document.getElementById('email').value.trim();
+                const emailValue = document.getElementById('email').value.trim().toLowerCase();
 
                 // Set the display email IMMEDIATELY so user sees it even while loading
                 const displayEl = document.getElementById('displayEmail');
@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         showFieldMsg('otp', 'Code sent to your university email!', 'success');
                     } else {
                         const err = await res.json();
-                        showFieldMsg('email', err.error || 'Failed to send OTP. Try again.');
+                        showFieldMsg('email', err.error || err.message || 'Failed to send OTP. Try again.');
                     }
                 } catch (err) {
                     console.error('OTP Send Error:', err);
@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const resendBtn = document.getElementById('resendOtpBtn');
     if (resendBtn) {
         resendBtn.addEventListener('click', async function () {
-            const emailValue = document.getElementById('email').value.trim();
+            const emailValue = document.getElementById('email').value.trim().toLowerCase();
             try {
                 this.classList.add('requesting');
                 const res = await fetch('/api/v2/auth?action=otp', {
@@ -359,6 +359,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const formData = new FormData(this);
             const data = Object.fromEntries(formData.entries());
             data.otp = otpCode;
+            if (data.email) {
+                data.email = data.email.trim().toLowerCase();
+            }
 
             const avatarSeed = isCustomUpload ? 'custom' : (shuffleCounter > 0 ? `${displayNameInput.value || 'User'}-${shuffleCounter}` : displayNameInput.value || 'User');
             data.avatarSeed = avatarSeed;
@@ -384,12 +387,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     body: JSON.stringify(data)
                 });
 
+                const resData = await res.json();
+
                 if (res.ok) {
+                    if (resData.token) {
+                        setAuthToken(resData.token);
+                    }
+                    if (resData.user) {
+                        localStorage.setItem('materio_user', JSON.stringify(resData.user));
+                    }
                     showFieldMsg('form', 'Welcome to Materio! Redirecting...', 'success');
                     setTimeout(() => window.location.href = '/account/profile', 1500);
                 } else {
-                    const err = await res.json();
-                    showFieldMsg('form', err.error || 'Registration failed. Check details.');
+                    showFieldMsg('form', resData.error || 'Registration failed. Check details.');
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Count Me In';
                 }

@@ -1,5 +1,5 @@
 const { 
-  supabase, 
+  supabaseAdmin, 
   hashPassword, 
   generateToken, 
   generateRecoveryKey,
@@ -48,18 +48,18 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields including verification code' });
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
+
     // University email validation during signup
-    const universityRegex = /^(\d{2})\d{7}(\d{4})@paruluniversity\.ac\.in$/;
-    const emailMatch = email.match(universityRegex);
-    if (!emailMatch) {
+    if (!normalizedEmail.endsWith('@paruluniversity.ac.in')) {
       return res.status(400).json({ error: 'Only Parul University emails are allowed (@paruluniversity.ac.in)' });
     }
 
     // STEP 1: Verify OTP
-    const { data: otpRecord, error: otpError } = await supabase
+    const { data: otpRecord, error: otpError } = await supabaseAdmin
       .from('otps')
       .select('*')
-      .eq('email', email)
+      .eq('email', normalizedEmail)
       .eq('otp', otp)
       .eq('type', 'signup')
       .gt('expires_at', new Date().toISOString())
@@ -76,7 +76,7 @@ module.exports = async (req, res) => {
     let validInvite = null;
 
     if (inviteCode) {
-      const { data: invite, error: inviteError } = await supabase
+      const { data: invite, error: inviteError } = await supabaseAdmin
         .from('invites')
         .select('*')
         .eq('code', inviteCode.trim())
@@ -93,17 +93,17 @@ module.exports = async (req, res) => {
     }
 
     // STEP 2: Check if user already exists
-    const { data: existingUserByEmail } = await supabase
+    const { data: existingUserByEmail } = await supabaseAdmin
       .from('users')
       .select('email')
-      .eq('email', email)
+      .eq('email', normalizedEmail)
       .maybeSingle();
 
     if (existingUserByEmail) {
       return res.status(409).json({ error: 'Email already exists' });
     }
 
-    const { data: existingUserByUsername } = await supabase
+    const { data: existingUserByUsername } = await supabaseAdmin
       .from('users')
       .select('username')
       .eq('username', username)
@@ -123,7 +123,7 @@ module.exports = async (req, res) => {
     const userData = {
       username,
       display_name: displayName,
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
       recovery_key: recoveryKey,
       has_admin_privileges: false,
@@ -132,14 +132,14 @@ module.exports = async (req, res) => {
       current_year: currentYear,
       passout_year: passoutYear,
       specialization: specialization,
-      university_roll_no: email.split('@')[0], // Entire numeric string
+      university_roll_no: normalizedEmail.split('@')[0], // Entire roll number string before domain
       // Use captured picture if available, otherwise neutral fallback
       profile_picture: hasInlineProfilePicture ? profilePicture : fallbackAvatarUrl,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
 
-    const { data: newUser, error: userError } = await supabase
+    const { data: newUser, error: userError } = await supabaseAdmin
       .from('users')
       .insert(userData)
       .select()
@@ -151,7 +151,7 @@ module.exports = async (req, res) => {
 
     // STEP 3.5: Mark Invite as Redeemed if used
     if (validInvite) {
-      await supabase
+      await supabaseAdmin
         .from('invites')
         .update({
           redeemed: true,
@@ -175,7 +175,7 @@ module.exports = async (req, res) => {
         const fileName = `${newUser.id}/profile.${fileExt}`;
         const bufferData = Buffer.from(base64Data, 'base64');
         
-        const { data: uploadData, error: uploadError } = await supabase
+        const { data: uploadData, error: uploadError } = await supabaseAdmin
           .storage
           .from('profile-pictures')
           .upload(fileName, bufferData, {
@@ -184,13 +184,13 @@ module.exports = async (req, res) => {
           });
 
         if (!uploadError) {
-          const { data: { publicUrl } } = supabase
+          const { data: { publicUrl } } = supabaseAdmin
             .storage
             .from('profile-pictures')
             .getPublicUrl(fileName);
 
           finalProfilePic = publicUrl;
-          await supabase
+          await supabaseAdmin
             .from('users')
             .update({ profile_picture: finalProfilePic })
             .eq('id', newUser.id);
@@ -201,7 +201,7 @@ module.exports = async (req, res) => {
     }
 
     // STEP 5: Clean up OTP
-    await supabase.from('otps').delete().eq('id', otpRecord.id);
+    await supabaseAdmin.from('otps').delete().eq('id', otpRecord.id);
 
     // STEP 6: Generate JWT token
     const token = generateToken({ 

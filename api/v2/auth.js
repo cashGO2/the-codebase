@@ -585,10 +585,11 @@ async function handleOTP(req, res) {
       return res.status(400).json({ error: 'Email and type are required' });
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
+
     // Signup restricted to university email
     if (type === 'signup') {
-      const universityRegex = /^\d{13}@paruluniversity\.ac\.in$/;
-      if (!universityRegex.test(email)) {
+      if (!normalizedEmail.endsWith('@paruluniversity.ac.in')) {
         return res.status(400).json({ 
           error: 'Restricted Signup', 
           message: 'Only students with @paruluniversity.ac.in emails are allowed to create an account.' 
@@ -604,7 +605,7 @@ async function handleOTP(req, res) {
     const { error: dbError } = await supabaseAdmin
       .from('otps')
       .insert({
-        email,
+        email: normalizedEmail,
         otp,
         type,
         expires_at: expiresAt
@@ -621,11 +622,11 @@ async function handleOTP(req, res) {
     }
 
     // Render Template
-    const html = getOTPTemplate(otp, type, email);
+    const html = getOTPTemplate(otp, type, normalizedEmail);
 
     // Send Email
     const emailResult = await sendOTPEmail({
-      to: email,
+      to: normalizedEmail,
       otp,
       type,
       html
