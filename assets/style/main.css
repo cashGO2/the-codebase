@@ -8222,6 +8222,8 @@ body.dark-mode .attachments-empty {
 .enrollment-input:focus {
     border-bottom-color: var(--color-primary, #ff6b35);
     border-bottom-style: solid;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 .enrollment-input::placeholder {
@@ -8232,6 +8234,7 @@ body.dark-mode .attachments-empty {
 .seating-search-btn {
     background: none;
     border: none;
+    border-radius: 6px;
     color: var(--color-primary, #ff6b35);
     cursor: var(--f-cursor-pointer);
     padding: 2px 4px;
@@ -8240,7 +8243,7 @@ body.dark-mode .attachments-empty {
     justify-content: center;
     font-size: 13px;
     opacity: 0.85;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
 }
 
 .seating-search-btn:hover {
@@ -8267,6 +8270,7 @@ body.dark-mode .attachments-empty {
 .seating-clear-btn {
     background: none;
     border: none;
+    border-radius: 6px;
     color: var(--text-secondary, #888);
     cursor: var(--f-cursor-pointer);
     padding: 2px 4px;
@@ -8275,7 +8279,7 @@ body.dark-mode .attachments-empty {
     justify-content: center;
     font-size: 12px;
     opacity: 0.7;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
 }
 
 .seating-clear-btn:hover {
