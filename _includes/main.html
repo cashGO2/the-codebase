@@ -304,25 +304,6 @@
                             </article>
                         </a>
                         {% endfor %}
-                        {% else %}
-                        {% for post in site.posts limit: 3 %}
-                        {% unless post.hidden or post.draft or post.visibility == 'private' %}
-                        <a href="{{ post.url | relative_url }}" class="insight-card-link" target="_blank"
-                            rel="noopener noreferrer">
-                            <article class="insight-card" id="staticBlogPost{{ forloop.index }}"
-                                style="--card-bg: url('{% if post.image %}{{ post.image | relative_url }}{% else %}/assets/img/noidea.png{% endif %}')">
-                                <div class="insight-card-bg"></div>
-                                <div class="insight-card-gradient"></div>
-                                <div class="insight-card-content">
-                                    <h3 class="insight-card-title">{{ post.title }}</h3>
-                                    <p class="insight-card-excerpt">{{ post.excerpt | strip_html | normalize_whitespace
-                                        | truncate: 120 }}</p>
-                                    <span class="insight-card-date">{{ post.date | date: "%d-%m-%Y" }}</span>
-                                </div>
-                            </article>
-                        </a>
-                        {% endunless %}
-                        {% endfor %}
                         {% endif %}
                         <!-- Exam Card in Default View -->
                         <div id="examCardDefault" class="exam-card" style="display: none;" onclick="openExamModal()">

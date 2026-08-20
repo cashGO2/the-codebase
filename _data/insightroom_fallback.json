@@ -1,37 +1,37 @@
 [
   {
-    "title": "Introducing Materio v5 ",
-    "excerpt": "Materio v5 brings a fully rebuilt search engine with smarter rankings, an upgraded AI Mode that searches inside PDFs, and Thinklet, a new AI study assistant with Materio built right in.",
-    "date": "01-06-2026",
-    "url": "https://room.getmaterio.app/whats-new/introducing-materio-v5",
-    "image": "https://res.cloudinary.com/dvsdsl7iw/image/upload/v1780291254/insightroom/szthf1e5qdqcyqk8idvq.webp"
-  },
-  {
-    "title": " Unit 5 - Data Storage Techniques",
-    "excerpt": "A complete coverage of Data Storage Techniques in Android - Shared Preferences, Files and Directories, SQLite Database, and Content Providers.",
-    "date": "23-04-2026",
-    "url": "https://room.getmaterio.app/chapter/unit-5-data-storage-techniques",
+    "title": "NoSQL Data Management",
+    "excerpt": "Exam-ready notes on NoSQL data management: types, aggregates, key-value and document models, graph databases, map-reduce, and partitioning.",
+    "date": "19-08-2026",
+    "url": "https://room.getmaterio.app/database-management-systems/nosql-data-management",
     "image": ""
   },
   {
-    "title": "Unit 6 - Deployment and Best Practices",
-    "excerpt": "A complete coverage of all topics from CodeTantra notes of Unit 6 - Deployment and Best practices.",
-    "date": "20-04-2026",
-    "url": "https://room.getmaterio.app/chapter/mean-unit6",
-    "image": "https://res.cloudinary.com/dvsdsl7iw/image/upload/v1779015892/insightroom/mo0gafeiwxalwnqw1raf.webp"
+    "title": "Systems Vulnerability Scanning",
+    "excerpt": "Complete notes on vulnerability scanning: port identification, banner grabbing, traffic and vulnerability probes, plus hands-on coverage of Netcat, Nmap, and Wireshark.",
+    "date": "14-08-2026",
+    "url": "https://room.getmaterio.app/cybersecurity/systems-vulnerability-scanning",
+    "image": "https://res.cloudinary.com/dvsdsl7iw/image/upload/v1786720804/insightroom/xrradtxl97kpvkkyvasb.webp"
   },
   {
-    "title": "Unit 5 - Integration",
-    "excerpt": "A complete coverage of all topics from CodeTantra notes of Unit 5 - Integration.",
-    "date": "20-04-2026",
-    "url": "https://room.getmaterio.app/chapter/mean-unit5",
-    "image": ""
+    "title": "Block Ciphers and the Data Encryption Standard (DES)",
+    "excerpt": "Covers block cipher principles, confusion and diffusion, the Feistel structure, full DES internals (rounds, key schedule, S-boxes), the avalanche effect, differential and linear cryptanalysis, meet-in-the-middle attacks, Triple DES, and all five modes of operation (ECB, CBC, CFB, OFB, CTR).",
+    "date": "11-08-2026",
+    "url": "https://room.getmaterio.app/originals/unit-3-block-ciphers-and-the-data-encryption-standard-des",
+    "image": "https://res.cloudinary.com/dvsdsl7iw/image/upload/v1786509113/insightroom/zhn6iz40kfmgays0slvf.webp"
   },
   {
-    "title": "Git and Github",
-    "excerpt": "This resource provides comprehensive knowledge about basics of Git and GitHub as a beginer or Just a quick knowledge refresh.",
-    "date": "22-01-2026",
-    "url": "https://room.getmaterio.app/originals/git",
-    "image": "https://room.getmaterio.app/assets/img/covers/aec4c2cc-25c1-48eb-961e-2048503608fd.webp"
+    "title": "Classical Encryption Techniques",
+    "excerpt": "Covers the symmetric cipher model, cryptanalysis and attack types, and classical ciphers including Caesar, monoalphabetic, Playfair, Hill, Vigenere, one-time pad, transposition, and steganography, with interactive demos for each.",
+    "date": "26-07-2026",
+    "url": "https://room.getmaterio.app/originals/information-and-network-security-chapter-2-classical-encryption-techniques",
+    "image": "https://res.cloudinary.com/dvsdsl7iw/image/upload/v1786455602/insightroom/ulyiaktzumv56euiltnm.webp"
+  },
+  {
+    "title": "Information & Network Security: Assignment 1 & 2 Solutions",
+    "excerpt": "Complete worked solutions for Information and Network Security Assignments 1 and 2, covering classical ciphers (Hill, Vigenere, Playfair, transposition, OTP) and DES internals (Feistel structure, S-boxes, CFB mode, triple DES, meet-in-the-middle attacks).",
+    "date": "08-07-2026",
+    "url": "https://room.getmaterio.app/assignments/information-amp-network-security-assignment-1-amp-2-solutions",
+    "image": "https://res.cloudinary.com/dvsdsl7iw/image/upload/v1786629829/insightroom/hjpi7ht6wkuyewyc11gw.webp"
   }
 ]
